@@ -57,11 +57,31 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestScenario.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="TestScenario.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/instructable/server/TestScenario.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.43889844" vertical-offset="0" max-vertical-offset="1037">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1037">
               <caret line="15" column="41" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="41" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.9082734" vertical-offset="277" max-vertical-offset="901">
+              <caret line="46" column="7" selection-start-line="46" selection-start-column="7" selection-end-line="46" selection-end-column="7" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../../Git/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-18.16" vertical-offset="1110" max-vertical-offset="1666">
+              <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -117,31 +137,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GenericConcept.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/GenericConcept.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1538" max-vertical-offset="2227">
-              <caret line="101" column="5" selection-start-line="101" selection-start-column="5" selection-end-line="101" selection-end-column="5" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="InstanceContainer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1581">
-              <caret line="41" column="43" selection-start-line="41" selection-start-column="43" selection-end-line="41" selection-end-column="43" />
-              <folding>
-                <element signature="e#1267#1594#0" expanded="false" />
-                <element signature="e#1593#1594#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="Git.Settings">
@@ -191,6 +186,7 @@
         <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/OutgoingEmail.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/EmailAddress.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/TestScenario.java" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -534,7 +530,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1920" height="1032" extended-state="1" />
+    <frame x="0" y="0" width="1920" height="1032" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1135,8 +1131,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/TestScenario.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.43889844" vertical-offset="0" max-vertical-offset="1037">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1037">
           <caret line="15" column="41" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../Git/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-18.16" vertical-offset="1110" max-vertical-offset="1666">
+          <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.9082734" vertical-offset="277" max-vertical-offset="901">
+          <caret line="46" column="7" selection-start-line="46" selection-start-column="7" selection-end-line="46" selection-end-column="7" />
           <folding />
         </state>
       </provider>
