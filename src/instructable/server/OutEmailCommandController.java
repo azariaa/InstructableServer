@@ -14,11 +14,12 @@ public class OutEmailCommandController
 {
     private String myEmail;
     InstanceContainer instanceContainer;
+    int numOfEmailsSent = 0;
 
     OutEmailCommandController(String myEmail, ConceptContainer conceptContainer, InstanceContainer instanceContainer)
     {
         this.myEmail = myEmail;
-        conceptContainer.defineConcept(OutgoingEmail.strOutgoingEmailTypeAndName, EmailMessage.fieldDescriptions);
+        conceptContainer.defineConcept(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, EmailMessage.fieldDescriptions);
         this.instanceContainer = instanceContainer;
     }
 
@@ -38,7 +39,14 @@ public class OutEmailCommandController
     {
         OutgoingEmail email = getEmailBeingComposed(executionStatus);
         if (email != null)
+        {
             email.sendEmail(executionStatus);
+            if (executionStatus.noError())
+            {
+                numOfEmailsSent++;
+                instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName, "sent" + numOfEmailsSent);
+            }
+        }
     }
 
     public void createNewEmail(ExecutionStatus executionStatus)

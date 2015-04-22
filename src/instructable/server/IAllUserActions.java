@@ -60,4 +60,7 @@ public interface IAllUserActions
     ActionResponse nextEmailMessage(String usersText);
     ActionResponse previousEmailMessage(String usersText);
 
+
+    //future work: ActionResponse undoLastAction(String usersText);
+
 }
