@@ -1,13 +1,13 @@
 package instructable.server;
 
 import com.sun.deploy.util.StringUtils;
-import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 import instructable.server.hirarchy.ConceptContainer;
 import instructable.server.hirarchy.GenericConcept;
 import instructable.server.hirarchy.InstanceContainer;
+import instructable.server.hirarchy.OutgoingEmail;
+import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
@@ -20,7 +20,9 @@ public class TopDMAllActions implements IAllUserActions
 
     public TopDMAllActions()
     {
-        dMContextAndExecution = new OutEmailCommandController("myemail@gmail.com");
+        conceptContainer = new ConceptContainer();
+        instanceContainer = new InstanceContainer();
+        dMContextAndExecution = new OutEmailCommandController("myemail@gmail.com", conceptContainer, instanceContainer);
         conceptContainer = new ConceptContainer();
         instanceContainer = new InstanceContainer();
     }
@@ -92,7 +94,7 @@ public class TopDMAllActions implements IAllUserActions
         } else
         {
             retSentences.append("Composing new email. ");
-            Set<String> emailFieldNames = dMContextAndExecution.getComposedEmailFields();
+            List<String> emailFieldNames = dMContextAndExecution.changeToRelevantComposedEmailFields(conceptContainer.getFields(OutgoingEmail.strOutgoingEmailTypeAndName));
             String appendedFields = StringUtils.join(emailFieldNames, ", ");
             String toReplace = ",";  //replace last "," with and.
             String replacement = " and";

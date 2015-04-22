@@ -86,4 +86,18 @@ public class ConceptContainer
         List<FieldDescription> currentFields = conceptFieldMap.get(conceptName);
         currentFields.removeIf( x -> x.fieldName == fieldName);
     }
+
+    public List<String> getFields(String conceptName)
+    {
+        LinkedList<String> fieldNames = new LinkedList<>();
+        List<FieldDescription> fields = conceptFieldMap.get(conceptName);
+        if (fields != null)
+        {
+            for (FieldDescription fieldDescription : fields)
+            {
+                fieldNames.add(fieldDescription.fieldName);
+            }
+        }
+        return  fieldNames;
+    }
 }

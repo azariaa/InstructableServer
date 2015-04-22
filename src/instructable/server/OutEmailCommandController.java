@@ -5,7 +5,7 @@ import instructable.server.hirarchy.EmailMessage;
 import instructable.server.hirarchy.InstanceContainer;
 import instructable.server.hirarchy.OutgoingEmail;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by Amos Azaria on 15-Apr-15.
@@ -46,10 +46,9 @@ public class OutEmailCommandController
         instanceContainer.addInstance(executionStatus, new OutgoingEmail(executionStatus, myEmail));
     }
 
-    public Set<String> getComposedEmailFields()
+    public List<String> changeToRelevantComposedEmailFields(List<String> allEmailFields)
     {
-        Set<String> allFields = emailBeingComposed.getAllFieldNames();
-        allFields.remove(EmailMessage.senderStr);
-        return allFields;
+        allEmailFields.remove(EmailMessage.senderStr);
+        return allEmailFields;
     }
 }
