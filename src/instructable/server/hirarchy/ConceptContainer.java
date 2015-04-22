@@ -89,6 +89,7 @@ public class ConceptContainer
 
     public List<String> getFields(String conceptName)
     {
+        //I wish I could use LinQ...
         LinkedList<String> fieldNames = new LinkedList<>();
         List<FieldDescription> fields = conceptFieldMap.get(conceptName);
         if (fields != null)

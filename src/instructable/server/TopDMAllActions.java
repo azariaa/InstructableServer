@@ -23,8 +23,6 @@ public class TopDMAllActions implements IAllUserActions
         conceptContainer = new ConceptContainer();
         instanceContainer = new InstanceContainer();
         dMContextAndExecution = new OutEmailCommandController("myemail@gmail.com", conceptContainer, instanceContainer);
-        conceptContainer = new ConceptContainer();
-        instanceContainer = new InstanceContainer();
     }
 
     private enum InternalState
@@ -47,7 +45,8 @@ public class TopDMAllActions implements IAllUserActions
         {
             if (testNoEmailBeingComposed(retSentences, statusAndMessage))
                 return new ActionResponse(retSentences.toString(), null);
-        } else
+        }
+        else
         {
             if (statusAndMessage.message != null)
             {
@@ -62,9 +61,9 @@ public class TopDMAllActions implements IAllUserActions
     {
         if (statusAndMessage.message != null)
         {
-            if (statusAndMessage.message.equals("there is no email being composed"))//TODO: bad bad bad!
+            if (statusAndMessage.message.startsWith("there are no instances of"))//TODO: bad bad bad!
             {
-                retSentences.append("I see that " + statusAndMessage.message + ".\n");
+                retSentences.append("I see that there is no email being composed.\n");
                 retSentences.append("Do you want to compose a new email?\n");
                 internalState = InternalState.pendingOnEmailCreation;
                 return true;
