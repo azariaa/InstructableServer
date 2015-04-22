@@ -46,12 +46,13 @@ public class TopDMAllActions implements IAllUserActions
             if (testNoEmailBeingComposed(retSentences, statusAndMessage))
                 return new ActionResponse(retSentences.toString(), null);
         }
-        else
+
+        if (statusAndMessage.message != null)
         {
-            if (statusAndMessage.message != null)
-            {
-                retSentences.append("I see that " + statusAndMessage.message + ".\n");
-            }
+            retSentences.append("I see that " + statusAndMessage.message + ".\n");
+        }
+        if (executionStatus.noError())
+        {
             retSentences.append("Email sent successfully.\n");
         }
         return new ActionResponse(retSentences.toString(), null);

@@ -9,6 +9,12 @@ public class TestScenario
     {
         IAllUserActions allUserActions = new TopDMAllActions();
 
+        sendingBasicEmail(allUserActions);
+
+    }
+
+    private static void sendingBasicEmail(IAllUserActions allUserActions)
+    {
         systemSays("Let's start by sending a dummy email to your-self.");
         ActionResponse response;
 
@@ -21,9 +27,20 @@ public class TestScenario
         response = allUserActions.set("set the subject of this email to test", "outgoing email", "subject", "test");
         systemSays(response.sayToUser);
 
-        response = allUserActions.set("set the subject of this email to test", "subject", "test2");
+        response = allUserActions.set("put test2 in body", "body", "test2");
         systemSays(response.sayToUser);
 
+        response = allUserActions.sendEmail("send the email");
+        systemSays(response.sayToUser);
+
+        response = allUserActions.set("set hello as the recipient", "recipient list", "hello");
+        systemSays(response.sayToUser);
+
+        response = allUserActions.set("set myself@myjob.com as the recipient", "recipient list", "myself@myjob.com");
+        systemSays(response.sayToUser);
+
+        response = allUserActions.sendEmail("send");
+        systemSays(response.sayToUser);
     }
 
     public static void systemSays(String str)

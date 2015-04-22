@@ -53,12 +53,12 @@ public class OutgoingEmail extends EmailMessage
                 }
                 else
                 {
-                    executionStatus.add(ExecutionStatus.RetStatus.warning,  "the message has no body.");
+                    executionStatus.add(ExecutionStatus.RetStatus.warning,  "the message has no body");
                     return;
                 }
             }
         }
-        executionStatus.add(ExecutionStatus.RetStatus.error, "the message has no recipient.");
+        executionStatus.add(ExecutionStatus.RetStatus.error, "the message has no recipient");
         return;
     }
 

@@ -67,6 +67,11 @@ public class ExecutionStatus
         return retStatus==RetStatus.error;
     }
 
+    public boolean noError()
+    {
+        return !isError();
+    }
+
     public boolean isOkOrComment()
     {
         RetStatus retStatus = getStatus();

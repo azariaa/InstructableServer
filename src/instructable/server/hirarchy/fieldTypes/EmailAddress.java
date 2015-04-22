@@ -45,11 +45,11 @@ public class EmailAddress extends FieldType
         if (testAddress(val))
         {
             address = val;
-            executionStatus.add(ExecutionStatus.RetStatus.comment, "minor email fixes were performed.");
+            executionStatus.add(ExecutionStatus.RetStatus.comment, "minor email fixes were performed");
             return;
         }
 
-        executionStatus.add(ExecutionStatus.RetStatus.error, "the given string was not an email address.");
+        executionStatus.add(ExecutionStatus.RetStatus.error, "the given string was not an email address");
         return;
     }
 
