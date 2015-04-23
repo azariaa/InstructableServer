@@ -75,8 +75,11 @@ public class ConceptContainer
 
     public void defineConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription[] fieldDescriptions)
     {
-        //TODO: should test if concept exists, wants to add, etc.
-        conceptFieldMap.put(conceptName, Arrays.asList(fieldDescriptions));
+        defineConcept(executionStatus, conceptName);
+        if (executionStatus.isOkOrComment())
+        {
+            addFieldsToConcept(executionStatus, conceptName, fieldDescriptions);
+        }
     }
 
     public void addFieldToConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription fieldDescription)
@@ -88,8 +91,21 @@ public class ConceptContainer
     {
         //TODO: check all these...
         //TODO: check no duplicate fields!!!
-        List<FieldDescription> currentFields = conceptFieldMap.get(conceptName);
-        currentFields.addAll(Arrays.asList(fieldDescriptions));
+        if (!conceptFieldMap.containsKey(conceptName))
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "the concept \"" + conceptName + "\" is not defined, please define it first");
+            return;
+        }
+        List<FieldDescription> conceptFields = conceptFieldMap.get(conceptName);
+        for (FieldDescription fieldDescription : fieldDescriptions)
+        {
+            if (doesFieldExistInConcept(conceptName, fieldDescription.fieldName))
+            {
+                executionStatus.add(ExecutionStatus.RetStatus.warning, "the concept \"" + conceptName + "\" already has the field \""+fieldDescription.fieldName + "\"");
+            }
+            else
+                conceptFields.add(fieldDescription);
+        }
     }
 
     public void removeFieldFromConcept(ExecutionStatus executionStatus, String conceptName, String fieldName)

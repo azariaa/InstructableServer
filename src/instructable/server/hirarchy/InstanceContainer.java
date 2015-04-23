@@ -12,6 +12,13 @@ public class InstanceContainer
 
     Map<String,Map<String,GenericConcept>> conceptToInstance = new HashMap<>(); //TODO: should be stored in DB
 
+    ConceptContainer conceptContainer;
+
+    public InstanceContainer(ConceptContainer conceptContainer)
+    {
+        this.conceptContainer = conceptContainer;
+    }
+
     public GenericConcept getMostPlausibleInstance(ExecutionStatus executionStatus, List<String> conceptOptions)
     {
         return getMostPlausibleInstance(executionStatus, conceptOptions, null);
@@ -78,15 +85,34 @@ public class InstanceContainer
         return null;
     }
 
+    public void addInstance(ExecutionStatus executionStatus, String conceptName, String instanceName)
+    {
+        if (!conceptContainer.doesConceptExist(conceptName))
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error,"there is no concept with the name \"" + "\", please define it first");
+            return;
+        }
+        GenericConcept instance = new GenericConcept(conceptName, instanceName, conceptContainer.conceptFieldMap.get(conceptName));
+
+        addInstance(executionStatus, instance);
+    }
+
     public void addInstance(ExecutionStatus executionStatus, GenericConcept conceptInstance)
     {
-        if (!conceptToInstance.containsKey(conceptInstance.type))
+        String conceptName = conceptInstance.type;
+        if (!conceptContainer.doesConceptExist(conceptName))
         {
-            //TODO: should check validity of conceptName (should have access to conceptContainer) and update executionStatus
-            conceptToInstance.put(conceptInstance.type, new HashMap<>());
+            executionStatus.add(ExecutionStatus.RetStatus.error,"there is no concept with the name \"" + "\", please define it first");
         }
+        else
+        {
+            if (!conceptToInstance.containsKey(conceptName))
+            {
+                conceptToInstance.put(conceptInstance.type, new HashMap<>());
+            }
 
-        conceptToInstance.get(conceptInstance.type).put(conceptInstance.name,conceptInstance);
+            conceptToInstance.get(conceptInstance.type).put(conceptInstance.name, conceptInstance);
+        }
 
     }
 

@@ -1,9 +1,6 @@
 package instructable.server;
 
-import instructable.server.hirarchy.ConceptContainer;
-import instructable.server.hirarchy.GenericConcept;
-import instructable.server.hirarchy.InstanceContainer;
-import instructable.server.hirarchy.OutgoingEmail;
+import instructable.server.hirarchy.*;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 
 import java.util.List;
@@ -18,12 +15,14 @@ public class TopDMAllActions implements IAllUserActions
     OutEmailCommandController dMContextAndExecution;
     ConceptContainer conceptContainer;
     InstanceContainer instanceContainer;
+    ICommandsToParser commandsToParser;
 
-    public TopDMAllActions()
+    public TopDMAllActions(ICommandsToParser commandsToParser)
     {
         conceptContainer = new ConceptContainer();
-        instanceContainer = new InstanceContainer();
+        instanceContainer = new InstanceContainer(conceptContainer);
         dMContextAndExecution = new OutEmailCommandController("myemail@gmail.com", conceptContainer, instanceContainer);
+        this.commandsToParser = commandsToParser;
     }
 
     private enum InternalState
@@ -95,13 +94,13 @@ public class TopDMAllActions implements IAllUserActions
         } else
         {
             retSentences.append("Composing new email. ");
-            List<String> emailFieldNames = dMContextAndExecution.changeToRelevantComposedEmailFields(conceptContainer.getFields(OutgoingEmail.strOutgoingEmailTypeAndName));
-
-
-            retSentences.append("Outgoing email fields are: " + userFriendlyList(emailFieldNames) + ".");
+            String conceptName = OutgoingEmail.strOutgoingEmailTypeAndName;
+            List<String> emailFieldNames = dMContextAndExecution.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
+            retSentences.append("\"" + conceptName + "\"fields are: " + userFriendlyList(emailFieldNames) + ".");
         }
         return new ActionResponse(retSentences.toString(), null);
     }
+
 
     public ActionResponse yes(String usersText)
     {
@@ -238,19 +237,14 @@ public class TopDMAllActions implements IAllUserActions
         //TODO: remember what was the last concept defined, and add fields to is if no concept is given.
         ExecutionStatus executionStatus = new ExecutionStatus();
         conceptContainer.defineConcept(executionStatus, conceptName);
-        if (executionStatus.isOkOrComment())
+
+        StringBuilder response = new StringBuilder();
+        if (StaticUtils.testOkAndFormat(executionStatus, true, true, response))
         {
-            return new ActionResponse("Concept \""+conceptName +"\" was created successfully. Please define its fields.", null);
+            commandsToParser.newConceptDefined(conceptName);
+            response.append("Concept \"" + conceptName + "\" was created successfully. Please define its fields.");
         }
-        else
-        {
-            ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
-            if (statusAndMessage.message != null)
-            {
-                return new ActionResponse("I see that " + statusAndMessage.message + ".", null);
-            }
-        }
-        return new ActionResponse("There was some kind of error.",null);
+        return new ActionResponse(response.toString(), null);
     }
 
     @Override
@@ -263,17 +257,55 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse addFieldToConcept(String usersText, String conceptName, String fieldName)
     {
-        return null;
+        //TODO: need to infer the field type in a smarter way...
+        PossibleFieldType possibleFieldType = PossibleFieldType.multiLineString;
+        boolean isList = false;
+        if (fieldName.contains("email"))
+            possibleFieldType = PossibleFieldType.emailAddress;
+        if (conceptName.endsWith("list") || conceptName.endsWith("s")) //TODO: should use plural vs. singular not just use s!
+            isList = true;
+
+        return addFieldToConcept(usersText,conceptName,fieldName, possibleFieldType,isList);
     }
 
     @Override
     public ActionResponse addFieldToConcept(String usersText, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList)
     {
-        return null;
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        conceptContainer.addFieldToConcept(executionStatus, conceptName, new FieldDescription(fieldName, possibleFieldType, isList));
+
+        StringBuilder response = new StringBuilder();
+        if (StaticUtils.testOkAndFormat(executionStatus, true, true, response))
+        {
+            commandsToParser.newConceptDefined(conceptName);
+            response.append("Field \"" + fieldName + "\" was added to concept \"" + conceptName + "\".");
+        }
+        return new ActionResponse(response.toString(), null);
     }
 
     @Override
-    public ActionResponse addField(String usersText, String fieldName)
+    public ActionResponse createInstance(String usersText, String conceptName, String instanceName)
+    {
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        instanceContainer.addInstance(executionStatus, conceptName, instanceName);
+
+        StringBuilder response = new StringBuilder();
+        if (StaticUtils.testOkAndFormat(executionStatus, true, true, response))
+        {
+            commandsToParser.newConceptDefined(conceptName);
+            response.append("Instance \"" + instanceName + "\" (of concept \"" + conceptName + "\") was created. ");
+            response.append(listFieldsOfConcept(conceptName));
+        }
+        return new ActionResponse(response.toString(), null);
+    }
+
+    private String listFieldsOfConcept(String conceptName)
+    {
+        return "\""+conceptName+"\" fields are: " + userFriendlyList(conceptContainer.getFields(conceptName)) + ".";
+    }
+
+    @Override
+    public ActionResponse createInstance(String usersText, String instanceName)
     {
         return null;
     }

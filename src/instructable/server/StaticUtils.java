@@ -29,4 +29,32 @@ public class StaticUtils
         return appendedFields;
     }
 
+
+    /*
+        returns success.
+     */
+    public static boolean testOkAndFormat(ExecutionStatus executionStatus, boolean failWithWarningToo, boolean ignoreComments, StringBuilder response)
+    {
+        ExecutionStatus.RetStatus retStatus = executionStatus.getStatus();
+        if (retStatus == ExecutionStatus.RetStatus.error || retStatus == ExecutionStatus.RetStatus.warning ||
+                (retStatus == ExecutionStatus.RetStatus.comment && !ignoreComments))
+        {
+            ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
+            if (statusAndMessage.message != null)
+            {
+                response.append("I see that " + statusAndMessage.message + ".");
+            } else if (executionStatus.isError())
+            {
+                response.append("There was some kind of error.");
+            }
+        }
+        if (retStatus == ExecutionStatus.RetStatus.ok || retStatus == ExecutionStatus.RetStatus.comment ||
+                (retStatus == ExecutionStatus.RetStatus.warning && !failWithWarningToo))
+        {
+            //success
+            return true;
+        }
+        return false;
+    }
+
 }

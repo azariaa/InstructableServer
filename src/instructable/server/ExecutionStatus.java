@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class ExecutionStatus
 {
+
     public enum RetStatus {ok, comment, warning, error};
     //TODO: should have the messages strings in a separate file and have an enum (or similar) defining all messages
 
@@ -71,6 +72,7 @@ public class ExecutionStatus
     {
         return !isError();
     }
+
 
     public boolean isOkOrComment()
     {

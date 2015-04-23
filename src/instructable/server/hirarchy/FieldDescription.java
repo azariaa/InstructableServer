@@ -10,7 +10,7 @@ public class FieldDescription
     String fieldName;
     PossibleFieldType fieldType;
     boolean isList;
-    FieldDescription(String fieldName, PossibleFieldType fieldType, boolean isList)
+    public FieldDescription(String fieldName, PossibleFieldType fieldType, boolean isList)
     {
         this.fieldName = fieldName;
         this.fieldType = fieldType;

@@ -10,8 +10,9 @@ import java.util.*;
 public class GenericConcept
 {
 
-    public GenericConcept(String type, List<FieldDescription> fieldsInType)
+    public GenericConcept(String type, String instanceName, List<FieldDescription> fieldsInType)
     {
+        name = instanceName;
         lastAccess = new Date();
         this.type = type;
         fields = new HashMap<String, FieldHolder>();

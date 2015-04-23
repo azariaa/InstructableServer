@@ -1,5 +1,7 @@
 package instructable.server;
 
+import java.util.List;
+
 /**
  * Created by Amos Azaria on 20-Apr-15.
  */
@@ -7,7 +9,32 @@ public class TestScenario
 {
     public static void main(String[] args)
     {
-        IAllUserActions allUserActions = new TopDMAllActions();
+        IAllUserActions allUserActions = new TopDMAllActions(new ICommandsToParser()
+        {
+            @Override
+            public void addTrainingEg(String originalCommand, List<String> replaceWith)
+            {
+
+            }
+
+            @Override
+            public void newConceptDefined(String conceptName)
+            {
+
+            }
+
+            @Override
+            public void newFieldDefined(String fieldName)
+            {
+
+            }
+
+            @Override
+            public void newInstanceDefined(String instanceName)
+            {
+
+            }
+        });
 
         sendingBasicEmail(allUserActions);
 
@@ -29,6 +56,18 @@ public class TestScenario
         systemSays(response.sayToUser);
 
         response = allUserActions.defineConcept("Define contact!", "contact");
+        systemSays(response.sayToUser);
+
+        response = allUserActions.addFieldToConcept("add email as a field in contact", "contact", "email");
+        systemSays(response.sayToUser);
+
+        response = allUserActions.createInstance("create a contact, call it bob", "contact", "bob");
+        systemSays(response.sayToUser);
+
+        response = allUserActions.set("set bob's email to baba", "bob", "email", "baba");
+        systemSays(response.sayToUser);
+
+        response = allUserActions.set("set bob's email to bob@gmail.com", "bob", "email", "bob@gmail.com");
         systemSays(response.sayToUser);
     }
 

@@ -8,4 +8,10 @@ import java.util.List;
 public interface ICommandsToParser
 {
     void addTrainingEg(String originalCommand, List<String> replaceWith);
+
+    void newConceptDefined(String conceptName);
+
+    void newFieldDefined(String fieldName);
+
+    void newInstanceDefined(String instanceName);
 }

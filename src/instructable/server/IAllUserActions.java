@@ -36,7 +36,9 @@ public interface IAllUserActions
 
     ActionResponse addFieldToConcept(String usersText, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
 
-    ActionResponse addField(String usersText, String fieldName);
+    ActionResponse createInstance(String usersText, String conceptName, String instanceName);
+
+    ActionResponse createInstance(String usersText, String instanceName);
 
     ActionResponse setFieldTypeKnownConcept(String usersText, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
 

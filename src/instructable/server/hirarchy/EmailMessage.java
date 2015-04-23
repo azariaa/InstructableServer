@@ -24,9 +24,9 @@ public class EmailMessage extends GenericConcept
                     new FieldDescription(copyListStr, PossibleFieldType.emailAddress, true)
             };
 
-    public EmailMessage()
+    public EmailMessage(String messageId)
     {
-        super(emailMessageType, Arrays.asList(fieldDescriptions));
+        super(emailMessageType, messageId, Arrays.asList(fieldDescriptions));
     }
 
     public boolean hasRecipient()

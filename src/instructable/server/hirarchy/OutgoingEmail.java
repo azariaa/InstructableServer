@@ -13,9 +13,7 @@ public class OutgoingEmail extends EmailMessage
 
     public OutgoingEmail(ExecutionStatus executionStatus, String myEmail)
     {
-        super();
-        type = strOutgoingEmailTypeAndName;
-        name = strOutgoingEmailTypeAndName;
+        super(strOutgoingEmailTypeAndName);
         setField(executionStatus, senderStr, myEmail);
     }
 
