@@ -1,6 +1,10 @@
 package instructable.server.hirarchy;
 
+import instructable.server.ExecutionStatus;
+
 import java.util.*;
+
+import static instructable.server.StaticUtils.userFriendlyList;
 
 /**
  * Created by Amos Azaria on 21-Apr-15.
@@ -56,23 +60,31 @@ public class ConceptContainer
         return candidates;
     }
 
-    public void defineConcept(String conceptName)
+    public void defineConcept(ExecutionStatus executionStatus, String conceptName)
     {
-        conceptFieldMap.put(conceptName, new LinkedList<>());
+        if (conceptFieldMap.containsKey(conceptName))
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.warning, "the concept \""+conceptName + "\" is already defined. "
+                    + "Its fields are: " + userFriendlyList(getFields(conceptName)));
+        }
+        else
+        {
+            conceptFieldMap.put(conceptName, new LinkedList<>());
+        }
     }
 
-    public void defineConcept(String conceptName, FieldDescription[] fieldDescriptions)
+    public void defineConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription[] fieldDescriptions)
     {
         //TODO: should test if concept exists, wants to add, etc.
         conceptFieldMap.put(conceptName, Arrays.asList(fieldDescriptions));
     }
 
-    public void addFieldToConcept(String conceptName, FieldDescription fieldDescription)
+    public void addFieldToConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription fieldDescription)
     {
-        addFieldsToConcept(conceptName, new FieldDescription[] {fieldDescription});
+        addFieldsToConcept(executionStatus, conceptName, new FieldDescription[] {fieldDescription});
     }
 
-    public void addFieldsToConcept(String conceptName, FieldDescription[] fieldDescriptions)
+    public void addFieldsToConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription[] fieldDescriptions)
     {
         //TODO: check all these...
         //TODO: check no duplicate fields!!!
@@ -80,12 +92,13 @@ public class ConceptContainer
         currentFields.addAll(Arrays.asList(fieldDescriptions));
     }
 
-    public void removeFieldFromConcept(String conceptName, String fieldName)
+    public void removeFieldFromConcept(ExecutionStatus executionStatus, String conceptName, String fieldName)
     {
         //TODO: check all these...
         List<FieldDescription> currentFields = conceptFieldMap.get(conceptName);
         currentFields.removeIf( x -> x.fieldName == fieldName);
     }
+
 
     public List<String> getFields(String conceptName)
     {

@@ -89,4 +89,21 @@ public class InstanceContainer
         conceptToInstance.get(conceptInstance.type).put(conceptInstance.name,conceptInstance);
 
     }
+
+    public void renameInstance(ExecutionStatus executionStatus, String conceptName, String instanceOldName, String instanceNewName)
+    {
+        if (conceptToInstance.containsKey(conceptName))
+        {
+            Map<String, GenericConcept> instances = conceptToInstance.get(conceptName);
+            if (instances.containsKey(instanceOldName))
+            {
+                GenericConcept reqInstance = instances.get(instanceOldName);
+                reqInstance.name = instanceNewName;
+                instances.remove(instanceOldName);
+                instances.put(instanceNewName, reqInstance);
+                return;
+            }
+        }
+        executionStatus.add(ExecutionStatus.RetStatus.warning, "the instance was not found");
+    }
 }

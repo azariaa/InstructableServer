@@ -1,6 +1,5 @@
 package instructable.server;
 
-import com.sun.deploy.util.StringUtils;
 import instructable.server.hirarchy.ConceptContainer;
 import instructable.server.hirarchy.GenericConcept;
 import instructable.server.hirarchy.InstanceContainer;
@@ -8,6 +7,8 @@ import instructable.server.hirarchy.OutgoingEmail;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 
 import java.util.List;
+
+import static instructable.server.StaticUtils.userFriendlyList;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
@@ -62,7 +63,7 @@ public class TopDMAllActions implements IAllUserActions
     {
         if (statusAndMessage.message != null)
         {
-            if (statusAndMessage.message.startsWith("there are no instances of"))//TODO: bad bad bad!
+            if (statusAndMessage.message.startsWith("there are no instances of") || statusAndMessage.message.startsWith("there is no email") || statusAndMessage.message.startsWith("there is no"))//TODO: bad bad bad!
             {
                 retSentences.append("I see that there is no email being composed.\n");
                 retSentences.append("Do you want to compose a new email?\n");
@@ -95,18 +96,9 @@ public class TopDMAllActions implements IAllUserActions
         {
             retSentences.append("Composing new email. ");
             List<String> emailFieldNames = dMContextAndExecution.changeToRelevantComposedEmailFields(conceptContainer.getFields(OutgoingEmail.strOutgoingEmailTypeAndName));
-            String appendedFields = StringUtils.join(emailFieldNames, ", ");
-            String toReplace = ",";  //replace last "," with and.
-            String replacement = " and";
-            int idx = appendedFields.lastIndexOf(",");
-            if (idx != -1)
-            {
-                appendedFields = appendedFields.substring(0, idx)
-                        + replacement
-                        + appendedFields.substring(idx + toReplace.length(), appendedFields.length());
-            }
 
-            retSentences.append("Outgoing email fields are: " + appendedFields + ".");
+
+            retSentences.append("Outgoing email fields are: " + userFriendlyList(emailFieldNames) + ".");
         }
         return new ActionResponse(retSentences.toString(), null);
     }
@@ -244,13 +236,27 @@ public class TopDMAllActions implements IAllUserActions
     public ActionResponse defineConcept(String usersText, String conceptName)
     {
         //TODO: remember what was the last concept defined, and add fields to is if no concept is given.
-        return null;
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        conceptContainer.defineConcept(executionStatus, conceptName);
+        if (executionStatus.isOkOrComment())
+        {
+            return new ActionResponse("Concept \""+conceptName +"\" was created successfully. Please define its fields.", null);
+        }
+        else
+        {
+            ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
+            if (statusAndMessage.message != null)
+            {
+                return new ActionResponse("I see that " + statusAndMessage.message + ".", null);
+            }
+        }
+        return new ActionResponse("There was some kind of error.",null);
     }
 
     @Override
     public ActionResponse addFieldToConcept(String usersText, String fieldName)
     {
-        //TODO: remember what was the last concept defined, and add fields to is if no concept is given.
+        //TODO: use timestamp (just like with the instances) to resolve ambiguity
         return null;
     }
 
