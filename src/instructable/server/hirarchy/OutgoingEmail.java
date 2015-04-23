@@ -13,7 +13,7 @@ public class OutgoingEmail extends EmailMessage
 
     public OutgoingEmail(ExecutionStatus executionStatus, String myEmail)
     {
-        super(strOutgoingEmailTypeAndName);
+        super(strOutgoingEmailTypeAndName, strOutgoingEmailTypeAndName);
         setField(executionStatus, senderStr, myEmail);
     }
 

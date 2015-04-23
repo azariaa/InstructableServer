@@ -25,13 +25,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TestScenario.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="OutEmailCommandController.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/instructable/server/OutEmailCommandController.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="573" max-vertical-offset="1156">
+              <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestScenario.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/instructable/server/TestScenario.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="393" max-vertical-offset="1717">
-              <caret line="60" column="42" selection-start-line="60" selection-start-column="42" selection-end-line="60" selection-end-column="42" />
+            <state vertical-scroll-proportion="-1.5105783" vertical-offset="1785" max-vertical-offset="2516">
+              <caret line="66" column="78" selection-start-line="66" selection-start-column="78" selection-end-line="66" selection-end-column="78" />
               <folding>
-                <element signature="class#244:762" expanded="false" />
+                <element signature="imports" expanded="true" />
+                <element signature="class#426:944" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -40,8 +53,8 @@
       <file leaf-file-name="OutgoingEmail.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/OutgoingEmail.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1173">
-              <caret line="15" column="43" selection-start-line="15" selection-start-column="43" selection-end-line="15" selection-end-column="43" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="556" max-vertical-offset="1173">
+              <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -50,55 +63,12 @@
       <file leaf-file-name="EmailMessage.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/EmailMessage.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="731">
-              <caret line="28" column="10" selection-start-line="28" selection-start-column="10" selection-end-line="28" selection-end-column="10" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="444" max-vertical-offset="867">
+              <caret line="53" column="0" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
               <folding>
-                <element signature="e#1214#1215#0" expanded="true" />
-                <element signature="e#1298#1299#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="IAllUserActions.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/IAllUserActions.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="364" max-vertical-offset="1258">
-              <caret line="34" column="19" selection-start-line="34" selection-start-column="19" selection-end-line="34" selection-end-column="19" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TopDMAllActions.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.36825398" vertical-offset="4681" max-vertical-offset="6630">
-              <caret line="295" column="67" selection-start-line="295" selection-start-column="67" selection-end-line="295" selection-end-column="67" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#13010#13011#0" expanded="true" />
-                <element signature="e#13037#13038#0" expanded="true" />
-                <element signature="e#13501#13502#0" expanded="true" />
-                <element signature="e#13528#13529#0" expanded="true" />
-                <element signature="e#13605#13606#0" expanded="true" />
-                <element signature="e#13632#13633#0" expanded="true" />
-                <element signature="e#13719#13720#0" expanded="true" />
-                <element signature="e#13746#13747#0" expanded="true" />
-                <element signature="e#13854#13855#0" expanded="true" />
-                <element signature="e#13881#13882#0" expanded="true" />
-                <element signature="e#14135#14136#0" expanded="true" />
-                <element signature="e#14162#14163#0" expanded="true" />
-                <element signature="e#14263#14264#0" expanded="true" />
-                <element signature="e#14290#14291#0" expanded="true" />
-                <element signature="e#14411#14412#0" expanded="true" />
-                <element signature="e#14438#14439#0" expanded="true" />
-                <element signature="e#14520#14521#0" expanded="true" />
-                <element signature="e#14547#14548#0" expanded="true" />
-                <element signature="e#14629#14630#0" expanded="true" />
-                <element signature="e#14656#14657#0" expanded="true" />
-                <element signature="e#14742#14743#0" expanded="true" />
-                <element signature="e#14769#14770#0" expanded="true" />
+                <element signature="e#1215#1216#0" expanded="true" />
+                <element signature="e#1264#1265#0" expanded="true" />
+                <element signature="e#1760#1761#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -107,8 +77,8 @@
       <file leaf-file-name="StaticUtils.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/instructable/server/StaticUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="357" max-vertical-offset="1122">
-              <caret line="54" column="21" selection-start-line="54" selection-start-column="21" selection-end-line="54" selection-end-column="21" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1122">
+              <caret line="18" column="43" selection-start-line="18" selection-start-column="32" selection-end-line="18" selection-end-column="43" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -116,14 +86,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ExecutionStatus.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/ExecutionStatus.java">
+      <file leaf-file-name="TopDMAllActions.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="816" max-vertical-offset="1462">
-              <caret line="74" column="0" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="6069">
+              <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#923#941#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -132,8 +101,8 @@
       <file leaf-file-name="GenericConcept.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/GenericConcept.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2244">
-              <caret line="12" column="11" selection-start-line="12" selection-start-column="11" selection-end-line="12" selection-end-column="11" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1581" max-vertical-offset="2244">
+              <caret line="109" column="0" selection-start-line="109" selection-start-column="0" selection-end-line="109" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -141,11 +110,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ConceptContainer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/ConceptContainer.java">
+      <file leaf-file-name="StringField.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/StringField.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="155" max-vertical-offset="2312">
-              <caret line="118" column="24" selection-start-line="118" selection-start-column="24" selection-end-line="118" selection-end-column="24" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="102" max-vertical-offset="1003">
+              <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+              <folding>
+                <element signature="e#602#603#0" expanded="true" />
+                <element signature="e#660#661#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FieldHolder.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/FieldHolder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1855" max-vertical-offset="2278">
+              <caret line="124" column="0" selection-start-line="124" selection-start-column="0" selection-end-line="124" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -156,12 +138,9 @@
       <file leaf-file-name="InstanceContainer.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="70" max-vertical-offset="2363">
-              <caret line="16" column="11" selection-start-line="16" selection-start-column="11" selection-end-line="16" selection-end-column="11" />
-              <folding>
-                <element signature="e#407#408#0" expanded="true" />
-                <element signature="e#463#464#0" expanded="true" />
-              </folding>
+            <state vertical-scroll-proportion="0.0" vertical-offset="286" max-vertical-offset="2312">
+              <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -202,7 +181,6 @@
         <option value="$PROJECT_DIR$/src/instructable/server/ConceptContainer.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/DMContextAndExecution.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/FieldHolder.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/StringField.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/EmailAddress.java" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/src/instructable/server/OutEmailCommandController.java" />
@@ -213,12 +191,13 @@
         <option value="$PROJECT_DIR$/src/instructable/server/StaticUtils.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/ConceptContainer.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/GenericConcept.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/EmailMessage.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/OutgoingEmail.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/IAllUserActions.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/TestScenario.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/OutgoingEmail.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/EmailMessage.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/StringField.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/TestScenario.java" />
       </list>
     </option>
   </component>
@@ -249,6 +228,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -326,17 +306,26 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="hirarchy" />
+              <option name="myItemId" value="ccg" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="InstructableServer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="InstructableServer" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="fieldTypes" />
+              <option name="myItemId" value="lib" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -355,8 +344,8 @@
     <property name="dynamic.classpath" value="false" />
     <property name="extract.method.default.visibility" value="private" />
     <property name="LayoutCode.rearrangeEntriesJava" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib" />
+    <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.0" />
   </component>
@@ -575,16 +564,16 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23529412" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16063349" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1587473" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2183258" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30882353" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.1711663" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.270362" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35859728" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -617,13 +606,19 @@
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java</url>
-          <line>262</line>
+          <url>file://$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java</url>
+          <line>104</line>
           <properties />
-          <option name="timeStamp" value="4" />
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/instructable/server/TestScenario.java</url>
+          <line>160</line>
+          <properties />
+          <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="5" />
+      <option name="time" value="11" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
@@ -636,29 +631,14 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/OutgoingEmail.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="119" max-vertical-offset="1207">
-          <caret line="7" column="26" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/EmailMessage.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="714">
           <caret line="9" column="48" selection-start-line="9" selection-start-column="34" selection-end-line="9" selection-end-column="48" />
           <folding>
-            <element signature="e#1214#1215#0" expanded="true" />
-            <element signature="e#1298#1299#0" expanded="true" />
-            <element signature="e#1339#1340#0" expanded="false" />
-            <element signature="e#1393#1394#0" expanded="false" />
-            <element signature="e#1429#1430#0" expanded="false" />
-            <element signature="e#1478#1479#0" expanded="false" />
-            <element signature="e#1514#1515#0" expanded="false" />
-            <element signature="e#1559#1560#0" expanded="false" />
-            <element signature="e#1598#1599#0" expanded="false" />
-            <element signature="e#1646#1647#0" expanded="false" />
+            <element signature="e#1215#1216#0" expanded="true" />
+            <element signature="e#1264#1265#0" expanded="true" />
+            <element signature="e#1760#1761#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -669,28 +649,6 @@
           <caret line="22" column="32" selection-start-line="22" selection-start-column="32" selection-end-line="22" selection-end-column="32" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#13010#13011#0" expanded="true" />
-            <element signature="e#13037#13038#0" expanded="true" />
-            <element signature="e#13501#13502#0" expanded="true" />
-            <element signature="e#13528#13529#0" expanded="true" />
-            <element signature="e#13605#13606#0" expanded="true" />
-            <element signature="e#13632#13633#0" expanded="true" />
-            <element signature="e#13719#13720#0" expanded="true" />
-            <element signature="e#13746#13747#0" expanded="true" />
-            <element signature="e#13854#13855#0" expanded="true" />
-            <element signature="e#13881#13882#0" expanded="true" />
-            <element signature="e#14135#14136#0" expanded="true" />
-            <element signature="e#14162#14163#0" expanded="true" />
-            <element signature="e#14263#14264#0" expanded="true" />
-            <element signature="e#14290#14291#0" expanded="true" />
-            <element signature="e#14411#14412#0" expanded="true" />
-            <element signature="e#14438#14439#0" expanded="true" />
-            <element signature="e#14520#14521#0" expanded="true" />
-            <element signature="e#14547#14548#0" expanded="true" />
-            <element signature="e#14629#14630#0" expanded="true" />
-            <element signature="e#14656#14657#0" expanded="true" />
-            <element signature="e#14742#14743#0" expanded="true" />
-            <element signature="e#14769#14770#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -717,7 +675,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="85" max-vertical-offset="221">
           <caret line="5" column="12" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -726,18 +683,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="379" max-vertical-offset="952">
           <caret line="43" column="32" selection-start-line="43" selection-start-column="32" selection-end-line="43" selection-end-column="32" />
           <folding>
-            <element signature="e#237#238#0" expanded="false" />
-            <element signature="e#276#277#0" expanded="false" />
-            <element signature="e#370#371#0" expanded="false" />
-            <element signature="e#403#404#0" expanded="false" />
-            <element signature="e#440#441#0" expanded="false" />
-            <element signature="e#472#473#0" expanded="false" />
-            <element signature="e#517#518#0" expanded="false" />
-            <element signature="e#547#548#0" expanded="false" />
-            <element signature="e#597#598#0" expanded="false" />
-            <element signature="e#655#656#0" expanded="false" />
-            <element signature="e#1589#1590#0" expanded="false" />
-            <element signature="e#1619#1620#0" expanded="false" />
+            <element signature="e#602#603#0" expanded="true" />
+            <element signature="e#660#661#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -756,10 +703,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1275" max-vertical-offset="1581">
           <caret line="80" column="16" selection-start-line="80" selection-start-column="16" selection-end-line="80" selection-end-column="16" />
-          <folding>
-            <element signature="e#407#408#0" expanded="true" />
-            <element signature="e#463#464#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -787,28 +731,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#13010#13011#0" expanded="true" />
-            <element signature="e#13037#13038#0" expanded="true" />
-            <element signature="e#13501#13502#0" expanded="true" />
-            <element signature="e#13528#13529#0" expanded="true" />
-            <element signature="e#13605#13606#0" expanded="true" />
-            <element signature="e#13632#13633#0" expanded="true" />
-            <element signature="e#13719#13720#0" expanded="true" />
-            <element signature="e#13746#13747#0" expanded="true" />
-            <element signature="e#13854#13855#0" expanded="true" />
-            <element signature="e#13881#13882#0" expanded="true" />
-            <element signature="e#14135#14136#0" expanded="true" />
-            <element signature="e#14162#14163#0" expanded="true" />
-            <element signature="e#14263#14264#0" expanded="true" />
-            <element signature="e#14290#14291#0" expanded="true" />
-            <element signature="e#14411#14412#0" expanded="true" />
-            <element signature="e#14438#14439#0" expanded="true" />
-            <element signature="e#14520#14521#0" expanded="true" />
-            <element signature="e#14547#14548#0" expanded="true" />
-            <element signature="e#14629#14630#0" expanded="true" />
-            <element signature="e#14656#14657#0" expanded="true" />
-            <element signature="e#14742#14743#0" expanded="true" />
-            <element signature="e#14769#14770#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -835,7 +757,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="170" max-vertical-offset="340">
           <caret line="10" column="96" selection-start-line="10" selection-start-column="96" selection-end-line="10" selection-end-column="96" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -843,7 +764,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="85" max-vertical-offset="221">
           <caret line="5" column="12" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -852,18 +772,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="379" max-vertical-offset="952">
           <caret line="43" column="32" selection-start-line="43" selection-start-column="32" selection-end-line="43" selection-end-column="32" />
           <folding>
-            <element signature="e#237#238#0" expanded="false" />
-            <element signature="e#276#277#0" expanded="false" />
-            <element signature="e#370#371#0" expanded="false" />
-            <element signature="e#403#404#0" expanded="false" />
-            <element signature="e#440#441#0" expanded="false" />
-            <element signature="e#472#473#0" expanded="false" />
-            <element signature="e#517#518#0" expanded="false" />
-            <element signature="e#547#548#0" expanded="false" />
-            <element signature="e#597#598#0" expanded="false" />
-            <element signature="e#655#656#0" expanded="false" />
-            <element signature="e#1589#1590#0" expanded="false" />
-            <element signature="e#1619#1620#0" expanded="false" />
+            <element signature="e#602#603#0" expanded="true" />
+            <element signature="e#660#661#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -872,10 +782,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="828" max-vertical-offset="1666">
           <caret line="84" column="124" selection-start-line="84" selection-start-column="124" selection-end-line="84" selection-end-column="124" />
-          <folding>
-            <element signature="e#407#408#0" expanded="true" />
-            <element signature="e#463#464#0" expanded="true" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -958,16 +865,9 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="16" max-vertical-offset="867">
           <caret line="22" column="105" selection-start-line="22" selection-start-column="105" selection-end-line="22" selection-end-column="105" />
           <folding>
-            <element signature="e#1214#1215#0" expanded="true" />
-            <element signature="e#1298#1299#0" expanded="true" />
-            <element signature="e#1339#1340#0" expanded="false" />
-            <element signature="e#1393#1394#0" expanded="false" />
-            <element signature="e#1429#1430#0" expanded="false" />
-            <element signature="e#1478#1479#0" expanded="false" />
-            <element signature="e#1514#1515#0" expanded="false" />
-            <element signature="e#1559#1560#0" expanded="false" />
-            <element signature="e#1598#1599#0" expanded="false" />
-            <element signature="e#1646#1647#0" expanded="false" />
+            <element signature="e#1215#1216#0" expanded="true" />
+            <element signature="e#1264#1265#0" expanded="true" />
+            <element signature="e#1760#1761#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1007,16 +907,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/FieldHolder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2278">
-          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/ActionResponse.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="357">
@@ -1029,7 +919,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="340">
           <caret line="10" column="96" selection-start-line="10" selection-start-column="96" selection-end-line="10" selection-end-column="96" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1037,28 +926,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="204">
           <caret line="5" column="12" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/StringField.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="379" max-vertical-offset="952">
-          <caret line="43" column="32" selection-start-line="43" selection-start-column="32" selection-end-line="43" selection-end-column="32" />
-          <folding>
-            <element signature="e#237#238#0" expanded="false" />
-            <element signature="e#276#277#0" expanded="false" />
-            <element signature="e#370#371#0" expanded="false" />
-            <element signature="e#403#404#0" expanded="false" />
-            <element signature="e#440#441#0" expanded="false" />
-            <element signature="e#472#473#0" expanded="false" />
-            <element signature="e#517#518#0" expanded="false" />
-            <element signature="e#547#548#0" expanded="false" />
-            <element signature="e#597#598#0" expanded="false" />
-            <element signature="e#655#656#0" expanded="false" />
-            <element signature="e#1589#1590#0" expanded="false" />
-            <element signature="e#1619#1620#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1066,7 +933,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.3322884" vertical-offset="3613" max-vertical-offset="6698">
           <caret line="248" column="12" selection-start-line="248" selection-start-column="12" selection-end-line="248" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1082,7 +948,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-18.16" vertical-offset="1110" max-vertical-offset="1666">
           <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="7" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1091,16 +956,6 @@
         <state vertical-scroll-proportion="1.1618705" vertical-offset="0" max-vertical-offset="901">
           <caret line="38" column="8" selection-start-line="38" selection-start-column="8" selection-end-line="38" selection-end-column="8" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/OutEmailCommandController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="146" max-vertical-offset="1156">
-          <caret line="21" column="137" selection-start-line="21" selection-start-column="137" selection-end-line="21" selection-end-column="137" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1120,20 +975,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/StaticUtils.java">
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="357" max-vertical-offset="1122">
-          <caret line="54" column="21" selection-start-line="54" selection-start-column="21" selection-end-line="54" selection-end-column="21" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3587">
+          <caret line="28" column="62" selection-start-line="28" selection-start-column="62" selection-end-line="28" selection-end-column="62" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/IAllUserActions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1258">
+          <caret line="11" column="19" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/ExecutionStatus.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="816" max-vertical-offset="1462">
-          <caret line="74" column="0" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="340" max-vertical-offset="1462">
+          <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#923#941#0" expanded="true" />
@@ -1143,8 +1004,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/ConceptContainer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="155" max-vertical-offset="2312">
-          <caret line="118" column="24" selection-start-line="118" selection-start-column="24" selection-end-line="118" selection-end-column="24" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2312">
+          <caret line="17" column="54" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="54" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/StaticUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1122">
+          <caret line="18" column="43" selection-start-line="18" selection-start-column="32" selection-end-line="18" selection-end-column="43" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1153,30 +1024,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="70" max-vertical-offset="2363">
-          <caret line="16" column="11" selection-start-line="16" selection-start-column="11" selection-end-line="16" selection-end-column="11" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="286" max-vertical-offset="2312">
+          <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="6069">
+          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
           <folding>
-            <element signature="e#407#408#0" expanded="true" />
-            <element signature="e#463#464#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/EmailMessage.java">
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/OutEmailCommandController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="731">
-          <caret line="28" column="10" selection-start-line="28" selection-start-column="10" selection-end-line="28" selection-end-column="10" />
-          <folding>
-            <element signature="e#1214#1215#0" expanded="true" />
-            <element signature="e#1298#1299#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/GenericConcept.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2244">
-          <caret line="12" column="11" selection-start-line="12" selection-start-column="11" selection-end-line="12" selection-end-column="11" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="550" max-vertical-offset="1156">
+          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1185,58 +1052,62 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/OutgoingEmail.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1173">
-          <caret line="15" column="43" selection-start-line="15" selection-start-column="43" selection-end-line="15" selection-end-column="43" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="533" max-vertical-offset="1173">
+          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/EmailMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="374" max-vertical-offset="867">
+          <caret line="53" column="0" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+          <folding>
+            <element signature="e#1215#1216#0" expanded="true" />
+            <element signature="e#1264#1265#0" expanded="true" />
+            <element signature="e#1760#1761#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/GenericConcept.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1638" max-vertical-offset="2244">
+          <caret line="109" column="0" selection-start-line="109" selection-start-column="0" selection-end-line="109" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/FieldHolder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1785" max-vertical-offset="2278">
+          <caret line="124" column="0" selection-start-line="124" selection-start-column="0" selection-end-line="124" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/StringField.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="102" max-vertical-offset="1003">
+          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding>
+            <element signature="e#602#603#0" expanded="true" />
+            <element signature="e#660#661#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/TestScenario.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="393" max-vertical-offset="1717">
-          <caret line="60" column="42" selection-start-line="60" selection-start-column="42" selection-end-line="60" selection-end-column="42" />
-          <folding>
-            <element signature="class#244:762" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/IAllUserActions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="364" max-vertical-offset="1258">
-          <caret line="34" column="19" selection-start-line="34" selection-start-column="19" selection-end-line="34" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.36825398" vertical-offset="4681" max-vertical-offset="6630">
-          <caret line="295" column="67" selection-start-line="295" selection-start-column="67" selection-end-line="295" selection-end-column="67" />
+        <state vertical-scroll-proportion="-1.5105783" vertical-offset="1785" max-vertical-offset="2516">
+          <caret line="66" column="78" selection-start-line="66" selection-start-column="78" selection-end-line="66" selection-end-column="78" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#13010#13011#0" expanded="true" />
-            <element signature="e#13037#13038#0" expanded="true" />
-            <element signature="e#13501#13502#0" expanded="true" />
-            <element signature="e#13528#13529#0" expanded="true" />
-            <element signature="e#13605#13606#0" expanded="true" />
-            <element signature="e#13632#13633#0" expanded="true" />
-            <element signature="e#13719#13720#0" expanded="true" />
-            <element signature="e#13746#13747#0" expanded="true" />
-            <element signature="e#13854#13855#0" expanded="true" />
-            <element signature="e#13881#13882#0" expanded="true" />
-            <element signature="e#14135#14136#0" expanded="true" />
-            <element signature="e#14162#14163#0" expanded="true" />
-            <element signature="e#14263#14264#0" expanded="true" />
-            <element signature="e#14290#14291#0" expanded="true" />
-            <element signature="e#14411#14412#0" expanded="true" />
-            <element signature="e#14438#14439#0" expanded="true" />
-            <element signature="e#14520#14521#0" expanded="true" />
-            <element signature="e#14547#14548#0" expanded="true" />
-            <element signature="e#14629#14630#0" expanded="true" />
-            <element signature="e#14656#14657#0" expanded="true" />
-            <element signature="e#14742#14743#0" expanded="true" />
-            <element signature="e#14769#14770#0" expanded="true" />
+            <element signature="class#426:944" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1317,6 +1188,7 @@
       </state>
       <state key="ProjectLibrariesConfigurable.UI">
         <settings>
+          <last-edited>lib</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

@@ -83,10 +83,10 @@ public class TopDMAllActions implements IAllUserActions
     public ActionResponse composeEmail(String usersText)
     {
         checkInternalState();
-        StringBuilder retSentences = new StringBuilder();
         ExecutionStatus executionStatus = new ExecutionStatus();
         dMContextAndExecution.createNewEmail(executionStatus);
 
+        StringBuilder retSentences = new StringBuilder();
         if (executionStatus.isError())
         {
             ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
@@ -96,7 +96,7 @@ public class TopDMAllActions implements IAllUserActions
             retSentences.append("Composing new email. ");
             String conceptName = OutgoingEmail.strOutgoingEmailTypeAndName;
             List<String> emailFieldNames = dMContextAndExecution.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
-            retSentences.append("\"" + conceptName + "\"fields are: " + userFriendlyList(emailFieldNames) + ".");
+            retSentences.append("\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + ".");
         }
         return new ActionResponse(retSentences.toString(), null);
     }

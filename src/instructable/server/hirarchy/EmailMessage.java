@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public class EmailMessage extends GenericConcept
 {
-    public static final String emailMessageType = "emailMessage";
+    public static final String emailMessageType = "email message";
     public static final String subjectStr = "subject";
     public static final String bodyStr = "body";
     public static final String senderStr = "sender";
@@ -26,7 +26,12 @@ public class EmailMessage extends GenericConcept
 
     public EmailMessage(String messageId)
     {
-        super(emailMessageType, messageId, Arrays.asList(fieldDescriptions));
+        this(emailMessageType, messageId);
+    }
+
+    public EmailMessage(String messageType, String messageId)
+    {
+        super(messageType, messageId, Arrays.asList(fieldDescriptions));
     }
 
     public boolean hasRecipient()

@@ -14,7 +14,7 @@ public class StringField extends FieldType
     }
 
     boolean multiline = false;
-    String fieldVal;
+    String fieldVal = "";
 
 
     public boolean isMultiline()

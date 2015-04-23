@@ -102,7 +102,7 @@ public class InstanceContainer
         String conceptName = conceptInstance.type;
         if (!conceptContainer.doesConceptExist(conceptName))
         {
-            executionStatus.add(ExecutionStatus.RetStatus.error,"there is no concept with the name \"" + "\", please define it first");
+            executionStatus.add(ExecutionStatus.RetStatus.error,"there is no concept with the name \"" + conceptName + "\" is defined, please define it first");
         }
         else
         {
