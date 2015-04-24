@@ -4,7 +4,7 @@ import instructable.server.ExecutionStatus;
 
 import java.util.*;
 
-import static instructable.server.StaticUtils.userFriendlyList;
+import static instructable.server.TextFormattingUtils.userFriendlyList;
 
 /**
  * Created by Amos Azaria on 21-Apr-15.

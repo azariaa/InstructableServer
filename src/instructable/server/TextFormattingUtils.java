@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by Amos Azaria on 22-Apr-15.
  */
-public class StaticUtils
+public class TextFormattingUtils
 {
     /*
         separates with commas and adds "and" instead of last comma.
@@ -31,30 +31,49 @@ public class StaticUtils
 
 
     /*
+        internalState can be null if askToTeachIfFails is false
         returns success.
      */
-    public static boolean testOkAndFormat(ExecutionStatus executionStatus, boolean failWithWarningToo, boolean ignoreComments, StringBuilder response)
+    public static boolean testOkAndFormat(ExecutionStatus executionStatus,
+                                          boolean failWithWarningToo,
+                                          boolean ignoreComments,
+                                          StringBuilder response,
+                                          String successSentence,
+                                          boolean askToTeachIfFails,
+                                          TopDMAllActions.InternalState internalState)
     {
         ExecutionStatus.RetStatus retStatus = executionStatus.getStatus();
+        boolean success = retStatus == ExecutionStatus.RetStatus.ok || retStatus == ExecutionStatus.RetStatus.comment ||
+                (retStatus == ExecutionStatus.RetStatus.warning && !failWithWarningToo);
         if (retStatus == ExecutionStatus.RetStatus.error || retStatus == ExecutionStatus.RetStatus.warning ||
                 (retStatus == ExecutionStatus.RetStatus.comment && !ignoreComments))
         {
             ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
             if (statusAndMessage.message != null)
             {
-                response.append("I see that " + statusAndMessage.message + ".");
+                if (success)
+                {
+                    response.append("I see that " + statusAndMessage.message + ".");
+                }
+                else
+                {
+                    response.append("Sorry, but " + statusAndMessage.message + ".");
+                    if (askToTeachIfFails)
+                    {
+                        response.append("\nWould you like to teach me what to do in this case (either say yes or simply ignore this question)?");
+                        internalState.pendOnLearning();
+                    }
+                }
             } else if (executionStatus.isError())
             {
                 response.append("There was some kind of error.");
             }
         }
-        if (retStatus == ExecutionStatus.RetStatus.ok || retStatus == ExecutionStatus.RetStatus.comment ||
-                (retStatus == ExecutionStatus.RetStatus.warning && !failWithWarningToo))
-        {
-            //success
-            return true;
-        }
-        return false;
+
+        if (success)
+            response.append(successSentence);
+
+        return success;
     }
 
 }

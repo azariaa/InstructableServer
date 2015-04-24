@@ -5,9 +5,12 @@ import instructable.server.hirarchy.fieldTypes.EmailAddress;
 import instructable.server.hirarchy.fieldTypes.FieldType;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 import instructable.server.hirarchy.fieldTypes.StringField;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 15-Apr-15.
@@ -57,6 +60,11 @@ public class FieldHolder
     boolean isList;
     FieldType field;
     List<FieldType> fieldList;
+
+    static final String fieldTypeForJson = "fieldType";
+    static final String isListForJson = "isList";
+    static final String fieldForJson = "field";
+    static final String fieldListForJson = "fieldList";
 
     public void set(ExecutionStatus executionStatus, String toSet)
     {
@@ -124,5 +132,72 @@ public class FieldHolder
         {
             return field.isEmpty();
         }
+    }
+
+    static public String fieldFromJSon(JSONObject jsonObject)
+    {
+        return jsonObject.toString();
+    }
+
+    public JSONObject getAsJSon()
+    {
+        JSONObject obj = new JSONObject();
+
+
+        obj.put(fieldTypeForJson, fieldType.toString());
+        obj.put(isListForJson, isList);
+        if (isList)
+        {
+            JSONArray jArray = fieldList.stream().map(FieldType::asString).collect(Collectors.toCollection(() -> new JSONArray()));
+            obj.put(fieldListForJson, jArray);
+        }
+        else
+        {
+            obj.put(fieldForJson, field.asString());
+        }
+        return obj;
+    }
+
+    public void setFromJSon(ExecutionStatus executionStatus, JSONObject jsonObject)
+    {
+        boolean mustSetFromList = false;
+        if (jsonObject.containsKey(isListForJson) && (boolean)jsonObject.get(isListForJson) ||
+                !jsonObject.containsKey(isListForJson) && jsonObject.containsKey(fieldListForJson))
+            mustSetFromList = true;
+        if (mustSetFromList)
+        {
+            String[] fieldListAsString = (String[]) jsonObject.get(fieldListForJson);
+            if (isList)
+            {
+                fieldList.clear();
+                for (String singleField : fieldListAsString)
+                {
+                    appendToEnd(executionStatus, singleField);
+                }
+            } else
+            {
+                //if input is a list (array), and this isn't a list,
+                if (fieldListAsString.length >= 1)
+                {
+                    if (fieldListAsString.length > 1)
+                    {
+                        executionStatus.add(ExecutionStatus.RetStatus.warning, "taking only first item out of" + fieldListAsString.length);
+                    }
+                    //if it has only one item, take it,
+                    set(executionStatus, fieldListAsString[0]);
+                }
+                else
+                {
+                    executionStatus.add(ExecutionStatus.RetStatus.warning, "list is empty");
+                }
+
+            }
+        }
+        else
+        {
+            set(executionStatus, (String)jsonObject.get(fieldForJson));
+        }
+
+        return;
     }
 }

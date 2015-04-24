@@ -2,10 +2,12 @@ package instructable.server;
 
 import instructable.server.hirarchy.*;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
+import org.json.simple.JSONObject;
 
+import java.util.LinkedList;
 import java.util.List;
 
-import static instructable.server.StaticUtils.userFriendlyList;
+import static instructable.server.TextFormattingUtils.userFriendlyList;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
@@ -23,20 +25,90 @@ public class TopDMAllActions implements IAllUserActions
         instanceContainer = new InstanceContainer(conceptContainer);
         dMContextAndExecution = new OutEmailCommandController("myemail@gmail.com", conceptContainer, instanceContainer);
         this.commandsToParser = commandsToParser;
+        internalState = new InternalState();
     }
 
-    private enum InternalState
+    //TODO: may want to allow to pend on function delegates.
+    /*
+    this class is in-charge of tracking the user's sentences especially for learning.
+     */
+    public static class InternalState
     {
-        none, pendingOnEmailCreation
+        private static enum InternalStateMode
+
+        {
+            none, pendingOnEmailCreation, pendOnLearning, learning
+        }
+
+        private InternalStateMode internalStateMode;
+        List<String> sentencesSaid = new LinkedList<>();
+        String lastCommandOrLearningCommand = "";
+
+        public boolean isPendingOnEmailCreation()
+        {
+            return internalStateMode == InternalStateMode.pendingOnEmailCreation;
+        }
+
+        public boolean isPendingOnLearning()
+        {
+            return internalStateMode == InternalStateMode.pendOnLearning;
+        }
+
+        public void pendOnEmailCreation()
+        {
+            internalStateMode = InternalStateMode.pendingOnEmailCreation;
+        }
+
+        public void pendOnLearning()
+        {
+            internalStateMode = InternalStateMode.pendOnLearning;
+        }
+
+        public void reset()
+        {
+            internalStateMode = InternalStateMode.none;
+        }
+
+        public String startLearning()
+        {
+            internalStateMode = InternalStateMode.learning;
+            return lastCommandOrLearningCommand;
+        }
+
+        /*
+            returns if in learning mode
+         */
+        public boolean userSaidNotYes(String usersSentence)
+        {
+            if (internalStateMode == InternalStateMode.learning)
+            {
+                sentencesSaid.add(usersSentence);
+            }
+            else
+            {
+                lastCommandOrLearningCommand = usersSentence;
+                internalStateMode = InternalStateMode.none;
+            }
+            return internalStateMode == InternalStateMode.learning;
+        }
+
+        public List<String> endLearningGetSentences()
+        {
+            internalStateMode = InternalStateMode.none;
+            List<String> userSentences = sentencesSaid;
+            sentencesSaid = new LinkedList<>();
+            return userSentences;
+        }
+
     }
 
-    InternalState internalState = InternalState.none;
+    InternalState internalState;
     String currentConcept = null; //in use when update concept.
 
     @Override
     public ActionResponse sendEmail(String usersText)
     {
-        checkInternalState();
+        internalState.userSaidNotYes(usersText);
         StringBuilder retSentences = new StringBuilder();
         ExecutionStatus executionStatus = new ExecutionStatus();
         dMContextAndExecution.sendEmail(executionStatus);
@@ -66,23 +138,17 @@ public class TopDMAllActions implements IAllUserActions
             {
                 retSentences.append("I see that there is no email being composed.\n");
                 retSentences.append("Do you want to compose a new email?\n");
-                internalState = InternalState.pendingOnEmailCreation;
+                internalState.pendOnEmailCreation();
                 return true;
             }
         }
         return false;
     }
 
-    private void checkInternalState()
-    {
-        if (internalState == InternalState.pendingOnEmailCreation)
-            internalState = InternalState.none;
-    }
-
     @Override
     public ActionResponse composeEmail(String usersText)
     {
-        checkInternalState();
+        internalState.userSaidNotYes(usersText);
         ExecutionStatus executionStatus = new ExecutionStatus();
         dMContextAndExecution.createNewEmail(executionStatus);
 
@@ -104,10 +170,15 @@ public class TopDMAllActions implements IAllUserActions
 
     public ActionResponse yes(String usersText)
     {
-        if (internalState == InternalState.pendingOnEmailCreation)
+        if (internalState.isPendingOnEmailCreation())
         {
             return composeEmail(usersText);
-        } else
+        } else if (internalState.isPendingOnLearning())
+        {
+            String lastCommand = internalState.startLearning();
+            return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first?", null);
+        }
+        else
         {
             return new ActionResponse("I did not understand what you said yes to, please give the full request.", null);
         }
@@ -116,20 +187,24 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse no(String usersText)
     {
-        internalState = InternalState.none;
+        internalState.userSaidNotYes(usersText);
         return new ActionResponse("Ok, I won't do anything.", null);
     }
 
+    /*
+        stop learning.
+     */
     @Override
     public ActionResponse cancel(String usersText)
     {
-        internalState = InternalState.none;
-        return new ActionResponse("Ok, I won't do anything.", null);
+        internalState.reset();
+        return new ActionResponse("Ok, I'll stop.", null);
     }
 
     @Override
     public ActionResponse set(String usersText, String fieldName, String val)
     {
+        internalState.userSaidNotYes(usersText);
         List<String> conceptOptions = conceptContainer.findConceptsForField(fieldName);
         if (conceptOptions.isEmpty())
         {
@@ -151,6 +226,7 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse set(String usersText, String instanceName, String fieldName, String val)
     {
+        internalState.userSaidNotYes(usersText);
         //find intersection of all instances that have requested instanceName and fieldName
         List<String> conceptOptions = conceptContainer.findConceptsForField(fieldName);
         if (conceptOptions.isEmpty())
@@ -173,6 +249,7 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse set(String usersText, String conceptName, String instanceName, String fieldName, String val)
     {
+        internalState.userSaidNotYes(usersText);
         if (!conceptContainer.doesConceptExist(conceptName))
         {
             return new ActionResponse("I am not familiar with the concept: \"" + conceptName + "\". Please define it first, or use a different concept.", null);
@@ -209,14 +286,17 @@ public class TopDMAllActions implements IAllUserActions
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
         theInstance.setField(executionStatus, fieldName, val);
-        ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
-        if (statusAndMessage.retStatus == ExecutionStatus.RetStatus.error)
-        {
-            return new ActionResponse("I see that " + statusAndMessage.message + ".", null);
-        } else
-        {
-            return new ActionResponse("The \"" + fieldName + "\" field in \"" + theInstance.getName() + "\" was set to: \"" + val + "\".", null);
-        }
+
+        StringBuilder response = new StringBuilder();
+        TextFormattingUtils.testOkAndFormat(executionStatus,
+                false,
+                true,
+                response,
+                "The \"" + fieldName + "\" field in \"" + theInstance.getName() + "\" was set to: \"" + val + "\".",
+                true,
+                internalState);
+
+        return new ActionResponse(response.toString(), null);
     }
 
     @Override
@@ -234,15 +314,22 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse defineConcept(String usersText, String conceptName)
     {
+        internalState.userSaidNotYes(usersText);
         //TODO: remember what was the last concept defined, and add fields to is if no concept is given.
         ExecutionStatus executionStatus = new ExecutionStatus();
         conceptContainer.defineConcept(executionStatus, conceptName);
 
         StringBuilder response = new StringBuilder();
-        if (StaticUtils.testOkAndFormat(executionStatus, true, true, response))
+        if (TextFormattingUtils.testOkAndFormat(executionStatus,
+                true,
+                true,
+                response,
+                "Concept \"" + conceptName + "\" was created successfully. Please define its fields.",
+                false,
+                internalState
+        ))
         {
             commandsToParser.newConceptDefined(conceptName);
-            response.append("Concept \"" + conceptName + "\" was created successfully. Please define its fields.");
         }
         return new ActionResponse(response.toString(), null);
     }
@@ -257,6 +344,7 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse addFieldToConcept(String usersText, String conceptName, String fieldName)
     {
+        internalState.userSaidNotYes(usersText);
         //TODO: need to infer the field type in a smarter way...
         PossibleFieldType possibleFieldType = PossibleFieldType.multiLineString;
         boolean isList = false;
@@ -271,14 +359,21 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse addFieldToConcept(String usersText, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList)
     {
+        internalState.userSaidNotYes(usersText);
         ExecutionStatus executionStatus = new ExecutionStatus();
         conceptContainer.addFieldToConcept(executionStatus, conceptName, new FieldDescription(fieldName, possibleFieldType, isList));
 
         StringBuilder response = new StringBuilder();
-        if (StaticUtils.testOkAndFormat(executionStatus, true, true, response))
+        if (TextFormattingUtils.testOkAndFormat(executionStatus,
+                true,
+                true,
+                response,
+                "Field \"" + fieldName + "\" was added to concept \"" + conceptName + "\".",
+                false,
+                internalState
+        ))
         {
             commandsToParser.newConceptDefined(conceptName);
-            response.append("Field \"" + fieldName + "\" was added to concept \"" + conceptName + "\".");
         }
         return new ActionResponse(response.toString(), null);
     }
@@ -286,14 +381,21 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse createInstance(String usersText, String conceptName, String instanceName)
     {
+        internalState.userSaidNotYes(usersText);
         ExecutionStatus executionStatus = new ExecutionStatus();
         instanceContainer.addInstance(executionStatus, conceptName, instanceName);
 
         StringBuilder response = new StringBuilder();
-        if (StaticUtils.testOkAndFormat(executionStatus, true, true, response))
+        if (TextFormattingUtils.testOkAndFormat(executionStatus,
+                true,
+                true,
+                response,
+                "Instance \"" + instanceName + "\" (of concept \"" + conceptName + "\") was created. ",
+                false,
+                internalState
+        ))
         {
             commandsToParser.newConceptDefined(conceptName);
-            response.append("Instance \"" + instanceName + "\" (of concept \"" + conceptName + "\") was created. ");
             response.append(listFieldsOfConcept(conceptName));
         }
         return new ActionResponse(response.toString(), null);
@@ -331,12 +433,28 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse endTeaching(String usersText)
     {
-        return null;
+        String commandBeingLearnt = internalState.lastCommandOrLearningCommand;
+        List<String> allSentences = internalState.endLearningGetSentences();
+        //TODO: execute all sentences, possibly can be done on a clone of the data, although the user did initially ask to do it.
+        for (String command : allSentences)
+        {
+            //commandsToParser.executeCommand(command);
+        }
+
+        boolean success = true;
+        if (success)
+        {
+            // TODO: if success, update parser.
+            commandsToParser.addTrainingEg(commandBeingLearnt, allSentences);
+        }
+
+        return new ActionResponse("I now know what to do when you say (for example): "+commandBeingLearnt,null);
     }
 
     @Override
     public ActionResponse get(String usersText, String fieldName)
     {
+        //get field of most recently touched instance with the relevant fieldName
         return null;
     }
 
@@ -349,7 +467,21 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse get(String usersText, String conceptName, String instanceName, String fieldName)
     {
-        return null;
+        internalState.userSaidNotYes(usersText);
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        GenericConcept instance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);
+        JSONObject requestedField = instance.getField(executionStatus, fieldName);
+
+        StringBuilder response = new StringBuilder();
+        TextFormattingUtils.testOkAndFormat(executionStatus,
+                true,
+                true,
+                response,
+                "It is: " + requestedField,
+                true,
+                internalState
+                );
+        return new ActionResponse(response.toString(), requestedField);
     }
 
     @Override

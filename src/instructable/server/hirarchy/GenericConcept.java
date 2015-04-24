@@ -1,6 +1,7 @@
 package instructable.server.hirarchy;
 
 import instructable.server.ExecutionStatus;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 
@@ -42,15 +43,11 @@ public class GenericConcept
         if (fields.containsKey(fieldName))
         {
             FieldHolder requestedField = fields.get(fieldName);
-            if (requestedField == null)
-            {
-                executionStatus.add(ExecutionStatus.RetStatus.error, "the field cannot be empty");
-                return;
-            }
+            //requestedField shouldn't be null.
             requestedField.set(executionStatus, val);
             return;
         }
-        executionStatus.add(ExecutionStatus.RetStatus.error, "the field cannot be found");
+        executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + " cannot be found");
     }
 
     /*
@@ -63,11 +60,7 @@ public class GenericConcept
         if (fields.containsKey(fieldName))
         {
             FieldHolder requestedField = fields.get(fieldName);
-            if (requestedField == null)
-            {
-                executionStatus.add(ExecutionStatus.RetStatus.error, "the field cannot be empty");
-                return;
-            }
+            //requestedField shouldn't be null.
             if (appendToEnd)
             {
                 requestedField.appendToEnd(executionStatus, val);
@@ -79,7 +72,7 @@ public class GenericConcept
                 return;
             }
         }
-        executionStatus.add(ExecutionStatus.RetStatus.error, "the field cannot be found");
+        executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + " cannot be found");
     }
 
     /*
@@ -117,6 +110,19 @@ public class GenericConcept
     {
         lastAccess = new Date();
         return fields.keySet();
+    }
+
+    public JSONObject getField(ExecutionStatus executionStatus, String fieldName)
+    {
+        lastAccess = new Date();
+        if (fields.containsKey(fieldName))
+        {
+            FieldHolder requestedField = fields.get(fieldName);
+            //requestedField shouldn't be null.
+            return requestedField.getAsJSon();
+        }
+        executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + " cannot be found");
+        return null;
     }
 
 

@@ -7,7 +7,8 @@ The "subject" field in "outgoing email" was set to: "hello".
 The "body" field in "outgoing email" was set to: "test".
 I see that the message has no recipient.
 
-I see that the given string was not an email address.
+Sorry, but "myself" is not an email address.
+Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 The "recipient list" field in "outgoing email" was set to: "myself@myjob.com".
 Email sent successfully.
 
@@ -15,11 +16,13 @@ I see that there is no email being composed.
 Do you want to compose a new email?
 
 Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
-I see that the given string was not an email address.
+Sorry, but "myspouse" is not an email address.
+Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 Concept "contact" was created successfully. Please define its fields.
-I see that the concept "contact" is already defined. Its fields are: none.
+Sorry, but the concept "contact" is already defined. Its fields are: none.
 Field "email" was added to concept "contact".
 Instance "bob" (of concept "contact") was created. "contact" fields are: email.
-I see that the given string was not an email address.
+Sorry, but "baba" is not an email address.
+Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 The "email" field in "bob" was set to: "bob@gmail.com".
 

@@ -18,8 +18,6 @@ public class EmailAddress extends FieldType
             "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                     + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
-    String address = null;
-
     private boolean testAddress(String addr)
     {
         Pattern pattern = Pattern.compile(EMAIL_PATTERN);
@@ -34,7 +32,7 @@ public class EmailAddress extends FieldType
     {
         if (testAddress(val))
         {
-            address = val;
+            fieldVal = val;
             return;
         }
 
@@ -44,24 +42,24 @@ public class EmailAddress extends FieldType
         val = val.trim().replace(" ", "");
         if (testAddress(val))
         {
-            address = val;
+            fieldVal = val;
             executionStatus.add(ExecutionStatus.RetStatus.comment, "minor email fixes were performed");
             return;
         }
 
-        executionStatus.add(ExecutionStatus.RetStatus.error, "the given string was not an email address");
+        executionStatus.add(ExecutionStatus.RetStatus.error, "\""+ val + "\" is not an email address");
         return;
     }
 
     public String getAddress()
     {
-        return address;
+        return fieldVal;
     }
 
     @Override
     public boolean isEmpty()
     {
-        return address == null;
+        return fieldVal == null;
     }
 
     @Override

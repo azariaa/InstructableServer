@@ -45,40 +45,53 @@ public class TestScenario
 
         TestHelpers testHelpers = new TestHelpers(testingMode, "Apr23test.txt");
         sendingBasicEmail(allUserActions, testHelpers);
-
         definingContact(allUserActions, testHelpers);
-
         testHelpers.endTest();
+
+        getAndGetInContext(allUserActions, testHelpers);
+
+        //teachingToSetRecipientAsContact(allUserActions, testHelpers);
+
+        //learningToForwardAnEmail(allUserActions, testHelpers);
+        //emailSomeoneSomeText()
+
     }
 
-    private static void definingContact(IAllUserActions allUserActions, TestHelpers testHelpers)
+    private static void getAndGetInContext(IAllUserActions allUserActions, TestHelpers testHelpers)
     {
         ActionResponse response;
 
-        response = allUserActions.composeEmail("compose a new email");
+        response = allUserActions.get("what is bob's email?", "bob", "email");
+        testHelpers.systemSays(response.sayToUser);
+        testHelpers.systemSays(response.value.toJSONString());
+
+
+        //set from a get
+
+        //get in context
+
+    }
+
+    private static void teachingToSetRecipientAsContact(IAllUserActions allUserActions, TestHelpers testHelpers)
+    {
+        ActionResponse response;
+
+        response = allUserActions.composeEmail("compose an email");
         testHelpers.systemSays(response.sayToUser);
 
-        response = allUserActions.set("set my spouse as the recipient", "recipient list", "my spouse");
+        response = allUserActions.set("make bob the recipient", "recipient list", "bob");
         testHelpers.systemSays(response.sayToUser);
 
-        response = allUserActions.defineConcept("I want to teach you what a contact is", "contact");
+        response = allUserActions.yes("yes");
         testHelpers.systemSays(response.sayToUser);
 
-        response = allUserActions.defineConcept("Define contact!", "contact");
+        response = allUserActions.set("set the recipient to be bob's email", "recipient list", "bob");
         testHelpers.systemSays(response.sayToUser);
 
-        response = allUserActions.addFieldToConcept("add email as a field in contact", "contact", "email");
-        testHelpers.systemSays(response.sayToUser);
+    }
 
-        response = allUserActions.createInstance("create a contact, call it bob", "contact", "bob");
-        testHelpers.systemSays(response.sayToUser);
-
-        response = allUserActions.set("set bob's email to baba", "bob", "email", "baba");
-        testHelpers.systemSays(response.sayToUser);
-
-        response = allUserActions.set("set bob's email to bob@gmail.com", "bob", "email", "bob@gmail.com");
-        testHelpers.systemSays(response.sayToUser);
-
+    private static void learningToForwardAnEmail(IAllUserActions allUserActions, TestHelpers testHelpers)
+    {
     }
 
     private static void sendingBasicEmail(IAllUserActions allUserActions, TestHelpers testHelpers)
@@ -114,6 +127,37 @@ public class TestScenario
 
         response = allUserActions.sendEmail("send");
         testHelpers.systemSays(response.sayToUser);
+    }
+
+
+    private static void definingContact(IAllUserActions allUserActions, TestHelpers testHelpers)
+    {
+        ActionResponse response;
+
+        response = allUserActions.composeEmail("compose a new email");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.set("set my spouse as the recipient", "recipient list", "my spouse");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.defineConcept("I want to teach you what a contact is", "contact");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.defineConcept("Define contact!", "contact");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.addFieldToConcept("add email as a field in contact", "contact", "email");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.createInstance("create a contact, call it bob", "contact", "bob");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.set("set bob's email to baba", "bob", "email", "baba");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.set("set bob's email to bob@gmail.com", "bob", "email", "bob@gmail.com");
+        testHelpers.systemSays(response.sayToUser);
+
     }
 
     static class TestHelpers
