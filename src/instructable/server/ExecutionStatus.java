@@ -2,6 +2,7 @@ package instructable.server;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
@@ -16,13 +17,13 @@ public class ExecutionStatus
 
     static public class StatusAndMessage
     {
-        StatusAndMessage(RetStatus retStatus, String message)
+        StatusAndMessage(RetStatus retStatus, Optional<String> message)
         {
             this.retStatus = retStatus;
             this.message = message;
         }
         RetStatus retStatus;
-        String message;
+        Optional<String> message;
     }
 
     /*
@@ -87,6 +88,6 @@ public class ExecutionStatus
 
     public void add(RetStatus retStatus, String message)
     {
-        internalList.add(new StatusAndMessage(retStatus,message));
+        internalList.add(new StatusAndMessage(retStatus, Optional.of(message)));
     }
 }

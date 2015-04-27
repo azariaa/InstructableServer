@@ -36,15 +36,19 @@ public class GenericConcept
     /*
     replaces existing (use add to add or create new).
     must have field defined in this object.
+    must either have val or jsonVal
      */
-    public void setField(ExecutionStatus executionStatus, String fieldName, String val)
+    public void setField(ExecutionStatus executionStatus, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal)
     {
         lastAccess = new Date();
         if (fields.containsKey(fieldName))
         {
             FieldHolder requestedField = fields.get(fieldName);
             //requestedField shouldn't be null.
-            requestedField.set(executionStatus, val);
+            if (jsonVal.isPresent())
+                requestedField.setFromJSon(executionStatus, jsonVal.get());
+            else
+                requestedField.set(executionStatus, val.get());
             return;
         }
         executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + " cannot be found");

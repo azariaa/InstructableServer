@@ -1,10 +1,17 @@
-package instructable.server;
+package testing;
 
 import com.sun.deploy.util.StringUtils;
+import instructable.server.ActionResponse;
+import instructable.server.IAllUserActions;
+import instructable.server.ICommandsToParser;
+import instructable.server.TopDMAllActions;
+import org.json.simple.JSONObject;
 
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,6 +20,7 @@ import java.util.List;
 public class TestScenario
 {
     static boolean testingMode = true;
+    static String fileName = "Apr27test.txt";
 
     public static void main(String[] args) throws Exception
     {
@@ -43,12 +51,13 @@ public class TestScenario
             }
         });
 
-        TestHelpers testHelpers = new TestHelpers(testingMode, "Apr23test.txt");
+        TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
         sendingBasicEmail(allUserActions, testHelpers);
         definingContact(allUserActions, testHelpers);
-        testHelpers.endTest();
 
-        getAndGetInContext(allUserActions, testHelpers);
+        setFromGet(allUserActions, testHelpers);
+
+        testHelpers.endTest();
 
         //teachingToSetRecipientAsContact(allUserActions, testHelpers);
 
@@ -57,14 +66,29 @@ public class TestScenario
 
     }
 
-    private static void getAndGetInContext(IAllUserActions allUserActions, TestHelpers testHelpers)
+    private static void setFromGet(IAllUserActions allUserActions, TestHelpers testHelpers)
     {
         ActionResponse response;
 
         response = allUserActions.get("what is bob's email?", "bob", "email");
         testHelpers.systemSays(response.sayToUser);
-        testHelpers.systemSays(response.value.toJSONString());
+        //testHelpers.systemSays(response.value.get().toJSONString());
 
+        response = allUserActions.createInstance("create a contact jane", "contact", "jane");
+        testHelpers.systemSays(response.sayToUser);
+
+        //"take bob's email and set it as jane's email"
+        //(set jane email (get bob email))
+        response = allUserActions.get("take bob's email", "bob", "email");
+        if (response.value.isPresent())
+        {
+            JSONObject bobsEmail = response.value.get();
+            response = allUserActions.set("and set it as jane's email", "jane", "email", bobsEmail);
+            testHelpers.systemSays(response.sayToUser);
+
+            response = allUserActions.set("set the recipient to be bob's email", "recipient list", bobsEmail);
+        }
+        testHelpers.systemSays(response.sayToUser);
 
         //set from a get
 
@@ -180,7 +204,7 @@ public class TestScenario
                 System.out.println("S: " + sentence);
             }
             System.out.println();
-            allSystemReplies.append(str + "\n");
+            allSystemReplies.append(str + "\n\n");
         }
 
         public void endTest() throws Exception
@@ -190,8 +214,11 @@ public class TestScenario
                 String shouldBe = StringUtils.join(Files.readAllLines(Paths.get(fileName)),"\n");
                 if (!shouldBe.equals(allSystemReplies.toString()))
                 {
+                    String failFileName = new SimpleDateFormat("yyyyMMddhhmm'fail.txt'").format(new Date());
+                    PrintWriter out = new PrintWriter(failFileName);
+                    out.println(allSystemReplies.toString());
+                    out.close();
                     System.out.println("Error!!!!");
-                    //can add StringUtils.difference of Google diff, but requires an extra jar.
                     throw new Exception("Test failed");
                 }
                 else

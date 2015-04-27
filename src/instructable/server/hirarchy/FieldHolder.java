@@ -134,9 +134,21 @@ public class FieldHolder
         }
     }
 
-    static public String fieldFromJSon(JSONObject jsonObject)
+    /*
+        should be used only for presenting a value to the user.
+     */
+    static public String fieldFromJSonForUser(JSONObject jsonObject)
     {
-        return jsonObject.toString();
+        boolean isFromList = false;
+        if (jsonObject.containsKey(isListForJson) && (boolean)jsonObject.get(isListForJson) ||
+                !jsonObject.containsKey(isListForJson) && jsonObject.containsKey(fieldListForJson))
+            isFromList = true;
+        String retVal;
+        if (isFromList)
+            retVal = (((JSONArray)jsonObject.get(fieldListForJson)).get(0)).toString();
+        else
+            retVal = jsonObject.get(fieldForJson).toString();
+        return retVal;
     }
 
     public JSONObject getAsJSon()

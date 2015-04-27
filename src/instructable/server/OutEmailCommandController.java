@@ -1,11 +1,9 @@
 package instructable.server;
 
-import instructable.server.hirarchy.ConceptContainer;
-import instructable.server.hirarchy.EmailMessage;
-import instructable.server.hirarchy.InstanceContainer;
-import instructable.server.hirarchy.OutgoingEmail;
+import instructable.server.hirarchy.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Amos Azaria on 15-Apr-15.
@@ -23,24 +21,26 @@ public class OutEmailCommandController
         this.instanceContainer = instanceContainer;
     }
 
-    public OutgoingEmail getEmailBeingComposed(ExecutionStatus executionStatus)
+    public Optional<OutgoingEmail> getEmailBeingComposed(ExecutionStatus executionStatus)
     {
-        OutgoingEmail emailBeingComposed = (OutgoingEmail)instanceContainer.getInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
-        if (emailBeingComposed != null)
-            return emailBeingComposed;
+        Optional<GenericConcept> emailBeingComposed = instanceContainer.getInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
+        if (emailBeingComposed.isPresent())
+        {
+            return Optional.of((OutgoingEmail) emailBeingComposed.get());
+        }
         else
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "there is no email being composed");
-            return null;
+            return Optional.empty();
         }
     }
 
     public void sendEmail(ExecutionStatus executionStatus)
     {
-        OutgoingEmail email = getEmailBeingComposed(executionStatus);
-        if (email != null)
+        Optional<OutgoingEmail> email = getEmailBeingComposed(executionStatus);
+        if (email.isPresent())
         {
-            email.sendEmail(executionStatus);
+            email.get().sendEmail(executionStatus);
             if (executionStatus.noError())
             {
                 numOfEmailsSent++;

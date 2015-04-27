@@ -66,13 +66,13 @@ public class InstanceContainer
         return allPossibleInstances;
     }
 
-    public GenericConcept getInstance(ExecutionStatus executionStatus, String conceptName, String instanceName)
+    public Optional<GenericConcept> getInstance(ExecutionStatus executionStatus, String conceptName, String instanceName)
     {
         if (conceptToInstance.containsKey(conceptName))
         {
             Map<String,GenericConcept> instances = conceptToInstance.get(conceptName);
             if (instances.containsKey(instanceName))
-                return instances.get(instanceName);
+                return Optional.of(instances.get(instanceName));
             else
             {
                 executionStatus.add(ExecutionStatus.RetStatus.error, "there is no instance of \""+conceptName+"\" with name \"" +instanceName + "\", please create one first");
@@ -82,7 +82,7 @@ public class InstanceContainer
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "there are no instances of \""+conceptName+"\", please create an instance first (with name \"" +instanceName + "\")");
         }
-        return null;
+        return Optional.empty();
     }
 
     public void addInstance(ExecutionStatus executionStatus, String conceptName, String instanceName)

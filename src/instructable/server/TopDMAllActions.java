@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static instructable.server.TextFormattingUtils.userFriendlyList;
 
@@ -103,7 +104,7 @@ public class TopDMAllActions implements IAllUserActions
     }
 
     InternalState internalState;
-    String currentConcept = null; //in use when update concept.
+    String currentConcept = ""; //in use when update concept.
 
     @Override
     public ActionResponse sendEmail(String usersText)
@@ -116,29 +117,29 @@ public class TopDMAllActions implements IAllUserActions
         if (executionStatus.isError())
         {
             if (testNoEmailBeingComposed(retSentences, statusAndMessage))
-                return new ActionResponse(retSentences.toString(), null);
+                return new ActionResponse(retSentences.toString(), false, Optional.empty());
         }
 
-        if (statusAndMessage.message != null)
-        {
-            retSentences.append("I see that " + statusAndMessage.message + ".\n");
-        }
-        if (executionStatus.noError())
-        {
-            retSentences.append("Email sent successfully.\n");
-        }
-        return new ActionResponse(retSentences.toString(), null);
+
+        StringBuilder response = new StringBuilder();
+        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
+                false,
+                true,
+                response,
+                Optional.of("Email sent successfully."),
+                true,
+                internalState);
+
+        return new ActionResponse(response.toString(), success, Optional.empty());
     }
 
     private boolean testNoEmailBeingComposed(StringBuilder retSentences, ExecutionStatus.StatusAndMessage statusAndMessage)
     {
-        if (statusAndMessage.message != null)
+        if (statusAndMessage.message.isPresent())
         {
-            if (statusAndMessage.message.startsWith("there are no instances of") || statusAndMessage.message.startsWith("there is no email") || statusAndMessage.message.startsWith("there is no"))//TODO: bad bad bad!
+            if (statusAndMessage.message.get().startsWith("there are no instances of") || statusAndMessage.message.get().startsWith("there is no email") || statusAndMessage.message.get().startsWith("there is no"))//TODO: bad bad bad!
             {
-                retSentences.append("I see that there is no email being composed.\n");
-                retSentences.append("Do you want to compose a new email?\n");
-                internalState.pendOnEmailCreation();
+                TextFormattingUtils.noEmailFound(retSentences, internalState);
                 return true;
             }
         }
@@ -152,19 +153,19 @@ public class TopDMAllActions implements IAllUserActions
         ExecutionStatus executionStatus = new ExecutionStatus();
         dMContextAndExecution.createNewEmail(executionStatus);
 
-        StringBuilder retSentences = new StringBuilder();
-        if (executionStatus.isError())
-        {
-            ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
-            retSentences.append("Error. I see that " + statusAndMessage.message + ".\n");
-        } else
-        {
-            retSentences.append("Composing new email. ");
-            String conceptName = OutgoingEmail.strOutgoingEmailTypeAndName;
-            List<String> emailFieldNames = dMContextAndExecution.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
-            retSentences.append("\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + ".");
-        }
-        return new ActionResponse(retSentences.toString(), null);
+
+        StringBuilder response = new StringBuilder();
+        String conceptName = OutgoingEmail.strOutgoingEmailTypeAndName;
+        List<String> emailFieldNames = dMContextAndExecution.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
+        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
+                false,
+                true,
+                response,
+                Optional.of("Composing new email. " + "\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + "."),
+                true,
+                internalState);
+
+        return new ActionResponse(response.toString(), success, Optional.empty());
     }
 
 
@@ -176,11 +177,11 @@ public class TopDMAllActions implements IAllUserActions
         } else if (internalState.isPendingOnLearning())
         {
             String lastCommand = internalState.startLearning();
-            return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first?", null);
+            return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first?", true, Optional.empty());
         }
         else
         {
-            return new ActionResponse("I did not understand what you said yes to, please give the full request.", null);
+            return new ActionResponse("I did not understand what you said yes to, please give the full request.", false, Optional.empty());
         }
     }
 
@@ -188,7 +189,7 @@ public class TopDMAllActions implements IAllUserActions
     public ActionResponse no(String usersText)
     {
         internalState.userSaidNotYes(usersText);
-        return new ActionResponse("Ok, I won't do anything.", null);
+        return new ActionResponse("Ok, I won't do anything.", true, Optional.empty());
     }
 
     /*
@@ -198,105 +199,148 @@ public class TopDMAllActions implements IAllUserActions
     public ActionResponse cancel(String usersText)
     {
         internalState.reset();
-        return new ActionResponse("Ok, I'll stop.", null);
+        return new ActionResponse("Ok, I'll stop.", true, Optional.empty());
     }
 
     @Override
     public ActionResponse set(String usersText, String fieldName, String val)
     {
-        internalState.userSaidNotYes(usersText);
-        List<String> conceptOptions = conceptContainer.findConceptsForField(fieldName);
-        if (conceptOptions.isEmpty())
-        {
-            return new ActionResponse("I am not familiar with any concept with a field \"" + fieldName + "\". Please define it first, or use a different field.", null);
-        }
-
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        GenericConcept theInstance = instanceContainer.getMostPlausibleInstance(executionStatus, conceptOptions);
-
-        ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
-        if (statusAndMessage.retStatus == ExecutionStatus.RetStatus.error)
-        {
-            return new ActionResponse("I see that " + statusAndMessage.message + ".", null);
-        }
-
-        return set(fieldName, val, theInstance);
+        return set(usersText, Optional.empty(), Optional.empty(), fieldName, Optional.of(val), Optional.empty());
     }
 
     @Override
     public ActionResponse set(String usersText, String instanceName, String fieldName, String val)
     {
-        internalState.userSaidNotYes(usersText);
+        return set(usersText, Optional.empty(), Optional.of(instanceName), fieldName, Optional.of(val), Optional.empty());
+    }
+
+    private Optional<GenericConcept> getMostPlausibleInstance(ExecutionStatus executionStatus, Optional<String> optionalInstanceName, String fieldName)
+    {
         //find intersection of all instances that have requested instanceName and fieldName
-        List<String> conceptOptions = conceptContainer.findConceptsForField(fieldName);
-        if (conceptOptions.isEmpty())
+        List<String> conceptOptions = conceptContainer.findConceptsForField(executionStatus, fieldName);
+        if (executionStatus.isError())
         {
-            return new ActionResponse("I am not familiar with any concept with a field \"" + fieldName + "\". Please define it first, or use a different field.", null);
+            return Optional.empty();
         }
 
+        if (optionalInstanceName.isPresent())
+            return Optional.of(instanceContainer.getMostPlausibleInstance(executionStatus, conceptOptions, optionalInstanceName.get()));
+        return Optional.of(instanceContainer.getMostPlausibleInstance(executionStatus, conceptOptions));
+    }
+
+    /*
+        must either have val or jsonVal
+     */
+    private ActionResponse set(String usersText, Optional<String> conceptName, Optional<String> instanceName, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal)
+    {
+        internalState.userSaidNotYes(usersText);
         ExecutionStatus executionStatus = new ExecutionStatus();
-        GenericConcept theInstance = instanceContainer.getMostPlausibleInstance(executionStatus, conceptOptions, instanceName);
-
-        ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
-        if (statusAndMessage.retStatus == ExecutionStatus.RetStatus.error)
+        Optional<GenericConcept> theInstance;
+        if (conceptName.isPresent()) //must also have instanceName
         {
-            return new ActionResponse("I see that " + statusAndMessage.message + ".", null);
+            if (!conceptContainer.doesConceptExist(conceptName.get()))
+            {
+                return new ActionResponse("I am not familiar with the concept: \"" + conceptName.get() + "\". Please define it first, or use a different concept.", false, Optional.empty());
+            }
+            if (!conceptContainer.doesFieldExistInConcept(conceptName.get(), fieldName))
+            {
+                return new ActionResponse("The concept: \"" + conceptName + "\", does not have a field \"" + fieldName + "\". Please define it first, or use a different field.", false, Optional.empty());
+            }
+
+            StringBuilder response = new StringBuilder();
+            if ((conceptName.equals("email") || conceptName.equals("outgoing email")) &&
+                    (instanceName.equals("outgoing email") || instanceName.equals("composed email") || instanceName.equals("email")))
+            //TODO: these rules should be done in a smarter way (maybe rely on the parser).
+            {
+                //only outgoing email can be manipulated
+                Optional<OutgoingEmail> emailInstance = dMContextAndExecution.getEmailBeingComposed(executionStatus);
+                if (emailInstance.isPresent())
+                {
+                    theInstance = Optional.of(emailInstance.get());
+                }
+                else
+                {
+                    TextFormattingUtils.noEmailFound(response, internalState);
+                    return new ActionResponse(response.toString(), false, Optional.empty());
+                }
+            } else
+            {
+                theInstance = instanceContainer.getInstance(executionStatus, conceptName.get(), instanceName.get());
+            }
+
+        }
+        else
+        {
+            theInstance = getMostPlausibleInstance(executionStatus, instanceName, fieldName);
         }
 
-        return set(fieldName, val, theInstance);
+        StringBuilder response = new StringBuilder();
+
+        if (TextFormattingUtils.testOkAndFormat(executionStatus,
+                false,
+                true,
+                response,
+                Optional.empty(),
+                false,
+                internalState
+        ))
+        {
+              return set(fieldName, theInstance.get(), val, jsonVal);
+
+        }
+
+        return  new ActionResponse(response.toString(), false, Optional.empty());
+
     }
 
     @Override
     public ActionResponse set(String usersText, String conceptName, String instanceName, String fieldName, String val)
     {
-        internalState.userSaidNotYes(usersText);
-        if (!conceptContainer.doesConceptExist(conceptName))
-        {
-            return new ActionResponse("I am not familiar with the concept: \"" + conceptName + "\". Please define it first, or use a different concept.", null);
-        }
-        if (!conceptContainer.doesFieldExistInConcept(conceptName, fieldName))
-        {
-            return new ActionResponse("The concept: \"" + conceptName + "\", does not have a field \"" + fieldName + "\". Please define it first, or use a different field.", null);
-        }
-        GenericConcept theInstance;
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        if ((conceptName.equals("email") || conceptName.equals("outgoing email")) &&
-                (instanceName.equals("outgoing email") || instanceName.equals("composed email") || instanceName.equals("email")))
-        //TODO: these rules should be done in a smarter way (maybe rely on the parser).
-        {
-            //only outgoing email can be manipulated
-            theInstance = dMContextAndExecution.getEmailBeingComposed(executionStatus);
-            ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
-            StringBuilder retSentences = new StringBuilder();
-            if (testNoEmailBeingComposed(retSentences, statusAndMessage))
-                return new ActionResponse(retSentences.toString(), null);
-        } else
-        {
-            theInstance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);
-        }
-        ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
-        if (statusAndMessage.retStatus == ExecutionStatus.RetStatus.error)
-        {
-            return new ActionResponse("I see that " + statusAndMessage.message + ".", null);
-        }
-        return set(fieldName, val, theInstance);
+        return set(usersText, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.of(val),Optional.empty());
     }
 
-    private ActionResponse set(String fieldName, String val, GenericConcept theInstance)
+    @Override
+    public ActionResponse set(String usersText, String fieldName, JSONObject jsonVal)
+    {
+        return set(usersText, Optional.empty(), Optional.empty(), fieldName, Optional.empty(), Optional.of(jsonVal));
+    }
+
+    @Override
+    public ActionResponse set(String usersText, String instanceName, String fieldName, JSONObject jsonVal)
+    {
+        return set(usersText, Optional.empty(), Optional.of(instanceName), fieldName, Optional.empty(), Optional.of(jsonVal));
+    }
+
+    @Override
+    public ActionResponse set(String usersText, String conceptName, String instanceName, String fieldName, JSONObject jsonVal)
+    {
+        return set(usersText, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.empty(), Optional.of(jsonVal));
+    }
+
+    /*
+     must either have val or jsonVal
+     */
+    private ActionResponse set(String fieldName, GenericConcept theInstance, Optional<String> val, Optional<JSONObject> jsonVal)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
-        theInstance.setField(executionStatus, fieldName, val);
+        theInstance.setField(executionStatus, fieldName, val, jsonVal);
+
+        String valForOutput;
+        if (jsonVal.isPresent())
+            valForOutput = FieldHolder.fieldFromJSonForUser(jsonVal.get());
+        else
+            valForOutput = val.get();
 
         StringBuilder response = new StringBuilder();
-        TextFormattingUtils.testOkAndFormat(executionStatus,
+        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
                 false,
                 true,
                 response,
-                "The \"" + fieldName + "\" field in \"" + theInstance.getName() + "\" was set to: \"" + val + "\".",
+                Optional.of("The \"" + fieldName + "\" field in \"" + theInstance.getName() + "\" was set to: \"" + valForOutput + "\"."),
                 true,
                 internalState);
 
-        return new ActionResponse(response.toString(), null);
+        return new ActionResponse(response.toString(), success, Optional.empty());
     }
 
     @Override
@@ -320,18 +364,19 @@ public class TopDMAllActions implements IAllUserActions
         conceptContainer.defineConcept(executionStatus, conceptName);
 
         StringBuilder response = new StringBuilder();
-        if (TextFormattingUtils.testOkAndFormat(executionStatus,
+        boolean success =
+        TextFormattingUtils.testOkAndFormat(executionStatus,
                 true,
                 true,
                 response,
-                "Concept \"" + conceptName + "\" was created successfully. Please define its fields.",
+                Optional.of("Concept \"" + conceptName + "\" was created successfully. Please define its fields."),
                 false,
-                internalState
-        ))
+                internalState);
+        if (success)
         {
             commandsToParser.newConceptDefined(conceptName);
         }
-        return new ActionResponse(response.toString(), null);
+        return new ActionResponse(response.toString(), success, Optional.empty());
     }
 
     @Override
@@ -364,18 +409,18 @@ public class TopDMAllActions implements IAllUserActions
         conceptContainer.addFieldToConcept(executionStatus, conceptName, new FieldDescription(fieldName, possibleFieldType, isList));
 
         StringBuilder response = new StringBuilder();
-        if (TextFormattingUtils.testOkAndFormat(executionStatus,
+        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
                 true,
                 true,
                 response,
-                "Field \"" + fieldName + "\" was added to concept \"" + conceptName + "\".",
+                Optional.of("Field \"" + fieldName + "\" was added to concept \"" + conceptName + "\"."),
                 false,
-                internalState
-        ))
+                internalState);
+        if (success)
         {
             commandsToParser.newConceptDefined(conceptName);
         }
-        return new ActionResponse(response.toString(), null);
+        return new ActionResponse(response.toString(), success, Optional.empty());
     }
 
     @Override
@@ -386,19 +431,19 @@ public class TopDMAllActions implements IAllUserActions
         instanceContainer.addInstance(executionStatus, conceptName, instanceName);
 
         StringBuilder response = new StringBuilder();
-        if (TextFormattingUtils.testOkAndFormat(executionStatus,
+        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
                 true,
                 true,
                 response,
-                "Instance \"" + instanceName + "\" (of concept \"" + conceptName + "\") was created. ",
+                Optional.of("Instance \"" + instanceName + "\" (of concept \"" + conceptName + "\") was created. "),
                 false,
-                internalState
-        ))
+                internalState);
+        if (success)
         {
             commandsToParser.newConceptDefined(conceptName);
             response.append(listFieldsOfConcept(conceptName));
         }
-        return new ActionResponse(response.toString(), null);
+        return new ActionResponse(response.toString(), success, Optional.empty());
     }
 
     private String listFieldsOfConcept(String conceptName)
@@ -448,7 +493,7 @@ public class TopDMAllActions implements IAllUserActions
             commandsToParser.addTrainingEg(commandBeingLearnt, allSentences);
         }
 
-        return new ActionResponse("I now know what to do when you say (for example): "+commandBeingLearnt,null);
+        return new ActionResponse("I now know what to do when you say (for example): " + commandBeingLearnt, success, Optional.empty());
     }
 
     @Override
@@ -461,7 +506,9 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse get(String usersText, String instanceName, String fieldName)
     {
-        return null;
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        Optional<GenericConcept> theInstance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), fieldName);
+        return get(executionStatus, fieldName, theInstance);
     }
 
     @Override
@@ -469,19 +516,27 @@ public class TopDMAllActions implements IAllUserActions
     {
         internalState.userSaidNotYes(usersText);
         ExecutionStatus executionStatus = new ExecutionStatus();
-        GenericConcept instance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);
-        JSONObject requestedField = instance.getField(executionStatus, fieldName);
+        Optional<GenericConcept> instance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);
+        return get(executionStatus, fieldName, instance);
+    }
+
+    private ActionResponse get(ExecutionStatus executionStatus, String fieldName, Optional<GenericConcept> instance)
+    {
+        JSONObject requestedField = new JSONObject();
+
+        if (instance.isPresent())
+            requestedField = instance.get().getField(executionStatus, fieldName);
 
         StringBuilder response = new StringBuilder();
-        TextFormattingUtils.testOkAndFormat(executionStatus,
+        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
                 true,
                 true,
                 response,
-                "It is: " + requestedField,
+                Optional.of("It is: " + FieldHolder.fieldFromJSonForUser(requestedField)),
                 true,
                 internalState
-                );
-        return new ActionResponse(response.toString(), requestedField);
+        );
+        return new ActionResponse(response.toString(), success, Optional.of(requestedField));
     }
 
     @Override

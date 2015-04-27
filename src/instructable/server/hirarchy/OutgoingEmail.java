@@ -2,6 +2,8 @@ package instructable.server.hirarchy;
 
 import instructable.server.ExecutionStatus;
 
+import java.util.Optional;
+
 /**
  * Created by Amos Azaria on 15-Apr-15.
  */
@@ -14,7 +16,7 @@ public class OutgoingEmail extends EmailMessage
     public OutgoingEmail(ExecutionStatus executionStatus, String myEmail)
     {
         super(strOutgoingEmailTypeAndName, strOutgoingEmailTypeAndName);
-        setField(executionStatus, senderStr, myEmail);
+        setField(executionStatus, senderStr, Optional.of(myEmail), Optional.empty());
     }
 
 

@@ -42,7 +42,7 @@ public class ConceptContainer
         return false;
     }
 
-    public List<String> findConceptsForField(String fieldName)
+    public List<String> findConceptsForField(ExecutionStatus executionStatus, String fieldName)
     {
         List<String> candidates = new LinkedList<>();
         for (String concept : conceptFieldMap.keySet())
@@ -56,6 +56,10 @@ public class ConceptContainer
                     break;
                 }
             }
+        }
+        if (candidates.size() == 0)
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "I am not familiar with any concept with a field \"" + fieldName + "\". Please define it first, or use a different field.");
         }
         return candidates;
     }

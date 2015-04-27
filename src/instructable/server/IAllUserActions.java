@@ -1,6 +1,7 @@
 package instructable.server;
 
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
+import org.json.simple.JSONObject;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
@@ -22,6 +23,12 @@ public interface IAllUserActions
     ActionResponse set(String usersText, String instanceName, String fieldName, String val);
 
     ActionResponse set(String usersText, String conceptName, String instanceName, String fieldName, String val);
+
+    ActionResponse set(String usersText, String fieldName, JSONObject jsonVal);
+
+    ActionResponse set(String usersText, String instanceName, String fieldName, JSONObject jsonVal);
+
+    ActionResponse set(String usersText, String conceptName, String instanceName, String fieldName, JSONObject jsonVal);
 
     ActionResponse add(String usersText, String fieldName, String val);
 

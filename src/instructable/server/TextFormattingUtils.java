@@ -3,6 +3,7 @@ package instructable.server;
 import com.sun.deploy.util.StringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Amos Azaria on 22-Apr-15.
@@ -38,7 +39,7 @@ public class TextFormattingUtils
                                           boolean failWithWarningToo,
                                           boolean ignoreComments,
                                           StringBuilder response,
-                                          String successSentence,
+                                          Optional<String> optionalSuccessSentence,
                                           boolean askToTeachIfFails,
                                           TopDMAllActions.InternalState internalState)
     {
@@ -49,15 +50,15 @@ public class TextFormattingUtils
                 (retStatus == ExecutionStatus.RetStatus.comment && !ignoreComments))
         {
             ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
-            if (statusAndMessage.message != null)
+            if (statusAndMessage.message.isPresent())
             {
                 if (success)
                 {
-                    response.append("I see that " + statusAndMessage.message + ".");
+                    response.append("I see that " + statusAndMessage.message.get() + ".");
                 }
                 else
                 {
-                    response.append("Sorry, but " + statusAndMessage.message + ".");
+                    response.append("Sorry, but " + statusAndMessage.message.get() + ".");
                     if (askToTeachIfFails)
                     {
                         response.append("\nWould you like to teach me what to do in this case (either say yes or simply ignore this question)?");
@@ -70,10 +71,20 @@ public class TextFormattingUtils
             }
         }
 
-        if (success)
-            response.append(successSentence);
+        if (success && optionalSuccessSentence.isPresent())
+        {
+            response.append(optionalSuccessSentence.get());
+        }
 
         return success;
+    }
+
+
+    static public void noEmailFound(StringBuilder response, TopDMAllActions.InternalState internalState)
+    {
+        response.append("I see that there is no email being composed.\n");
+        response.append("Do you want to compose a new email?\n");
+        internalState.pendOnEmailCreation();
     }
 
 }
