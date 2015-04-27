@@ -5,7 +5,6 @@ import instructable.server.ActionResponse;
 import instructable.server.IAllUserActions;
 import instructable.server.ICommandsToParser;
 import instructable.server.TopDMAllActions;
-import org.json.simple.JSONObject;
 
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -59,7 +58,7 @@ public class TestScenario
 
         testHelpers.endTest();
 
-        //teachingToSetRecipientAsContact(allUserActions, testHelpers);
+        teachingToSetRecipientAsContact(allUserActions, testHelpers);
 
         //learningToForwardAnEmail(allUserActions, testHelpers);
         //emailSomeoneSomeText()
@@ -77,18 +76,35 @@ public class TestScenario
         response = allUserActions.createInstance("create a contact jane", "contact", "jane");
         testHelpers.systemSays(response.sayToUser);
 
+
+        response = allUserActions.get("take bob's email", "bob", "email");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.setFromPreviousGet("and set it as jane's email", "jane", "email");
+        testHelpers.systemSays(response.sayToUser);
+
+
         //"take bob's email and set it as jane's email"
+        //parser should translate to:
         //(set jane email (get bob email))
         response = allUserActions.get("take bob's email", "bob", "email");
         if (response.value.isPresent())
         {
-            JSONObject bobsEmail = response.value.get();
-            response = allUserActions.set("and set it as jane's email", "jane", "email", bobsEmail);
-            testHelpers.systemSays(response.sayToUser);
-
-            response = allUserActions.set("set the recipient to be bob's email", "recipient list", bobsEmail);
+            response = allUserActions.set("and set it as jane's email", "jane", "email", response.value.get());
         }
         testHelpers.systemSays(response.sayToUser);
+
+        //"set the recipient to be bob's email"
+        //parser should translate to:
+        //(set recipient_list (get bob email))
+        response = allUserActions.get("take bob's email", "bob", "email");
+        if (response.value.isPresent())
+        {
+            response = allUserActions.set("set the recipient to be bob's email", "recipient list", response.value.get());
+        }
+
+        testHelpers.systemSays(response.sayToUser);
+
 
         //set from a get
 
@@ -103,14 +119,29 @@ public class TestScenario
         response = allUserActions.composeEmail("compose an email");
         testHelpers.systemSays(response.sayToUser);
 
+        response = allUserActions.set("set jane's email to be jane@gmail.com", "jane", "email", "jane@gmail.com");
+        testHelpers.systemSays(response.sayToUser);
+
         response = allUserActions.set("make bob the recipient", "recipient list", "bob");
         testHelpers.systemSays(response.sayToUser);
 
         response = allUserActions.yes("yes");
         testHelpers.systemSays(response.sayToUser);
 
-        response = allUserActions.set("set the recipient to be bob's email", "recipient list", "bob");
+        response = allUserActions.get("take bob's email", "bob", "email");
         testHelpers.systemSays(response.sayToUser);
+        response = allUserActions.setFromPreviousGet("and set it as the recipient", "recipient list");
+        testHelpers.systemSays(response.sayToUser);
+        response = allUserActions.endTeaching("that's it");
+        testHelpers.systemSays(response.sayToUser);
+
+        //"make jane the recipient" should now translate to:
+        {
+            response = allUserActions.get("take jane's email", "jane", "email");
+            response = allUserActions.setFromPreviousGet("and set it as the recipient", "recipient list");
+            testHelpers.systemSays(response.sayToUser);
+        }
+
 
     }
 
@@ -218,12 +249,12 @@ public class TestScenario
                     PrintWriter out = new PrintWriter(failFileName);
                     out.println(allSystemReplies.toString());
                     out.close();
-                    System.out.println("Error!!!!");
+                    System.out.println("Error!!!!\nTest failed!!!\n");
                     throw new Exception("Test failed");
                 }
                 else
                 {
-                    System.out.println("Success!!!!");
+                    System.out.println("Success!!!!\n");
                 }
             }
             else

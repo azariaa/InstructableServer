@@ -46,6 +46,10 @@ It is: bob@gmail.com
 
 Instance "jane" (of concept "contact") was created. "contact" fields are: email.
 
+It is: bob@gmail.com
+
+The "email" field in "jane" was set to: "bob@gmail.com".
+
 The "email" field in "jane" was set to: "bob@gmail.com".
 
 The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".

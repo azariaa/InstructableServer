@@ -20,6 +20,8 @@ public class TopDMAllActions implements IAllUserActions
     InstanceContainer instanceContainer;
     ICommandsToParser commandsToParser;
 
+    Optional<JSONObject> previousGet = Optional.empty();
+
     public TopDMAllActions(ICommandsToParser commandsToParser)
     {
         conceptContainer = new ConceptContainer();
@@ -35,6 +37,7 @@ public class TopDMAllActions implements IAllUserActions
      */
     public static class InternalState
     {
+
         private static enum InternalStateMode
 
         {
@@ -53,6 +56,10 @@ public class TopDMAllActions implements IAllUserActions
         public boolean isPendingOnLearning()
         {
             return internalStateMode == InternalStateMode.pendOnLearning;
+        }
+        public boolean isInLearningMode()
+        {
+            return internalStateMode == InternalStateMode.learning;
         }
 
         public void pendOnEmailCreation()
@@ -76,21 +83,18 @@ public class TopDMAllActions implements IAllUserActions
             return lastCommandOrLearningCommand;
         }
 
-        /*
-            returns if in learning mode
-         */
-        public boolean userSaidNotYes(String usersSentence)
+        public void userGaveCommand(String usersSentence, boolean success)
         {
             if (internalStateMode == InternalStateMode.learning)
             {
-                sentencesSaid.add(usersSentence);
+                if (success)
+                    sentencesSaid.add(usersSentence);
             }
             else
             {
                 lastCommandOrLearningCommand = usersSentence;
                 internalStateMode = InternalStateMode.none;
             }
-            return internalStateMode == InternalStateMode.learning;
         }
 
         public List<String> endLearningGetSentences()
@@ -109,7 +113,6 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse sendEmail(String usersText)
     {
-        internalState.userSaidNotYes(usersText);
         StringBuilder retSentences = new StringBuilder();
         ExecutionStatus executionStatus = new ExecutionStatus();
         dMContextAndExecution.sendEmail(executionStatus);
@@ -122,7 +125,8 @@ public class TopDMAllActions implements IAllUserActions
 
 
         StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
+        boolean success = TextFormattingUtils.testOkAndFormat(usersText,
+                executionStatus,
                 false,
                 true,
                 response,
@@ -149,7 +153,6 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse composeEmail(String usersText)
     {
-        internalState.userSaidNotYes(usersText);
         ExecutionStatus executionStatus = new ExecutionStatus();
         dMContextAndExecution.createNewEmail(executionStatus);
 
@@ -157,7 +160,8 @@ public class TopDMAllActions implements IAllUserActions
         StringBuilder response = new StringBuilder();
         String conceptName = OutgoingEmail.strOutgoingEmailTypeAndName;
         List<String> emailFieldNames = dMContextAndExecution.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
-        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
+        boolean success = TextFormattingUtils.testOkAndFormat(usersText,
+                executionStatus,
                 false,
                 true,
                 response,
@@ -188,7 +192,6 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse no(String usersText)
     {
-        internalState.userSaidNotYes(usersText);
         return new ActionResponse("Ok, I won't do anything.", true, Optional.empty());
     }
 
@@ -233,7 +236,10 @@ public class TopDMAllActions implements IAllUserActions
      */
     private ActionResponse set(String usersText, Optional<String> conceptName, Optional<String> instanceName, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal)
     {
-        internalState.userSaidNotYes(usersText);
+        if (!val.isPresent() && !jsonVal.isPresent())
+        {
+            return new ActionResponse("I don't know what I should set it to, please rephrase.", false, Optional.empty());
+        }
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericConcept> theInstance;
         if (conceptName.isPresent()) //must also have instanceName
@@ -276,7 +282,8 @@ public class TopDMAllActions implements IAllUserActions
 
         StringBuilder response = new StringBuilder();
 
-        if (TextFormattingUtils.testOkAndFormat(executionStatus,
+        if (TextFormattingUtils.testOkAndFormat(usersText,
+                executionStatus,
                 false,
                 true,
                 response,
@@ -285,7 +292,7 @@ public class TopDMAllActions implements IAllUserActions
                 internalState
         ))
         {
-              return set(fieldName, theInstance.get(), val, jsonVal);
+              return set(usersText, fieldName, theInstance.get(), val, jsonVal);
 
         }
 
@@ -317,10 +324,28 @@ public class TopDMAllActions implements IAllUserActions
         return set(usersText, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.empty(), Optional.of(jsonVal));
     }
 
+    @Override
+    public ActionResponse setFromPreviousGet(String usersText, String fieldName)
+    {
+        return set(usersText, Optional.empty(), Optional.empty(), fieldName, Optional.empty(), previousGet);
+    }
+
+    @Override
+    public ActionResponse setFromPreviousGet(String usersText, String instanceName, String fieldName)
+    {
+        return set(usersText, Optional.empty(), Optional.of(instanceName), fieldName, Optional.empty(), previousGet);
+    }
+
+    @Override
+    public ActionResponse setFromPreviousGet(String usersText, String conceptName, String instanceName, String fieldName)
+    {
+        return set(usersText, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.empty(), previousGet);
+    }
+
     /*
      must either have val or jsonVal
      */
-    private ActionResponse set(String fieldName, GenericConcept theInstance, Optional<String> val, Optional<JSONObject> jsonVal)
+    private ActionResponse set(String usersText, String fieldName, GenericConcept theInstance, Optional<String> val, Optional<JSONObject> jsonVal)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
         theInstance.setField(executionStatus, fieldName, val, jsonVal);
@@ -332,7 +357,8 @@ public class TopDMAllActions implements IAllUserActions
             valForOutput = val.get();
 
         StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
+        boolean success = TextFormattingUtils.testOkAndFormat(usersText,
+                executionStatus,
                 false,
                 true,
                 response,
@@ -358,14 +384,14 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse defineConcept(String usersText, String conceptName)
     {
-        internalState.userSaidNotYes(usersText);
         //TODO: remember what was the last concept defined, and add fields to is if no concept is given.
         ExecutionStatus executionStatus = new ExecutionStatus();
         conceptContainer.defineConcept(executionStatus, conceptName);
 
         StringBuilder response = new StringBuilder();
         boolean success =
-        TextFormattingUtils.testOkAndFormat(executionStatus,
+        TextFormattingUtils.testOkAndFormat(usersText,
+                executionStatus,
                 true,
                 true,
                 response,
@@ -389,7 +415,6 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse addFieldToConcept(String usersText, String conceptName, String fieldName)
     {
-        internalState.userSaidNotYes(usersText);
         //TODO: need to infer the field type in a smarter way...
         PossibleFieldType possibleFieldType = PossibleFieldType.multiLineString;
         boolean isList = false;
@@ -404,12 +429,12 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse addFieldToConcept(String usersText, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList)
     {
-        internalState.userSaidNotYes(usersText);
         ExecutionStatus executionStatus = new ExecutionStatus();
         conceptContainer.addFieldToConcept(executionStatus, conceptName, new FieldDescription(fieldName, possibleFieldType, isList));
 
         StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
+        boolean success = TextFormattingUtils.testOkAndFormat(usersText,
+                executionStatus,
                 true,
                 true,
                 response,
@@ -426,12 +451,12 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse createInstance(String usersText, String conceptName, String instanceName)
     {
-        internalState.userSaidNotYes(usersText);
         ExecutionStatus executionStatus = new ExecutionStatus();
         instanceContainer.addInstance(executionStatus, conceptName, instanceName);
 
         StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
+        boolean success = TextFormattingUtils.testOkAndFormat(usersText,
+                executionStatus,
                 true,
                 true,
                 response,
@@ -475,25 +500,28 @@ public class TopDMAllActions implements IAllUserActions
         return null;
     }
 
+    /*
+        We excecute all sentences as we go. no need to execute them again, just update the parser for next time.
+     */
     @Override
     public ActionResponse endTeaching(String usersText)
     {
+        if (!internalState.isInLearningMode())
+        {
+            return new ActionResponse("Not sure what you are talking about.", false, Optional.empty());
+        }
         String commandBeingLearnt = internalState.lastCommandOrLearningCommand;
         List<String> allSentences = internalState.endLearningGetSentences();
-        //TODO: execute all sentences, possibly can be done on a clone of the data, although the user did initially ask to do it.
-        for (String command : allSentences)
-        {
-            //commandsToParser.executeCommand(command);
-        }
 
-        boolean success = true;
-        if (success)
+        //make sure learnt at least one successful sentence
+        if (allSentences.size() > 0)
         {
-            // TODO: if success, update parser.
+
             commandsToParser.addTrainingEg(commandBeingLearnt, allSentences);
+            return new ActionResponse("I now know what to do when you say (for example): \"" + commandBeingLearnt +"\"!", true, Optional.empty());
         }
+        return new ActionResponse("I'm afraid that I didn't learn anything.", false, Optional.empty());
 
-        return new ActionResponse("I now know what to do when you say (for example): " + commandBeingLearnt, success, Optional.empty());
     }
 
     @Override
@@ -508,19 +536,18 @@ public class TopDMAllActions implements IAllUserActions
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericConcept> theInstance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), fieldName);
-        return get(executionStatus, fieldName, theInstance);
+        return get(usersText, executionStatus, fieldName, theInstance);
     }
 
     @Override
     public ActionResponse get(String usersText, String conceptName, String instanceName, String fieldName)
     {
-        internalState.userSaidNotYes(usersText);
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericConcept> instance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);
-        return get(executionStatus, fieldName, instance);
+        return get(usersText, executionStatus, fieldName, instance);
     }
 
-    private ActionResponse get(ExecutionStatus executionStatus, String fieldName, Optional<GenericConcept> instance)
+    private ActionResponse get(String usersText, ExecutionStatus executionStatus, String fieldName, Optional<GenericConcept> instance)
     {
         JSONObject requestedField = new JSONObject();
 
@@ -528,7 +555,8 @@ public class TopDMAllActions implements IAllUserActions
             requestedField = instance.get().getField(executionStatus, fieldName);
 
         StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(executionStatus,
+        boolean success = TextFormattingUtils.testOkAndFormat(usersText,
+                executionStatus,
                 true,
                 true,
                 response,
@@ -536,6 +564,8 @@ public class TopDMAllActions implements IAllUserActions
                 true,
                 internalState
         );
+        if (success)
+            previousGet = Optional.of(requestedField);
         return new ActionResponse(response.toString(), success, Optional.of(requestedField));
     }
 

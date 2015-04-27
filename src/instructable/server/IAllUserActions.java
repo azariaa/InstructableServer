@@ -30,6 +30,12 @@ public interface IAllUserActions
 
     ActionResponse set(String usersText, String conceptName, String instanceName, String fieldName, JSONObject jsonVal);
 
+    ActionResponse setFromPreviousGet(String usersText, String fieldName);
+
+    ActionResponse setFromPreviousGet(String usersText, String instanceName, String fieldName);
+
+    ActionResponse setFromPreviousGet(String usersText, String conceptName, String instanceName, String fieldName);
+
     ActionResponse add(String usersText, String fieldName, String val);
 
     ActionResponse addToBeginning(String usersText, String fieldName, String val);

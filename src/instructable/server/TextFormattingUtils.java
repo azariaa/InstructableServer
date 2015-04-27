@@ -35,17 +35,22 @@ public class TextFormattingUtils
         internalState can be null if askToTeachIfFails is false
         returns success.
      */
-    public static boolean testOkAndFormat(ExecutionStatus executionStatus,
-                                          boolean failWithWarningToo,
-                                          boolean ignoreComments,
-                                          StringBuilder response,
-                                          Optional<String> optionalSuccessSentence,
-                                          boolean askToTeachIfFails,
-                                          TopDMAllActions.InternalState internalState)
+    public static boolean testOkAndFormat(String userSaid,
+                  ExecutionStatus executionStatus,
+                  boolean failWithWarningToo,
+                  boolean ignoreComments,
+                  StringBuilder response,
+                  Optional<String> optionalSuccessSentence,
+                  boolean askToTeachIfFails,
+                  TopDMAllActions.InternalState internalState)
     {
+        boolean isInLearningPhase = internalState.isInLearningMode();
         ExecutionStatus.RetStatus retStatus = executionStatus.getStatus();
         boolean success = retStatus == ExecutionStatus.RetStatus.ok || retStatus == ExecutionStatus.RetStatus.comment ||
                 (retStatus == ExecutionStatus.RetStatus.warning && !failWithWarningToo);
+
+        internalState.userGaveCommand(userSaid, success);
+
         if (retStatus == ExecutionStatus.RetStatus.error || retStatus == ExecutionStatus.RetStatus.warning ||
                 (retStatus == ExecutionStatus.RetStatus.comment && !ignoreComments))
         {
@@ -59,10 +64,9 @@ public class TextFormattingUtils
                 else
                 {
                     response.append("Sorry, but " + statusAndMessage.message.get() + ".");
-                    if (askToTeachIfFails)
+                    if (isInLearningPhase)
                     {
-                        response.append("\nWould you like to teach me what to do in this case (either say yes or simply ignore this question)?");
-                        internalState.pendOnLearning();
+                        response.append("\nWhat should I do instead (when executing: \""+ internalState.lastCommandOrLearningCommand + "\")?");
                     }
                 }
             } else if (executionStatus.isError())
@@ -71,10 +75,19 @@ public class TextFormattingUtils
             }
         }
 
+        if (!success && askToTeachIfFails)
+        {
+            response.append("\nWould you like to teach me what to do in this case (either say yes or simply ignore this question)?");
+            internalState.pendOnLearning();
+        }
+
         if (success && optionalSuccessSentence.isPresent())
         {
             response.append(optionalSuccessSentence.get());
+            if (isInLearningPhase)
+                response.append("\nWhat shall I do next (when executing: \""+ internalState.lastCommandOrLearningCommand + "\")?");
         }
+
 
         return success;
     }
