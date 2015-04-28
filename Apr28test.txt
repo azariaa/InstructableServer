@@ -1,169 +1,167 @@
-Let's start by sending a dummy email to your-self, set the subject to hello and the body to test.
+S: Let's start by sending a dummy email to your-self, set the subject to hello and the body to test.
 
-send an email
-I see that there is no email being composed.
-Do you want to compose a new email?
+U: send an email
+S: I see that there is no email being composed.
+S: Do you want to compose a new email?
 
+U: yes
+S: Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
 
-yes
-Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
+U: set the subject of this email to hello
+S: The "subject" field in "outgoing email" was set to: "hello".
 
-set the subject of this email to hello
-The "subject" field in "outgoing email" was set to: "hello".
+U: put test in body
+S: The "body" field in "outgoing email" was set to: "test".
 
-put test in body
-The "body" field in "outgoing email" was set to: "test".
+U: send the email
+S: Sorry, but the message has no recipient.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
-send the email
-Sorry, but the message has no recipient.
-Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+U: set myself as the recipient
+S: Sorry, but "myself" is not an email address.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
-set myself as the recipient
-Sorry, but "myself" is not an email address.
-Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+U: set myself@myjob.com as the recipient
+S: The "recipient list" field in "outgoing email" was set to: "myself@myjob.com".
 
-set myself@myjob.com as the recipient
-The "recipient list" field in "outgoing email" was set to: "myself@myjob.com".
+U: send
+S: Email sent successfully.
 
-send
-Email sent successfully.
-
-send
-I see that there is no email being composed.
-Do you want to compose a new email?
-
+U: send
+S: I see that there is no email being composed.
+S: Do you want to compose a new email?
 
 ---------------- now in definingContact --------------------
 
-compose a new email
-Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
+U: compose a new email
+S: Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
 
-set my spouse as the recipient
-Sorry, but "myspouse" is not an email address.
-Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+U: set my spouse as the recipient
+S: Sorry, but "myspouse" is not an email address.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
-I want to teach you what a contact is
-Concept "contact" was created successfully. Please define its fields.
+U: I want to teach you what a contact is
+S: Concept "contact" was created successfully. Please define its fields.
 
-Define contact!
-Sorry, but the concept "contact" is already defined. Its fields are: none.
+U: Define contact!
+S: Sorry, but the concept "contact" is already defined. Its fields are: none.
 
-add email as a field in contact
-Field "email" was added to concept "contact".
+U: add email as a field in contact
+S: Field "email" was added to concept "contact".
 
-create a contact, call it bob
-Instance "bob" (of concept "contact") was created. "contact" fields are: email.
+U: create a contact, call it bob
+S: Instance "bob" (of concept "contact") was created. "contact" fields are: email.
 
-set bob's email to baba
-Sorry, but "baba" is not an email address.
-Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+U: set bob's email to baba
+S: Sorry, but "baba" is not an email address.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
-set bob's email to bob@gmail.com
-The "email" field in "bob" was set to: "bob@gmail.com".
+U: set bob's email to bob@gmail.com
+S: The "email" field in "bob" was set to: "bob@gmail.com".
 
 ---------------- now in setFromGet --------------------
 
-what is bob's email?
-It is: bob@gmail.com
+U: what is bob's email?
+S: It is: bob@gmail.com
 
-create a contact jane
-Instance "jane" (of concept "contact") was created. "contact" fields are: email.
+U: create a contact jane
+S: Instance "jane" (of concept "contact") was created. "contact" fields are: email.
 
-take bob's email
-It is: bob@gmail.com
+U: take bob's email
+S: It is: bob@gmail.com
 
-and set it as jane's email
-The "email" field in "jane" was set to: "bob@gmail.com".
+U: and set it as jane's email
+S: The "email" field in "jane" was set to: "bob@gmail.com".
 
-take bob's email and set it as jane's email
-The "email" field in "jane" was set to: "bob@gmail.com".
+U: take bob's email and set it as jane's email
+S: The "email" field in "jane" was set to: "bob@gmail.com".
 
-set the recipient to be bob's email
-The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
+U: set the recipient to be bob's email
+S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
 
 ---------------- now in teachingToSetRecipientAsContact --------------------
 
-compose an email
-Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
+U: compose an email
+S: Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
 
-set jane's email to be jane@gmail.com
-The "email" field in "jane" was set to: "jane@gmail.com".
+U: set jane's email to be jane@gmail.com
+S: The "email" field in "jane" was set to: "jane@gmail.com".
 
-make bob the recipient
-Sorry, but "bob" is not an email address.
-Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+U: make bob the recipient
+S: Sorry, but "bob" is not an email address.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
-yes
-Great! When you say, for example: "make bob the recipient", what shall I do first?
+U: yes
+S: Great! When you say, for example: "make bob the recipient", what shall I do first?
 
-take bob's email
-It is: bob@gmail.com
-What shall I do next (when executing: "make bob the recipient")?
+U: take bob's email
+S: It is: bob@gmail.com
+S: What shall I do next (when executing: "make bob the recipient")?
 
-and set it as the recipient
-The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
-What shall I do next (when executing: "make bob the recipient")?
+U: and set it as the recipient
+S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
+S: What shall I do next (when executing: "make bob the recipient")?
 
-that's it
-I now know what to do when you say (for example): "make bob the recipient"!
+U: that's it
+S: I now know what to do when you say (for example): "make bob the recipient"!
 
-make jane the recipient
-The "recipient list" field in "outgoing email" was set to: "jane@gmail.com".
+U: make jane the recipient
+S: The "recipient list" field in "outgoing email" was set to: "jane@gmail.com".
 
 ---------------- now in buildRequiredDB --------------------
 
-create a contact my spouse
-Instance "my spouse" (of concept "contact") was created. "contact" fields are: email.
+U: create a contact my spouse
+S: Instance "my spouse" (of concept "contact") was created. "contact" fields are: email.
 
-set its email to my.spouse@gmail.com
-The "email" field in "my spouse" was set to: "my.spouse@gmail.com".
+U: set its email to my.spouse@gmail.com
+S: The "email" field in "bob" was set to: "my.spouse@gmail.com".
 
 ---------------- now in learningToForwardAnEmail --------------------
 
-forward this email to my spouse
-Sorry, but I don't understand.
-Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+U: forward this email to my spouse
+S: Sorry, but I don't understand.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
-sure
-Great! When you say, for example: "forward this email to my spouse", what shall I do first?
+U: sure
+S: Great! When you say, for example: "forward this email to my spouse", what shall I do first?
 
-first create a new email
-Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
-What shall I do next (when executing: "forward this email to my spouse")?
+U: first create a new email
+S: Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
+S: What shall I do next (when executing: "forward this email to my spouse")?
 
-then copy the subject from the incoming email to the outgoing email
-Sorry, but I don't understand.
-What should I do instead (when executing: "forward this email to my spouse")?
+U: then copy the subject from the incoming email to the outgoing email
+S: Sorry, but I don't understand.
+S: What should I do instead (when executing: "forward this email to my spouse")?
 
-take the subject from the incoming email
-It is: department party
-What shall I do next (when executing: "forward this email to my spouse")?
+U: take the subject from the incoming email
+S: It is: department party
+S: What shall I do next (when executing: "forward this email to my spouse")?
 
-and set it as the outgoing email's subject
-The "subject" field in "outgoing email" was set to: "department party".
-What shall I do next (when executing: "forward this email to my spouse")?
+U: and set it as the outgoing email's subject
+S: The "subject" field in "outgoing email" was set to: "department party".
+S: What shall I do next (when executing: "forward this email to my spouse")?
 
-take the body from the incoming email
-It is: We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.
-What shall I do next (when executing: "forward this email to my spouse")?
+U: take the body from the incoming email
+S: It is: We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.
+S: What shall I do next (when executing: "forward this email to my spouse")?
 
-and set it as the body
-The "body" field in "outgoing email" was set to: "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.".
-What shall I do next (when executing: "forward this email to my spouse")?
+U: and set it as the body
+S: The "body" field in "outgoing email" was set to: "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.".
+S: What shall I do next (when executing: "forward this email to my spouse")?
 
-send the email
-Sorry, but the message has no recipient.
-What should I do instead (when executing: "forward this email to my spouse")?
+U: send the email
+S: Sorry, but the message has no recipient.
+S: What should I do instead (when executing: "forward this email to my spouse")?
 
-oh, yeah, set the recipient as my spouse
-The "recipient list" field in "outgoing email" was set to: "my.spouse@gmail.com".
-What shall I do next (when executing: "forward this email to my spouse")?
+U: oh, yeah, set the recipient as my spouse
+S: Sorry, but "" is not an email address.
+S: What should I do instead (when executing: "forward this email to my spouse")?
 
-now send the email
-Email sent successfully.
-What shall I do next (when executing: "forward this email to my spouse")?
+U: now send the email
+S: Sorry, but the message has no recipient.
+S: What should I do instead (when executing: "forward this email to my spouse")?
 
-that's it, you're done!
-I now know what to do when you say (for example): "forward this email to my spouse"!
+U: that's it, you're done!
+S: I now know what to do when you say (for example): "forward this email to my spouse"!
 
 

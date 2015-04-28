@@ -1,7 +1,15 @@
 package testing;
 
+import com.google.common.collect.Lists;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.sun.deploy.util.StringUtils;
 import instructable.server.*;
+import instructable.server.ccg.CcgUtils;
 import instructable.server.hirarchy.EmailMessage;
 
 import java.io.PrintWriter;
@@ -62,7 +70,7 @@ public class TestScenario
 
         learningToForwardAnEmail(allUserActions, testHelpers);
 
-        testHelpers.endTest();
+        //testHelpers.endTest();
         //emailSomeoneSomeText()
 
     }
@@ -285,9 +293,27 @@ public class TestScenario
         ActionResponse response;
         String userSays;
 
+        String[] lexiconEntries = new String[] {"\"send\",\"S{0}\",\"(sendEmail)\",\"0 sendEmail\"", "\"set\",\"(((S{0}/N{3}){0}/N{2}){0}/N{1}){0}\",\"(lambda $3 $2 $1 (set $2 $1 $3))\",\"0 set\",\"set 1 1\",\"set 2 2\",\"set 3 3\""};
+        List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(Arrays.asList(lexiconEntries));
+
+        String[][] examples = new String[][] {{"send email", "(sendEmail)"},
+                {"set the body of foo to bar", "(set \"foo\" \"body\" \"bar\")"}};
+
+        List<CcgExample> ccgExamples = Lists.newArrayList();
+        for (int i = 0; i < examples.length; i++) {
+            Expression2 expression = ExpressionParser.expression2().parseSingleExpression(examples[i][1]);
+            CcgExample example = CcgUtils.createCcgExample(Arrays.asList(examples[i][0].split(" ")), expression);
+            ccgExamples.add(example);
+        }
+
+        ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon);
+        CcgParser parser = CcgUtils.train(family, ccgExamples);
+
         userSays = "send an email";
+        Expression2 expression = CcgUtils.parse(parser, CcgUtils.tokenize(userSays));
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(userSays);
+        response = CcgUtils.evaluate(allUserActions, userSays, expression);
+        // response = allUserActions.sendEmail(userSays);
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "yes";
@@ -295,7 +321,7 @@ public class TestScenario
         response = allUserActions.yes(userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "set the subject of this email to hello";
+        userSays = "set the subject of the outgoing email to hello";
         testHelpers.userSays(userSays);
         response = allUserActions.set(userSays, "outgoing email", "subject", "hello");
         testHelpers.systemSays(response.sayToUser);
@@ -397,12 +423,14 @@ public class TestScenario
 
         public void userSays(String str)
         {
+            StringBuilder toOutput = new StringBuilder();
             String[] sentences = str.split("\n");
             for (String sentence : sentences)
             {
-                System.out.println("U: " + sentence);
+                toOutput.append("U: " + sentence + "\n");
             }
-            allSystemReplies.append(str + "\n");
+            System.out.print(toOutput.toString());
+            allSystemReplies.append(toOutput.toString());
         }
 
         public void newSection(String sectionName)
@@ -414,13 +442,15 @@ public class TestScenario
 
         public void systemSays(String str)
         {
+            StringBuilder toOutput = new StringBuilder();
             String[] sentences = str.split("\n");
             for (String sentence : sentences)
             {
-                System.out.println("S: " + sentence);
+                toOutput.append("S: " + sentence + "\n");
             }
-            System.out.println();
-            allSystemReplies.append(str + "\n\n");
+            toOutput.append("\n");
+            System.out.print(toOutput.toString());
+            allSystemReplies.append(toOutput.toString());
         }
 
         public void endTest() throws Exception

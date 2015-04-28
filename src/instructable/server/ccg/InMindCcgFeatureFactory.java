@@ -16,10 +16,7 @@ import com.jayantkrish.jklol.models.parametric.CombiningParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ConstantParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ParametricFactor;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Creates the features for a CCG parser.
@@ -42,8 +39,9 @@ public class InMindCcgFeatureFactory implements CcgFeatureFactory {
 
   @Override
   public DiscreteVariable getSemanticPredicateVar(List<String> semanticPredicates) {
-    semanticPredicates.addAll(this.stringCategoryPredicates);
-    return new DiscreteVariable("semanticPredicates", semanticPredicates);
+      List<String> predicates = new LinkedList<>(semanticPredicates);
+      predicates.addAll(this.stringCategoryPredicates);
+      return new DiscreteVariable("semanticPredicates", predicates);
   }
 
   @Override
