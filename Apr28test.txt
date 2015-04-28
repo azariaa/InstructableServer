@@ -83,7 +83,7 @@ now in buildRequiredDB
 
 Instance "my spouse" (of concept "contact") was created. "contact" fields are: email.
 
-The "email" field in "bob" was set to: "my.spouse@gmail.com".
+The "email" field in "my spouse" was set to: "my.spouse@gmail.com".
 
 now in learningToForwardAnEmail
 
@@ -113,11 +113,11 @@ What shall I do next (when executing: "forward this email to my spouse")?
 Sorry, but the message has no recipient.
 What should I do instead (when executing: "forward this email to my spouse")?
 
-Sorry, but "" is not an email address.
-What should I do instead (when executing: "forward this email to my spouse")?
+The "recipient list" field in "outgoing email" was set to: "my.spouse@gmail.com".
+What shall I do next (when executing: "forward this email to my spouse")?
 
-Sorry, but the message has no recipient.
-What should I do instead (when executing: "forward this email to my spouse")?
+Email sent successfully.
+What shall I do next (when executing: "forward this email to my spouse")?
 
 I now know what to do when you say (for example): "forward this email to my spouse"!
 
