@@ -1,5 +1,7 @@
 package instructable.server;
 
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+
 import java.util.List;
 
 /**
@@ -7,7 +9,7 @@ import java.util.List;
  */
 public interface ICommandsToParser
 {
-    void addTrainingEg(String originalCommand, List<String> replaceWith);
+    void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt);
 
     void newConceptDefined(String conceptName);
 

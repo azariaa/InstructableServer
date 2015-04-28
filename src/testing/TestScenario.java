@@ -34,9 +34,9 @@ public class TestScenario
         IAllUserActions allUserActions = new TopDMAllActions(new ICommandsToParser()
         {
             @Override
-            public void addTrainingEg(String originalCommand, List<String> replaceWith)
+            public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt)
             {
-
+                
             }
 
             @Override
@@ -70,7 +70,7 @@ public class TestScenario
 
         learningToForwardAnEmail(allUserActions, testHelpers);
 
-        //testHelpers.endTest();
+        testHelpers.endTest();
         //emailSomeoneSomeText()
 
     }
@@ -86,12 +86,12 @@ public class TestScenario
 
         userSays = "create a contact my spouse";
         testHelpers.userSays(userSays);
-        response = allUserActions.createInstance(userSays, "contact", "my spouse");
+        response = allUserActions.createInstance(new InfoForCommand(userSays,null), "contact", "my spouse");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "set its email to my.spouse@gmail.com";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(userSays, "email", "my.spouse@gmail.com");
+        response = allUserActions.set(new InfoForCommand(userSays,null), "email", "my.spouse@gmail.com");
         testHelpers.systemSays(response.sayToUser);
 
         incomingEmailControlling.addEmailMessageToInbox(new EmailMessage("bob7@myjob.com",
@@ -118,44 +118,46 @@ public class TestScenario
 
         userSays = "what is bob's email?";
         testHelpers.userSays(userSays);
-        response = allUserActions.get(userSays, "bob", "email");
+        response = allUserActions.get(new InfoForCommand(userSays,null), "bob", "email");
         testHelpers.systemSays(response.sayToUser);
         //testHelpers.systemSays(response.value.get().toJSONString());
 
         userSays = "create a contact jane";
         testHelpers.userSays(userSays);
-        response = allUserActions.createInstance(userSays, "contact", "jane");
+        response = allUserActions.createInstance(new InfoForCommand(userSays,null), "contact", "jane");
         testHelpers.systemSays(response.sayToUser);
 
 
         userSays = "take bob's email";
         testHelpers.userSays(userSays);
-        response = allUserActions.get(userSays, "bob", "email");
+        response = allUserActions.get(new InfoForCommand(userSays,null), "bob", "email");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "and set it as jane's email";
         testHelpers.userSays(userSays);
-        response = allUserActions.setFromPreviousGet(userSays, "jane", "email");
+        response = allUserActions.setFromPreviousGet(new InfoForCommand(userSays,null), "jane", "email");
         testHelpers.systemSays(response.sayToUser);
 
 
-        testHelpers.userSays("take bob's email and set it as jane's email");
+        userSays = "take bob's email and set it as jane's email";
+        testHelpers.userSays(userSays);
         //parser should translate to:
         //(set jane email (get bob email))
-        response = allUserActions.get("take bob's email", "bob", "email");
+        response = allUserActions.get(new InfoForCommand(userSays,null), "bob", "email");
         if (response.value.isPresent())
         {
-            response = allUserActions.set("and set it as jane's email", "jane", "email", response.value.get());
+            response = allUserActions.set(new InfoForCommand(userSays,null), "jane", "email", response.value.get());
         }
         testHelpers.systemSays(response.sayToUser);
 
-        testHelpers.userSays("set the recipient to be bob's email");
+        userSays = "set the recipient to be bob's email";
+        testHelpers.userSays(userSays);
         //parser should translate to:
         //(set recipient_list (get bob email))
-        response = allUserActions.get("take bob's email", "bob", "email");
+        response = allUserActions.get(new InfoForCommand(userSays,null), "bob", "email");
         if (response.value.isPresent())
         {
-            response = allUserActions.set("set the recipient to be bob's email", "recipient list", response.value.get());
+            response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", response.value.get());
         }
 
         testHelpers.systemSays(response.sayToUser);
@@ -170,45 +172,46 @@ public class TestScenario
 
         userSays = "compose an email";
         testHelpers.userSays(userSays);
-        response = allUserActions.composeEmail(userSays);
+        response = allUserActions.composeEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "set jane's email to be jane@gmail.com";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(userSays, "jane", "email", "jane@gmail.com");
+        response = allUserActions.set(new InfoForCommand(userSays,null), "jane", "email", "jane@gmail.com");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "make bob the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(userSays, "recipient list", "bob");
+        response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "bob");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "yes";
         testHelpers.userSays(userSays);
-        response = allUserActions.yes(userSays);
+        response = allUserActions.yes(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "take bob's email";
         testHelpers.userSays(userSays);
-        response = allUserActions.get(userSays, "bob", "email");
+        response = allUserActions.get(new InfoForCommand(userSays,null), "bob", "email");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "and set it as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.setFromPreviousGet(userSays, "recipient list");
+        response = allUserActions.setFromPreviousGet(new InfoForCommand(userSays,null), "recipient list");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "that's it";
         testHelpers.userSays(userSays);
-        response = allUserActions.endTeaching(userSays);
+        response = allUserActions.endTeaching(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
-        testHelpers.userSays("make jane the recipient");
+        userSays = "make jane the recipient";
+        testHelpers.userSays(userSays);
         //should now translate to:
         {
-            response = allUserActions.get("take jane's email", "jane", "email");
+            response = allUserActions.get(new InfoForCommand(userSays,null), "jane", "email");
             if (response.success)
-                response = allUserActions.setFromPreviousGet("and set it as the recipient", "recipient list");
+                response = allUserActions.setFromPreviousGet(new InfoForCommand(userSays,null), "recipient list");
             testHelpers.systemSays(response.sayToUser);
         }
 
@@ -223,66 +226,67 @@ public class TestScenario
 
         userSays = "forward this email to my spouse";
         testHelpers.userSays(userSays);
-        response = allUserActions.unknownCommand(userSays);
+        response = allUserActions.unknownCommand(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "sure";
         testHelpers.userSays(userSays);
-        response = allUserActions.yes(userSays);
+        response = allUserActions.yes(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "first create a new email";
         testHelpers.userSays(userSays);
-        response = allUserActions.composeEmail(userSays);
+        response = allUserActions.composeEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "then copy the subject from the incoming email to the outgoing email";
         testHelpers.userSays(userSays);
-        response = allUserActions.unknownCommand(userSays);
+        response = allUserActions.unknownCommand(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "take the subject from the incoming email";
         testHelpers.userSays(userSays);
-        response = allUserActions.get(userSays, "inbox", "subject");
+        response = allUserActions.get(new InfoForCommand(userSays,null), "inbox", "subject");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "and set it as the outgoing email's subject";
         testHelpers.userSays(userSays);
-        response = allUserActions.setFromPreviousGet(userSays, "outgoing email", "subject");
+        response = allUserActions.setFromPreviousGet(new InfoForCommand(userSays,null), "outgoing email", "subject");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "take the body from the incoming email";
         testHelpers.userSays(userSays);
-        response = allUserActions.get(userSays, "inbox", "body");
+        response = allUserActions.get(new InfoForCommand(userSays,null), "inbox", "body");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "and set it as the body";
         testHelpers.userSays(userSays);
-        response = allUserActions.setFromPreviousGet(userSays, "outgoing email", "body"); //TODO: should understand since incoming email should not be mutable, or maybe leave for parser
+        response = allUserActions.setFromPreviousGet(new InfoForCommand(userSays,null), "outgoing email", "body"); //TODO: should understand since incoming email should not be mutable, or maybe leave for parser
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "send the email";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(userSays);
+        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
-        testHelpers.userSays("oh, yeah, set the recipient as my spouse");
+        userSays = "oh, yeah, set the recipient as my spouse";
+        testHelpers.userSays(userSays);
         // should translate to:
         {
-            response = allUserActions.get("take my spouse's email", "my spouse", "email");
+            response = allUserActions.get(new InfoForCommand(userSays,null), "my spouse", "email");
             if (response.success)
-                response = allUserActions.setFromPreviousGet("and set it as the recipient", "recipient list");
+                response = allUserActions.setFromPreviousGet(new InfoForCommand(userSays,null), "recipient list");
             testHelpers.systemSays(response.sayToUser);
         }
 
         userSays = "now send the email";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(userSays);
+        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "that's it, you're done!";
         testHelpers.userSays(userSays);
-        response = allUserActions.endTeaching(userSays);
+        response = allUserActions.endTeaching(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
     }
@@ -313,49 +317,49 @@ public class TestScenario
         Expression2 expression = CcgUtils.parse(parser, CcgUtils.tokenize(userSays));
         testHelpers.userSays(userSays);
         response = CcgUtils.evaluate(allUserActions, userSays, expression);
-        // response = allUserActions.sendEmail(userSays);
+        //response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "yes";
         testHelpers.userSays(userSays);
-        response = allUserActions.yes(userSays);
+        response = allUserActions.yes(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "set the subject of the outgoing email to hello";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(userSays, "outgoing email", "subject", "hello");
+        response = allUserActions.set(new InfoForCommand(userSays,null), "outgoing email", "subject", "hello");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "put test in body";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(userSays, "body", "test");
+        response = allUserActions.set(new InfoForCommand(userSays,null), "body", "test");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "send the email";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(userSays);
+        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "set myself as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(userSays, "recipient list", "myself");
+        response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "myself");
         //how should we know that recipient is recipient list? Leave it for the parser?
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "set myself@myjob.com as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(userSays, "recipient list", "myself@myjob.com");
+        response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "myself@myjob.com");
         //should be able to learn something from this!!!
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "send";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(userSays);
+        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "send";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(userSays);
+        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
     }
 
@@ -369,42 +373,42 @@ public class TestScenario
 
         userSays = "compose a new email";
         testHelpers.userSays(userSays);
-        response = allUserActions.composeEmail(userSays);
+        response = allUserActions.composeEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "set my spouse as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(userSays, "recipient list", "my spouse");
+        response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "my spouse");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "I want to teach you what a contact is";
         testHelpers.userSays(userSays);
-        response = allUserActions.defineConcept(userSays, "contact");
+        response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "Define contact!";
         testHelpers.userSays(userSays);
-        response = allUserActions.defineConcept(userSays, "contact");
+        response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "add email as a field in contact";
         testHelpers.userSays(userSays);
-        response = allUserActions.addFieldToConcept(userSays, "contact", "email");
+        response = allUserActions.addFieldToConcept(new InfoForCommand(userSays,null), "contact", "email");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "create a contact, call it bob";
         testHelpers.userSays(userSays);
-        response = allUserActions.createInstance(userSays, "contact", "bob");
+        response = allUserActions.createInstance(new InfoForCommand(userSays,null), "contact", "bob");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "set bob's email to baba";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(userSays, "bob", "email", "baba");
+        response = allUserActions.set(new InfoForCommand(userSays,null), "bob", "email", "baba");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "set bob's email to bob@gmail.com";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(userSays, "bob", "email", "bob@gmail.com");
+        response = allUserActions.set(new InfoForCommand(userSays,null), "bob", "email", "bob@gmail.com");
         testHelpers.systemSays(response.sayToUser);
 
     }

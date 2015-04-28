@@ -21,7 +21,8 @@ import com.jayantkrish.jklol.util.IndexedList;
 import com.jayantkrish.jklol.util.PairCountAccumulator;
 import instructable.server.ActionResponse;
 import instructable.server.IAllUserActions;
-import instructable.server.LispToCommand;
+import instructable.server.InfoForCommand;
+import instructable.server.LispExecutor;
 
 import java.util.*;
 
@@ -189,12 +190,12 @@ public class CcgUtils {
 
     public static ActionResponse evaluate(IAllUserActions allUserActions, String userSays, Expression2 expression) {
 
-        LispToCommand lispToCommand = new LispToCommand(allUserActions, userSays);
+        LispExecutor lispExecutor = new LispExecutor(allUserActions, new InfoForCommand(userSays, expression));
 
         Environment env = Environment.empty();
         IndexedList<String> symbolTable = IndexedList.create();
-        env.bindName("sendEmail", lispToCommand.getSendEmailFunction(), symbolTable);
-        env.bindName("set", lispToCommand.getSetFunction(), symbolTable);
+        env.bindName("sendEmail", lispExecutor.getSendEmailFunction(), symbolTable);
+        env.bindName("set", lispExecutor.getSetFunction(), symbolTable);
 
         LispEval eval = new LispEval(symbolTable);
         SExpression sExpression = ExpressionParser.sExpression(symbolTable).parseSingleExpression(expression.toString());

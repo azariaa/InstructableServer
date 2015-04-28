@@ -8,78 +8,78 @@ import org.json.simple.JSONObject;
  */
 public interface IAllUserActions
 {
-    ActionResponse sendEmail(String usersText);
+    ActionResponse sendEmail(InfoForCommand infoForCommand);
 
-    ActionResponse composeEmail(String usersText);
+    ActionResponse composeEmail(InfoForCommand infoForCommand);
 
-    ActionResponse yes(String usersText);
+    ActionResponse yes(InfoForCommand infoForCommand);
 
-    ActionResponse no(String usersText);
+    ActionResponse no(InfoForCommand infoForCommand);
 
-    ActionResponse cancel(String usersText);
+    ActionResponse cancel(InfoForCommand infoForCommand);
 
-    ActionResponse set(String usersText, String fieldName, String val);
+    ActionResponse set(InfoForCommand infoForCommand, String fieldName, String val);
 
-    ActionResponse set(String usersText, String instanceName, String fieldName, String val);
+    ActionResponse set(InfoForCommand infoForCommand, String instanceName, String fieldName, String val);
 
-    ActionResponse set(String usersText, String conceptName, String instanceName, String fieldName, String val);
+    ActionResponse set(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, String val);
 
-    ActionResponse set(String usersText, String fieldName, JSONObject jsonVal);
+    ActionResponse set(InfoForCommand infoForCommand, String fieldName, JSONObject jsonVal);
 
-    ActionResponse set(String usersText, String instanceName, String fieldName, JSONObject jsonVal);
+    ActionResponse set(InfoForCommand infoForCommand, String instanceName, String fieldName, JSONObject jsonVal);
 
-    ActionResponse set(String usersText, String conceptName, String instanceName, String fieldName, JSONObject jsonVal);
+    ActionResponse set(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, JSONObject jsonVal);
 
-    ActionResponse setFromPreviousGet(String usersText, String fieldName);
+    ActionResponse setFromPreviousGet(InfoForCommand infoForCommand, String fieldName);
 
-    ActionResponse setFromPreviousGet(String usersText, String instanceName, String fieldName);
+    ActionResponse setFromPreviousGet(InfoForCommand infoForCommand, String instanceName, String fieldName);
 
-    ActionResponse setFromPreviousGet(String usersText, String conceptName, String instanceName, String fieldName);
+    ActionResponse setFromPreviousGet(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName);
 
-    ActionResponse add(String usersText, String fieldName, String val);
+    ActionResponse add(InfoForCommand infoForCommand, String fieldName, String val);
 
-    ActionResponse addToBeginning(String usersText, String fieldName, String val);
+    ActionResponse addToBeginning(InfoForCommand infoForCommand, String fieldName, String val);
 
-    ActionResponse defineConcept(String usersText, String conceptName);
+    ActionResponse defineConcept(InfoForCommand infoForCommand, String conceptName);
 
-    ActionResponse addFieldToConcept(String usersText, String fieldName);
+    ActionResponse addFieldToConcept(InfoForCommand infoForCommand, String fieldName);
 
     //I will try to learn field type and isList from the fieldName?
-    ActionResponse addFieldToConcept(String usersText, String conceptName, String fieldName);
+    ActionResponse addFieldToConcept(InfoForCommand infoForCommand, String conceptName, String fieldName);
 
-    ActionResponse addFieldToConcept(String usersText, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
+    ActionResponse addFieldToConcept(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
 
-    ActionResponse createInstance(String usersText, String conceptName, String instanceName);
+    ActionResponse createInstance(InfoForCommand infoForCommand, String conceptName, String instanceName);
 
-    ActionResponse createInstance(String usersText, String instanceName);
+    ActionResponse createInstance(InfoForCommand infoForCommand, String instanceName);
 
-    ActionResponse setFieldTypeKnownConcept(String usersText, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
+    ActionResponse setFieldTypeKnownConcept(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
 
-    ActionResponse setFieldType(String usersText, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
+    ActionResponse setFieldType(InfoForCommand infoForCommand, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
 
-    ActionResponse unknownCommand(String usersText);
+    ActionResponse unknownCommand(InfoForCommand infoForCommand);
 
-    ActionResponse endTeaching(String usersText); // e.g. "that's it"
+    ActionResponse endTeaching(InfoForCommand infoForCommand); // e.g. "that's it"
 
     //the get functions return an actual value in the ActionResponse.value that can be further used.
-    ActionResponse get(String usersText, String fieldName);
+    ActionResponse get(InfoForCommand infoForCommand, String fieldName);
 
-    ActionResponse get(String usersText, String instanceName, String fieldName);
+    ActionResponse get(InfoForCommand infoForCommand, String instanceName, String fieldName);
 
-    ActionResponse get(String usersText, String conceptName, String instanceName, String fieldName);
+    ActionResponse get(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName);
 
     //read current email etc.
-    ActionResponse getFullInstance(String usersText, String instanceName);
-    ActionResponse getFullInstance(String usersText, String conceptName, String instanceName);
+    ActionResponse getFullInstance(InfoForCommand infoForCommand, String instanceName);
+    ActionResponse getFullInstance(InfoForCommand infoForCommand, String conceptName, String instanceName);
 
-    ActionResponse deleteConcept(String usersText, String conceptName);
-    ActionResponse deleteInstance(String usersText, String instanceName);
-    ActionResponse deleteInstance(String usersText, String conceptName, String instanceName);
+    ActionResponse deleteConcept(InfoForCommand infoForCommand, String conceptName);
+    ActionResponse deleteInstance(InfoForCommand infoForCommand, String instanceName);
+    ActionResponse deleteInstance(InfoForCommand infoForCommand, String conceptName, String instanceName);
 
-    ActionResponse nextEmailMessage(String usersText);
-    ActionResponse previousEmailMessage(String usersText);
+    ActionResponse nextEmailMessage(InfoForCommand infoForCommand);
+    ActionResponse previousEmailMessage(InfoForCommand infoForCommand);
 
 
-    //future work: ActionResponse undoLastAction(String usersText);
+    //future work: ActionResponse undoLastAction(InfoForCommand infoForCommand);
 
 }

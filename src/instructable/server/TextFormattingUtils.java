@@ -35,7 +35,7 @@ public class TextFormattingUtils
         internalState can be null if askToTeachIfFails is false
         returns success.
      */
-    public static boolean testOkAndFormat(String userSaid,
+    public static boolean testOkAndFormat(InfoForCommand infoForCommand,
                   ExecutionStatus executionStatus,
                   boolean failWithWarningToo,
                   boolean ignoreComments,
@@ -49,7 +49,7 @@ public class TextFormattingUtils
         boolean success = retStatus == ExecutionStatus.RetStatus.ok || retStatus == ExecutionStatus.RetStatus.comment ||
                 (retStatus == ExecutionStatus.RetStatus.warning && !failWithWarningToo);
 
-        internalState.userGaveCommand(userSaid, success);
+        internalState.userGaveCommand(infoForCommand, success);
 
         if (retStatus == ExecutionStatus.RetStatus.error || retStatus == ExecutionStatus.RetStatus.warning ||
                 (retStatus == ExecutionStatus.RetStatus.comment && !ignoreComments))
