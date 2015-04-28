@@ -75,7 +75,7 @@ public class TextFormattingUtils
             }
         }
 
-        if (!success && askToTeachIfFails)
+        if (!success && askToTeachIfFails && !isInLearningPhase)
         {
             response.append("\nWould you like to teach me what to do in this case (either say yes or simply ignore this question)?");
             internalState.pendOnLearning();

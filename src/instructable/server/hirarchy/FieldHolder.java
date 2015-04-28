@@ -84,17 +84,8 @@ public class FieldHolder
         return;
     }
 
-    public void appendToEnd(ExecutionStatus executionStatus, String toAdd)
-    {
-        field.appendTo(executionStatus, toAdd, true);
-    }
 
-    public void addToBeginning(ExecutionStatus executionStatus, String toAdd)
-    {
-        field.appendTo(executionStatus, toAdd, false);
-    }
-
-    private void appendTo(ExecutionStatus executionStatus, String toAdd, boolean toEnd)
+    public void appendTo(ExecutionStatus executionStatus, String toAdd, boolean toEnd)
     {
         if (toAdd == null)
         {
@@ -139,6 +130,8 @@ public class FieldHolder
      */
     static public String fieldFromJSonForUser(JSONObject jsonObject)
     {
+        if (jsonObject.isEmpty() || (!jsonObject.containsKey(fieldListForJson) && !jsonObject.containsKey(fieldForJson)))
+            return "";
         boolean isFromList = false;
         if (jsonObject.containsKey(isListForJson) && (boolean)jsonObject.get(isListForJson) ||
                 !jsonObject.containsKey(isListForJson) && jsonObject.containsKey(fieldListForJson))
@@ -184,7 +177,7 @@ public class FieldHolder
                 fieldList.clear();
                 for (String singleField : fieldListAsString)
                 {
-                    appendToEnd(executionStatus, singleField);
+                    appendTo(executionStatus, singleField, true);
                 }
             } else
             {

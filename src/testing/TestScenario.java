@@ -1,16 +1,16 @@
 package testing;
 
 import com.sun.deploy.util.StringUtils;
-import instructable.server.ActionResponse;
-import instructable.server.IAllUserActions;
-import instructable.server.ICommandsToParser;
-import instructable.server.TopDMAllActions;
+import instructable.server.*;
+import instructable.server.hirarchy.EmailMessage;
 
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,7 +19,7 @@ import java.util.List;
 public class TestScenario
 {
     static boolean testingMode = true;
-    static String fileName = "Apr27test.txt";
+    static String fileName = "Apr28test.txt";
 
     public static void main(String[] args) throws Exception
     {
@@ -56,17 +56,50 @@ public class TestScenario
 
         setFromGet(allUserActions, testHelpers);
 
-        testHelpers.endTest();
-
         teachingToSetRecipientAsContact(allUserActions, testHelpers);
 
-        //learningToForwardAnEmail(allUserActions, testHelpers);
+        buildRequiredDB((TopDMAllActions)allUserActions, testHelpers);
+
+        learningToForwardAnEmail(allUserActions, testHelpers);
+
+        testHelpers.endTest();
         //emailSomeoneSomeText()
 
     }
 
+    private static void buildRequiredDB(TopDMAllActions topDMAllActions, TestHelpers testHelpers)
+    {
+        testHelpers.systemSays("now in buildRequiredDB");
+
+        ActionResponse response;
+        IAllUserActions allUserActions = topDMAllActions;
+        IIncomingEmailControlling incomingEmailControlling = topDMAllActions;
+
+        response = allUserActions.createInstance("create a contact my spouse", "contact", "my spouse");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.set("set its email to my.spouse@gmail.com", "email", "my.spouse@gmail.com");
+        testHelpers.systemSays(response.sayToUser);
+
+        incomingEmailControlling.addEmailMessageToInbox(new EmailMessage("bob7@myjob.com",
+                "department party",
+                Arrays.asList(new String[] {"you@myjob.com"}),
+                new LinkedList<String>(),
+                "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new EmailMessage("dan@myjob.com",
+                "another email",
+                Arrays.asList(new String[] {"you@myjob.com"}),
+                new LinkedList<String>(),
+                "sending another email."
+        ));
+    }
+
     private static void setFromGet(IAllUserActions allUserActions, TestHelpers testHelpers)
     {
+        testHelpers.systemSays("now in setFromGet");
+
         ActionResponse response;
 
         response = allUserActions.get("what is bob's email?", "bob", "email");
@@ -104,16 +137,12 @@ public class TestScenario
         }
 
         testHelpers.systemSays(response.sayToUser);
-
-
-        //set from a get
-
-        //get in context
-
     }
 
     private static void teachingToSetRecipientAsContact(IAllUserActions allUserActions, TestHelpers testHelpers)
     {
+        testHelpers.systemSays("now in teachingToSetRecipientAsContact");
+
         ActionResponse response;
 
         response = allUserActions.composeEmail("compose an email");
@@ -138,15 +167,63 @@ public class TestScenario
         //"make jane the recipient" should now translate to:
         {
             response = allUserActions.get("take jane's email", "jane", "email");
-            response = allUserActions.setFromPreviousGet("and set it as the recipient", "recipient list");
+            if (response.success)
+                response = allUserActions.setFromPreviousGet("and set it as the recipient", "recipient list");
             testHelpers.systemSays(response.sayToUser);
         }
-
 
     }
 
     private static void learningToForwardAnEmail(IAllUserActions allUserActions, TestHelpers testHelpers)
     {
+        testHelpers.systemSays("now in learningToForwardAnEmail");
+
+        ActionResponse response;
+
+        response = allUserActions.unknownCommand("forward this email to my spouse");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.yes("sure");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.composeEmail("first create a new email");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.unknownCommand("then copy the subject from the incoming email to the outgoing email");
+        testHelpers.systemSays(response.sayToUser);
+
+
+        response = allUserActions.get("take the subject from the incoming email", "inbox", "subject");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.setFromPreviousGet("and set it as the outgoing email's subject", "outgoing email", "subject");
+        testHelpers.systemSays(response.sayToUser);
+
+
+        response = allUserActions.get("take the body from the incoming email", "inbox", "body");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.setFromPreviousGet("and set it as the body", "outgoing email", "body"); //TODO: should understand since incoming email should not be mutable, or maybe leave for parser
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.sendEmail("send the email");
+        testHelpers.systemSays(response.sayToUser);
+
+        //"oh, yeah, set the recipient as my spouse"
+        // should translate to:
+        {
+            response = allUserActions.get("take my spouse's email", "my spouse", "email");
+            if (response.success)
+                response = allUserActions.setFromPreviousGet("and set it as the recipient", "recipient list");
+            testHelpers.systemSays(response.sayToUser);
+        }
+
+        response = allUserActions.sendEmail("now send the email");
+        testHelpers.systemSays(response.sayToUser);
+
+        response = allUserActions.endTeaching("that's it, you're done!");
+        testHelpers.systemSays(response.sayToUser);
+
     }
 
     private static void sendingBasicEmail(IAllUserActions allUserActions, TestHelpers testHelpers)
@@ -187,6 +264,8 @@ public class TestScenario
 
     private static void definingContact(IAllUserActions allUserActions, TestHelpers testHelpers)
     {
+        testHelpers.systemSays("now in definingContact");
+
         ActionResponse response;
 
         response = allUserActions.composeEmail("compose a new email");

@@ -68,10 +68,14 @@ public interface IAllUserActions
 
     ActionResponse get(String usersText, String conceptName, String instanceName, String fieldName);
 
+    //read current email etc.
+    ActionResponse getFullInstance(String usersText, String instanceName);
+    ActionResponse getFullInstance(String usersText, String conceptName, String instanceName);
+
     ActionResponse deleteConcept(String usersText, String conceptName);
     ActionResponse deleteInstance(String usersText, String instanceName);
     ActionResponse deleteInstance(String usersText, String conceptName, String instanceName);
-    ActionResponse readCurrentEmail(String usersText);
+
     ActionResponse nextEmailMessage(String usersText);
     ActionResponse previousEmailMessage(String usersText);
 

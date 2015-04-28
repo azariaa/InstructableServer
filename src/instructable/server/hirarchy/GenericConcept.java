@@ -65,16 +65,7 @@ public class GenericConcept
         {
             FieldHolder requestedField = fields.get(fieldName);
             //requestedField shouldn't be null.
-            if (appendToEnd)
-            {
-                requestedField.appendToEnd(executionStatus, val);
-                return;
-            }
-            else
-            {
-                requestedField.addToBeginning(executionStatus, val);
-                return;
-            }
+            requestedField.appendTo(executionStatus, val, appendToEnd);
         }
         executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + " cannot be found");
     }

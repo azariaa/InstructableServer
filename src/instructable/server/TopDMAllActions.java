@@ -13,12 +13,14 @@ import static instructable.server.TextFormattingUtils.userFriendlyList;
 /**
  * Created by Amos Azaria on 20-Apr-15.
  */
-public class TopDMAllActions implements IAllUserActions
+public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlling
 {
     OutEmailCommandController dMContextAndExecution;
     ConceptContainer conceptContainer;
     InstanceContainer instanceContainer;
     ICommandsToParser commandsToParser;
+    int currentIncomingEmailIdx = 0;
+    static final String emailMessageNameStart = "inbox";
 
     Optional<JSONObject> previousGet = Optional.empty();
 
@@ -29,6 +31,17 @@ public class TopDMAllActions implements IAllUserActions
         dMContextAndExecution = new OutEmailCommandController("myemail@gmail.com", conceptContainer, instanceContainer);
         this.commandsToParser = commandsToParser;
         internalState = new InternalState();
+        //TODO: should really have a class controlling all incoming email
+        conceptContainer.defineConcept(new ExecutionStatus(), EmailMessage.emailMessageType, EmailMessage.fieldDescriptions);
+    }
+
+    @Override
+    public void addEmailMessageToInbox(EmailMessage emailMessage)
+    {
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        int numOfMessages = instanceContainer.getAllInstances(EmailMessage.emailMessageType).size();
+        emailMessage.setName(emailMessageNameStart + numOfMessages);
+        instanceContainer.addInstance(executionStatus, emailMessage);
     }
 
     //TODO: may want to allow to pend on function delegates.
@@ -226,9 +239,7 @@ public class TopDMAllActions implements IAllUserActions
             return Optional.empty();
         }
 
-        if (optionalInstanceName.isPresent())
-            return Optional.of(instanceContainer.getMostPlausibleInstance(executionStatus, conceptOptions, optionalInstanceName.get()));
-        return Optional.of(instanceContainer.getMostPlausibleInstance(executionStatus, conceptOptions));
+        return instanceContainer.getMostPlausibleInstance(executionStatus, conceptOptions, optionalInstanceName);
     }
 
     /*
@@ -497,7 +508,19 @@ public class TopDMAllActions implements IAllUserActions
     @Override
     public ActionResponse unknownCommand(String usersText)
     {
-        return null;
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        executionStatus.add(ExecutionStatus.RetStatus.error, "I don't understand");
+
+        StringBuilder response = new StringBuilder();
+        boolean success = TextFormattingUtils.testOkAndFormat(usersText,
+                executionStatus,
+                true,
+                true,
+                response,
+                Optional.empty(), //will fail anyway, because added error above.
+                true,
+                internalState);
+        return new ActionResponse(response.toString(), success, Optional.empty());
     }
 
     /*
@@ -528,31 +551,52 @@ public class TopDMAllActions implements IAllUserActions
     public ActionResponse get(String usersText, String fieldName)
     {
         //get field of most recently touched instance with the relevant fieldName
-        return null;
+        return internalGet(usersText, Optional.empty(), Optional.empty(), fieldName);
     }
 
     @Override
     public ActionResponse get(String usersText, String instanceName, String fieldName)
     {
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        Optional<GenericConcept> theInstance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), fieldName);
-        return get(usersText, executionStatus, fieldName, theInstance);
+        return internalGet(usersText, Optional.empty(), Optional.of(instanceName), fieldName);
     }
 
     @Override
     public ActionResponse get(String usersText, String conceptName, String instanceName, String fieldName)
     {
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        Optional<GenericConcept> instance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);
-        return get(usersText, executionStatus, fieldName, instance);
+        return internalGet(usersText, Optional.of(conceptName), Optional.of(instanceName), fieldName);
     }
 
-    private ActionResponse get(String usersText, ExecutionStatus executionStatus, String fieldName, Optional<GenericConcept> instance)
+    @Override
+    public ActionResponse getFullInstance(String usersText, String instanceName)
     {
-        JSONObject requestedField = new JSONObject();
+        return null;
+    }
 
-        if (instance.isPresent())
+    @Override
+    public ActionResponse getFullInstance(String usersText, String conceptName, String instanceName)
+    {
+        return null;
+    }
+
+    private ActionResponse internalGet(String usersText,  Optional<String> conceptName, Optional<String> instanceName, String fieldName)
+    {
+        instanceName = modifiedInstanceNameIfNeeded(instanceName);
+
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        Optional<GenericConcept> instance;
+        if (conceptName.isPresent() && instanceName.isPresent())
+            instance = instanceContainer.getInstance(executionStatus, conceptName.get(), instanceName.get());
+        else
+        {
+            instance = getMostPlausibleInstance(executionStatus, instanceName, fieldName);
+        }
+
+        JSONObject requestedField = new JSONObject();
+        if (instance.isPresent())// identical to: executionStatus.noError()
+        {
+
             requestedField = instance.get().getField(executionStatus, fieldName);
+        }
 
         StringBuilder response = new StringBuilder();
         boolean success = TextFormattingUtils.testOkAndFormat(usersText,
@@ -567,6 +611,16 @@ public class TopDMAllActions implements IAllUserActions
         if (success)
             previousGet = Optional.of(requestedField);
         return new ActionResponse(response.toString(), success, Optional.of(requestedField));
+    }
+
+    private Optional<String> modifiedInstanceNameIfNeeded(Optional<String> instanceName)
+    {
+        if (instanceName.isPresent())
+        {
+            if (instanceName.get().equals(emailMessageNameStart))
+                return Optional.of(emailMessageNameStart + currentIncomingEmailIdx);
+        }
+        return instanceName;
     }
 
     @Override
@@ -587,21 +641,18 @@ public class TopDMAllActions implements IAllUserActions
         return null;
     }
 
-    @Override
-    public ActionResponse readCurrentEmail(String usersText)
-    {
-        return null;
-    }
 
     @Override
     public ActionResponse nextEmailMessage(String usersText)
     {
+        //TODO: check if has next email, if so advance counter, otherwise return error.
         return null;
     }
 
     @Override
     public ActionResponse previousEmailMessage(String usersText)
     {
+        //TODO: check if has previous email, if so reduce counter, otherwise return error.
         return null;
     }
 }

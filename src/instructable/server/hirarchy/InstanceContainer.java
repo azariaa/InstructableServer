@@ -19,18 +19,14 @@ public class InstanceContainer
         this.conceptContainer = conceptContainer;
     }
 
-    public GenericConcept getMostPlausibleInstance(ExecutionStatus executionStatus, List<String> conceptOptions)
-    {
-        return getMostPlausibleInstance(executionStatus, conceptOptions, null);
-    }
     //save last access, and sort according to last access
-    public GenericConcept getMostPlausibleInstance(ExecutionStatus executionStatus, List<String> conceptOptions, String optionalInstanceName)
+    public Optional<GenericConcept> getMostPlausibleInstance(ExecutionStatus executionStatus, List<String> conceptOptions, Optional<String> instanceName)
     {
-        List<GenericConcept> allPossibleInstances = getAllPossibleInstances(executionStatus, conceptOptions, optionalInstanceName);
+        List<GenericConcept> allPossibleInstances = getAllPossibleInstances(conceptOptions, instanceName);
         if (allPossibleInstances.isEmpty())
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "no relevant instances were found");
-            return null;
+            return Optional.empty();
         }
         if (allPossibleInstances.size() > 1)
         {
@@ -46,10 +42,17 @@ public class InstanceContainer
                 return o1.lastAccess.before(o2.lastAccess) ? 1 : -1;
             }
         });
-        return allPossibleInstances.get(0);
+        return Optional.of(allPossibleInstances.get(0));
     }
 
-    private List<GenericConcept> getAllPossibleInstances(ExecutionStatus executionStatus, List<String> conceptOptions, String optionalInstanceName)
+    public List<GenericConcept> getAllInstances(String concept)
+    {
+        List<String> conceptOptions = new LinkedList<>();
+        conceptOptions.add(concept);
+        return getAllPossibleInstances(conceptOptions, Optional.empty());
+    }
+
+    private List<GenericConcept> getAllPossibleInstances(List<String> conceptOptions, Optional<String> instanceName)
     {
         List<GenericConcept> allPossibleInstances = new LinkedList<>();
         for (String concept : conceptToInstance.keySet())
@@ -58,7 +61,7 @@ public class InstanceContainer
             {
                 for (GenericConcept genericConcept : conceptToInstance.get(concept).values())
                 {
-                    if (optionalInstanceName == null  || genericConcept.name.equals(optionalInstanceName))
+                    if (!instanceName.isPresent()  || genericConcept.name.equals(instanceName.get()))
                         allPossibleInstances.add(genericConcept);
                 }
             }

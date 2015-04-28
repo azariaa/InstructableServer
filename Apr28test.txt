@@ -1,0 +1,124 @@
+Let's start by sending a dummy email to your-self, set the subject to hello and the body to test.
+
+I see that there is no email being composed.
+Do you want to compose a new email?
+
+
+Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
+
+The "subject" field in "outgoing email" was set to: "hello".
+
+The "body" field in "outgoing email" was set to: "test".
+
+Sorry, but the message has no recipient.
+Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+Sorry, but "myself" is not an email address.
+Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+The "recipient list" field in "outgoing email" was set to: "myself@myjob.com".
+
+Email sent successfully.
+
+I see that there is no email being composed.
+Do you want to compose a new email?
+
+
+now in definingContact
+
+Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
+
+Sorry, but "myspouse" is not an email address.
+Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+Concept "contact" was created successfully. Please define its fields.
+
+Sorry, but the concept "contact" is already defined. Its fields are: none.
+
+Field "email" was added to concept "contact".
+
+Instance "bob" (of concept "contact") was created. "contact" fields are: email.
+
+Sorry, but "baba" is not an email address.
+Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+The "email" field in "bob" was set to: "bob@gmail.com".
+
+now in setFromGet
+
+It is: bob@gmail.com
+
+Instance "jane" (of concept "contact") was created. "contact" fields are: email.
+
+It is: bob@gmail.com
+
+The "email" field in "jane" was set to: "bob@gmail.com".
+
+The "email" field in "jane" was set to: "bob@gmail.com".
+
+The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
+
+now in teachingToSetRecipientAsContact
+
+Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
+
+The "email" field in "jane" was set to: "jane@gmail.com".
+
+Sorry, but "bob" is not an email address.
+Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+Great! When you say, for example: "make bob the recipient", what shall I do first?
+
+It is: bob@gmail.com
+What shall I do next (when executing: "make bob the recipient")?
+
+The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
+What shall I do next (when executing: "make bob the recipient")?
+
+I now know what to do when you say (for example): "make bob the recipient"!
+
+The "recipient list" field in "outgoing email" was set to: "jane@gmail.com".
+
+now in buildRequiredDB
+
+Instance "my spouse" (of concept "contact") was created. "contact" fields are: email.
+
+The "email" field in "bob" was set to: "my.spouse@gmail.com".
+
+now in learningToForwardAnEmail
+
+Sorry, but I don't understand.
+Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+Great! When you say, for example: "forward this email to my spouse", what shall I do first?
+
+Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
+What shall I do next (when executing: "forward this email to my spouse")?
+
+Sorry, but I don't understand.
+What should I do instead (when executing: "forward this email to my spouse")?
+
+It is: department party
+What shall I do next (when executing: "forward this email to my spouse")?
+
+The "subject" field in "outgoing email" was set to: "department party".
+What shall I do next (when executing: "forward this email to my spouse")?
+
+It is: We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.
+What shall I do next (when executing: "forward this email to my spouse")?
+
+The "body" field in "outgoing email" was set to: "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.".
+What shall I do next (when executing: "forward this email to my spouse")?
+
+Sorry, but the message has no recipient.
+What should I do instead (when executing: "forward this email to my spouse")?
+
+Sorry, but "" is not an email address.
+What should I do instead (when executing: "forward this email to my spouse")?
+
+Sorry, but the message has no recipient.
+What should I do instead (when executing: "forward this email to my spouse")?
+
+I now know what to do when you say (for example): "forward this email to my spouse"!
+
+

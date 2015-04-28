@@ -1,8 +1,11 @@
 package instructable.server.hirarchy;
 
+import instructable.server.ExecutionStatus;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Amos Azaria on 15-Apr-15.
@@ -23,6 +26,30 @@ public class EmailMessage extends GenericConcept
                     new FieldDescription(recipientListStr, PossibleFieldType.emailAddress, true),
                     new FieldDescription(copyListStr, PossibleFieldType.emailAddress, true)
             };
+
+    public EmailMessage(String sender, String subject, List<String> recipientList, List<String> copyList, String body)
+    {
+        this("TBD");
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        setField(executionStatus, senderStr, Optional.of(sender), Optional.empty());
+        setField(executionStatus, subjectStr, Optional.of(subject), Optional.empty());
+        setField(executionStatus, bodyStr, Optional.of(body), Optional.empty());
+        for (String recipient : recipientList)
+        {
+            addToField(executionStatus, recipientListStr, recipient, true);
+        }
+
+        for (String copy : copyList)
+        {
+            addToField(executionStatus, copyListStr, copy, true);
+        }
+    }
+
+    // should only be called if email had no name at first.
+    public void setName(String newEmailName)
+    {
+        name = newEmailName;
+    }
 
     public EmailMessage(String messageId)
     {
