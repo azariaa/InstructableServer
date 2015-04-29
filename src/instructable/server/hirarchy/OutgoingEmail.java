@@ -16,7 +16,7 @@ public class OutgoingEmail extends EmailMessage
     public OutgoingEmail(ExecutionStatus executionStatus, String myEmail)
     {
         super(strOutgoingEmailTypeAndName, strOutgoingEmailTypeAndName);
-        setField(executionStatus, senderStr, Optional.of(myEmail), Optional.empty());
+        setField(executionStatus, senderStr, Optional.of(myEmail), Optional.empty(), false, true);
     }
 
 
