@@ -222,13 +222,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse set(InfoForCommand infoForCommand, String fieldName, String val)
     {
-        return set(infoForCommand, Optional.empty(), Optional.empty(), fieldName, Optional.of(val), Optional.empty());
+        return set(infoForCommand, Optional.empty(), Optional.empty(), fieldName, Optional.of(val), Optional.empty(), false, true);
     }
 
     @Override
     public ActionResponse set(InfoForCommand infoForCommand, String instanceName, String fieldName, String val)
     {
-        return set(infoForCommand, Optional.empty(), Optional.of(instanceName), fieldName, Optional.of(val), Optional.empty());
+        return set(infoForCommand, Optional.empty(), Optional.of(instanceName), fieldName, Optional.of(val), Optional.empty(), false, true);
     }
 
     private Optional<GenericConcept> getMostPlausibleInstance(ExecutionStatus executionStatus, Optional<String> optionalInstanceName, String fieldName)
@@ -246,7 +246,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     /*
         must either have val or jsonVal
      */
-    private ActionResponse set(InfoForCommand infoForCommand, Optional<String> conceptName, Optional<String> instanceName, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal)
+    private ActionResponse set(InfoForCommand infoForCommand, Optional<String> conceptName, Optional<String> instanceName, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal, boolean appendToExisting, boolean appendToEnd)
     {
         if (!val.isPresent() && !jsonVal.isPresent())
         {
@@ -304,7 +304,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 internalState
         ))
         {
-              return set(infoForCommand, fieldName, theInstance.get(), val, jsonVal);
+              return set(infoForCommand, fieldName, theInstance.get(), val, jsonVal, appendToExisting, appendToEnd);
 
         }
 
@@ -315,52 +315,106 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse set(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, String val)
     {
-        return set(infoForCommand, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.of(val),Optional.empty());
+        return set(infoForCommand, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.of(val),Optional.empty(), false, true);
     }
 
     @Override
     public ActionResponse set(InfoForCommand infoForCommand, String fieldName, JSONObject jsonVal)
     {
-        return set(infoForCommand, Optional.empty(), Optional.empty(), fieldName, Optional.empty(), Optional.of(jsonVal));
+        return set(infoForCommand, Optional.empty(), Optional.empty(), fieldName, Optional.empty(), Optional.of(jsonVal), false, true);
     }
 
     @Override
     public ActionResponse set(InfoForCommand infoForCommand, String instanceName, String fieldName, JSONObject jsonVal)
     {
-        return set(infoForCommand, Optional.empty(), Optional.of(instanceName), fieldName, Optional.empty(), Optional.of(jsonVal));
+        return set(infoForCommand, Optional.empty(), Optional.of(instanceName), fieldName, Optional.empty(), Optional.of(jsonVal), false, true);
     }
 
     @Override
     public ActionResponse set(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, JSONObject jsonVal)
     {
-        return set(infoForCommand, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.empty(), Optional.of(jsonVal));
+        return set(infoForCommand, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.empty(), Optional.of(jsonVal), false, true);
     }
 
     @Override
     public ActionResponse setFromPreviousGet(InfoForCommand infoForCommand, String fieldName)
     {
-        return set(infoForCommand, Optional.empty(), Optional.empty(), fieldName, Optional.empty(), previousGet);
+        return set(infoForCommand, Optional.empty(), Optional.empty(), fieldName, Optional.empty(), previousGet, false, true);
     }
 
     @Override
     public ActionResponse setFromPreviousGet(InfoForCommand infoForCommand, String instanceName, String fieldName)
     {
-        return set(infoForCommand, Optional.empty(), Optional.of(instanceName), fieldName, Optional.empty(), previousGet);
+        return set(infoForCommand, Optional.empty(), Optional.of(instanceName), fieldName, Optional.empty(), previousGet, false, true);
     }
 
     @Override
     public ActionResponse setFromPreviousGet(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName)
     {
-        return set(infoForCommand, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.empty(), previousGet);
+        return set(infoForCommand, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.empty(), previousGet, false, true);
+    }
+
+    @Override
+    public ActionResponse add(InfoForCommand infoForCommand, String fieldName, String val, boolean appendToEnd)
+    {
+        return set(infoForCommand, Optional.empty(), Optional.empty(), fieldName, Optional.of(val), Optional.empty(), true, appendToEnd);
+    }
+
+    @Override
+    public ActionResponse add(InfoForCommand infoForCommand, String instanceName, String fieldName, String val, boolean appendToEnd)
+    {
+        return set(infoForCommand, Optional.empty(), Optional.of(instanceName), fieldName, Optional.of(val), Optional.empty(), true, appendToEnd);
+    }
+
+    @Override
+    public ActionResponse add(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, String val, boolean appendToEnd)
+    {
+        return set(infoForCommand, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.of(val), Optional.empty(), true, appendToEnd);
+    }
+
+    @Override
+    public ActionResponse add(InfoForCommand infoForCommand, String fieldName, JSONObject jsonVal, boolean appendToEnd)
+    {
+        return set(infoForCommand, Optional.empty(), Optional.empty(), fieldName, Optional.empty(), Optional.of(jsonVal), true, appendToEnd);
+    }
+
+    @Override
+    public ActionResponse add(InfoForCommand infoForCommand, String instanceName, String fieldName, JSONObject jsonVal, boolean appendToEnd)
+    {
+        return set(infoForCommand, Optional.empty(), Optional.of(instanceName), fieldName, Optional.empty(), Optional.of(jsonVal), true, appendToEnd);
+    }
+
+    @Override
+    public ActionResponse add(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, JSONObject jsonVal, boolean appendToEnd)
+    {
+        return set(infoForCommand, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.empty(), Optional.of(jsonVal), true, appendToEnd);
+    }
+
+    @Override
+    public ActionResponse addFromPreviousGet(InfoForCommand infoForCommand, String fieldName, boolean appendToEnd)
+    {
+        return set(infoForCommand, Optional.empty(), Optional.empty(), fieldName, Optional.empty(), previousGet, true, appendToEnd);
+    }
+
+    @Override
+    public ActionResponse addFromPreviousGet(InfoForCommand infoForCommand, String instanceName, String fieldName, boolean appendToEnd)
+    {
+        return set(infoForCommand, Optional.empty(), Optional.of(instanceName), fieldName, Optional.empty(), previousGet, true, appendToEnd);
+    }
+
+    @Override
+    public ActionResponse addFromPreviousGet(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, boolean appendToEnd)
+    {
+        return set(infoForCommand, Optional.of(conceptName), Optional.of(instanceName), fieldName, Optional.empty(), previousGet, true, appendToEnd);
     }
 
     /*
      must either have val or jsonVal
      */
-    private ActionResponse set(InfoForCommand infoForCommand, String fieldName, GenericConcept theInstance, Optional<String> val, Optional<JSONObject> jsonVal)
+    private ActionResponse set(InfoForCommand infoForCommand, String fieldName, GenericConcept theInstance, Optional<String> val, Optional<JSONObject> jsonVal, boolean toAdd, boolean appendToEnd)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
-        theInstance.setField(executionStatus, fieldName, val, jsonVal);
+        theInstance.setField(executionStatus, fieldName, val, jsonVal, toAdd, appendToEnd);
 
         String valForOutput;
         if (jsonVal.isPresent())
@@ -368,29 +422,20 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         else
             valForOutput = val.get();
 
+        String successStr = "The \"" + fieldName + "\" field in \"" + theInstance.getName() + "\" was set to: \"" + valForOutput + "\".";
+        if (toAdd)
+            successStr = "\"" + valForOutput + "\" was added to the \"" + fieldName + "\" field in \"" + theInstance.getName() + "\".";
         StringBuilder response = new StringBuilder();
         boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
                 response,
-                Optional.of("The \"" + fieldName + "\" field in \"" + theInstance.getName() + "\" was set to: \"" + valForOutput + "\"."),
+                Optional.of(successStr),
                 true,
                 internalState);
 
         return new ActionResponse(response.toString(), success, Optional.empty());
-    }
-
-    @Override
-    public ActionResponse add(InfoForCommand infoForCommand, String fieldName, String val)
-    {
-        return null;
-    }
-
-    @Override
-    public ActionResponse addToBeginning(InfoForCommand infoForCommand, String fieldName, String val)
-    {
-        return null;
     }
 
     @Override

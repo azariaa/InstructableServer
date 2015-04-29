@@ -79,6 +79,9 @@ S: The "email" field in "jane" was set to: "bob@gmail.com".
 U: set the recipient to be bob's email
 S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
 
+U: add nana@gmail.com to the recipient list
+S: "nana@gmail.com" was added to the "recipient list" field in "outgoing email".
+
 ---------------- now in teachingToSetRecipientAsContact --------------------
 
 U: compose an email

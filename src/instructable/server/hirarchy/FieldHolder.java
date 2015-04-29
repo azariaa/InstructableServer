@@ -8,6 +8,8 @@ import instructable.server.hirarchy.fieldTypes.StringField;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -163,7 +165,7 @@ public class FieldHolder
         return obj;
     }
 
-    public void setFromJSon(ExecutionStatus executionStatus, JSONObject jsonObject)
+    public void setFromJSon(ExecutionStatus executionStatus, JSONObject jsonObject, boolean addToExisting, boolean appendToEnd)
     {
         boolean mustSetFromList = false;
         if (jsonObject.containsKey(isListForJson) && (boolean)jsonObject.get(isListForJson) ||
@@ -174,10 +176,16 @@ public class FieldHolder
             String[] fieldListAsString = (String[]) jsonObject.get(fieldListForJson);
             if (isList)
             {
-                fieldList.clear();
+                if (!addToExisting)
+                {
+                    fieldList.clear();
+                }
+                //if need to append to beginning, need first to reverse the array.
+                if (!appendToEnd)
+                    Collections.reverse(Arrays.asList(fieldListAsString));
                 for (String singleField : fieldListAsString)
                 {
-                    appendTo(executionStatus, singleField, true);
+                    appendTo(executionStatus, singleField, appendToEnd);
                 }
             } else
             {
@@ -189,7 +197,14 @@ public class FieldHolder
                         executionStatus.add(ExecutionStatus.RetStatus.warning, "taking only first item out of" + fieldListAsString.length);
                     }
                     //if it has only one item, take it,
-                    set(executionStatus, fieldListAsString[0]);
+                    if (addToExisting)
+                    {
+                        appendTo(executionStatus, fieldListAsString[0], appendToEnd);
+                    }
+                    else
+                    {
+                        set(executionStatus, fieldListAsString[0]);
+                    }
                 }
                 else
                 {
@@ -200,7 +215,14 @@ public class FieldHolder
         }
         else
         {
-            set(executionStatus, (String)jsonObject.get(fieldForJson));
+            if (addToExisting)
+            {
+                appendTo(executionStatus, (String) jsonObject.get(fieldForJson), appendToEnd);
+            }
+            else
+            {
+                set(executionStatus, (String) jsonObject.get(fieldForJson));
+            }
         }
 
         return;

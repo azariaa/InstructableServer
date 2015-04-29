@@ -36,9 +36,23 @@ public interface IAllUserActions
 
     ActionResponse setFromPreviousGet(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName);
 
-    ActionResponse add(InfoForCommand infoForCommand, String fieldName, String val);
+    ActionResponse add(InfoForCommand infoForCommand, String fieldName, String val, boolean appendToEnd);
 
-    ActionResponse addToBeginning(InfoForCommand infoForCommand, String fieldName, String val);
+    ActionResponse add(InfoForCommand infoForCommand, String instanceName, String fieldName, String val, boolean appendToEnd);
+
+    ActionResponse add(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, String val, boolean appendToEnd);
+
+    ActionResponse add(InfoForCommand infoForCommand, String fieldName, JSONObject jsonVal, boolean appendToEnd);
+
+    ActionResponse add(InfoForCommand infoForCommand, String instanceName, String fieldName, JSONObject jsonVal, boolean appendToEnd);
+
+    ActionResponse add(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, JSONObject jsonVal, boolean appendToEnd);
+
+    ActionResponse addFromPreviousGet(InfoForCommand infoForCommand, String fieldName, boolean appendToEnd);
+
+    ActionResponse addFromPreviousGet(InfoForCommand infoForCommand, String instanceName, String fieldName, boolean appendToEnd);
+
+    ActionResponse addFromPreviousGet(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, boolean appendToEnd);
 
     ActionResponse defineConcept(InfoForCommand infoForCommand, String conceptName);
 

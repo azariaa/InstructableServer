@@ -37,9 +37,9 @@ public class InstanceContainer
             @Override
             public int compare(GenericConcept o1, GenericConcept o2)
             {
-                if (o1.lastAccess.equals(o2.lastAccess))
+                if (o1.lastAccess == o2.lastAccess)
                     return 0;
-                return o1.lastAccess.before(o2.lastAccess) ? 1 : -1;
+                return (o1.lastAccess < o2.lastAccess) ? 1 : -1;
             }
         });
         return Optional.of(allPossibleInstances.get(0));

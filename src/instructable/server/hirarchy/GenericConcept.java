@@ -14,7 +14,7 @@ public class GenericConcept
     public GenericConcept(String type, String instanceName, List<FieldDescription> fieldsInType)
     {
         name = instanceName;
-        lastAccess = new Date();
+        lastAccess = System.currentTimeMillis();
         this.type = type;
         fields = new HashMap<String, FieldHolder>();
         for (FieldDescription fieldDescription : fieldsInType)
@@ -25,7 +25,7 @@ public class GenericConcept
 
     String name;
     String type; //class, concept
-    Date lastAccess;
+    long lastAccess;
     private Map<String, FieldHolder> fields;
 
     public String getName()
@@ -38,44 +38,36 @@ public class GenericConcept
     must have field defined in this object.
     must either have val or jsonVal
      */
-    public void setField(ExecutionStatus executionStatus, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal)
+    public void setField(ExecutionStatus executionStatus, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal, boolean addToExisting, boolean addToEnd)
     {
-        lastAccess = new Date();
+        lastAccess = System.currentTimeMillis();
         if (fields.containsKey(fieldName))
         {
             FieldHolder requestedField = fields.get(fieldName);
             //requestedField shouldn't be null.
             if (jsonVal.isPresent())
-                requestedField.setFromJSon(executionStatus, jsonVal.get());
+            {
+                requestedField.setFromJSon(executionStatus, jsonVal.get(), addToExisting, addToEnd);
+            }
             else
-                requestedField.set(executionStatus, val.get());
+            {
+                if (addToExisting)
+                    requestedField.appendTo(executionStatus, val.get(), addToEnd);
+                else
+                    requestedField.set(executionStatus, val.get());
+            }
             return;
         }
         executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + " cannot be found");
     }
 
-    /*
-        adds to existing field.
-        must have field defined in this object.
-     */
-    public void addToField(ExecutionStatus executionStatus, String fieldName, String val, boolean appendToEnd)
-    {
-        lastAccess = new Date();
-        if (fields.containsKey(fieldName))
-        {
-            FieldHolder requestedField = fields.get(fieldName);
-            //requestedField shouldn't be null.
-            requestedField.appendTo(executionStatus, val, appendToEnd);
-        }
-        executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + " cannot be found");
-    }
 
     /*
     should be called only if a new field was added to the type
      */
     public ExecutionStatus addFieldToObject(FieldDescription fieldToAdd)
     {
-        lastAccess = new Date();
+        lastAccess = System.currentTimeMillis();
         if (!fields.containsKey(fieldToAdd.fieldName))
         {
             fields.put(fieldToAdd.fieldName, new FieldHolder(fieldToAdd));
@@ -86,13 +78,13 @@ public class GenericConcept
 
     public boolean fieldExists(String fieldName)
     {
-        lastAccess = new Date();
+        lastAccess = System.currentTimeMillis();
         return fields.containsKey(fieldName);
     }
 
     public boolean fieldIsEmpty(String fieldName)
     {
-        lastAccess = new Date();
+        lastAccess = System.currentTimeMillis();
         if (fields.containsKey(fieldName))
         {
             return fields.get(fieldName).isEmpty();
@@ -103,13 +95,13 @@ public class GenericConcept
 
     public Set<String> getAllFieldNames()
     {
-        lastAccess = new Date();
+        lastAccess = System.currentTimeMillis();
         return fields.keySet();
     }
 
     public JSONObject getField(ExecutionStatus executionStatus, String fieldName)
     {
-        lastAccess = new Date();
+        lastAccess = System.currentTimeMillis();
         if (fields.containsKey(fieldName))
         {
             FieldHolder requestedField = fields.get(fieldName);

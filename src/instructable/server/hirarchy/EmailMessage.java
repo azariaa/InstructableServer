@@ -31,17 +31,17 @@ public class EmailMessage extends GenericConcept
     {
         this("TBD");
         ExecutionStatus executionStatus = new ExecutionStatus();
-        setField(executionStatus, senderStr, Optional.of(sender), Optional.empty());
-        setField(executionStatus, subjectStr, Optional.of(subject), Optional.empty());
-        setField(executionStatus, bodyStr, Optional.of(body), Optional.empty());
+        setField(executionStatus, senderStr, Optional.of(sender), Optional.empty(), false, true);
+        setField(executionStatus, subjectStr, Optional.of(subject), Optional.empty(), false, true);
+        setField(executionStatus, bodyStr, Optional.of(body), Optional.empty(), false, true);
         for (String recipient : recipientList)
         {
-            addToField(executionStatus, recipientListStr, recipient, true);
+            setField(executionStatus, recipientListStr, Optional.of(recipient), Optional.empty(), true, true);
         }
 
         for (String copy : copyList)
         {
-            addToField(executionStatus, copyListStr, copy, true);
+            setField(executionStatus, recipientListStr, Optional.of(copy), Optional.empty(), true, true);
         }
     }
 
