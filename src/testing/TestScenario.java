@@ -7,7 +7,7 @@ import com.jayantkrish.jklol.ccg.LexiconEntry;
 import com.jayantkrish.jklol.ccg.ParametricCcgParser;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import com.sun.deploy.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import instructable.server.*;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.hirarchy.EmailMessage;
