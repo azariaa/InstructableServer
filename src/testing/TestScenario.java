@@ -27,7 +27,7 @@ import java.util.List;
 public class TestScenario
 {
     static boolean testingMode = true;
-    static String fileName = "Apr28test.txt";
+    static String fileName = "Apr29test.txt";
 
     public static void main(String[] args) throws Exception
     {
@@ -75,39 +75,132 @@ public class TestScenario
 
     }
 
-    private static void buildRequiredDB(TopDMAllActions topDMAllActions, TestHelpers testHelpers)
+
+    private static void sendingBasicEmail(IAllUserActions allUserActions, TestHelpers testHelpers)
     {
-        testHelpers.newSection("buildRequiredDB");
+        testHelpers.systemSays("Let's start by sending a dummy email to your-self, set the subject to hello and the body to test.");
+        ActionResponse response;
+        String userSays;
+
+        String[] lexiconEntries = new String[] {"\"send\",\"S{0}\",\"(sendEmail)\",\"0 sendEmail\"", "\"set\",\"(((S{0}/N{3}){0}/N{2}){0}/N{1}){0}\",\"(lambda $3 $2 $1 (set $2 $1 $3))\",\"0 set\",\"set 1 1\",\"set 2 2\",\"set 3 3\""};
+        List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(Arrays.asList(lexiconEntries));
+
+        String[][] examples = new String[][] {{"send email", "(sendEmail)"},
+                {"set the body of foo to bar", "(set \"foo\" \"body\" \"bar\")"}};
+        //what will I do with
+        //set foo's body to bar (this changes the order of the variables).
+        //put bar in foo's body
+
+        List<CcgExample> ccgExamples = Lists.newArrayList();
+        for (int i = 0; i < examples.length; i++) {
+            Expression2 expression = ExpressionParser.expression2().parseSingleExpression(examples[i][1]);
+            CcgExample example = CcgUtils.createCcgExample(Arrays.asList(examples[i][0].split(" ")), expression);
+            ccgExamples.add(example);
+        }
+
+        ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon);
+        CcgParser parser = CcgUtils.train(family, ccgExamples);
+
+        userSays = "send an email";
+        Expression2 expression = CcgUtils.parse(parser, CcgUtils.tokenize(userSays));
+        testHelpers.userSays(userSays);
+        response = CcgUtils.evaluate(allUserActions, userSays, expression);
+        //response = allUserActions.sendEmail(new InfoForCommand(userSays,expression));
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "yes";
+        testHelpers.userSays(userSays);
+        response = allUserActions.yes(new InfoForCommand(userSays,null));
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "set the subject of the outgoing email to hello";
+        testHelpers.userSays(userSays);
+        response = allUserActions.set(new InfoForCommand(userSays,null), "outgoing email", "subject", "hello");
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "put test in body";
+        testHelpers.userSays(userSays);
+        response = allUserActions.set(new InfoForCommand(userSays,null), "body", "test");
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "send the email";
+        testHelpers.userSays(userSays);
+        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "set myself as the recipient";
+        testHelpers.userSays(userSays);
+        response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "myself");
+        //how should we know that recipient is recipient list? Leave it for the parser?
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "set myself@myjob.com as the recipient";
+        testHelpers.userSays(userSays);
+        response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "myself@myjob.com");
+        //should be able to learn something from this!!!
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "send";
+        testHelpers.userSays(userSays);
+        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "send";
+        testHelpers.userSays(userSays);
+        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        testHelpers.systemSays(response.sayToUser);
+    }
+
+
+    private static void definingContact(IAllUserActions allUserActions, TestHelpers testHelpers)
+    {
+        testHelpers.newSection("definingContact");
 
         ActionResponse response;
         String userSays;
-        IAllUserActions allUserActions = topDMAllActions;
-        IIncomingEmailControlling incomingEmailControlling = topDMAllActions;
 
-        userSays = "create a contact my spouse";
+        userSays = "compose a new email";
         testHelpers.userSays(userSays);
-        response = allUserActions.createInstance(new InfoForCommand(userSays,null), "contact", "my spouse");
+        response = allUserActions.composeEmail(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "set its email to my.spouse@gmail.com";
+        userSays = "set my spouse as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(new InfoForCommand(userSays,null), "email", "my.spouse@gmail.com");
+        response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "my spouse");
         testHelpers.systemSays(response.sayToUser);
 
-        incomingEmailControlling.addEmailMessageToInbox(new EmailMessage("bob7@myjob.com",
-                "department party",
-                Arrays.asList(new String[] {"you@myjob.com"}),
-                new LinkedList<String>(),
-                "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse."
-        ));
+        userSays = "I want to teach you what a contact is";
+        testHelpers.userSays(userSays);
+        response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
+        testHelpers.systemSays(response.sayToUser);
 
-        incomingEmailControlling.addEmailMessageToInbox(new EmailMessage("dan@myjob.com",
-                "another email",
-                Arrays.asList(new String[] {"you@myjob.com"}),
-                new LinkedList<String>(),
-                "sending another email."
-        ));
+        userSays = "Define contact!";
+        testHelpers.userSays(userSays);
+        response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "add email as a field in contact";
+        testHelpers.userSays(userSays);
+        response = allUserActions.addFieldToConcept(new InfoForCommand(userSays,null), "contact", "email");
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "create a contact, call it bob";
+        testHelpers.userSays(userSays);
+        response = allUserActions.createInstance(new InfoForCommand(userSays,null), "contact", "bob");
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "set bob's email to baba";
+        testHelpers.userSays(userSays);
+        response = allUserActions.set(new InfoForCommand(userSays,null), "bob", "email", "baba");
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "set bob's email to bob@gmail.com";
+        testHelpers.userSays(userSays);
+        response = allUserActions.set(new InfoForCommand(userSays,null), "bob", "email", "bob@gmail.com");
+        testHelpers.systemSays(response.sayToUser);
+
     }
+
 
     private static void setFromGet(IAllUserActions allUserActions, TestHelpers testHelpers)
     {
@@ -159,9 +252,19 @@ public class TestScenario
         {
             response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", response.value.get());
         }
+        testHelpers.systemSays(response.sayToUser);
+
+
+        //simple add test
+        userSays = "add nana@gmail.com to the recipient list";
+        testHelpers.userSays(userSays);
+        //parser should translate to:
+        //(set recipient_list (get bob email))
+        response = allUserActions.add(new InfoForCommand(userSays, null), "recipient list", "nana@gmail.com", true);
 
         testHelpers.systemSays(response.sayToUser);
     }
+
 
     private static void teachingToSetRecipientAsContact(IAllUserActions allUserActions, TestHelpers testHelpers)
     {
@@ -216,6 +319,43 @@ public class TestScenario
         }
 
     }
+
+
+
+    private static void buildRequiredDB(TopDMAllActions topDMAllActions, TestHelpers testHelpers)
+    {
+        testHelpers.newSection("buildRequiredDB");
+
+        ActionResponse response;
+        String userSays;
+        IAllUserActions allUserActions = topDMAllActions;
+        IIncomingEmailControlling incomingEmailControlling = topDMAllActions;
+
+        userSays = "create a contact my spouse";
+        testHelpers.userSays(userSays);
+        response = allUserActions.createInstance(new InfoForCommand(userSays,null), "contact", "my spouse");
+        testHelpers.systemSays(response.sayToUser);
+
+        userSays = "set its email to my.spouse@gmail.com";
+        testHelpers.userSays(userSays);
+        response = allUserActions.set(new InfoForCommand(userSays,null), "email", "my.spouse@gmail.com");
+        testHelpers.systemSays(response.sayToUser);
+
+        incomingEmailControlling.addEmailMessageToInbox(new EmailMessage("bob7@myjob.com",
+                "department party",
+                Arrays.asList(new String[] {"you@myjob.com"}),
+                new LinkedList<String>(),
+                "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new EmailMessage("dan@myjob.com",
+                "another email",
+                Arrays.asList(new String[] {"you@myjob.com"}),
+                new LinkedList<String>(),
+                "sending another email."
+        ));
+    }
+
 
     private static void learningToForwardAnEmail(IAllUserActions allUserActions, TestHelpers testHelpers)
     {
@@ -287,128 +427,6 @@ public class TestScenario
         userSays = "that's it, you're done!";
         testHelpers.userSays(userSays);
         response = allUserActions.endTeaching(new InfoForCommand(userSays,null));
-        testHelpers.systemSays(response.sayToUser);
-
-    }
-
-    private static void sendingBasicEmail(IAllUserActions allUserActions, TestHelpers testHelpers)
-    {
-        testHelpers.systemSays("Let's start by sending a dummy email to your-self, set the subject to hello and the body to test.");
-        ActionResponse response;
-        String userSays;
-
-        String[] lexiconEntries = new String[] {"\"send\",\"S{0}\",\"(sendEmail)\",\"0 sendEmail\"", "\"set\",\"(((S{0}/N{3}){0}/N{2}){0}/N{1}){0}\",\"(lambda $3 $2 $1 (set $2 $1 $3))\",\"0 set\",\"set 1 1\",\"set 2 2\",\"set 3 3\""};
-        List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(Arrays.asList(lexiconEntries));
-
-        String[][] examples = new String[][] {{"send email", "(sendEmail)"},
-                {"set the body of foo to bar", "(set \"foo\" \"body\" \"bar\")"}};
-
-        List<CcgExample> ccgExamples = Lists.newArrayList();
-        for (int i = 0; i < examples.length; i++) {
-            Expression2 expression = ExpressionParser.expression2().parseSingleExpression(examples[i][1]);
-            CcgExample example = CcgUtils.createCcgExample(Arrays.asList(examples[i][0].split(" ")), expression);
-            ccgExamples.add(example);
-        }
-
-        ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon);
-        CcgParser parser = CcgUtils.train(family, ccgExamples);
-
-        userSays = "send an email";
-        Expression2 expression = CcgUtils.parse(parser, CcgUtils.tokenize(userSays));
-        testHelpers.userSays(userSays);
-        response = CcgUtils.evaluate(allUserActions, userSays, expression);
-        //response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "yes";
-        testHelpers.userSays(userSays);
-        response = allUserActions.yes(new InfoForCommand(userSays,null));
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "set the subject of the outgoing email to hello";
-        testHelpers.userSays(userSays);
-        response = allUserActions.set(new InfoForCommand(userSays,null), "outgoing email", "subject", "hello");
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "put test in body";
-        testHelpers.userSays(userSays);
-        response = allUserActions.set(new InfoForCommand(userSays,null), "body", "test");
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "send the email";
-        testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "set myself as the recipient";
-        testHelpers.userSays(userSays);
-        response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "myself");
-        //how should we know that recipient is recipient list? Leave it for the parser?
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "set myself@myjob.com as the recipient";
-        testHelpers.userSays(userSays);
-        response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "myself@myjob.com");
-        //should be able to learn something from this!!!
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "send";
-        testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "send";
-        testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
-        testHelpers.systemSays(response.sayToUser);
-    }
-
-
-    private static void definingContact(IAllUserActions allUserActions, TestHelpers testHelpers)
-    {
-        testHelpers.newSection("definingContact");
-
-        ActionResponse response;
-        String userSays;
-
-        userSays = "compose a new email";
-        testHelpers.userSays(userSays);
-        response = allUserActions.composeEmail(new InfoForCommand(userSays,null));
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "set my spouse as the recipient";
-        testHelpers.userSays(userSays);
-        response = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "my spouse");
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "I want to teach you what a contact is";
-        testHelpers.userSays(userSays);
-        response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "Define contact!";
-        testHelpers.userSays(userSays);
-        response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "add email as a field in contact";
-        testHelpers.userSays(userSays);
-        response = allUserActions.addFieldToConcept(new InfoForCommand(userSays,null), "contact", "email");
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "create a contact, call it bob";
-        testHelpers.userSays(userSays);
-        response = allUserActions.createInstance(new InfoForCommand(userSays,null), "contact", "bob");
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "set bob's email to baba";
-        testHelpers.userSays(userSays);
-        response = allUserActions.set(new InfoForCommand(userSays,null), "bob", "email", "baba");
-        testHelpers.systemSays(response.sayToUser);
-
-        userSays = "set bob's email to bob@gmail.com";
-        testHelpers.userSays(userSays);
-        response = allUserActions.set(new InfoForCommand(userSays,null), "bob", "email", "bob@gmail.com");
         testHelpers.systemSays(response.sayToUser);
 
     }

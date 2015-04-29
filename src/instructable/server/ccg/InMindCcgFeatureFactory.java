@@ -1,11 +1,21 @@
 package instructable.server.ccg;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgCategory;
 import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
 import com.jayantkrish.jklol.ccg.LexiconEntry;
-import com.jayantkrish.jklol.ccg.lexicon.*;
+import com.jayantkrish.jklol.ccg.lexicon.ParametricCcgLexicon;
+import com.jayantkrish.jklol.ccg.lexicon.ParametricCombiningLexicon;
+import com.jayantkrish.jklol.ccg.lexicon.ParametricStringLexicon;
+import com.jayantkrish.jklol.ccg.lexicon.ParametricTableLexicon;
+import com.jayantkrish.jklol.ccg.lexicon.StringLexicon;
 import com.jayantkrish.jklol.models.DiscreteFactor;
 import com.jayantkrish.jklol.models.DiscreteVariable;
 import com.jayantkrish.jklol.models.TableFactor;
@@ -16,8 +26,6 @@ import com.jayantkrish.jklol.models.parametric.CombiningParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ConstantParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ParametricFactor;
 
-import java.util.*;
-
 /**
  * Creates the features for a CCG parser.
  * 
@@ -25,15 +33,17 @@ import java.util.*;
  */
 public class InMindCcgFeatureFactory implements CcgFeatureFactory {
   
-  private final CcgCategory stringCategory;
+  private final List<CcgCategory> stringCategories;
   private final List<String> stringCategoryPredicates;
   
-  public InMindCcgFeatureFactory(CcgCategory stringCategory) {
-    this.stringCategory = Preconditions.checkNotNull(stringCategory);
+  public InMindCcgFeatureFactory(List<CcgCategory> stringCategories) {
+    this.stringCategories = Preconditions.checkNotNull(stringCategories);
     this.stringCategoryPredicates = Lists.newArrayList();
-    this.stringCategoryPredicates.addAll(stringCategory.getSemanticHeads());
-    for (Set<String> assignment : stringCategory.getAssignment()) {
-      this.stringCategoryPredicates.addAll(assignment);
+    for (CcgCategory stringCategory : stringCategories) {
+      this.stringCategoryPredicates.addAll(stringCategory.getSemanticHeads());
+      for (Set<String> assignment : stringCategory.getAssignment()) {
+        this.stringCategoryPredicates.addAll(assignment);
+      }
     }
   }
 
@@ -141,7 +151,7 @@ public class InMindCcgFeatureFactory implements CcgFeatureFactory {
           terminalPosParametricFactor, terminalSyntaxFactor);
 
       // Add a lexicon that instantiates strings in the parse.
-      StringLexicon stringLexicon = new StringLexicon(terminalWordVar, Arrays.asList(stringCategory));
+      StringLexicon stringLexicon = new StringLexicon(terminalWordVar, stringCategories);
       ParametricCcgLexicon parametricStringLexicon = new ParametricStringLexicon(stringLexicon);
 
       return new ParametricCombiningLexicon(terminalWordVar, Arrays.asList("lexicon", "stringLexicon"),
