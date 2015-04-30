@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<project name="InstructableServer" default="jar">
+  <property name="src-dir" location="src" />
+  <property name="lib-dir" location="lib" />
+  <property name="java-build-dir" location="build" />
+
+  <path id="classpath.base">
+    <fileset dir="lib">
+      <include name="*.jar" />
+    </fileset>
+  </path>
+
+  <target name="clean">
+    <delete dir="${java-build-dir}" />
+    <delete file="InstructableServer.jar" />
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${java-build-dir}" />
+    <javac sourcepath="" srcdir="${src-dir}" destdir="${java-build-dir}" debug="on">
+      <classpath refid="classpath.base"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile">
+    <jar destfile="InstructableServer.jar" basedir="${java-build-dir}" />
+  </target>
+
+</project>
