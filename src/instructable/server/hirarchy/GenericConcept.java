@@ -14,7 +14,7 @@ public class GenericConcept
     public GenericConcept(String type, String instanceName, List<FieldDescription> fieldsInType)
     {
         name = instanceName;
-        lastAccess = System.currentTimeMillis();
+        lastAccess = System.nanoTime(); //System.currentTimeMillis(); doesn't work because in test may execute several commands in same millisecond
         this.type = type;
         fields = new HashMap<String, FieldHolder>();
         for (FieldDescription fieldDescription : fieldsInType)
@@ -40,7 +40,7 @@ public class GenericConcept
      */
     public void setField(ExecutionStatus executionStatus, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal, boolean addToExisting, boolean addToEnd)
     {
-        lastAccess = System.currentTimeMillis();
+        lastAccess = System.nanoTime();
         if (fields.containsKey(fieldName))
         {
             FieldHolder requestedField = fields.get(fieldName);
@@ -67,7 +67,7 @@ public class GenericConcept
      */
     public ExecutionStatus addFieldToObject(FieldDescription fieldToAdd)
     {
-        lastAccess = System.currentTimeMillis();
+        lastAccess = System.nanoTime();
         if (!fields.containsKey(fieldToAdd.fieldName))
         {
             fields.put(fieldToAdd.fieldName, new FieldHolder(fieldToAdd));
@@ -78,13 +78,13 @@ public class GenericConcept
 
     public boolean fieldExists(String fieldName)
     {
-        lastAccess = System.currentTimeMillis();
+        lastAccess = System.nanoTime();
         return fields.containsKey(fieldName);
     }
 
     public boolean fieldIsEmpty(String fieldName)
     {
-        lastAccess = System.currentTimeMillis();
+        lastAccess = System.nanoTime();
         if (fields.containsKey(fieldName))
         {
             return fields.get(fieldName).isEmpty();
@@ -95,13 +95,13 @@ public class GenericConcept
 
     public Set<String> getAllFieldNames()
     {
-        lastAccess = System.currentTimeMillis();
+        lastAccess = System.nanoTime();
         return fields.keySet();
     }
 
     public JSONObject getField(ExecutionStatus executionStatus, String fieldName)
     {
-        lastAccess = System.currentTimeMillis();
+        lastAccess = System.nanoTime();
         if (fields.containsKey(fieldName))
         {
             FieldHolder requestedField = fields.get(fieldName);

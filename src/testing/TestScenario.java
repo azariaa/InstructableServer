@@ -104,8 +104,8 @@ public class TestScenario
         userSays = "send an email";
         Expression2 expression = CcgUtils.parse(parser, CcgUtils.tokenize(userSays));
         testHelpers.userSays(userSays);
-        response = CcgUtils.evaluate(allUserActions, userSays, expression);
-        //response = allUserActions.sendEmail(new InfoForCommand(userSays,expression));
+        //response = CcgUtils.evaluate(allUserActions, userSays, expression);
+        response = allUserActions.sendEmail(new InfoForCommand(userSays,expression));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "yes";
