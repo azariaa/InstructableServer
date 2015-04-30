@@ -173,7 +173,7 @@ public class CcgUtils {
     ExpressionSimplifier simplifier = getExpressionSimplifier();
     ExpressionComparator comparator = new SimplificationComparator(simplifier);
 
-    int beamSize = 100;
+    int beamSize = 5000;
     CcgInference inferenceAlgorithm = new CcgBeamSearchInference(null, comparator, beamSize,
         -1, Integer.MAX_VALUE, Runtime.getRuntime().availableProcessors(), false);
     GradientOracle<CcgParser, CcgExample> oracle = new CcgPerceptronOracle(parametricCcgParser,

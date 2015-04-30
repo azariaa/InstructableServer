@@ -82,7 +82,7 @@ public class TestScenario
         ActionResponse response;
         String userSays;
 
-        String[] lexiconEntries = new String[] {"\"send\",\"S{0}\",\"(sendEmail)\",\"0 sendEmail\"", "\"set\",\"(((S{0}/N{3}){0}/N{2}){0}/N{1}){0}\",\"(lambda $3 $2 $1 (set $2 $1 $3))\",\"0 set\",\"set 1 1\",\"set 2 2\",\"set 3 3\""};
+        String[] lexiconEntries = new String[] {"\"send\",\"S{0}\",\"(sendEmail)\",\"0 sendEmail\"", "\"set\",\"(((S{0}/N{3}){0}/N{2}){0}/N{1}){0}\",\"(lambda $3 $2 $1 (set $2 $3 $1))\",\"0 set\",\"set 1 1\",\"set 2 2\",\"set 3 3\""};
         List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(Arrays.asList(lexiconEntries));
 
         String[][] examples = new String[][] {{"send email", "(sendEmail)"},
@@ -115,7 +115,8 @@ public class TestScenario
 
         userSays = "set the subject of the outgoing email to hello";
         testHelpers.userSays(userSays);
-        response = allUserActions.set(new InfoForCommand(userSays,null), "outgoing email", "subject", "hello");
+        response = CcgUtils.evaluate(allUserActions, userSays, expression);
+        // response = allUserActions.set(new InfoForCommand(userSays,null), "outgoing email", "subject", "hello");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "put test in body";
