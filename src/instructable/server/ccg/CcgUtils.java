@@ -234,6 +234,7 @@ public class CcgUtils {
         IndexedList<String> symbolTable = IndexedList.create();
         env.bindName("sendEmail", lispExecutor.getSendEmailFunction(), symbolTable);
         env.bindName("set", lispExecutor.getSetFunction(), symbolTable);
+        env.bindName("body", "body", symbolTable);
 
         LispEval eval = new LispEval(symbolTable);
         SExpression sExpression = ExpressionParser.sExpression(symbolTable).parseSingleExpression(expression.toString());
