@@ -86,7 +86,9 @@ public class TestScenario
         List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(Arrays.asList(lexiconEntries));
 
         String[][] examples = new String[][] {{"send email", "(sendEmail)"},
-                {"set the body of foo to bar", "(set \"foo\" \"body\" \"bar\")"}};
+                {"set the body of foo to bar", "(set \"foo\" \"body\" \"bar\")"},
+                {"set the recipient list of the email to myself@myjob.com", "(set \"the email\" \"recipient list\" \"myself@myjob.com\")"},
+                {"set the subject of this email to hello", "(set \"this email\" \"subject\" \"hello\")"}};
         //what will I do with
         //set foo's body to bar (this changes the order of the variables).
         //put bar in foo's body
@@ -102,10 +104,10 @@ public class TestScenario
         CcgParser parser = CcgUtils.train(family, ccgExamples);
 
         userSays = "send an email";
-        Expression2 expression = CcgUtils.parse(parser, CcgUtils.tokenize(userSays));
         testHelpers.userSays(userSays);
-        //response = CcgUtils.evaluate(allUserActions, userSays, expression);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,expression));
+        Expression2 expression = CcgUtils.parse(parser, CcgUtils.tokenize(userSays));
+        response = CcgUtils.evaluate(allUserActions, userSays, expression);
+        //response = allUserActions.sendEmail(new InfoForCommand(userSays,expression));
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "yes";
@@ -113,10 +115,11 @@ public class TestScenario
         response = allUserActions.yes(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "set the subject of the outgoing email to hello";
+        userSays = "set the subject of this email to hello";
         testHelpers.userSays(userSays);
+        expression = CcgUtils.parse(parser, CcgUtils.tokenize(userSays));
         response = CcgUtils.evaluate(allUserActions, userSays, expression);
-        // response = allUserActions.set(new InfoForCommand(userSays,null), "outgoing email", "subject", "hello");
+        //response = allUserActions.set(new InfoForCommand(userSays,null), "outgoing email", "subject", "hello");
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "put test in body";

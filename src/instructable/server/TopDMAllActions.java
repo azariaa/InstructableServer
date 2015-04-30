@@ -252,6 +252,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             return new ActionResponse("I don't know what I should set it to, please rephrase.", false, Optional.empty());
         }
+        if (instanceName.isPresent())
+            instanceName = Optional.of(AliasMapping.instanceNameMapping(instanceName.get()));
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericConcept> theInstance;
         if (conceptName.isPresent()) //must also have instanceName
