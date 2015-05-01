@@ -206,7 +206,8 @@ public class CcgUtils {
         Environment env = Environment.empty();
         IndexedList<String> symbolTable = IndexedList.create();
         env.bindName("sendEmail", lispExecutor.getFunction("sendEmail"), symbolTable);
-        env.bindName("set", lispExecutor.getFunction("set"), symbolTable);
+        env.bindName("setFieldFromString", lispExecutor.getFunction("setFieldFromString"), symbolTable);
+        env.bindName("getProbFieldByInstanceNameAndFieldName", lispExecutor.getFunction("getProbFieldByInstanceNameAndFieldName"), symbolTable);
         env.bindName("body", "body", symbolTable);
         env.bindName("outgoing_email", "outgoing email", symbolTable);
         env.bindName("recipient_list", "recipient list", symbolTable);
