@@ -1,47 +1,13 @@
 package instructable.server.ccg;
 
-import instructable.server.ActionResponse;
-import instructable.server.IAllUserActions;
-import instructable.server.InfoForCommand;
-import instructable.server.LispExecutor;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
-import com.jayantkrish.jklol.ccg.CcgBinaryRule;
-import com.jayantkrish.jklol.ccg.CcgCategory;
-import com.jayantkrish.jklol.ccg.CcgExactInference;
-import com.jayantkrish.jklol.ccg.CcgExample;
-import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
-import com.jayantkrish.jklol.ccg.CcgInference;
-import com.jayantkrish.jklol.ccg.CcgParse;
-import com.jayantkrish.jklol.ccg.CcgParser;
-import com.jayantkrish.jklol.ccg.CcgPerceptronOracle;
-import com.jayantkrish.jklol.ccg.CcgUnaryRule;
-import com.jayantkrish.jklol.ccg.LexiconEntry;
-import com.jayantkrish.jklol.ccg.ParametricCcgParser;
+import com.jayantkrish.jklol.ccg.*;
 import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
-import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
-import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
-import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
-import com.jayantkrish.jklol.ccg.lexinduct.AlignmentExample;
-import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentEmOracle;
-import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentModel;
-import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTokenFeatureGenerator;
-import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTree;
-import com.jayantkrish.jklol.ccg.lexinduct.ParametricCfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.lambda2.*;
+import com.jayantkrish.jklol.ccg.lexinduct.*;
 import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
 import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
 import com.jayantkrish.jklol.lisp.Environment;
@@ -50,13 +16,20 @@ import com.jayantkrish.jklol.lisp.SExpression;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
-import com.jayantkrish.jklol.training.ExpectationMaximization;
-import com.jayantkrish.jklol.training.GradientOptimizer;
-import com.jayantkrish.jklol.training.GradientOracle;
-import com.jayantkrish.jklol.training.NullLogFunction;
-import com.jayantkrish.jklol.training.StochasticGradientTrainer;
+import com.jayantkrish.jklol.training.*;
+import com.jayantkrish.jklol.util.CsvParser;
 import com.jayantkrish.jklol.util.IndexedList;
 import com.jayantkrish.jklol.util.PairCountAccumulator;
+import instructable.server.ActionResponse;
+import instructable.server.IAllUserActions;
+import instructable.server.InfoForCommand;
+import instructable.server.LispExecutor;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Path;
+import java.util.*;
 
 public class CcgUtils {
   
@@ -136,7 +109,7 @@ public class CcgUtils {
    * @return
    */
   public static ParametricCcgParser buildParametricCcgParser(List<LexiconEntry> lexiconEntries) {
-    CcgCategory stringCategory = CcgCategory.parseFrom("N{0},(lambda $0 $0),0 special:string");
+    CcgCategory stringCategory = CcgCategory.parseFrom("String{0},(lambda $0 $0),0 special:string");
     
     List<Set<String>> assignments = Lists.newArrayList();
     assignments.add(Sets.newHashSet(ParametricCcgParser.SKIP_PREDICATE));
@@ -232,15 +205,45 @@ public class CcgUtils {
 
         Environment env = Environment.empty();
         IndexedList<String> symbolTable = IndexedList.create();
-        env.bindName("sendEmail", lispExecutor.getSendEmailFunction(), symbolTable);
-        env.bindName("set", lispExecutor.getSetFunction(), symbolTable);
+        env.bindName("sendEmail", lispExecutor.getFunction("sendEmail"), symbolTable);
+        env.bindName("set", lispExecutor.getFunction("set"), symbolTable);
         env.bindName("body", "body", symbolTable);
+        env.bindName("outgoing_email", "outgoing email", symbolTable);
+        env.bindName("recipient_list", "recipient list", symbolTable);
+        env.bindName("subject", "subject", symbolTable);
+        env.bindName("bob", "bob", symbolTable);
+
 
         LispEval eval = new LispEval(symbolTable);
         SExpression sExpression = ExpressionParser.sExpression(symbolTable).parseSingleExpression(expression.toString());
         LispEval.EvalResult result = eval.eval(sExpression, env);
 
         return (ActionResponse) result.getValue();
+    }
+
+
+
+    public static List<String[]> loadExamples(Path filePath)
+    {
+        final String cvsSplitBy = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
+        List<String[]> retVal = new LinkedList<>();
+        try
+        {
+
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(filePath.toString())));
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null)
+            {
+                line = line.replace("\"\"","\\\"");
+                retVal.add(CsvParser.defaultParser().parseLine(line));
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return retVal;
     }
 
   private CcgUtils() {

@@ -7,7 +7,7 @@ S: Do you want to compose a new email?
 U: yes
 S: Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
 
-U: set the subject of the outgoing email to hello
+U: set the subject of this email to hello
 S: The "subject" field in "outgoing email" was set to: "hello".
 
 U: put test in body

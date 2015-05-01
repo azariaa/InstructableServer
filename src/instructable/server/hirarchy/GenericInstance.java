@@ -8,10 +8,10 @@ import java.util.*;
 /**
  * Created by Amos Azaria on 15-Apr-15.
  */
-public class GenericConcept
+public class GenericInstance
 {
 
-    public GenericConcept(String type, String instanceName, List<FieldDescription> fieldsInType)
+    public GenericInstance(String type, String instanceName, List<FieldDescription> fieldsInType)
     {
         name = instanceName;
         lastAccess = System.nanoTime(); //System.currentTimeMillis(); doesn't work because in test may execute several commands in same millisecond
@@ -19,7 +19,7 @@ public class GenericConcept
         fields = new HashMap<String, FieldHolder>();
         for (FieldDescription fieldDescription : fieldsInType)
         {
-            fields.put(fieldDescription.fieldName, new FieldHolder(fieldDescription));
+            fields.put(fieldDescription.fieldName, new FieldHolder(fieldDescription, this));
         }
     }
 
@@ -38,7 +38,7 @@ public class GenericConcept
     must have field defined in this object.
     must either have val or jsonVal
      */
-    public void setField(ExecutionStatus executionStatus, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal, boolean addToExisting, boolean addToEnd)
+    public void setField(ExecutionStatus executionStatus, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal, boolean addToExisting, boolean appendToEnd)
     {
         lastAccess = System.nanoTime();
         if (fields.containsKey(fieldName))
@@ -47,12 +47,12 @@ public class GenericConcept
             //requestedField shouldn't be null.
             if (jsonVal.isPresent())
             {
-                requestedField.setFromJSon(executionStatus, jsonVal.get(), addToExisting, addToEnd);
+                requestedField.setFromJSon(executionStatus, jsonVal.get(), addToExisting, appendToEnd);
             }
             else
             {
                 if (addToExisting)
-                    requestedField.appendTo(executionStatus, val.get(), addToEnd);
+                    requestedField.appendTo(executionStatus, val.get(), appendToEnd);
                 else
                     requestedField.set(executionStatus, val.get());
             }
@@ -70,7 +70,7 @@ public class GenericConcept
         lastAccess = System.nanoTime();
         if (!fields.containsKey(fieldToAdd.fieldName))
         {
-            fields.put(fieldToAdd.fieldName, new FieldHolder(fieldToAdd));
+            fields.put(fieldToAdd.fieldName, new FieldHolder(fieldToAdd, this));
             return new ExecutionStatus();
         }
         return new ExecutionStatus(ExecutionStatus.RetStatus.error, "the field cannot be found");
@@ -99,17 +99,27 @@ public class GenericConcept
         return fields.keySet();
     }
 
-    public JSONObject getField(ExecutionStatus executionStatus, String fieldName)
+    public Optional<FieldHolder> getField(ExecutionStatus executionStatus, String fieldName)
     {
         lastAccess = System.nanoTime();
         if (fields.containsKey(fieldName))
         {
-            FieldHolder requestedField = fields.get(fieldName);
-            //requestedField shouldn't be null.
-            return requestedField.getAsJSon();
+            return Optional.of(fields.get(fieldName));
         }
         executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + " cannot be found");
-        return null;
+        return Optional.empty();
+    }
+
+    public Optional<JSONObject> getFieldVal(ExecutionStatus executionStatus, String fieldName)
+    {
+        lastAccess = System.nanoTime();
+        Optional<FieldHolder> requestedField = getField(executionStatus, fieldName);
+        if (requestedField.isPresent())
+        {
+            return Optional.of(requestedField.get().getFieldVal());
+        }
+        executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + " cannot be found");
+        return Optional.empty();
     }
 
 

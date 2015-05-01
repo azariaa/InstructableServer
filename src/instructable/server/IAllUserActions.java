@@ -1,5 +1,7 @@
 package instructable.server;
 
+import instructable.server.hirarchy.FieldHolder;
+import instructable.server.hirarchy.GenericInstance;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 import org.json.simple.JSONObject;
 
@@ -18,41 +20,44 @@ public interface IAllUserActions
 
     ActionResponse cancel(InfoForCommand infoForCommand);
 
-    ActionResponse set(InfoForCommand infoForCommand, String fieldName, String val);
+    //the following functions will usually be used only internally
+    ActionResponse getInstance(InfoForCommand infoForCommand, String conceptName, String instanceName);
 
-    ActionResponse set(InfoForCommand infoForCommand, String instanceName, String fieldName, String val);
+    ActionResponse getFieldFromInstance(InfoForCommand infoForCommand, GenericInstance instance, String fieldName);
 
-    ActionResponse set(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, String val);
+    //this function may either be used as the most upper level function, or result may be used later for a set, or just if the user asks for information
+    //TODO: add later: ActionResponse getFieldFromPreviousInstance(InfoForCommand infoForCommand, String fieldName);
 
-    ActionResponse set(InfoForCommand infoForCommand, String fieldName, JSONObject jsonVal);
+    ActionResponse getProbInstanceByName(InfoForCommand infoForCommand, String instanceName);
 
-    ActionResponse set(InfoForCommand infoForCommand, String instanceName, String fieldName, JSONObject jsonVal);
+    ActionResponse getProbFieldByInstanceNameAndFieldName(InfoForCommand infoForCommand, String instanceName, String fieldName);
 
-    ActionResponse set(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, JSONObject jsonVal);
+    ActionResponse getProbFieldByFieldName(InfoForCommand infoForCommand, String fieldName);
 
-    ActionResponse setFromPreviousGet(InfoForCommand infoForCommand, String fieldName);
+    //this function may either be used as the most upper level function, or result may be used later for a set, or just if the user asks for information
+    ActionResponse evalField(InfoForCommand infoForCommand, FieldHolder field); //from FieldHolder to Json (from field to fieldVal)
 
-    ActionResponse setFromPreviousGet(InfoForCommand infoForCommand, String instanceName, String fieldName);
+    //the following functions may only be the most upper level function, results reach user
+    ActionResponse readInstance(InfoForCommand infoForCommand, GenericInstance instance); //read email etc.
 
-    ActionResponse setFromPreviousGet(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName);
+    ActionResponse setFieldFromString(InfoForCommand infoForCommand, FieldHolder field, String val);
 
-    ActionResponse add(InfoForCommand infoForCommand, String fieldName, String val, boolean appendToEnd);
+    ActionResponse setFieldFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal);
 
-    ActionResponse add(InfoForCommand infoForCommand, String instanceName, String fieldName, String val, boolean appendToEnd);
+    ActionResponse setFieldFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 
-    ActionResponse add(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, String val, boolean appendToEnd);
+    ActionResponse addToFieldFromString(InfoForCommand infoForCommand, FieldHolder field, String val);
 
-    ActionResponse add(InfoForCommand infoForCommand, String fieldName, JSONObject jsonVal, boolean appendToEnd);
+    ActionResponse addToFieldFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal);
 
-    ActionResponse add(InfoForCommand infoForCommand, String instanceName, String fieldName, JSONObject jsonVal, boolean appendToEnd);
+    ActionResponse addToFieldFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 
-    ActionResponse add(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, JSONObject jsonVal, boolean appendToEnd);
+    ActionResponse addToFieldAtStartFromString(InfoForCommand infoForCommand, FieldHolder field, String val);
 
-    ActionResponse addFromPreviousGet(InfoForCommand infoForCommand, String fieldName, boolean appendToEnd);
+    ActionResponse addToFieldAtStartFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal);
 
-    ActionResponse addFromPreviousGet(InfoForCommand infoForCommand, String instanceName, String fieldName, boolean appendToEnd);
+    ActionResponse addToFieldAtStartFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 
-    ActionResponse addFromPreviousGet(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName, boolean appendToEnd);
 
     ActionResponse defineConcept(InfoForCommand infoForCommand, String conceptName);
 
@@ -73,18 +78,8 @@ public interface IAllUserActions
 
     ActionResponse unknownCommand(InfoForCommand infoForCommand);
 
-    ActionResponse endTeaching(InfoForCommand infoForCommand); // e.g. "that's it"
+    ActionResponse endLearning(InfoForCommand infoForCommand); // e.g. "that's it"
 
-    //the get functions return an actual value in the ActionResponse.value that can be further used.
-    ActionResponse get(InfoForCommand infoForCommand, String fieldName);
-
-    ActionResponse get(InfoForCommand infoForCommand, String instanceName, String fieldName);
-
-    ActionResponse get(InfoForCommand infoForCommand, String conceptName, String instanceName, String fieldName);
-
-    //read current email etc.
-    ActionResponse getFullInstance(InfoForCommand infoForCommand, String instanceName);
-    ActionResponse getFullInstance(InfoForCommand infoForCommand, String conceptName, String instanceName);
 
     ActionResponse deleteConcept(InfoForCommand infoForCommand, String conceptName);
     ActionResponse deleteInstance(InfoForCommand infoForCommand, String instanceName);

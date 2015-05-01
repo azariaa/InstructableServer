@@ -59,7 +59,7 @@ public class TextFormattingUtils
             {
                 if (success)
                 {
-                    response.append("I see that " + statusAndMessage.message.get() + ".");
+                    response.append("I see that " + statusAndMessage.message.get() + ". ");
                 }
                 else
                 {

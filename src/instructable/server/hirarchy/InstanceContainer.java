@@ -10,7 +10,7 @@ import java.util.*;
 public class InstanceContainer
 {
 
-    Map<String,Map<String,GenericConcept>> conceptToInstance = new HashMap<>(); //TODO: should be stored in DB
+    Map<String,Map<String,GenericInstance>> conceptToInstance = new HashMap<>(); //TODO: should be stored in DB
 
     ConceptContainer conceptContainer;
 
@@ -20,9 +20,9 @@ public class InstanceContainer
     }
 
     //save last access, and sort according to last access
-    public Optional<GenericConcept> getMostPlausibleInstance(ExecutionStatus executionStatus, List<String> conceptOptions, Optional<String> instanceName)
+    public Optional<GenericInstance> getMostPlausibleInstance(ExecutionStatus executionStatus, List<String> conceptOptions, Optional<String> instanceName)
     {
-        List<GenericConcept> allPossibleInstances = getAllPossibleInstances(conceptOptions, instanceName);
+        List<GenericInstance> allPossibleInstances = getAllPossibleInstances(conceptOptions, instanceName);
         if (allPossibleInstances.isEmpty())
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "no relevant instances were found");
@@ -32,10 +32,10 @@ public class InstanceContainer
         {
             executionStatus.add(ExecutionStatus.RetStatus.warning, "there is more than one possible instance, using the most recent");
         }
-        allPossibleInstances.sort(new Comparator<GenericConcept>()
+        allPossibleInstances.sort(new Comparator<GenericInstance>()
         {
             @Override
-            public int compare(GenericConcept o1, GenericConcept o2)
+            public int compare(GenericInstance o1, GenericInstance o2)
             {
                 if (o1.lastAccess == o2.lastAccess)
                     return 0;
@@ -45,35 +45,35 @@ public class InstanceContainer
         return Optional.of(allPossibleInstances.get(0));
     }
 
-    public List<GenericConcept> getAllInstances(String concept)
+    public List<GenericInstance> getAllInstances(String concept)
     {
         List<String> conceptOptions = new LinkedList<>();
         conceptOptions.add(concept);
         return getAllPossibleInstances(conceptOptions, Optional.empty());
     }
 
-    private List<GenericConcept> getAllPossibleInstances(List<String> conceptOptions, Optional<String> instanceName)
+    private List<GenericInstance> getAllPossibleInstances(List<String> conceptOptions, Optional<String> instanceName)
     {
-        List<GenericConcept> allPossibleInstances = new LinkedList<>();
+        List<GenericInstance> allPossibleInstances = new LinkedList<>();
         for (String concept : conceptToInstance.keySet())
         {
             if (conceptOptions.contains(concept))
             {
-                for (GenericConcept genericConcept : conceptToInstance.get(concept).values())
+                for (GenericInstance genericInstance : conceptToInstance.get(concept).values())
                 {
-                    if (!instanceName.isPresent()  || genericConcept.name.equals(instanceName.get()))
-                        allPossibleInstances.add(genericConcept);
+                    if (!instanceName.isPresent()  || genericInstance.name.equals(instanceName.get()))
+                        allPossibleInstances.add(genericInstance);
                 }
             }
         }
         return allPossibleInstances;
     }
 
-    public Optional<GenericConcept> getInstance(ExecutionStatus executionStatus, String conceptName, String instanceName)
+    public Optional<GenericInstance> getInstance(ExecutionStatus executionStatus, String conceptName, String instanceName)
     {
         if (conceptToInstance.containsKey(conceptName))
         {
-            Map<String,GenericConcept> instances = conceptToInstance.get(conceptName);
+            Map<String,GenericInstance> instances = conceptToInstance.get(conceptName);
             if (instances.containsKey(instanceName))
                 return Optional.of(instances.get(instanceName));
             else
@@ -95,12 +95,12 @@ public class InstanceContainer
             executionStatus.add(ExecutionStatus.RetStatus.error,"there is no concept with the name \"" + "\", please define it first");
             return;
         }
-        GenericConcept instance = new GenericConcept(conceptName, instanceName, conceptContainer.conceptFieldMap.get(conceptName));
+        GenericInstance instance = new GenericInstance(conceptName, instanceName, conceptContainer.conceptFieldMap.get(conceptName));
 
         addInstance(executionStatus, instance);
     }
 
-    public void addInstance(ExecutionStatus executionStatus, GenericConcept conceptInstance)
+    public void addInstance(ExecutionStatus executionStatus, GenericInstance conceptInstance)
     {
         String conceptName = conceptInstance.type;
         if (!conceptContainer.doesConceptExist(conceptName))
@@ -123,10 +123,10 @@ public class InstanceContainer
     {
         if (conceptToInstance.containsKey(conceptName))
         {
-            Map<String, GenericConcept> instances = conceptToInstance.get(conceptName);
+            Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
             if (instances.containsKey(instanceOldName))
             {
-                GenericConcept reqInstance = instances.get(instanceOldName);
+                GenericInstance reqInstance = instances.get(instanceOldName);
                 reqInstance.name = instanceNewName;
                 instances.remove(instanceOldName);
                 instances.put(instanceNewName, reqInstance);

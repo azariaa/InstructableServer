@@ -134,4 +134,12 @@ public class ConceptContainer
         }
         return  fieldNames;
     }
+
+    //can't fail, but can return empty list
+    public List<String> getAllConceptNames()
+    {
+        List<String> conceptNames = new LinkedList<>();
+        conceptNames.addAll(conceptFieldMap.keySet());
+        return  conceptNames;
+    }
 }

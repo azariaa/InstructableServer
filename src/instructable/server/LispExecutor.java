@@ -20,45 +20,44 @@ public class LispExecutor
         this.infoForCommand = infoForCommand;
     }
 
-    public SendEmailFunction getSendEmailFunction() {
-        return new SendEmailFunction();
+    public AllFunction getFunction(String name) {
+        return new AllFunction(name);
     }
 
-    public SetFunction getSetFunction()
-    {
-        return new SetFunction();
-    }
 
-    public class SendEmailFunction implements FunctionValue
+    public class AllFunction implements FunctionValue
     {
-        @Override
-        public Object apply(List<Object> argumentValues, Environment env) {
-            Preconditions.checkArgument(argumentValues.size() == 0);
-            return allUserActions.sendEmail(infoForCommand);
-        }
-    }
-
-    public class SetFunction implements FunctionValue
-    {
-        @Override
-        public Object apply(List<Object> list, Environment environment)
+        String currentFunction;
+        public AllFunction(String currentFunction)
         {
-            Preconditions.checkArgument(list.size() >= 2 && list.size() <= 4);
-            if (list.size() == 2)
+            this.currentFunction = currentFunction;
+        }
+        @Override
+        public Object apply(List<Object> argumentValues, Environment environment)
+        {
+            switch(currentFunction)
             {
-                if (list.get(1) instanceof ActionResponse)
-                    return allUserActions.set(infoForCommand, (String) list.get(0), ((ActionResponse) list.get(1)).value.get());
-                return allUserActions.set(infoForCommand, (String) list.get(0), (String) list.get(1));
+                case "set":
+//                    Preconditions.checkArgument(argumentValues.size() >= 2 && argumentValues.size() <= 4);
+//                    if (argumentValues.size() == 2)
+//                    {
+//                        if (argumentValues.get(1) instanceof ActionResponse)
+//                            return allUserActions.set(infoForCommand, (String) argumentValues.get(0), ((ActionResponse) argumentValues.get(1)).value.get());
+//                        return allUserActions.set(infoForCommand, (String) argumentValues.get(0), (String) argumentValues.get(1));
+//                    } else if (argumentValues.size() == 3)
+//                    {
+//                        if (argumentValues.get(2) instanceof ActionResponse)
+//                            return allUserActions.set(infoForCommand, (String) argumentValues.get(0), (String) argumentValues.get(1), ((ActionResponse) argumentValues.get(2)).value.get());
+//                        return allUserActions.set(infoForCommand, (String) argumentValues.get(0), (String) argumentValues.get(1), (String) argumentValues.get(2));
+//                    }
+//                    if (argumentValues.get(3) instanceof ActionResponse)
+//                        return allUserActions.set(infoForCommand, (String) argumentValues.get(0), (String) argumentValues.get(1), (String) argumentValues.get(2), ((ActionResponse) argumentValues.get(3)).value.get());
+//                    return allUserActions.set(infoForCommand, (String) argumentValues.get(0), (String) argumentValues.get(1), (String) argumentValues.get(2), (String) argumentValues.get(3));
+                case "sendEmail":
+                    Preconditions.checkArgument(argumentValues.size() == 0);
+                    return allUserActions.sendEmail(infoForCommand);
             }
-            else if (list.size() == 3)
-            {
-                if (list.get(2) instanceof ActionResponse)
-                    return allUserActions.set(infoForCommand, (String) list.get(0), (String) list.get(1), ((ActionResponse) list.get(2)).value.get());
-                return allUserActions.set(infoForCommand, (String) list.get(0), (String) list.get(1), (String) list.get(2));
-            }
-            if (list.get(3) instanceof ActionResponse)
-                return allUserActions.set(infoForCommand, (String) list.get(0), (String) list.get(1), (String) list.get(2), ((ActionResponse) list.get(3)).value.get());
-            return allUserActions.set(infoForCommand, (String) list.get(0), (String) list.get(1), (String) list.get(2), (String) list.get(3));
+            return new Object();
         }
     }
 }

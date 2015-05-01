@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * Created by Amos Azaria on 15-Apr-15.
  */
-public class EmailMessage extends GenericConcept
+public class EmailMessage extends GenericInstance
 {
     public static final String emailMessageType = "email message";
     public static final String subjectStr = "subject";

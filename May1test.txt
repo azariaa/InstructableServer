@@ -7,9 +7,8 @@ S: Do you want to compose a new email?
 U: yes
 S: Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
 
-U: set the subject of the outgoing email to hello
-S: Sorry, but the message has no recipient.
-S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+U: set the subject of this email to hello
+S: The "subject" field in "outgoing email" was set to: "hello".
 
 U: put test in body
 S: The "body" field in "outgoing email" was set to: "test".
@@ -26,7 +25,7 @@ U: set myself@myjob.com as the recipient
 S: The "recipient list" field in "outgoing email" was set to: "myself@myjob.com".
 
 U: send
-S: I see that the message has no subject.Email sent successfully.
+S: Email sent successfully.
 
 U: send
 S: I see that there is no email being composed.
@@ -92,7 +91,7 @@ U: set jane's email to be jane@gmail.com
 S: The "email" field in "jane" was set to: "jane@gmail.com".
 
 U: make bob the recipient
-S: Sorry, but "bob" is not an email address.
+S: Sorry, but I don't understand.
 S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
 U: yes

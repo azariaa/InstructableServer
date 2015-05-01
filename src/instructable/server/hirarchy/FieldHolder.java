@@ -18,15 +18,17 @@ import java.util.stream.Collectors;
  * Created by Amos Azaria on 15-Apr-15.
  *
  * This class is like a union of FieldType and List<FieldType>.
+ * In future may add a pointer to a different instance.
  */
 public class FieldHolder
 {
 
-    FieldHolder(FieldDescription fieldDescription)
+    FieldHolder(FieldDescription fieldDescription, GenericInstance fieldParent)
     {
         this.fieldName = fieldDescription.fieldName;
         this.fieldType = fieldDescription.fieldType;
         this.isList = fieldDescription.isList;
+        this.fieldParent = fieldParent;
 
         if (isList)
         {
@@ -62,6 +64,13 @@ public class FieldHolder
     boolean isList;
     FieldType field;
     List<FieldType> fieldList;
+    private GenericInstance fieldParent;
+
+    public String getParentInstanceName()
+    {
+        return fieldParent.getName();
+    }
+
 
     static final String fieldTypeForJson = "fieldType";
     static final String isListForJson = "isList";
@@ -146,7 +155,7 @@ public class FieldHolder
         return retVal;
     }
 
-    public JSONObject getAsJSon()
+    public JSONObject getFieldVal()
     {
         JSONObject obj = new JSONObject();
 
@@ -226,5 +235,16 @@ public class FieldHolder
         }
 
         return;
+    }
+
+    public String getFieldName()
+    {
+        return fieldName;
+    }
+
+    @Override
+    public String toString()
+    {
+        return  fieldName;
     }
 }

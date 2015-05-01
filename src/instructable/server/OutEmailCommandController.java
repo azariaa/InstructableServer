@@ -23,7 +23,7 @@ public class OutEmailCommandController
 
     public Optional<OutgoingEmail> getEmailBeingComposed(ExecutionStatus executionStatus)
     {
-        Optional<GenericConcept> emailBeingComposed = instanceContainer.getInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
+        Optional<GenericInstance> emailBeingComposed = instanceContainer.getInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
         if (emailBeingComposed.isPresent())
         {
             return Optional.of((OutgoingEmail) emailBeingComposed.get());
