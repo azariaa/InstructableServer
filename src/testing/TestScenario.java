@@ -1,17 +1,13 @@
 package testing;
 
-import com.google.common.collect.Lists;
-import com.jayantkrish.jklol.ccg.CcgExample;
-import com.jayantkrish.jklol.ccg.CcgParser;
-import com.jayantkrish.jklol.ccg.LexiconEntry;
-import com.jayantkrish.jklol.ccg.ParametricCcgParser;
-import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.*;
 import instructable.server.ccg.CcgUtils;
+import instructable.server.ccg.ParserSettings;
 import instructable.server.hirarchy.EmailMessage;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -31,12 +27,17 @@ public class TestScenario
 
     public static void main(String[] args) throws Exception
     {
+        runTest();
+    }
+
+    private static void runTest() throws Exception
+    {
         IAllUserActions allUserActions = new TopDMAllActions(new ICommandsToParser()
         {
             @Override
             public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt)
             {
-                
+
             }
 
             @Override
@@ -59,7 +60,11 @@ public class TestScenario
         });
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
-        sendingBasicEmail(allUserActions, testHelpers);
+
+        ParserSettings parserSettings = createParser();
+
+        sendingBasicEmail(allUserActions, testHelpers, parserSettings);
+
         definingContact(allUserActions, testHelpers);
 
         setFromGet(allUserActions, testHelpers);
@@ -72,52 +77,63 @@ public class TestScenario
 
         testHelpers.endTest();
         //emailSomeoneSomeText()
-
     }
 
 
-    private static void sendingBasicEmail(IAllUserActions allUserActions, TestHelpers testHelpers)
+    private static ParserSettings createParser()
     {
-        testHelpers.systemSays("Let's start by sending a dummy email to your-self, set the subject to hello and the body to test.");
-        ActionResponse response;
-        String userSays;
-
-        String[] lexiconEntries = new String[] {"\"send\",\"S{0}\",\"(sendEmail)\",\"0 sendEmail\"",
-            "\"set\",\"((S{0}/String{2}){0}/Field{1}){0}\",\"(lambda $1 $2 (setFieldFromString $1 $2))\",\"0 setFieldFromString\",\"setFieldFromString 1 1\",\"setFieldFromString 2 2\"",
+        String[] lexiconEntries1 = new String[] {"\"send\",\"S{0}\",\"(sendEmail)\",\"0 sendEmail\"",
+                "\"set\",\"((S{0}/PP_String{2}){0}/Field{1}){0}\",\"(lambda $1 $2 (setFieldFromString $1 $2))\",\"0 setFieldFromString\",\"setFieldFromString 1 1\",\"setFieldFromString 2 2\"",
+                "\"set\",\"((S{0}/PP_Field{2}){0}/String{1}){0}\",\"(lambda $1 $2 (setFieldFromString $2 $1))\",\"0 setFieldFromString\",\"setFieldFromString 1 1\",\"setFieldFromString 2 2\"",
                 "\"of\",\"((Field{0}\\FieldName{2}){0}/InstanceName{1}){0}\",\"(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $1 $2))\",\"0 getProbFieldByInstanceNameAndFieldName\",\"getProbFieldByInstanceNameAndFieldName 1 1\",\"getProbFieldByInstanceNameAndFieldName 2 2\"",
-//TODO: should I add the word "to"?
-            "body,FieldName{0},body,0 body",
+                "\"to\",\"(PP_String{0}/String{1}){0}\",\"(lambda $1 $1)\", \"0 to\", \"to 1 1\"",
+                "as,PP_String/String,(lambda $1 $1)",
+                "as,PP_Field/Field,(lambda $1 $1)",
+                "body,FieldName{0},body,0 body",
                 "email,InstanceName{0},outgoing_email,0 outgoing_email",
                 "recipient,FieldName{0},recipient_list,0 recipient_list",
                 "subject,FieldName{0},subject,0 subject",
                 "bob,InstanceName{0},bob,0 bob"
         };
-        List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(Arrays.asList(lexiconEntries));
+
+        List<String> lexiconEntries = null;
+        try
+        {
+            lexiconEntries = Files.readAllLines(Paths.get("data/lexiconEntries.txt"));
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        String[] unaryRules = new String[] {
+                "Field{0} FieldVal{0},(lambda x (evalField x))",
+                "FieldName{0} Field{0},(lambda x (getProbFieldByFieldName x))"
+        };
+
 
         String[][] examplesArr = new String[][] {{"send email", "(sendEmail)"},
                 {"set the body of bob to bar world", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email body) \"bar world\")"},
                 {"set the recipient list of the email to myself@myjob.com", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email recipient_list) \"myself@myjob.com\")"},
-                {"set the subject of this email to hello world and you too", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email subject) \"hello world and you too\")"}};
+                {"set the subject of this email to hello world and you too", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email subject) \"hello world and you too\")"},
+                {"set the subject of this email to what", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email subject) \"what\")"},
+                {"set the subject of this email as when", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email subject) \"when\")"}
+        };
 
-        //what will I do with
-        //set foo's body to bar (this changes the order of the variables).
-        //put bar in foo's body
+        return CcgUtils.getParserSettings(lexiconEntries, unaryRules, examplesArr);
+    }
 
-        List<String[]> examplesList = Arrays.asList(examplesArr);//CcgUtils.loadExamples(Paths.get("data/examples.csv"));
-        List<CcgExample> ccgExamples = Lists.newArrayList();
-        for (int i = 0; i < examplesList.size(); i++) {
-            Expression2 expression = ExpressionParser.expression2().parseSingleExpression(examplesList.get(i)[1]);
-            CcgExample example = CcgUtils.createCcgExample(Arrays.asList(examplesList.get(i)[0].split(" ")), expression);
-            ccgExamples.add(example);
-        }
 
-        ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon);
-        CcgParser parser = CcgUtils.train(family, ccgExamples);
+
+    private static void sendingBasicEmail(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
+    {
+        testHelpers.systemSays("Let's start by sending a dummy email to your-self, set the subject to hello and the body to test.");
+        ActionResponse response;
+        String userSays;
 
         userSays = "send an email";
         testHelpers.userSays(userSays);
-        Expression2 expression = CcgUtils.parse(parser, CcgUtils.tokenize(userSays));
-        response = CcgUtils.evaluate(allUserActions, userSays, expression);
+        Expression2 expression = CcgUtils.parse(parserSettings.parser, CcgUtils.tokenize(userSays));
+        response = CcgUtils.evaluate(allUserActions, userSays, expression, parserSettings);
         //response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.getSayToUser());
 
@@ -126,23 +142,26 @@ public class TestScenario
         response = allUserActions.yes(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.getSayToUser());
 
-        userSays = "set the subject of this email to hello all of you";
+        userSays = "set the subject of this email to hello";
         // (setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email subject) "hello")
         testHelpers.userSays(userSays);
-        expression = CcgUtils.parse(parser, CcgUtils.tokenize(userSays));
-        response = CcgUtils.evaluate(allUserActions, userSays, expression);
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         //response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "outgoing email", "subject");
         //if (response.isSuccess())
             //response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "hello");
         testHelpers.systemSays(response.getSayToUser());
 
+
+        //System.exit(0);
+
         userSays = "put test in body";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "body");
-        if (response.isSuccess())
-        {
-            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "test");
-        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
+//        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "body");
+//        if (response.isSuccess())
+//        {
+//            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "test");
+//        }
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "send the email";
@@ -180,7 +199,6 @@ public class TestScenario
         response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.getSayToUser());
     }
-
 
     private static void definingContact(IAllUserActions allUserActions, TestHelpers testHelpers)
     {

@@ -1,7 +1,14 @@
 "send","S{0}","(sendEmail)","0 sendEmail" 
-"set","((S{0}/String{2}){0}/Field{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
+"set","((S{0}/PP_String{2}){0}/Field{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
+"set","((S{0}/PP_Field{2}){0}/String{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
+"put","((S{0}/PP_Field{2}){0}/String{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
 "of","((Field{0}\FieldName{2}){0}/InstanceName{1}){0}","(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $1 $2))","0 getProbFieldByInstanceNameAndFieldName","getProbFieldByInstanceNameAndFieldName 1 1","getProbFieldByInstanceNameAndFieldName 2 2"
-
+"the value",String/String,(lambda $1 $1)
+to,PP_String/String,(lambda $1 $1)
+as,PP_String/String,(lambda $1 $1)
+as,PP_Field/Field,(lambda $1 $1)
+in,PP_Field/Field,(lambda $1 $1)
+inside,PP_Field/Field,(lambda $1 $1)
 body,FieldName{0},body,0 body
 email,InstanceName{0},outgoing_email,0 outgoing_email
 recipient,FieldName{0},recipient_list,0 recipient_list

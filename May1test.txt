@@ -37,7 +37,7 @@ U: compose a new email
 S: Composing new email. "outgoing email" fields are: subject, body, recipient list and copy list.
 
 U: set my spouse as the recipient
-S: Sorry, but "myspouse" is not an email address.
+S: Sorry, but "my spouse" is not an email address.
 S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
 U: I want to teach you what a contact is

@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.jayantkrish.jklol.ccg.*;
+import com.jayantkrish.jklol.ccg.chart.ChartCost;
+import com.jayantkrish.jklol.ccg.chart.ChartEntry;
 import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.*;
@@ -13,6 +15,7 @@ import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
 import com.jayantkrish.jklol.lisp.Environment;
 import com.jayantkrish.jklol.lisp.LispEval;
 import com.jayantkrish.jklol.lisp.SExpression;
+import com.jayantkrish.jklol.models.DiscreteVariable;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
@@ -20,6 +23,7 @@ import com.jayantkrish.jklol.training.*;
 import com.jayantkrish.jklol.util.CsvParser;
 import com.jayantkrish.jklol.util.IndexedList;
 import com.jayantkrish.jklol.util.PairCountAccumulator;
+import edu.stanford.nlp.process.PTBTokenizer;
 import instructable.server.ActionResponse;
 import instructable.server.IAllUserActions;
 import instructable.server.InfoForCommand;
@@ -28,8 +32,10 @@ import instructable.server.LispExecutor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CcgUtils {
   
@@ -108,7 +114,8 @@ public class CcgUtils {
    * @param lexiconEntries
    * @return
    */
-  public static ParametricCcgParser buildParametricCcgParser(List<LexiconEntry> lexiconEntries) {
+  public static ParametricCcgParser buildParametricCcgParser(List<LexiconEntry> lexiconEntries,
+                                                             List<CcgUnaryRule> inputUnaryRules) {
     CcgCategory stringCategory = CcgCategory.parseFrom("String{0},(lambda $0 $0),0 special:string");
     
     List<Set<String>> assignments = Lists.newArrayList();
@@ -120,7 +127,7 @@ public class CcgUtils {
     // Read in the lexicon to instantiate the model.
 
     List<CcgBinaryRule> binaryRules = Lists.newArrayList();
-    List<CcgUnaryRule> unaryRules = Lists.newArrayList();
+    List<CcgUnaryRule> unaryRules = Lists.newArrayList(inputUnaryRules);
     unaryRules.add(CcgUnaryRule.parseFrom("DUMMY{0} DUMMY{0},(lambda x x)"));
 
     boolean allowComposition = true;
@@ -169,7 +176,16 @@ public class CcgUtils {
   }
 
     public static List<String> tokenize(String sentence) {
-        return Arrays.asList(sentence.split(" "));
+
+        List<String> tokens = new LinkedList<>();
+        //remove punctuation (but not apostrophes!)
+        //TODO: what to do with uppercase? Ignoring for now.
+        String lightSentence = sentence.replaceAll("[^a-zA-Z ']", "").toLowerCase();
+
+        PTBTokenizer ptbTokenizer = PTBTokenizer.newPTBTokenizer(new StringReader(lightSentence));
+        while(ptbTokenizer.hasNext())
+            tokens.add(ptbTokenizer.next().toString());
+        return tokens;
     }
 
   /**
@@ -188,8 +204,30 @@ public class CcgUtils {
 
     List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
     SupertaggedSentence sentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, pos);
-    CcgParse parse = inferenceAlg.getBestParse(parser, sentence, null, new NullLogFunction());
 
+      //      //if we want to return only sentences and fieldVal in upper level:
+      DiscreteVariable dv = parser.getSyntaxVarType();
+
+      final int length = sentence.size();
+      ChartCost costFilter = new ChartCost()
+      {
+          @Override
+          public double apply(ChartEntry entry, int spanStart, int spanEnd, DiscreteVariable syntaxVarType)
+          {
+              if (spanStart == 0 && spanEnd == length - 1) {
+                  HeadedSyntacticCategory syntax = (HeadedSyntacticCategory) syntaxVarType.getValue(entry.getHeadedSyntax());
+                  if (syntax.toString().equals("S{0}") || syntax.toString().equals("FieldVal{0}"))
+                      return 0;
+                  else
+                      return Double.NEGATIVE_INFINITY;
+              }
+              return 0;
+          }
+      };
+      //upto here
+    CcgParse parse = inferenceAlg.getBestParse(parser, sentence, costFilter, new NullLogFunction());
+    //TODO: if parse is empty we may want to call unknownCommand, but if there is no parse, this might be a problem.
+      //TODO: we may want just to return an error.
     return simplifier.apply(parse.getLogicalForm());
   }
 
@@ -199,25 +237,67 @@ public class CcgUtils {
             new VariableCanonicalizationReplacementRule()));
   }
 
-    public static ActionResponse evaluate(IAllUserActions allUserActions, String userSays, Expression2 expression) {
+
+    public static ParserSettings getParserSettings(List<String> lexiconEntries, String[] unaryRules, String[][] examplesArr)
+    {
+        ParserSettings parserSettings = new ParserSettings();
+        parserSettings.env = Environment.empty();
+        parserSettings.symbolTable = IndexedList.create();
+
+
+        List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(lexiconEntries);
+
+
+        List<CcgUnaryRule> unaryRulesList = Lists.newArrayList();
+        for (String unaryRule : unaryRules) {
+            unaryRulesList.add(CcgUnaryRule.parseFrom(unaryRule));
+        }
+
+        List<String[]> examplesList = Arrays.asList(examplesArr);//CcgUtils.loadExamples(Paths.get("data/examples.csv"));
+        List<CcgExample> ccgExamples = Lists.newArrayList();
+        for (int i = 0; i < examplesList.size(); i++) {
+            Expression2 expression = ExpressionParser.expression2().parseSingleExpression(examplesList.get(i)[1]);
+            CcgExample example = CcgUtils.createCcgExample(CcgUtils.tokenize(examplesList.get(i)[0]), expression);
+            ccgExamples.add(example);
+            List<String> allFunctionNames = Arrays.asList(IAllUserActions.class.getMethods()).stream().map(x -> x.getName()).collect(Collectors.toList());
+            Set<String> freeSet = StaticAnalysis.getFreeVariables(example.getLogicalForm());
+            for (String free : freeSet)
+            {
+                //add all that's not a function name and not a string (starts and ends with ")
+                if (!(free.startsWith("\"") && free.endsWith("\"")) && !allFunctionNames.contains(free))
+                    parserSettings.env.bindName(free, free.replace("_"," "), parserSettings.symbolTable);
+            }
+            //StaticAnalysis.inferType() //TODO: Jayant will add this functionality
+        }
+
+        ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon, unaryRulesList);
+        parserSettings.parser = CcgUtils.train(family, ccgExamples);
+        return parserSettings;
+    }
+
+    public static ActionResponse evaluate(IAllUserActions allUserActions, String userSays, Expression2 expression, ParserSettings parserSettings) {
 
         LispExecutor lispExecutor = new LispExecutor(allUserActions, new InfoForCommand(userSays, expression));
 
-        Environment env = Environment.empty();
-        IndexedList<String> symbolTable = IndexedList.create();
-        env.bindName("sendEmail", lispExecutor.getFunction("sendEmail"), symbolTable);
-        env.bindName("setFieldFromString", lispExecutor.getFunction("setFieldFromString"), symbolTable);
-        env.bindName("getProbFieldByInstanceNameAndFieldName", lispExecutor.getFunction("getProbFieldByInstanceNameAndFieldName"), symbolTable);
-        env.bindName("body", "body", symbolTable);
-        env.bindName("outgoing_email", "outgoing email", symbolTable);
-        env.bindName("recipient_list", "recipient list", symbolTable);
-        env.bindName("subject", "subject", symbolTable);
-        env.bindName("bob", "bob", symbolTable);
+        //env.bindName("sendEmail", lispExecutor.getFunction("sendEmail"), symbolTable);
+        //env.bindName("setFieldFromString", lispExecutor.getFunction("setFieldFromString"), symbolTable);
+        //env.bindName("getProbFieldByInstanceNameAndFieldName", lispExecutor.getFunction("getProbFieldByInstanceNameAndFieldName"), symbolTable);
 
+        List<LispExecutor.FunctionToExecute> functionToExecutes = lispExecutor.getAllFunctions();
+        //this is ok, since we use the same function name it should override any old definition
+        functionToExecutes.forEach(function -> parserSettings.env.bindName(function.getFunctionName(), function, parserSettings.symbolTable));
 
-        LispEval eval = new LispEval(symbolTable);
-        SExpression sExpression = ExpressionParser.sExpression(symbolTable).parseSingleExpression(expression.toString());
-        LispEval.EvalResult result = eval.eval(sExpression, env);
+        //change in evaluation that every unknown name will change to it as a string (changing "_" with " ")
+
+        //env.bindName("body", "body", symbolTable);
+        //env.bindName("outgoing_email", "outgoing email", symbolTable);
+        //env.bindName("recipient_list", "recipient list", symbolTable);
+        //env.bindName("subject", "subject", symbolTable);
+        //env.bindName("bob", "bob", symbolTable);
+
+        LispEval eval = new LispEval(parserSettings.symbolTable);
+        SExpression sExpression = ExpressionParser.sExpression(parserSettings.symbolTable).parseSingleExpression(expression.toString());
+        LispEval.EvalResult result = eval.eval(sExpression, parserSettings.env);
 
         return (ActionResponse) result.getValue();
     }
@@ -239,6 +319,8 @@ public class CcgUtils {
                 line = line.replace("\"\"","\\\"");
                 retVal.add(CsvParser.defaultParser().parseLine(line));
             }
+            //use reflection, check all types of input functions and then add all other variables as their types.
+            //should use learner
         }
         catch (Exception ex)
         {
@@ -247,7 +329,18 @@ public class CcgUtils {
         return retVal;
     }
 
-  private CcgUtils() {
+
+    public static ActionResponse ParseAndEval(IAllUserActions allUserActions, ParserSettings parserSettings, String userSays)
+    {
+        Expression2 expression;
+        ActionResponse response;
+        expression = CcgUtils.parse(parserSettings.parser, CcgUtils.tokenize(userSays));
+        response = CcgUtils.evaluate(allUserActions, userSays, expression, parserSettings);
+        return response;
+    }
+
+
+    private CcgUtils() {
     // Prevent instantiation.
   }
 }

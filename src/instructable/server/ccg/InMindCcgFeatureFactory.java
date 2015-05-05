@@ -1,21 +1,11 @@
 package instructable.server.ccg;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgCategory;
 import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
 import com.jayantkrish.jklol.ccg.LexiconEntry;
-import com.jayantkrish.jklol.ccg.lexicon.ParametricCcgLexicon;
-import com.jayantkrish.jklol.ccg.lexicon.ParametricCombiningLexicon;
-import com.jayantkrish.jklol.ccg.lexicon.ParametricStringLexicon;
-import com.jayantkrish.jklol.ccg.lexicon.ParametricTableLexicon;
-import com.jayantkrish.jklol.ccg.lexicon.StringLexicon;
+import com.jayantkrish.jklol.ccg.lexicon.*;
 import com.jayantkrish.jklol.models.DiscreteFactor;
 import com.jayantkrish.jklol.models.DiscreteVariable;
 import com.jayantkrish.jklol.models.TableFactor;
@@ -25,6 +15,8 @@ import com.jayantkrish.jklol.models.loglinear.IndicatorLogLinearFactor;
 import com.jayantkrish.jklol.models.parametric.CombiningParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ConstantParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ParametricFactor;
+
+import java.util.*;
 
 /**
  * Creates the features for a CCG parser.

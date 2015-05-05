@@ -26,15 +26,32 @@ public class LispExecutor
         this.infoForCommand = infoForCommand;
     }
 
-    public AllFunction getFunction(String name) {
-        return new AllFunction(name);
+    public List<FunctionToExecute> getAllFunctions()
+    {
+        //get all functions using reflection
+        List<FunctionToExecute> functionToExecutes = new LinkedList<>();
+        Method[] methods = IAllUserActions.class.getMethods();
+        // Arrays.asList(methods).forEach(method -> env.bindName(method.getName(), lispExecutor.getFunction(method.getName()), symbolTable));
+        for (Method method : methods)
+        {
+            functionToExecutes.add(new FunctionToExecute(method.getName()));
+        }
+        return functionToExecutes;
     }
+    //public AllFunction getFunction(String name) {
+    //    return new AllFunction(name);
+    //}
 
 
-    public class AllFunction implements FunctionValue
+    public class FunctionToExecute implements FunctionValue
     {
         String currentFunction;
-        public AllFunction(String currentFunction)
+
+        public String getFunctionName()
+        {
+            return currentFunction;
+        }
+        public FunctionToExecute(String currentFunction)
         {
             this.currentFunction = currentFunction;
         }

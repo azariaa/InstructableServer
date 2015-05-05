@@ -37,12 +37,12 @@ public class EmailAddress extends FieldType
         }
 
         //tries to fix email address, especially useful for speech input.
-        val = val.replace(" at ", " @ ");
-        val = val.replace(" dot ", " . ");
-        val = val.trim().replace(" ", "");
-        if (testAddress(val))
+        String FixedVal = val.replace(" at ", " @ ");
+        FixedVal = FixedVal.replace(" dot ", " . ");
+        FixedVal = FixedVal.trim().replace(" ", "");
+        if (testAddress(FixedVal))
         {
-            fieldVal = val;
+            fieldVal = FixedVal;
             executionStatus.add(ExecutionStatus.RetStatus.comment, "minor email fixes were performed");
             return;
         }
