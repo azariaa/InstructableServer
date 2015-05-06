@@ -178,13 +178,18 @@ public class CcgUtils {
     public static List<String> tokenize(String sentence) {
 
         List<String> tokens = new LinkedList<>();
-        //remove punctuation (but not apostrophes!)
+
         //TODO: what to do with uppercase? Ignoring for now.
-        String lightSentence = sentence.replaceAll("[^a-zA-Z ']", "").toLowerCase();
+        String lightSentence = sentence.toLowerCase();//sentence.replaceAll("[^a-zA-Z ']", "").toLowerCase();
 
         PTBTokenizer ptbTokenizer = PTBTokenizer.newPTBTokenizer(new StringReader(lightSentence));
         while(ptbTokenizer.hasNext())
-            tokens.add(ptbTokenizer.next().toString());
+        {
+            //remove punctuation (but not apostrophes!)
+            String token = ptbTokenizer.next().toString();
+            if (token != "," && token != "." && token != "!" && token != "?")
+                tokens.add(token);
+        }
         return tokens;
     }
 
@@ -238,7 +243,7 @@ public class CcgUtils {
   }
 
 
-    public static ParserSettings getParserSettings(List<String> lexiconEntries, String[] unaryRules, String[][] examplesArr)
+    public static ParserSettings getParserSettings(List<String> lexiconEntries, String[] unaryRules, List<String[]> examplesList)
     {
         ParserSettings parserSettings = new ParserSettings();
         parserSettings.env = Environment.empty();
@@ -253,7 +258,6 @@ public class CcgUtils {
             unaryRulesList.add(CcgUnaryRule.parseFrom(unaryRule));
         }
 
-        List<String[]> examplesList = Arrays.asList(examplesArr);//CcgUtils.loadExamples(Paths.get("data/examples.csv"));
         List<CcgExample> ccgExamples = Lists.newArrayList();
         for (int i = 0; i < examplesList.size(); i++) {
             Expression2 expression = ExpressionParser.expression2().parseSingleExpression(examplesList.get(i)[1]);

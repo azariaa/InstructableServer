@@ -164,34 +164,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         return false;
     }
 
-    @Override
-    public ActionResponse composeEmail(InfoForCommand infoForCommand)
-    {
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        dMContextAndExecution.createNewEmail(executionStatus);
-
-
-        StringBuilder response = new StringBuilder();
-        String conceptName = OutgoingEmail.strOutgoingEmailTypeAndName;
-        List<String> emailFieldNames = dMContextAndExecution.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
-                executionStatus,
-                false,
-                true,
-                response,
-                Optional.of("Composing new email. " + "\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + "."),
-                true,
-                internalState);
-
-        return new ActionResponse(response.toString(), success);
-    }
-
 
     public ActionResponse yes(InfoForCommand infoForCommand)
     {
         if (internalState.isPendingOnEmailCreation())
         {
-            return composeEmail(infoForCommand);
+            //composeEmail(infoForCommand);
+            return createInstanceByConceptName(infoForCommand, OutgoingEmail.strOutgoingEmailTypeAndName);
         } else if (internalState.isPendingOnLearning())
         {
             String lastCommand = internalState.startLearning();
@@ -443,78 +422,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     /*
-        must either have val or jsonVal
-     */
-    private ActionResponse set(InfoForCommand infoForCommand, Optional<String> conceptName, Optional<String> instanceName, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal, boolean appendToExisting, boolean appendToEnd)
-    {
-        if (!val.isPresent() && !jsonVal.isPresent())
-        {
-            return new ActionResponse("I don't know what I should set it to, please rephrase.", false);
-        }
-        if (instanceName.isPresent())
-            instanceName = Optional.of(AliasMapping.instanceNameMapping(instanceName.get()));
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        Optional<GenericInstance> theInstance;
-        if (conceptName.isPresent()) //must also have instanceName
-        {
-            if (!conceptContainer.doesConceptExist(conceptName.get()))
-            {
-                return new ActionResponse("I am not familiar with the concept: \"" + conceptName.get() + "\". Please define it first, or use a different concept.", false);
-            }
-            if (!conceptContainer.doesFieldExistInConcept(conceptName.get(), fieldName))
-            {
-                return new ActionResponse("The concept: \"" + conceptName + "\", does not have a field \"" + fieldName + "\". Please define it first, or use a different field.", false);
-            }
-
-            StringBuilder response = new StringBuilder();
-            if ((conceptName.equals("email") || conceptName.equals("outgoing email")) &&
-                    (instanceName.equals("outgoing email") || instanceName.equals("composed email") || instanceName.equals("email")))
-            //TODO: these rules should be done in a smarter way (maybe rely on the parser).
-            {
-                //only outgoing email can be manipulated
-                Optional<OutgoingEmail> emailInstance = dMContextAndExecution.getEmailBeingComposed(executionStatus);
-                if (emailInstance.isPresent())
-                {
-                    theInstance = Optional.of(emailInstance.get());
-                }
-                else
-                {
-                    TextFormattingUtils.noEmailFound(response, internalState);
-                    return new ActionResponse(response.toString(), false);
-                }
-            } else
-            {
-                theInstance = instanceContainer.getInstance(executionStatus, conceptName.get(), instanceName.get());
-            }
-
-        }
-        else
-        {
-            theInstance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName));
-        }
-
-        StringBuilder response = new StringBuilder();
-
-        if (TextFormattingUtils.testOkAndFormat(infoForCommand,
-                executionStatus,
-                false,
-                true,
-                response,
-                Optional.empty(),
-                false,
-                internalState
-        ))
-        {
-              return null;//set(infoForCommand, fieldName, theInstance.get(), val, jsonVal, appendToExisting, appendToEnd);
-
-        }
-
-        return  new ActionResponse(response.toString(), false);
-
-    }
-
-
-    /*
      must either have val or jsonVal
      */
     private ActionResponse setAndAdd(InfoForCommand infoForCommand, FieldHolder theField, Optional<String> val, Optional<JSONObject> jsonVal, boolean addToExisting, boolean appendToEnd)
@@ -560,11 +467,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
-    public ActionResponse defineConcept(InfoForCommand infoForCommand, String conceptName)
+    public ActionResponse defineConcept(InfoForCommand infoForCommand, String newConceptName)
     {
         //TODO: remember what was the last concept defined, and add fields to is if no concept is given.
         ExecutionStatus executionStatus = new ExecutionStatus();
-        conceptContainer.defineConcept(executionStatus, conceptName);
+        conceptContainer.defineConcept(executionStatus, newConceptName);
 
         StringBuilder response = new StringBuilder();
         boolean success =
@@ -573,18 +480,18 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 true,
                 response,
-                Optional.of("Concept \"" + conceptName + "\" was created successfully. Please define its fields."),
+                Optional.of("Concept \"" + newConceptName + "\" was created successfully. Please define its fields."),
                 false,
                 internalState);
         if (success)
         {
-            commandsToParser.newConceptDefined(conceptName);
+            commandsToParser.newConceptDefined(newConceptName);
         }
         return new ActionResponse(response.toString(), success);
     }
 
     @Override
-    public ActionResponse addFieldToConcept(InfoForCommand infoForCommand, String fieldName)
+    public ActionResponse addFieldToProbConcept(InfoForCommand infoForCommand, String newFieldName)
     {
         //TODO: use timestamp (just like with the instances) to resolve ambiguity
         return null;
@@ -601,11 +508,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (conceptName.endsWith("list") || conceptName.endsWith("s")) //TODO: should use plural vs. singular not just use s!
             isList = true;
 
-        return addFieldToConcept(infoForCommand,conceptName,fieldName, possibleFieldType,isList);
+        return addFieldToConceptWithType(infoForCommand,conceptName,fieldName, possibleFieldType,isList);
     }
 
     @Override
-    public ActionResponse addFieldToConcept(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList)
+    public ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
         conceptContainer.addFieldToConcept(executionStatus, conceptName, new FieldDescription(fieldName, possibleFieldType, isList));
@@ -627,10 +534,33 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
-    public ActionResponse createInstance(InfoForCommand infoForCommand, String conceptName, String instanceName)
+    public ActionResponse createInstanceByConceptName(InfoForCommand infoForCommand, String conceptName)
+    {
+        if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+        {
+            ExecutionStatus executionStatus = new ExecutionStatus();
+            dMContextAndExecution.createNewEmail(executionStatus);
+            StringBuilder response = new StringBuilder();
+            List<String> emailFieldNames = dMContextAndExecution.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
+            boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+                    executionStatus,
+                    false,
+                    true,
+                    response,
+                    Optional.of("Composing new email. " + "\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + "."),
+                    true,
+                    internalState);
+
+            return new ActionResponse(response.toString(), success);
+        }
+        return new ActionResponse("Creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name).", false);
+    }
+
+    @Override
+    public ActionResponse createInstanceByFullNames(InfoForCommand infoForCommand, String conceptName, String newInstanceName)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
-        instanceContainer.addInstance(executionStatus, conceptName, instanceName);
+        instanceContainer.addInstance(executionStatus, conceptName, newInstanceName);
 
         StringBuilder response = new StringBuilder();
         boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
@@ -638,12 +568,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 true,
                 response,
-                Optional.of("Instance \"" + instanceName + "\" (of concept \"" + conceptName + "\") was created. "),
+                Optional.of("Instance \"" + newInstanceName + "\" (of concept \"" + conceptName + "\") was created. "),
                 false,
                 internalState);
         if (success)
         {
-            commandsToParser.newInstanceDefined(instanceName);
+            commandsToParser.newInstanceDefined(newInstanceName);
             response.append(listFieldsOfConcept(conceptName));
         }
         return new ActionResponse(response.toString(), success);
@@ -655,7 +585,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
-    public ActionResponse createInstance(InfoForCommand infoForCommand, String instanceName)
+    public ActionResponse createInstanceByInstanceName(InfoForCommand infoForCommand, String newInstanceName)
     {
         return null;
     }

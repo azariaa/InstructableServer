@@ -60,6 +60,16 @@ public class LispExecutor
         {
             try
             {
+                //make sure all ActionResponse we got are success, otherwise just propagate them up
+                for (Object obj : argumentValues)
+                {
+                    if (obj instanceof ActionResponse)
+                    {
+                        if (!((ActionResponse)obj).isSuccess())
+                            return obj;
+                    }
+                }
+
                 //first get function by name (no overloading so it is easy)
                 //we can't use IAllUserActions.class.getMethod(currentFunction), because we don't know the parameters
                 Method method = null;

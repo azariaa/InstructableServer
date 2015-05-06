@@ -12,7 +12,7 @@ public interface IAllUserActions
 {
     ActionResponse sendEmail(InfoForCommand infoForCommand);
 
-    ActionResponse composeEmail(InfoForCommand infoForCommand);
+    //ActionResponse composeEmail(InfoForCommand infoForCommand);
 
     ActionResponse yes(InfoForCommand infoForCommand);
 
@@ -59,18 +59,20 @@ public interface IAllUserActions
     ActionResponse addToFieldAtStartFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 
 
-    ActionResponse defineConcept(InfoForCommand infoForCommand, String conceptName);
+    ActionResponse defineConcept(InfoForCommand infoForCommand, String newConceptName);
 
-    ActionResponse addFieldToConcept(InfoForCommand infoForCommand, String fieldName);
+    ActionResponse addFieldToProbConcept(InfoForCommand infoForCommand, String newFieldName);
 
     //I will try to learn field type and isList from the fieldName?
     ActionResponse addFieldToConcept(InfoForCommand infoForCommand, String conceptName, String fieldName);
 
-    ActionResponse addFieldToConcept(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
+    ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
 
-    ActionResponse createInstance(InfoForCommand infoForCommand, String conceptName, String instanceName);
+    ActionResponse createInstanceByConceptName(InfoForCommand infoForCommand, String conceptName);
 
-    ActionResponse createInstance(InfoForCommand infoForCommand, String instanceName);
+    ActionResponse createInstanceByFullNames(InfoForCommand infoForCommand, String conceptName, String newInstanceName);
+
+    ActionResponse createInstanceByInstanceName(InfoForCommand infoForCommand, String newInstanceName);
 
     ActionResponse setFieldTypeKnownConcept(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
 

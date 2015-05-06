@@ -65,36 +65,36 @@ public class TestScenario
 
         sendingBasicEmail(allUserActions, testHelpers, parserSettings);
 
-        definingContact(allUserActions, testHelpers);
+        definingContact(allUserActions, testHelpers, parserSettings);
 
-        setFromGet(allUserActions, testHelpers);
+        setFromGet(allUserActions, testHelpers, parserSettings);
 
-        teachingToSetRecipientAsContact(allUserActions, testHelpers);
+        teachingToSetRecipientAsContact(allUserActions, testHelpers, parserSettings);
 
-        buildRequiredDB((TopDMAllActions)allUserActions, testHelpers);
+        buildRequiredDB((TopDMAllActions)allUserActions, testHelpers, parserSettings);
 
-        learningToForwardAnEmail(allUserActions, testHelpers);
+        learningToForwardAnEmail(allUserActions, testHelpers, parserSettings);
 
         testHelpers.endTest();
         //emailSomeoneSomeText()
     }
 
 
-    private static ParserSettings createParser()
+    public static ParserSettings createParser()
     {
-        String[] lexiconEntries1 = new String[] {"\"send\",\"S{0}\",\"(sendEmail)\",\"0 sendEmail\"",
-                "\"set\",\"((S{0}/PP_String{2}){0}/Field{1}){0}\",\"(lambda $1 $2 (setFieldFromString $1 $2))\",\"0 setFieldFromString\",\"setFieldFromString 1 1\",\"setFieldFromString 2 2\"",
-                "\"set\",\"((S{0}/PP_Field{2}){0}/String{1}){0}\",\"(lambda $1 $2 (setFieldFromString $2 $1))\",\"0 setFieldFromString\",\"setFieldFromString 1 1\",\"setFieldFromString 2 2\"",
-                "\"of\",\"((Field{0}\\FieldName{2}){0}/InstanceName{1}){0}\",\"(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $1 $2))\",\"0 getProbFieldByInstanceNameAndFieldName\",\"getProbFieldByInstanceNameAndFieldName 1 1\",\"getProbFieldByInstanceNameAndFieldName 2 2\"",
-                "\"to\",\"(PP_String{0}/String{1}){0}\",\"(lambda $1 $1)\", \"0 to\", \"to 1 1\"",
-                "as,PP_String/String,(lambda $1 $1)",
-                "as,PP_Field/Field,(lambda $1 $1)",
-                "body,FieldName{0},body,0 body",
-                "email,InstanceName{0},outgoing_email,0 outgoing_email",
-                "recipient,FieldName{0},recipient_list,0 recipient_list",
-                "subject,FieldName{0},subject,0 subject",
-                "bob,InstanceName{0},bob,0 bob"
-        };
+//        String[] lexiconEntries1 = new String[] {"\"send\",\"S{0}\",\"(sendEmail)\",\"0 sendEmail\"",
+//                "\"set\",\"((S{0}/PP_String{2}){0}/Field{1}){0}\",\"(lambda $1 $2 (setFieldFromString $1 $2))\",\"0 setFieldFromString\",\"setFieldFromString 1 1\",\"setFieldFromString 2 2\"",
+//                "\"set\",\"((S{0}/PP_Field{2}){0}/String{1}){0}\",\"(lambda $1 $2 (setFieldFromString $2 $1))\",\"0 setFieldFromString\",\"setFieldFromString 1 1\",\"setFieldFromString 2 2\"",
+//                "\"of\",\"((Field{0}\\FieldName{2}){0}/InstanceName{1}){0}\",\"(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $1 $2))\",\"0 getProbFieldByInstanceNameAndFieldName\",\"getProbFieldByInstanceNameAndFieldName 1 1\",\"getProbFieldByInstanceNameAndFieldName 2 2\"",
+//                "\"to\",\"(PP_String{0}/String{1}){0}\",\"(lambda $1 $1)\", \"0 to\", \"to 1 1\"",
+//                "as,PP_String/String,(lambda $1 $1)",
+//                "as,PP_Field/Field,(lambda $1 $1)",
+//                "body,FieldName{0},body,0 body",
+//                "email,InstanceName{0},outgoing_email,0 outgoing_email",
+//                "recipient,FieldName{0},recipient_list,0 recipient_list",
+//                "subject,FieldName{0},subject,0 subject",
+//                "bob,InstanceName{0},bob,0 bob"
+//        };
 
         List<String> lexiconEntries = null;
         try
@@ -111,15 +111,19 @@ public class TestScenario
         };
 
 
-        String[][] examplesArr = new String[][] {{"send email", "(sendEmail)"},
-                {"set the body of bob to bar world", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email body) \"bar world\")"},
-                {"set the recipient list of the email to myself@myjob.com", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email recipient_list) \"myself@myjob.com\")"},
-                {"set the subject of this email to hello world and you too", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email subject) \"hello world and you too\")"},
-                {"set the subject of this email to what", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email subject) \"what\")"},
-                {"set the subject of this email as when", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email subject) \"when\")"}
-        };
+//        String[][] examplesArr = new String[][] {{"send email", "(sendEmail)"},
+//                {"set the body of bob to bar world", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email body) \"bar world\")"},
+//                {"set the recipient list of the email to myself@myjob.com", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email recipient_list) \"myself@myjob.com\")"},
+//                {"set the subject of this email to hello world and you too", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email subject) \"hello world and you too\")"},
+//                {"set the subject of this email to what", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email subject) \"what\")"},
+//                {"set the subject of this email as when", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName outgoing_email subject) \"when\")"},
+//                {"add email to contact", "(addFieldToConcept contact \"email\")"},
+//                {"set bob's email to baba", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName bob email) \"baba\")"},
+//                {"set jane's email to baba", "(setFieldFromString (getProbFieldByInstanceNameAndFieldName jane email) \"baba\")"},
+//                {"and set it as jane's email","(setFieldFromPreviousEval (getProbFieldByInstanceNameAndFieldName jane email))"}
+//        };
 
-        return CcgUtils.getParserSettings(lexiconEntries, unaryRules, examplesArr);
+        return CcgUtils.getParserSettings(lexiconEntries, unaryRules, CcgUtils.loadExamples(Paths.get("data/examples.csv")));
     }
 
 
@@ -132,14 +136,14 @@ public class TestScenario
 
         userSays = "send an email";
         testHelpers.userSays(userSays);
-        Expression2 expression = CcgUtils.parse(parserSettings.parser, CcgUtils.tokenize(userSays));
-        response = CcgUtils.evaluate(allUserActions, userSays, expression, parserSettings);
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         //response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "yes";
         testHelpers.userSays(userSays);
-        response = allUserActions.yes(new InfoForCommand(userSays,null));
+        //response = allUserActions.yes(new InfoForCommand(userSays,null));
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set the subject of this email to hello";
@@ -166,41 +170,46 @@ public class TestScenario
 
         userSays = "send the email";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
+        //response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set myself as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
-        if (response.isSuccess())
-        {
-            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "myself");
-        }
+//        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+//        if (response.isSuccess())
+//        {
+//            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "myself");
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         //how should we know that recipient is recipient list? Leave it for the parser?
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set myself@myjob.com as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
-        if (response.isSuccess())
-        {
-            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "myself@myjob.com");
-        }
+//        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+//        if (response.isSuccess())
+//        {
+//            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "myself@myjob.com");
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         //could learn something from this?!
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "send";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        //response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "send";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        //response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
     }
 
-    private static void definingContact(IAllUserActions allUserActions, TestHelpers testHelpers)
+    private static void definingContact(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
     {
         testHelpers.newSection("definingContact");
 
@@ -209,18 +218,21 @@ public class TestScenario
 
         userSays = "compose a new email";
         testHelpers.userSays(userSays);
-        response = allUserActions.composeEmail(new InfoForCommand(userSays, null));
+        //response = allUserActions.createInstanceByConceptName(new InfoForCommand(userSays, null), "outgoing email");
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set my spouse as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
-        if (response.isSuccess())
-        {
-            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "my spouse");
-        }
+//        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+//        if (response.isSuccess())
+//        {
+//            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "my spouse");
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
+        //TODO: didn't do this one
         userSays = "I want to teach you what a contact is";
         testHelpers.userSays(userSays);
         response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
@@ -228,41 +240,48 @@ public class TestScenario
 
         userSays = "Define contact!";
         testHelpers.userSays(userSays);
-        response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
+        //response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "add email as a field in contact";
         testHelpers.userSays(userSays);
+        //TODO: left this for the next
         response = allUserActions.addFieldToConcept(new InfoForCommand(userSays,null), "contact", "email");
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "create a contact, call it bob";
         testHelpers.userSays(userSays);
-        response = allUserActions.createInstance(new InfoForCommand(userSays,null), "contact", "bob");
+        //TODO: left this for the next
+        response = allUserActions.createInstanceByFullNames(new InfoForCommand(userSays, null), "contact", "bob");
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set bob's email to baba";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
-        if (response.isSuccess())
-        {
-            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "baba");
-        }
+//        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
+//        if (response.isSuccess())
+//        {
+//            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "baba");
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set bob's email to bob@gmail.com";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
-        if (response.isSuccess())
-        {
-            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "bob@gmail.com");
-        }
+//        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
+//        if (response.isSuccess())
+//        {
+//            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "bob@gmail.com");
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
     }
 
 
-    private static void setFromGet(IAllUserActions allUserActions, TestHelpers testHelpers)
+    private static void setFromGet(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
     {
         testHelpers.newSection("setFromGet");
 
@@ -271,38 +290,42 @@ public class TestScenario
 
         userSays = "what is bob's email?";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
-        if (response.isSuccess())
-        {
-            //the parser should no not to return a field to the user but first evaluate it
-            response = allUserActions.evalField(new InfoForCommand(userSays, null), response.getField());
-        }
+//        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
+//        if (response.isSuccess())
+//        {
+//            //the parser should no not to return a field to the user but first evaluate it
+//            response = allUserActions.evalField(new InfoForCommand(userSays, null), response.getField());
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
         //testHelpers.systemSays(response.value.get().toJSONString());
 
         userSays = "create a contact jane";
         testHelpers.userSays(userSays);
-        response = allUserActions.createInstance(new InfoForCommand(userSays,null), "contact", "jane");
+        //response = allUserActions.createInstanceByFullNames(new InfoForCommand(userSays, null), "contact", "jane");
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
 
         userSays = "take bob's email";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
-        if (response.isSuccess())
-        {
-            //maybe this should be done automatically every time.
-            response = allUserActions.evalField(new InfoForCommand(userSays, null), response.getField());
-        }
+//        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
+//        if (response.isSuccess())
+//        {
+//            //maybe this should be done automatically every time.
+//            response = allUserActions.evalField(new InfoForCommand(userSays, null), response.getField());
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "and set it as jane's email";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "jane", "email");
-        if (response.isSuccess())
-        {
-            response = allUserActions.setFieldFromPreviousEval(new InfoForCommand(userSays, null), response.getField());
-        }
+//        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "jane", "email");
+//        if (response.isSuccess())
+//        {
+//            response = allUserActions.setFieldFromPreviousEval(new InfoForCommand(userSays, null), response.getField());
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
 
@@ -325,27 +348,30 @@ public class TestScenario
                 }
             }
         }
+        //TODO: think what to do with set with bob's email behind'
+        //response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set the recipient to be bob's email";
         testHelpers.userSays(userSays);
         //parser should translate to:
         //(set (get recipient_list) (eval (get bob email)))
-        ActionResponse recipientField = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
-        if (recipientField.isSuccess())
-        {
-            ActionResponse bobEmailField = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
-
-            if (bobEmailField.isSuccess())
-            {
-                ActionResponse bobEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null) , bobEmailField.getField());
-
-                if (bobEmailFieldVal.isSuccess())
-                {
-                    response = allUserActions.setFieldFromFieldVal(new InfoForCommand(userSays, null), recipientField.getField(), bobEmailFieldVal.getValue());
-                }
-            }
-        }
+//        ActionResponse recipientField = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+//        if (recipientField.isSuccess())
+//        {
+//            ActionResponse bobEmailField = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
+//
+//            if (bobEmailField.isSuccess())
+//            {
+//                ActionResponse bobEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null) , bobEmailField.getField());
+//
+//                if (bobEmailFieldVal.isSuccess())
+//                {
+//                    response = allUserActions.setFieldFromFieldVal(new InfoForCommand(userSays, null), recipientField.getField(), bobEmailFieldVal.getValue());
+//                }
+//            }
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
 
@@ -354,17 +380,18 @@ public class TestScenario
         testHelpers.userSays(userSays);
         //parser should translate to:
         //(add (get recipient_list) "nana@gmail.com")
-        recipientField = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
-        if (recipientField.isSuccess())
-        {
-            response = allUserActions.addToFieldFromString(new InfoForCommand(userSays, null), recipientField.getField(), "nana@gmail.com");
-        }
+//        ActionResponse recipientField = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+//        if (recipientField.isSuccess())
+//        {
+//            response = allUserActions.addToFieldFromString(new InfoForCommand(userSays, null), recipientField.getField(), "nana@gmail.com");
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
 
         testHelpers.systemSays(response.getSayToUser());
     }
 
 
-    private static void teachingToSetRecipientAsContact(IAllUserActions allUserActions, TestHelpers testHelpers)
+    private static void teachingToSetRecipientAsContact(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
     {
         testHelpers.newSection("teachingToSetRecipientAsContact");
 
@@ -373,17 +400,19 @@ public class TestScenario
 
         userSays = "compose an email";
         testHelpers.userSays(userSays);
-        response = allUserActions.composeEmail(new InfoForCommand(userSays,null));
+        //response = allUserActions.createInstanceByConceptName(new InfoForCommand(userSays,null), "outgoing email");
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set jane's email to be jane@gmail.com";
         //(set (get jane email) jane@gmail.com)
-        testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "jane", "email");
-        if (response.isSuccess())
-        {
-            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "jane@gmail.com");
-        }
+//        testHelpers.userSays(userSays);
+//        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "jane", "email");
+//        if (response.isSuccess())
+//        {
+//            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "jane@gmail.com");
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "make bob the recipient";
@@ -394,27 +423,30 @@ public class TestScenario
 
         userSays = "yes";
         testHelpers.userSays(userSays);
-        response = allUserActions.yes(new InfoForCommand(userSays,null));
+        //response = allUserActions.yes(new InfoForCommand(userSays,null));
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "take bob's email";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
-        if (response.isSuccess())
-        {
-            //maybe this should be done automatically every time.
-            response = allUserActions.evalField(new InfoForCommand(userSays, null), response.getField());
-        }
+//        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
+//        if (response.isSuccess())
+//        {
+//            //maybe this should be done automatically every time.
+//            response = allUserActions.evalField(new InfoForCommand(userSays, null), response.getField());
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "and set it as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
-        if (response.isSuccess())
-        {
-            //but then it will fail here...
-            response = allUserActions.setFieldFromPreviousEval(new InfoForCommand(userSays, null), response.getField());
-        }
+//        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+//        if (response.isSuccess())
+//        {
+//            //but then it will fail here...
+//            response = allUserActions.setFieldFromPreviousEval(new InfoForCommand(userSays, null), response.getField());
+//        }
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "that's it";
@@ -449,7 +481,7 @@ public class TestScenario
 
 
 
-    private static void buildRequiredDB(TopDMAllActions topDMAllActions, TestHelpers testHelpers)
+    private static void buildRequiredDB(TopDMAllActions topDMAllActions, TestHelpers testHelpers, ParserSettings parserSettings)
     {
         testHelpers.newSection("buildRequiredDB");
 
@@ -460,14 +492,16 @@ public class TestScenario
 
         userSays = "create a contact my spouse";
         testHelpers.userSays(userSays);
-        response = allUserActions.createInstance(new InfoForCommand(userSays,null), "contact", "my spouse");
+        response = allUserActions.createInstanceByFullNames(new InfoForCommand(userSays, null), "contact", "my spouse");
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set its email to my.spouse@gmail.com";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays,null), "email");
-        if (response.isSuccess())
-            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "my.spouse@gmail.com");
+//        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays,null), "email");
+//        if (response.isSuccess())
+//            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "my.spouse@gmail.com");
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         incomingEmailControlling.addEmailMessageToInbox(new EmailMessage("bob7@myjob.com",
@@ -486,7 +520,7 @@ public class TestScenario
     }
 
 
-    private static void learningToForwardAnEmail(IAllUserActions allUserActions, TestHelpers testHelpers)
+    private static void learningToForwardAnEmail(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
     {
         testHelpers.newSection("learningToForwardAnEmail");
 
@@ -505,7 +539,8 @@ public class TestScenario
 
         userSays = "first create a new email";
         testHelpers.userSays(userSays);
-        response = allUserActions.composeEmail(new InfoForCommand(userSays,null));
+        //response = allUserActions.createInstanceByConceptName(new InfoForCommand(userSays, null), "outgoing email");
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "then copy the subject from the incoming email to the outgoing email";
@@ -515,9 +550,10 @@ public class TestScenario
 
         userSays = "take the subject from the incoming email";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "inbox", "subject");
-        if (response.isSuccess())
-            response = allUserActions.evalField(new InfoForCommand(userSays,null), response.getField());
+//        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "inbox", "subject");
+//        if (response.isSuccess())
+//            response = allUserActions.evalField(new InfoForCommand(userSays,null), response.getField());
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "and set it as the outgoing email's subject";
@@ -528,23 +564,26 @@ public class TestScenario
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "take the body from the incoming email";
-        testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "inbox", "body");
-        if (response.isSuccess())
-            response = allUserActions.evalField(new InfoForCommand(userSays, null), response.getField());
+//        testHelpers.userSays(userSays);
+//        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "inbox", "body");
+//        if (response.isSuccess())
+//            response = allUserActions.evalField(new InfoForCommand(userSays, null), response.getField());
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "and set it as the body";
         testHelpers.userSays(userSays);
         //response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "body"); //TODO: should understand since incoming email should not be mutable, or maybe leave for parser
-        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "outgoing email", "body");
-        if (response.isSuccess())
-            response = allUserActions.setFieldFromPreviousEval(new InfoForCommand(userSays, null), response.getField());
+//        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "outgoing email", "body");
+//        if (response.isSuccess())
+//            response = allUserActions.setFieldFromPreviousEval(new InfoForCommand(userSays, null), response.getField());
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "send the email";
-        testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+//        testHelpers.userSays(userSays);
+//        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "oh, yeah, set the recipient as my spouse";
@@ -570,8 +609,9 @@ public class TestScenario
         }
 
         userSays = "now send the email";
-        testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+//        testHelpers.userSays(userSays);
+//        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "that's it, you're done!";
