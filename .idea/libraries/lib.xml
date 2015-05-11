@@ -4,7 +4,11 @@
       <root url="file://$PROJECT_DIR$/lib" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../jklol-1.1/performance" />
+      <root url="file://$PROJECT_DIR$/../jklol-1.1/src" />
+      <root url="file://$PROJECT_DIR$/../jklol-1.1/test" />
+    </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
   </library>
 </component>

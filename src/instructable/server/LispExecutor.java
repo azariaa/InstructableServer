@@ -9,8 +9,10 @@ import org.json.simple.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 28-Apr-15.
@@ -20,10 +22,19 @@ public class LispExecutor
     IAllUserActions allUserActions;
     InfoForCommand infoForCommand;
 
+    static final String doSeq = "doSeq";
+
     public LispExecutor(IAllUserActions allUserActions, InfoForCommand infoForCommand)
     {
         this.allUserActions = allUserActions;
         this.infoForCommand = infoForCommand;
+    }
+
+    public static List<String> allFunctionNames()
+    {
+        List<String> allFunctionNames = Arrays.asList(IAllUserActions.class.getMethods()).stream().map(x -> x.getName()).collect(Collectors.toList());
+        allFunctionNames.add(doSeq);
+        return allFunctionNames;
     }
 
     public List<FunctionToExecute> getAllFunctions()
@@ -32,9 +43,9 @@ public class LispExecutor
         List<FunctionToExecute> functionToExecutes = new LinkedList<>();
         Method[] methods = IAllUserActions.class.getMethods();
         // Arrays.asList(methods).forEach(method -> env.bindName(method.getName(), lispExecutor.getFunction(method.getName()), symbolTable));
-        for (Method method : methods)
+        for (String functionName : allFunctionNames())
         {
-            functionToExecutes.add(new FunctionToExecute(method.getName()));
+            functionToExecutes.add(new FunctionToExecute(functionName));
         }
         return functionToExecutes;
     }
@@ -60,6 +71,7 @@ public class LispExecutor
         {
             try
             {
+                ActionResponse lastResponse = null;
                 //make sure all ActionResponse we got are success, otherwise just propagate them up
                 for (Object obj : argumentValues)
                 {
@@ -67,7 +79,16 @@ public class LispExecutor
                     {
                         if (!((ActionResponse)obj).isSuccess())
                             return obj;
+                        else
+                            lastResponse = (ActionResponse)obj;
                     }
+                }
+
+                if (currentFunction.equals(doSeq))
+                {
+                    if (lastResponse == null)
+                        return new ActionResponse("Error! called do sequential, but no response found.", false);
+                    return lastResponse;
                 }
 
                 //first get function by name (no overloading so it is easy)
@@ -114,37 +135,6 @@ public class LispExecutor
             {
                 e.printStackTrace();
             }
-//
-//            switch(currentFunction)
-//            {
-//                //do all this with reflection.
-//
-//
-//                IAllUserActions.class.getMethod(currentFunction);
-//                case "sendEmail":
-//                    Preconditions.checkArgument(argumentValues.size() == 0);
-//                    return allUserActions.sendEmail(infoForCommand);
-//                case "composeEmail":
-//                    return allUserActions.composeEmail(infoForCommand);
-//                case "yes":
-//                    return allUserActions.yes(infoForCommand);
-//                case "no":
-//                    return allUserActions.no(infoForCommand);
-//                //case "cancel":
-//                    //return allUserActions.cancel(infoForCommand);
-//
-//                case "getProbFieldByInstanceNameAndFieldName":
-//                    return allUserActions.getProbFieldByInstanceNameAndFieldName(infoForCommand,(String)argumentValues.get(0),(String)argumentValues.get(1));
-//                case "getProbFieldByFieldName":
-//                    return allUserActions.getProbFieldByFieldName(infoForCommand, (String)argumentValues.get(0));
-//                case "evalField":
-//                    return allUserActions.evalField(infoForCommand, ((ActionResponse)argumentValues.get(0)).getField());
-//                case "setFieldFromString":
-//                    return allUserActions.setFieldFromString(infoForCommand,((ActionResponse)argumentValues.get(0)).getField(),(String)argumentValues.get(1));
-//
-//
-//
-//            }
             return null;
         }
     }

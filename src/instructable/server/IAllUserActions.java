@@ -34,6 +34,12 @@ public interface IAllUserActions
 
     ActionResponse getProbFieldByFieldName(InfoForCommand infoForCommand, String fieldName);
 
+    ActionResponse getProbMutableFieldByInstanceNameAndFieldName(InfoForCommand infoForCommand, String instanceName, String fieldName);
+
+    ActionResponse getProbMutableFieldByFieldName(InfoForCommand infoForCommand, String fieldName);
+
+    ActionResponse getProbFieldVal(InfoForCommand infoForCommand);
+
     //this function may either be used as the most upper level function, or result may be used later for a set, or just if the user asks for information
     ActionResponse evalField(InfoForCommand infoForCommand, FieldHolder field); //from FieldHolder to Json (from field to fieldVal)
 
@@ -44,19 +50,19 @@ public interface IAllUserActions
 
     ActionResponse setFieldFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal);
 
-    ActionResponse setFieldFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
+    //ActionResponse setFieldFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 
     ActionResponse addToFieldFromString(InfoForCommand infoForCommand, FieldHolder field, String val);
 
     ActionResponse addToFieldFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal);
 
-    ActionResponse addToFieldFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
+    //ActionResponse addToFieldFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 
     ActionResponse addToFieldAtStartFromString(InfoForCommand infoForCommand, FieldHolder field, String val);
 
     ActionResponse addToFieldAtStartFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal);
 
-    ActionResponse addToFieldAtStartFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
+    //ActionResponse addToFieldAtStartFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 
 
     ActionResponse defineConcept(InfoForCommand infoForCommand, String newConceptName);
@@ -66,7 +72,7 @@ public interface IAllUserActions
     //I will try to learn field type and isList from the fieldName?
     ActionResponse addFieldToConcept(InfoForCommand infoForCommand, String conceptName, String fieldName);
 
-    ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
+    ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList, boolean mutable);
 
     ActionResponse createInstanceByConceptName(InfoForCommand infoForCommand, String conceptName);
 
@@ -80,7 +86,7 @@ public interface IAllUserActions
 
     ActionResponse unknownCommand(InfoForCommand infoForCommand);
 
-    ActionResponse endLearning(InfoForCommand infoForCommand); // e.g. "that's it"
+    ActionResponse end(InfoForCommand infoForCommand); // mostly for end learning e.g. "that's it"
 
 
     ActionResponse deleteConcept(InfoForCommand infoForCommand, String conceptName);

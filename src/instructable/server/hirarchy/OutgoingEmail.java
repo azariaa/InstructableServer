@@ -15,10 +15,14 @@ public class OutgoingEmail extends EmailMessage
 
     public OutgoingEmail(ExecutionStatus executionStatus, String myEmail)
     {
-        super(strOutgoingEmailTypeAndName, strOutgoingEmailTypeAndName);
-        setField(executionStatus, senderStr, Optional.of(myEmail), Optional.empty(), false, true);
+        super(strOutgoingEmailTypeAndName, strOutgoingEmailTypeAndName, getFieldDescriptions());
+        setField(executionStatus, senderStr, Optional.of(myEmail), Optional.empty(), false, true, true);
     }
 
+    static public FieldDescription[] getFieldDescriptions()
+    {
+        return getFieldDescriptions(true);
+    }
 
     public void sendEmail(ExecutionStatus executionStatus)
     {

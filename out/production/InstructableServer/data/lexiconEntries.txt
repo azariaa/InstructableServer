@@ -1,43 +1,31 @@
 "send","S{0}","(sendEmail)","0 sendEmail"
 yes,S{0},(yes)
-ok,S{0},(yes)
-sure,S{0},(yes)
-finish,S{0},(end)
-end,S{0},(end)
-"that 's it",S{0},(end)
 "compose","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 "create","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 create,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
-create,((S{0}/ConceptName{2}){0}/String{1}), (lambda $1 $2 (createInstanceByFullNames $2 $1))
 define,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
-teach,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
 add,((S{0}/ConceptName{2}){0}/String{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
-add,((S{0}/PP_MutableField{2}){0}/String{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
+add,((S{0}/PP_Field{2}){0}/String{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
 what,(S{0}/Field{1}){0},(lambda $1 (evalField $1))
 take,(FieldVal{0}/Field{1}){0},(lambda $1 (evalField $1))
-"set","((S{0}/PP_String{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
-"set","((S{0}/PP_FieldVal{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $1 $2))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2"
-"set","((S{0}/PP_MutableField{2}){0}/String{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
-"set","((S{0}/PP_MutableField{2}){0}/FieldVal{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $2 $1))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2"
-"put","((S{0}/PP_MutableField{2}){0}/String{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
+"set","((S{0}/PP_String{2}){0}/Field{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
+"set","((S{0}/PP_Field{2}){0}/String{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
+"set","((S{0}/FieldVal{2}){0}/Field{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
+set,((S{0}/PP_Field{2}){0}/CoRef{1}){0},(lambda $1 $2 (setFieldFromPreviousEval $2))
+"put","((S{0}/PP_Field{2}){0}/String{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
 "of","((Field{0}\FieldName{2}){0}/InstanceName{1}){0}","(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $1 $2))","0 getProbFieldByInstanceNameAndFieldName","getProbFieldByInstanceNameAndFieldName 1 1","getProbFieldByInstanceNameAndFieldName 2 2"
-of,((MutableField{0}\FieldName{2}){0}/InstanceName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $1 $2))
 "from","((Field{0}\FieldName{2}){0}/InstanceName{1}){0}","(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $1 $2))","0 getProbFieldByInstanceNameAndFieldName","getProbFieldByInstanceNameAndFieldName 1 1","getProbFieldByInstanceNameAndFieldName 2 2"
 "the value",String/String,(lambda $1 $1)
 's,((Field{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $2 $1))
-'s,((MutableField{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $2 $1))
-it,FieldVal{0},(getProbFieldVal),0 getProbFieldVal
 to,PP_String/String,(lambda $1 $1)
 to,PP_Field/Field,(lambda $1 $1)
-to,PP_MutableField/MutableField,(lambda $1 $1)
-to,PP_FieldVal/FieldVal,(lambda $1 $1)
 as,PP_String/String,(lambda $1 $1)
-as,PP_MutableField/MutableField,(lambda $1 $1)
-in,PP_MutableField/MutableField,(lambda $1 $1)
-inside,PP_MutableField/MutableField,(lambda $1 $1)
+as,PP_Field/Field,(lambda $1 $1)
+in,PP_Field/Field,(lambda $1 $1)
+inside,PP_Field/Field,(lambda $1 $1)
+it,CoRef{0},it,0 it
 body,FieldName{0},body,0 body
 "incoming email",InstanceName{0},inbox
-inbox,InstanceName{0},inbox
 email,InstanceName{0},outgoing_email,0 outgoing_email
 email,ConceptName{0},outgoing_email,0 outgoing_email
 recipient,FieldName{0},recipient_list,0 recipient_list

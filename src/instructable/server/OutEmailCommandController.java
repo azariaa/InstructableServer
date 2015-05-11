@@ -17,7 +17,7 @@ public class OutEmailCommandController
     OutEmailCommandController(String myEmail, ConceptContainer conceptContainer, InstanceContainer instanceContainer)
     {
         this.myEmail = myEmail;
-        conceptContainer.defineConcept(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, EmailMessage.fieldDescriptions);
+        conceptContainer.defineConcept(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.getFieldDescriptions());
         this.instanceContainer = instanceContainer;
     }
 

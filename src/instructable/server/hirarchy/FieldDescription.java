@@ -10,10 +10,12 @@ public class FieldDescription
     String fieldName;
     PossibleFieldType fieldType;
     boolean isList;
-    public FieldDescription(String fieldName, PossibleFieldType fieldType, boolean isList)
+    boolean mutable;
+    public FieldDescription(String fieldName, PossibleFieldType fieldType, boolean isList, boolean mutable)
     {
         this.fieldName = fieldName;
         this.fieldType = fieldType;
         this.isList = isList;
+        this.mutable = mutable;
     }
 }

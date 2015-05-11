@@ -33,14 +33,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         this.commandsToParser = commandsToParser;
         internalState = new InternalState();
         //TODO: should really have a class controlling all incoming email
-        conceptContainer.defineConcept(new ExecutionStatus(), EmailMessage.emailMessageType, EmailMessage.fieldDescriptions);
+        conceptContainer.defineConcept(new ExecutionStatus(), IncomingEmail.incomingEmailType, IncomingEmail.getFieldDescriptions());
     }
 
     @Override
-    public void addEmailMessageToInbox(EmailMessage emailMessage)
+    public void addEmailMessageToInbox(IncomingEmail emailMessage)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
-        int numOfMessages = instanceContainer.getAllInstances(EmailMessage.emailMessageType).size();
+        int numOfMessages = instanceContainer.getAllInstances(IncomingEmail.incomingEmailType).size();
         emailMessage.setName(emailMessageNameStart + numOfMessages);
         instanceContainer.addInstance(executionStatus, emailMessage);
     }
@@ -249,7 +249,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         instanceName = addCounterToEmailMessageIdIfRequired(instanceName);
 
         ExecutionStatus executionStatus = new ExecutionStatus();
-        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty());
+        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty(), false);
         StringBuilder response = new StringBuilder();
         if(TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
@@ -268,36 +268,25 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse getProbFieldByInstanceNameAndFieldName(InfoForCommand infoForCommand, String instanceName, String fieldName)
     {
-        instanceName = AliasMapping.instanceNameMapping(instanceName);
-        instanceName = addCounterToEmailMessageIdIfRequired(instanceName);
-
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.of(fieldName));
-        Optional<FieldHolder> field = Optional.empty();
-        if (instance.isPresent())
-        {
-             field = instance.get().getField(executionStatus, fieldName);
-        }
-        StringBuilder response = new StringBuilder();
-        if(TextFormattingUtils.testOkAndFormat(infoForCommand,
-                executionStatus,
-                false,
-                true,
-                response,
-                Optional.of("Got field \"" + fieldName + "\" from instance \"" + instanceName + "\"."),
-                false,
-                internalState))
-        {
-            return new ActionResponse(response.toString(), true, field.get());
-        }
-        return new ActionResponse(response.toString(), false);
+        return getProbField(infoForCommand, Optional.of(instanceName), fieldName, false);
     }
 
     @Override
     public ActionResponse getProbFieldByFieldName(InfoForCommand infoForCommand, String fieldName)
     {
+        return getProbField(infoForCommand, Optional.empty(), fieldName, false);
+    }
+
+    private ActionResponse getProbField(InfoForCommand infoForCommand, Optional<String> instanceName, String fieldName, boolean mutableOnly)
+    {
+        if (instanceName.isPresent())
+        {
+            //instanceName = Optional.of(AliasMapping.instanceNameMapping(instanceName.get()));
+            instanceName = Optional.of(addCounterToEmailMessageIdIfRequired(instanceName.get()));
+        }
+
         ExecutionStatus executionStatus = new ExecutionStatus();
-        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.empty(), Optional.of(fieldName));
+        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly);
         Optional<FieldHolder> field = Optional.empty();
         String successStr = "";
         if (instance.isPresent())
@@ -319,6 +308,26 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             return new ActionResponse(response.toString(), true, field.get());
         }
         return new ActionResponse(response.toString(), false);
+    }
+
+    @Override
+    public ActionResponse getProbMutableFieldByInstanceNameAndFieldName(InfoForCommand infoForCommand, String instanceName, String fieldName)
+    {
+        return getProbField(infoForCommand, Optional.of(instanceName), fieldName, true);
+    }
+
+    @Override
+    public ActionResponse getProbMutableFieldByFieldName(InfoForCommand infoForCommand, String fieldName)
+    {
+        return getProbField(infoForCommand, Optional.empty(), fieldName, true);
+    }
+
+    @Override
+    public ActionResponse getProbFieldVal(InfoForCommand infoForCommand)
+    {
+        if (previousFieldEval.isPresent())
+            return new ActionResponse("It is: " + FieldHolder.fieldFromJSonForUser(previousFieldEval.get()), true, previousFieldEval.get());
+        return new ActionResponse("There is no previously evaluated field." + FieldHolder.fieldFromJSonForUser(previousFieldEval.get()), false);
     }
 
     @Override
@@ -362,11 +371,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         return setAndAdd(infoForCommand, field, Optional.empty(), Optional.of(jsonVal), false, true);
     }
 
-    @Override
-    public ActionResponse setFieldFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field)
-    {
-        return setAndAdd(infoForCommand, field, Optional.empty(), previousFieldEval, false, true);
-    }
 
     @Override
     public ActionResponse addToFieldFromString(InfoForCommand infoForCommand, FieldHolder field, String val)
@@ -380,11 +384,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         return setAndAdd(infoForCommand, field, Optional.empty(), Optional.of(jsonVal), true, true);
     }
 
-    @Override
-    public ActionResponse addToFieldFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field)
-    {
-        return setAndAdd(infoForCommand, field, Optional.empty(), previousFieldEval, true, true);
-    }
 
     @Override
     public ActionResponse addToFieldAtStartFromString(InfoForCommand infoForCommand, FieldHolder field, String val)
@@ -398,20 +397,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         return setAndAdd(infoForCommand, field, Optional.empty(), Optional.of(jsonVal), true, false);
     }
 
-    @Override
-    public ActionResponse addToFieldAtStartFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field)
-    {
-        return setAndAdd(infoForCommand, field, Optional.empty(), previousFieldEval, true, false);
-    }
 
-
-    private Optional<GenericInstance> getMostPlausibleInstance(ExecutionStatus executionStatus, Optional<String> optionalInstanceName, Optional<String> fieldName)
+    private Optional<GenericInstance> getMostPlausibleInstance(ExecutionStatus executionStatus, Optional<String> optionalInstanceName, Optional<String> fieldName, boolean mutableOnly)
     {
         //find intersection of all instances that have requested instanceName and fieldName
         List<String> conceptOptions;
         if (fieldName.isPresent())
         {
-            conceptOptions = conceptContainer.findConceptsForField(executionStatus, fieldName.get());
+            conceptOptions = conceptContainer.findConceptsForField(executionStatus, fieldName.get(), mutableOnly);
         }
         else
         {
@@ -434,14 +427,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         if (jsonVal.isPresent())
         {
-            theField.setFromJSon(executionStatus, jsonVal.get(), addToExisting, appendToEnd);
+            theField.setFromJSon(executionStatus, jsonVal.get(), addToExisting, appendToEnd, false);
         }
         else
         {
             if (addToExisting)
-                theField.appendTo(executionStatus, val.get(), appendToEnd);
+                theField.appendTo(executionStatus, val.get(), appendToEnd, false);
             else
-                theField.set(executionStatus, val.get());
+                theField.set(executionStatus, val.get(), false);
         }
 
         String valForOutput;
@@ -508,14 +501,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (conceptName.endsWith("list") || conceptName.endsWith("s")) //TODO: should use plural vs. singular not just use s!
             isList = true;
 
-        return addFieldToConceptWithType(infoForCommand,conceptName,fieldName, possibleFieldType,isList);
+        return addFieldToConceptWithType(infoForCommand, conceptName, fieldName, possibleFieldType, isList, true);
     }
 
     @Override
-    public ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList)
+    public ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList, boolean mutable)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
-        conceptContainer.addFieldToConcept(executionStatus, conceptName, new FieldDescription(fieldName, possibleFieldType, isList));
+        conceptContainer.addFieldToConcept(executionStatus, conceptName, new FieldDescription(fieldName, possibleFieldType, isList, mutable));
 
         StringBuilder response = new StringBuilder();
         boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
@@ -624,7 +617,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         We excecute all sentences as we go. no need to execute them again, just update the parser for next time.
      */
     @Override
-    public ActionResponse endLearning(InfoForCommand infoForCommand)
+    public ActionResponse end(InfoForCommand infoForCommand)
     {
         if (!internalState.isInLearningMode())
         {

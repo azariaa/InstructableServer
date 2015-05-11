@@ -1,49 +1,31 @@
 package instructable.server.hirarchy;
 
-import instructable.server.ExecutionStatus;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Amos Azaria on 15-Apr-15.
  */
-public class EmailMessage extends GenericInstance
+abstract public class EmailMessage extends GenericInstance
 {
-    public static final String emailMessageType = "email message";
     public static final String subjectStr = "subject";
     public static final String bodyStr = "body";
     public static final String senderStr = "sender";
     public static final String recipientListStr = "recipient list";
     public static final String copyListStr = "copy list";
-    public static final FieldDescription[] fieldDescriptions = new FieldDescription[]
-            {
-                    new FieldDescription(subjectStr, PossibleFieldType.singleLineString, false),
-                    new FieldDescription(bodyStr, PossibleFieldType.multiLineString, false),
-                    new FieldDescription(senderStr, PossibleFieldType.emailAddress, false),
-                    new FieldDescription(recipientListStr, PossibleFieldType.emailAddress, true),
-                    new FieldDescription(copyListStr, PossibleFieldType.emailAddress, true)
-            };
-
-    public EmailMessage(String sender, String subject, List<String> recipientList, List<String> copyList, String body)
+    protected static FieldDescription[] getFieldDescriptions(boolean mutable)
     {
-        this("TBD");
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        setField(executionStatus, senderStr, Optional.of(sender), Optional.empty(), false, true);
-        setField(executionStatus, subjectStr, Optional.of(subject), Optional.empty(), false, true);
-        setField(executionStatus, bodyStr, Optional.of(body), Optional.empty(), false, true);
-        for (String recipient : recipientList)
-        {
-            setField(executionStatus, recipientListStr, Optional.of(recipient), Optional.empty(), true, true);
-        }
-
-        for (String copy : copyList)
-        {
-            setField(executionStatus, recipientListStr, Optional.of(copy), Optional.empty(), true, true);
-        }
+        return new FieldDescription[]
+                {
+                        new FieldDescription(subjectStr, PossibleFieldType.singleLineString, false, mutable),
+                        new FieldDescription(bodyStr, PossibleFieldType.multiLineString, false, mutable),
+                        new FieldDescription(senderStr, PossibleFieldType.emailAddress, false, mutable),
+                        new FieldDescription(recipientListStr, PossibleFieldType.emailAddress, true, mutable),
+                        new FieldDescription(copyListStr, PossibleFieldType.emailAddress, true, mutable)
+                };
     }
+
 
     // should only be called if email had no name at first.
     public void setName(String newEmailName)
@@ -51,14 +33,11 @@ public class EmailMessage extends GenericInstance
         name = newEmailName;
     }
 
-    public EmailMessage(String messageId)
-    {
-        this(emailMessageType, messageId);
-    }
 
-    public EmailMessage(String messageType, String messageId)
+    public EmailMessage(String messageType, String messageId, FieldDescription[] fieldDescriptions)
     {
-        super(messageType, messageId, Arrays.asList(fieldDescriptions));
+        //TODO: may want to support adding fields to email messages. In that case, the field descriptions would need to come from the concept container
+        super(messageType, messageId, Arrays.asList((fieldDescriptions)));
     }
 
     public boolean hasRecipient()

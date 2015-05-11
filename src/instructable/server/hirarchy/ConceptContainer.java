@@ -20,7 +20,7 @@ public class ConceptContainer
     public ConceptContainer()
     {
         conceptFieldMap = new HashMap<>();
-        conceptFieldMap.put("email", Arrays.asList(EmailMessage.fieldDescriptions));
+        //conceptFieldMap.put("email", Arrays.asList(EmailMessage.fieldDescriptions));
     }
 
     public boolean doesConceptExist(String concept)
@@ -42,7 +42,7 @@ public class ConceptContainer
         return false;
     }
 
-    public List<String> findConceptsForField(ExecutionStatus executionStatus, String fieldName)
+    public List<String> findConceptsForField(ExecutionStatus executionStatus, String fieldName, boolean mutableOnly)
     {
         List<String> candidates = new LinkedList<>();
         for (String concept : conceptFieldMap.keySet())
@@ -52,7 +52,8 @@ public class ConceptContainer
             {
                 if (fieldDescription.fieldName.equals(fieldName))
                 {
-                    candidates.add(concept);
+                    if (!mutableOnly || fieldDescription.mutable)
+                        candidates.add(concept);
                     break;
                 }
             }

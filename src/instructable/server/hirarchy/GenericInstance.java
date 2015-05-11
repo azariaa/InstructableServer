@@ -38,7 +38,7 @@ public class GenericInstance
     must have field defined in this object.
     must either have val or jsonVal
      */
-    public void setField(ExecutionStatus executionStatus, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal, boolean addToExisting, boolean appendToEnd)
+    public void setField(ExecutionStatus executionStatus, String fieldName, Optional<String> val, Optional<JSONObject> jsonVal, boolean addToExisting, boolean appendToEnd, boolean setAlsoImmutable)
     {
         lastAccess = System.nanoTime();
         if (fields.containsKey(fieldName))
@@ -47,14 +47,14 @@ public class GenericInstance
             //requestedField shouldn't be null.
             if (jsonVal.isPresent())
             {
-                requestedField.setFromJSon(executionStatus, jsonVal.get(), addToExisting, appendToEnd);
+                requestedField.setFromJSon(executionStatus, jsonVal.get(), addToExisting, appendToEnd, setAlsoImmutable);
             }
             else
             {
                 if (addToExisting)
-                    requestedField.appendTo(executionStatus, val.get(), appendToEnd);
+                    requestedField.appendTo(executionStatus, val.get(), appendToEnd, setAlsoImmutable);
                 else
-                    requestedField.set(executionStatus, val.get());
+                    requestedField.set(executionStatus, val.get(), setAlsoImmutable);
             }
             return;
         }

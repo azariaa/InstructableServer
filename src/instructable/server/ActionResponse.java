@@ -1,5 +1,6 @@
 package instructable.server;
 
+import com.google.common.base.Preconditions;
 import instructable.server.hirarchy.FieldHolder;
 import instructable.server.hirarchy.GenericInstance;
 import org.json.simple.JSONObject;
@@ -59,16 +60,19 @@ public class ActionResponse
 
     public JSONObject getValue()
     {
+        Preconditions.checkState(type == ActionResponseType.value);
         return value;
     }
 
     public GenericInstance getInstance()
     {
+        Preconditions.checkState(type == ActionResponseType.instance);
         return instance;
     }
 
     public FieldHolder getField()
     {
+        Preconditions.checkState(type == ActionResponseType.field);
         return field;
     }
 

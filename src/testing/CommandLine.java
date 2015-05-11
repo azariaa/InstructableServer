@@ -45,11 +45,13 @@ public class CommandLine
             }
         });
 
-        ParserSettings parserSettings = TestScenario.createParser();
+        ParserSettings parserSettings = TestWithParser.createParser();
 
 
         Scanner scanIn = new Scanner(System.in);
-        System.out.println("\n\nS: What would you want me to do?");
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        //clearConsole();
+        System.out.println("S: What would you want me to do?");
         while (true)
         {
             String userSays = scanIn.nextLine();

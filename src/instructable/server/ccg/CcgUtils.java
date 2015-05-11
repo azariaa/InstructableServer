@@ -35,7 +35,6 @@ import java.io.FileReader;
 import java.io.StringReader;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CcgUtils {
   
@@ -165,6 +164,8 @@ public class CcgUtils {
         1, 1.0, true, true, l2Regularization, new NullLogFunction());
     SufficientStatistics parameters = trainer.train(oracle, oracle.initializeGradient(),
         trainingExamples);
+      //to see the parameters that were actually used:
+      //parametricCcgParser.getParameterDescription(parameters)
     return parametricCcgParser.getModelFromParameters(parameters);
   }
 
@@ -177,6 +178,8 @@ public class CcgUtils {
 
     public static List<String> tokenize(String sentence) {
 
+        final List<String> excludeTokens = Arrays.asList(new String[]{",",".","!","(",")","!","?"});
+
         List<String> tokens = new LinkedList<>();
 
         //TODO: what to do with uppercase? Ignoring for now.
@@ -187,7 +190,7 @@ public class CcgUtils {
         {
             //remove punctuation (but not apostrophes!)
             String token = ptbTokenizer.next().toString();
-            if (token != "," && token != "." && token != "!" && token != "?")
+            if (!excludeTokens.contains(token))
                 tokens.add(token);
         }
         return tokens;
@@ -263,7 +266,7 @@ public class CcgUtils {
             Expression2 expression = ExpressionParser.expression2().parseSingleExpression(examplesList.get(i)[1]);
             CcgExample example = CcgUtils.createCcgExample(CcgUtils.tokenize(examplesList.get(i)[0]), expression);
             ccgExamples.add(example);
-            List<String> allFunctionNames = Arrays.asList(IAllUserActions.class.getMethods()).stream().map(x -> x.getName()).collect(Collectors.toList());
+            List<String> allFunctionNames = LispExecutor.allFunctionNames();
             Set<String> freeSet = StaticAnalysis.getFreeVariables(example.getLogicalForm());
             for (String free : freeSet)
             {
@@ -339,6 +342,7 @@ public class CcgUtils {
         Expression2 expression;
         ActionResponse response;
         expression = CcgUtils.parse(parserSettings.parser, CcgUtils.tokenize(userSays));
+        System.out.println("debug:" + expression.toString());
         response = CcgUtils.evaluate(allUserActions, userSays, expression, parserSettings);
         return response;
     }

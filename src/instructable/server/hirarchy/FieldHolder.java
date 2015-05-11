@@ -29,6 +29,7 @@ public class FieldHolder
         this.fieldType = fieldDescription.fieldType;
         this.isList = fieldDescription.isList;
         this.fieldParent = fieldParent;
+        this.mutable = fieldDescription.mutable;
 
         if (isList)
         {
@@ -62,6 +63,7 @@ public class FieldHolder
     String fieldName;
     PossibleFieldType fieldType;
     boolean isList;
+    boolean mutable;
     FieldType field;
     List<FieldType> fieldList;
     private GenericInstance fieldParent;
@@ -77,8 +79,13 @@ public class FieldHolder
     static final String fieldForJson = "field";
     static final String fieldListForJson = "fieldList";
 
-    public void set(ExecutionStatus executionStatus, String toSet)
+    public void set(ExecutionStatus executionStatus, String toSet, boolean setAlsoImmutable)
     {
+        if (!setAlsoImmutable && !mutable)
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "\"" + fieldName + "\" is immutable");
+            return;
+        }
         FieldType toSetField = createNewField(fieldType);
         toSetField.setFromString(executionStatus, toSet);
         if (executionStatus.isError())
@@ -96,11 +103,11 @@ public class FieldHolder
     }
 
 
-    public void appendTo(ExecutionStatus executionStatus, String toAdd, boolean toEnd)
+    public void appendTo(ExecutionStatus executionStatus, String toAdd, boolean toEnd, boolean setAlsoImmutable)
     {
-        if (toAdd == null)
+        if (!setAlsoImmutable && !mutable)
         {
-            executionStatus.add(ExecutionStatus.RetStatus.error, "the toAdd field cannot be null");
+            executionStatus.add(ExecutionStatus.RetStatus.error, "\"" + fieldName + "\" is immutable");
             return;
         }
 
@@ -174,8 +181,13 @@ public class FieldHolder
         return obj;
     }
 
-    public void setFromJSon(ExecutionStatus executionStatus, JSONObject jsonObject, boolean addToExisting, boolean appendToEnd)
+    public void setFromJSon(ExecutionStatus executionStatus, JSONObject jsonObject, boolean addToExisting, boolean appendToEnd, boolean setAlsoImmutable)
     {
+        if (!setAlsoImmutable && !mutable)
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "\"" + fieldName + "\" is immutable");
+            return;
+        }
         boolean mustSetFromList = false;
         if (jsonObject.containsKey(isListForJson) && (boolean)jsonObject.get(isListForJson) ||
                 !jsonObject.containsKey(isListForJson) && jsonObject.containsKey(fieldListForJson))
@@ -194,7 +206,7 @@ public class FieldHolder
                     Collections.reverse(Arrays.asList(fieldListAsString));
                 for (String singleField : fieldListAsString)
                 {
-                    appendTo(executionStatus, singleField, appendToEnd);
+                    appendTo(executionStatus, singleField, appendToEnd, setAlsoImmutable);
                 }
             } else
             {
@@ -208,11 +220,11 @@ public class FieldHolder
                     //if it has only one item, take it,
                     if (addToExisting)
                     {
-                        appendTo(executionStatus, fieldListAsString[0], appendToEnd);
+                        appendTo(executionStatus, fieldListAsString[0], appendToEnd, setAlsoImmutable);
                     }
                     else
                     {
-                        set(executionStatus, fieldListAsString[0]);
+                        set(executionStatus, fieldListAsString[0], setAlsoImmutable);
                     }
                 }
                 else
@@ -226,11 +238,11 @@ public class FieldHolder
         {
             if (addToExisting)
             {
-                appendTo(executionStatus, (String) jsonObject.get(fieldForJson), appendToEnd);
+                appendTo(executionStatus, (String) jsonObject.get(fieldForJson), appendToEnd, setAlsoImmutable);
             }
             else
             {
-                set(executionStatus, (String) jsonObject.get(fieldForJson));
+                set(executionStatus, (String) jsonObject.get(fieldForJson), setAlsoImmutable);
             }
         }
 
