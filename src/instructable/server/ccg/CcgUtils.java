@@ -1,29 +1,5 @@
 package instructable.server.ccg;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.jayantkrish.jklol.ccg.*;
-import com.jayantkrish.jklol.ccg.chart.ChartCost;
-import com.jayantkrish.jklol.ccg.chart.ChartEntry;
-import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
-import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.*;
-import com.jayantkrish.jklol.ccg.lexinduct.*;
-import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
-import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
-import com.jayantkrish.jklol.lisp.Environment;
-import com.jayantkrish.jklol.lisp.LispEval;
-import com.jayantkrish.jklol.lisp.SExpression;
-import com.jayantkrish.jklol.models.DiscreteVariable;
-import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
-import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
-import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
-import com.jayantkrish.jklol.training.*;
-import com.jayantkrish.jklol.util.CsvParser;
-import com.jayantkrish.jklol.util.IndexedList;
-import com.jayantkrish.jklol.util.PairCountAccumulator;
-import edu.stanford.nlp.process.PTBTokenizer;
 import instructable.server.ActionResponse;
 import instructable.server.IAllUserActions;
 import instructable.server.InfoForCommand;
@@ -33,8 +9,68 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.StringReader;
-import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.gwt.editor.client.Editor.Path;
+import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
+import com.jayantkrish.jklol.ccg.CcgBinaryRule;
+import com.jayantkrish.jklol.ccg.CcgCategory;
+import com.jayantkrish.jklol.ccg.CcgExactInference;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
+import com.jayantkrish.jklol.ccg.CcgInference;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.CcgPerceptronOracle;
+import com.jayantkrish.jklol.ccg.CcgUnaryRule;
+import com.jayantkrish.jklol.ccg.HeadedSyntacticCategory;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
+import com.jayantkrish.jklol.ccg.chart.ChartCost;
+import com.jayantkrish.jklol.ccg.chart.ChartEntry;
+import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
+import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
+import com.jayantkrish.jklol.ccg.lexinduct.AlignmentExample;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentEmOracle;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTokenFeatureGenerator;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTree;
+import com.jayantkrish.jklol.ccg.lexinduct.ParametricCfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
+import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
+import com.jayantkrish.jklol.lisp.Environment;
+import com.jayantkrish.jklol.lisp.LispEval;
+import com.jayantkrish.jklol.lisp.SExpression;
+import com.jayantkrish.jklol.models.DiscreteVariable;
+import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
+import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
+import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
+import com.jayantkrish.jklol.training.ExpectationMaximization;
+import com.jayantkrish.jklol.training.GradientOptimizer;
+import com.jayantkrish.jklol.training.GradientOracle;
+import com.jayantkrish.jklol.training.NullLogFunction;
+import com.jayantkrish.jklol.training.StochasticGradientTrainer;
+import com.jayantkrish.jklol.util.CsvParser;
+import com.jayantkrish.jklol.util.IndexedList;
+import com.jayantkrish.jklol.util.PairCountAccumulator;
+
+import edu.stanford.nlp.process.PTBTokenizer;
 
 public class CcgUtils {
   
@@ -147,7 +183,7 @@ public class CcgUtils {
    * @param trainingExamples
    * @return
    */
-  public static CcgParser train(ParametricCcgParser parametricCcgParser,
+  public static SufficientStatistics train(ParametricCcgParser parametricCcgParser,
       List<CcgExample> trainingExamples) {
     ExpressionSimplifier simplifier = getExpressionSimplifier();
     ExpressionComparator comparator = new SimplificationComparator(simplifier);
@@ -166,7 +202,27 @@ public class CcgUtils {
         trainingExamples);
       //to see the parameters that were actually used:
       //parametricCcgParser.getParameterDescription(parameters)
-    return parametricCcgParser.getModelFromParameters(parameters);
+    return parameters;
+  }
+
+  /**
+   * Adds new lexicon entries and unary rules to the grammar of the
+   * CCG parser in {@code settings}.
+   * 
+   * @param lexiconEntries
+   * @param unaryRules
+   * @param settings
+   */
+  public static void updateParserGrammar(List<LexiconEntry> lexiconEntries, List<CcgUnaryRule> unaryRules,
+      ParserSettings settings) {
+    settings.lexicon.addAll(lexiconEntries);
+    settings.unaryRules.addAll(unaryRules);
+
+    ParametricCcgParser newFamily = buildParametricCcgParser(settings.lexicon, settings.unaryRules);
+    SufficientStatistics newParameters = newFamily.getNewSufficientStatistics();
+    newParameters.transferParameters(settings.parserParameters);
+    settings.parserParameters = newParameters;
+    settings.parser = newFamily.getModelFromParameters(newParameters);
   }
 
   public static CcgExample createCcgExample(List<String> tokens, Expression2 expression) {
@@ -278,7 +334,10 @@ public class CcgUtils {
         }
 
         ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon, unaryRulesList);
-        parserSettings.parser = CcgUtils.train(family, ccgExamples);
+        parserSettings.lexicon = lexicon;
+        parserSettings.unaryRules = unaryRulesList;
+        parserSettings.parserParameters = CcgUtils.train(family, ccgExamples);
+        parserSettings.parser = family.getModelFromParameters(parserSettings.parserParameters);
         return parserSettings;
     }
 
