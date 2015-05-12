@@ -6,10 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-
 /**
  * Created by Amos on 15-Apr-15.
- *
+ * <p>
  * fieldTypes can't be added by the users
  */
 public class EmailAddress extends FieldType
@@ -47,7 +46,7 @@ public class EmailAddress extends FieldType
             return;
         }
 
-        executionStatus.add(ExecutionStatus.RetStatus.error, "\""+ val + "\" is not an email address");
+        executionStatus.add(ExecutionStatus.RetStatus.error, "\"" + val + "\" is not an email address");
         return;
     }
 
@@ -65,7 +64,7 @@ public class EmailAddress extends FieldType
     @Override
     public void appendTo(ExecutionStatus executionStatus, String toAdd, boolean toEnd)
     {
-       //can't add to an email address, just replace it.
+        //can't add to an email address, just replace it.
         //may indicate that the user really means to have a list of emails
         ExecutionStatus settingRetVal = new ExecutionStatus();
         setAddress(settingRetVal, toAdd);

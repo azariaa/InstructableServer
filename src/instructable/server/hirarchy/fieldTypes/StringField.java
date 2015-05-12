@@ -18,12 +18,12 @@ public class StringField extends FieldType
 
     public boolean isMultiline()
     {
-        return  multiline;
+        return multiline;
     }
 
     public String getString()
     {
-        return  fieldVal;
+        return fieldVal;
     }
 
     public void setString(String val)
@@ -34,7 +34,7 @@ public class StringField extends FieldType
     @Override
     public boolean isEmpty()
     {
-        return ((String)fieldVal).trim().isEmpty();
+        return ((String) fieldVal).trim().isEmpty();
     }
 
     @Override

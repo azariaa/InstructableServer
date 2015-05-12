@@ -26,7 +26,7 @@ public class OutgoingEmail extends EmailMessage
 
     public void sendEmail(ExecutionStatus executionStatus)
     {
-        checkSendingPrerequisites(executionStatus,true);
+        checkSendingPrerequisites(executionStatus, true);
         if (!executionStatus.isError())
         {
             //TODO: sendEmail
@@ -57,7 +57,7 @@ public class OutgoingEmail extends EmailMessage
                 }
                 else
                 {
-                    executionStatus.add(ExecutionStatus.RetStatus.warning,  "the message has no body");
+                    executionStatus.add(ExecutionStatus.RetStatus.warning, "the message has no body");
                     return;
                 }
             }

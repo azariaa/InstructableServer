@@ -70,7 +70,7 @@ public class TestDirectly
 
         teachingToSetRecipientAsContact(allUserActions, testHelpers, parserSettings);
 
-        buildRequiredDB((TopDMAllActions)allUserActions, testHelpers, parserSettings);
+        buildRequiredDB((TopDMAllActions) allUserActions, testHelpers, parserSettings);
 
         learningToForwardAnEmail(allUserActions, testHelpers, parserSettings);
 
@@ -86,12 +86,12 @@ public class TestDirectly
 
         userSays = "send an email";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        response = allUserActions.sendEmail(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "yes";
         testHelpers.userSays(userSays);
-        response = allUserActions.yes(new InfoForCommand(userSays,null));
+        response = allUserActions.yes(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set the subject of this email to hello";
@@ -116,7 +116,7 @@ public class TestDirectly
 
         userSays = "send the email";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        response = allUserActions.sendEmail(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set myself as the recipient";
@@ -141,12 +141,12 @@ public class TestDirectly
 
         userSays = "send";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        response = allUserActions.sendEmail(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "send";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        response = allUserActions.sendEmail(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
     }
 
@@ -174,18 +174,18 @@ public class TestDirectly
         //TODO: didn't do this one
         userSays = "I want to teach you what a contact is";
         testHelpers.userSays(userSays);
-        response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
+        response = allUserActions.defineConcept(new InfoForCommand(userSays, null), "contact");
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "Define contact!";
         testHelpers.userSays(userSays);
-        response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
+        response = allUserActions.defineConcept(new InfoForCommand(userSays, null), "contact");
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "add email as a field in contact";
         testHelpers.userSays(userSays);
         //TODO: left this for the next
-        response = allUserActions.addFieldToConcept(new InfoForCommand(userSays,null), "contact", "email");
+        response = allUserActions.addFieldToConcept(new InfoForCommand(userSays, null), "contact", "email");
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "create a contact, call it bob";
@@ -270,7 +270,7 @@ public class TestDirectly
 
             if (bobEmailField.isSuccess())
             {
-                ActionResponse bobEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null) , bobEmailField.getField());
+                ActionResponse bobEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null), bobEmailField.getField());
 
                 if (bobEmailFieldVal.isSuccess())
                 {
@@ -292,7 +292,7 @@ public class TestDirectly
 
             if (bobEmailField.isSuccess())
             {
-                ActionResponse bobEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null) , bobEmailField.getField());
+                ActionResponse bobEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null), bobEmailField.getField());
 
                 if (bobEmailFieldVal.isSuccess())
                 {
@@ -327,7 +327,7 @@ public class TestDirectly
 
         userSays = "compose an email";
         testHelpers.userSays(userSays);
-        response = allUserActions.createInstanceByConceptName(new InfoForCommand(userSays,null), "outgoing email");
+        response = allUserActions.createInstanceByConceptName(new InfoForCommand(userSays, null), "outgoing email");
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "set jane's email to be jane@gmail.com";
@@ -348,7 +348,7 @@ public class TestDirectly
 
         userSays = "yes";
         testHelpers.userSays(userSays);
-        response = allUserActions.yes(new InfoForCommand(userSays,null));
+        response = allUserActions.yes(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "take bob's email";
@@ -403,7 +403,6 @@ public class TestDirectly
     }
 
 
-
     private static void buildRequiredDB(TopDMAllActions topDMAllActions, TestHelpers testHelpers, ParserSettings parserSettings)
     {
         testHelpers.newSection("buildRequiredDB");
@@ -420,21 +419,21 @@ public class TestDirectly
 
         userSays = "set its email to my.spouse@gmail.com";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays,null), "email");
+        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "email");
         if (response.isSuccess())
             response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "my.spouse@gmail.com");
         testHelpers.systemSays(response.getSayToUser());
 
         incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("bob7@myjob.com",
                 "department party",
-                Arrays.asList(new String[] {"you@myjob.com"}),
+                Arrays.asList(new String[]{"you@myjob.com"}),
                 new LinkedList<String>(),
                 "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse."
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("dan@myjob.com",
                 "another email",
-                Arrays.asList(new String[] {"you@myjob.com"}),
+                Arrays.asList(new String[]{"you@myjob.com"}),
                 new LinkedList<String>(),
                 "sending another email."
         ));
@@ -450,12 +449,12 @@ public class TestDirectly
 
         userSays = "forward this email to my spouse";
         testHelpers.userSays(userSays);
-        response = allUserActions.unknownCommand(new InfoForCommand(userSays,null));
+        response = allUserActions.unknownCommand(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "sure";
         testHelpers.userSays(userSays);
-        response = allUserActions.yes(new InfoForCommand(userSays,null));
+        response = allUserActions.yes(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "first create a new email";
@@ -465,14 +464,14 @@ public class TestDirectly
 
         userSays = "then copy the subject from the incoming email to the outgoing email";
         testHelpers.userSays(userSays);
-        response = allUserActions.unknownCommand(new InfoForCommand(userSays,null));
+        response = allUserActions.unknownCommand(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "take the subject from the incoming email";
         testHelpers.userSays(userSays);
         response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "inbox", "subject");
         if (response.isSuccess())
-            response = allUserActions.evalField(new InfoForCommand(userSays,null), response.getField());
+            response = allUserActions.evalField(new InfoForCommand(userSays, null), response.getField());
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "and set it as the outgoing email's subject";
@@ -494,12 +493,12 @@ public class TestDirectly
         //response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "body"); //TODO: should understand since incoming email should not be mutable, or maybe leave for parser
         response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "outgoing email", "body");
         if (response.isSuccess())
-            response = allUserActions.setFieldFromFieldVal(new InfoForCommand(userSays, null), response.getField(), allUserActions.getProbFieldVal(new InfoForCommand(userSays,null)).getValue());
+            response = allUserActions.setFieldFromFieldVal(new InfoForCommand(userSays, null), response.getField(), allUserActions.getProbFieldVal(new InfoForCommand(userSays, null)).getValue());
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "send the email";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        response = allUserActions.sendEmail(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "oh, yeah, set the recipient as my spouse";
@@ -513,7 +512,7 @@ public class TestDirectly
 
                 if (spouseEmailField.isSuccess())
                 {
-                    ActionResponse spouseEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null) , spouseEmailField.getField());
+                    ActionResponse spouseEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null), spouseEmailField.getField());
 
                     if (spouseEmailFieldVal.isSuccess())
                     {
@@ -526,7 +525,7 @@ public class TestDirectly
 
         userSays = "now send the email";
         testHelpers.userSays(userSays);
-        response = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+        response = allUserActions.sendEmail(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "that's it, you're done!";
@@ -541,6 +540,7 @@ public class TestDirectly
         boolean testingMode;
         StringBuilder allSystemReplies;
         String fileName;
+
         public TestHelpers(boolean testingMode, String fileName)
         {
             this.testingMode = testingMode;
@@ -584,7 +584,7 @@ public class TestDirectly
         {
             if (testingMode)
             {
-                String shouldBe = StringUtils.join(Files.readAllLines(Paths.get(fileName)),"\n");
+                String shouldBe = StringUtils.join(Files.readAllLines(Paths.get(fileName)), "\n");
                 if (!shouldBe.equals(allSystemReplies.toString()))
                 {
                     String failFileName = new SimpleDateFormat("yyyyMMddhhmm'fail.txt'").format(new Date());

@@ -6,13 +6,18 @@ import java.util.Optional;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
- *
+ * <p>
  * Message style should adhere to a sentence saying: "I see that ..."
  */
 public class ExecutionStatus
 {
 
-    public enum RetStatus {ok, comment, warning, error};
+    public enum RetStatus
+    {
+        ok, comment, warning, error
+    }
+
+    ;
     //TODO: should have the messages strings in a separate file and have an enum (or similar) defining all messages
 
     static public class StatusAndMessage
@@ -22,6 +27,7 @@ public class ExecutionStatus
             this.retStatus = retStatus;
             this.message = message;
         }
+
         RetStatus retStatus;
         Optional<String> message;
     }
@@ -35,7 +41,7 @@ public class ExecutionStatus
 
     public ExecutionStatus(RetStatus retStatus, String message)
     {
-        add(retStatus,message);
+        add(retStatus, message);
     }
 
     List<StatusAndMessage> internalList = new LinkedList<StatusAndMessage>();
@@ -66,7 +72,7 @@ public class ExecutionStatus
     public boolean isError()
     {
         RetStatus retStatus = getStatus();
-        return retStatus==RetStatus.error;
+        return retStatus == RetStatus.error;
     }
 
     public boolean noError()
@@ -78,7 +84,7 @@ public class ExecutionStatus
     public boolean isOkOrComment()
     {
         RetStatus retStatus = getStatus();
-        return retStatus==RetStatus.ok || retStatus == RetStatus.comment;
+        return retStatus == RetStatus.ok || retStatus == RetStatus.comment;
     }
 
     public RetStatus getStatus()

@@ -8,8 +8,11 @@ import instructable.server.ExecutionStatus;
 abstract public class FieldType
 {
     String fieldVal = "";
+
     public abstract boolean isEmpty();
+
     public abstract void appendTo(ExecutionStatus executionStatus, String toAdd, boolean toEnd);
+
     public abstract void setFromString(ExecutionStatus executionStatus, String val);
 
     public String asString()

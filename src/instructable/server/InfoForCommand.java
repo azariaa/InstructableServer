@@ -12,6 +12,7 @@ public class InfoForCommand
         this.userSentence = userSentence;
         this.expression = expression;
     }
+
     String userSentence;
     Expression2 expression;
 }

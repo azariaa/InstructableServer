@@ -62,8 +62,7 @@ public class CommandLine
             {
                 response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
                 System.out.println("S:" + response.getSayToUser() + "\n");
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 System.out.println("S: error.\n");
             }

@@ -7,13 +7,16 @@ import org.json.simple.JSONObject;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
- *
+ * <p>
  * Holds sayToUser and success. Can also hold a value (Json), an instance and a field. Caller must check type!
  * sayToUser is only used in upper most call (or the first failure). [Though sometime, the user may expect two responses]
  */
 public class ActionResponse
 {
-    public enum ActionResponseType {simple, value, instance, field}
+    public enum ActionResponseType
+    {
+        simple, value, instance, field
+    }
 
     ActionResponse(String sayToUser, boolean success)
     {
@@ -21,12 +24,14 @@ public class ActionResponse
         this.success = success;
         type = ActionResponseType.simple;
     }
+
     ActionResponse(String sayToUser, boolean success, JSONObject value)
     {
         this(sayToUser, success);
         this.value = value;
         type = ActionResponseType.value;
     }
+
     ActionResponse(String sayToUser, boolean success, GenericInstance instance)
     {
         this(sayToUser, success);

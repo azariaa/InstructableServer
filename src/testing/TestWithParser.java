@@ -71,7 +71,7 @@ public class TestWithParser
 
         teachingToSetRecipientAsContact(allUserActions, testHelpers, parserSettings);
 
-        buildRequiredDB((TopDMAllActions)allUserActions, testHelpers, parserSettings);
+        buildRequiredDB((TopDMAllActions) allUserActions, testHelpers, parserSettings);
 
         learningToForwardAnEmail(allUserActions, testHelpers, parserSettings);
 
@@ -105,13 +105,13 @@ public class TestWithParser
             e.printStackTrace();
         }
 
-        String[] unaryRules = new String[] {
+        String[] unaryRules = new String[]{
                 "Field{0} FieldVal{0},(lambda x (evalField x))",
-//                "FieldVal{0} S{0},(lambda x x)",
+                //"FieldVal{0} S{0},(lambda x x)", //TODO: bring this back once it works
                 "MutableField{0} FieldVal{0},(lambda x (evalField x))",
                 "FieldName{0} Field{0},(lambda x (getProbFieldByFieldName x))",
                 "FieldName{0} MutableField{0},(lambda x (getProbMutableFieldByFieldName x))",
-                "String{0} S{0},(lambda x (unknownCommand))"
+                "String{0} S{0},(lambda x (unknownCommand))" //TODO: remove this, once it's added in: buildParametricCcgParser (so only full sentence will be transferred to S)
         };
 
 
@@ -129,7 +129,6 @@ public class TestWithParser
 
         return CcgUtils.getParserSettings(lexiconEntries, unaryRules, CcgUtils.loadExamples(Paths.get("data/examples.csv")));
     }
-
 
 
     private static void sendingBasicEmail(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
@@ -156,7 +155,7 @@ public class TestWithParser
         response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
         //response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "outgoing email", "subject");
         //if (response.isSuccess())
-            //response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "hello");
+        //response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "hello");
         testHelpers.systemSays(response.getSayToUser());
 
 
@@ -239,7 +238,7 @@ public class TestWithParser
         //TODO: didn't do this one
         userSays = "I want to teach you what a contact is";
         testHelpers.userSays(userSays);
-        response = allUserActions.defineConcept(new InfoForCommand(userSays,null), "contact");
+        response = allUserActions.defineConcept(new InfoForCommand(userSays, null), "contact");
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "Define contact!";
@@ -344,7 +343,7 @@ public class TestWithParser
 
             if (bobEmailField.isSuccess())
             {
-                ActionResponse bobEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null) , bobEmailField.getField());
+                ActionResponse bobEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null), bobEmailField.getField());
 
                 if (bobEmailFieldVal.isSuccess())
                 {
@@ -484,7 +483,6 @@ public class TestWithParser
     }
 
 
-
     private static void buildRequiredDB(TopDMAllActions topDMAllActions, TestHelpers testHelpers, ParserSettings parserSettings)
     {
         testHelpers.newSection("buildRequiredDB");
@@ -510,14 +508,14 @@ public class TestWithParser
 
         incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("bob7@myjob.com",
                 "department party",
-                Arrays.asList(new String[] {"you@myjob.com"}),
+                Arrays.asList(new String[]{"you@myjob.com"}),
                 new LinkedList<String>(),
                 "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse."
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("dan@myjob.com",
                 "another email",
-                Arrays.asList(new String[] {"you@myjob.com"}),
+                Arrays.asList(new String[]{"you@myjob.com"}),
                 new LinkedList<String>(),
                 "sending another email."
         ));
@@ -533,12 +531,12 @@ public class TestWithParser
 
         userSays = "forward this email to my spouse";
         testHelpers.userSays(userSays);
-        response = allUserActions.unknownCommand(new InfoForCommand(userSays,null));
+        response = allUserActions.unknownCommand(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "sure";
         testHelpers.userSays(userSays);
-        response = allUserActions.yes(new InfoForCommand(userSays,null));
+        response = allUserActions.yes(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "first create a new email";
@@ -549,10 +547,10 @@ public class TestWithParser
 
         userSays = "then copy the subject from the incoming email to the outgoing email";
         testHelpers.userSays(userSays);
-        response = allUserActions.unknownCommand(new InfoForCommand(userSays,null));
+        response = allUserActions.unknownCommand(new InfoForCommand(userSays, null));
         testHelpers.systemSays(response.getSayToUser());
 
-        userSays = "take the subject from the inbox";
+        userSays = "take the subject from the incoming email";
         testHelpers.userSays(userSays);
 //        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "inbox", "subject");
 //        if (response.isSuccess())
@@ -567,7 +565,7 @@ public class TestWithParser
             response = allUserActions.setFieldFromFieldVal(new InfoForCommand(userSays, null), response.getField(), allUserActions.getProbFieldVal(new InfoForCommand(userSays, null)).getValue());
         testHelpers.systemSays(response.getSayToUser());
 
-        userSays = "take the body from the inbox";
+        userSays = "take the body from the incoming email";
         testHelpers.userSays(userSays);
 //        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "inbox", "body");
 //        if (response.isSuccess())
@@ -601,7 +599,7 @@ public class TestWithParser
 
                 if (spouseEmailField.isSuccess())
                 {
-                    ActionResponse spouseEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null) , spouseEmailField.getField());
+                    ActionResponse spouseEmailFieldVal = allUserActions.evalField(new InfoForCommand(userSays, null), spouseEmailField.getField());
 
                     if (spouseEmailFieldVal.isSuccess())
                     {
@@ -630,6 +628,7 @@ public class TestWithParser
         boolean testingMode;
         StringBuilder allSystemReplies;
         String fileName;
+
         public TestHelpers(boolean testingMode, String fileName)
         {
             this.testingMode = testingMode;
@@ -673,7 +672,7 @@ public class TestWithParser
         {
             if (testingMode)
             {
-                String shouldBe = StringUtils.join(Files.readAllLines(Paths.get(fileName)),"\n");
+                String shouldBe = StringUtils.join(Files.readAllLines(Paths.get(fileName)), "\n");
                 if (!shouldBe.equals(allSystemReplies.toString()))
                 {
                     String failFileName = new SimpleDateFormat("yyyyMMddhhmm'fail.txt'").format(new Date());

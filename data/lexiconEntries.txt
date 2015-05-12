@@ -35,6 +35,8 @@ as,PP_String/String,(lambda $1 $1)
 as,PP_MutableField/MutableField,(lambda $1 $1)
 in,PP_MutableField/MutableField,(lambda $1 $1)
 inside,PP_MutableField/MutableField,(lambda $1 $1)
+and,"(S/S)\S",(lambda $1 $2 (doSeq $1 $2))
+and,"(S/S)\FieldVal",(lambda $1 $2 (doSeq $1 $2))
 body,FieldName{0},body,0 body
 "incoming email",InstanceName{0},inbox
 inbox,InstanceName{0},inbox

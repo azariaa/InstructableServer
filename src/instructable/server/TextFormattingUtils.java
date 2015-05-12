@@ -36,13 +36,13 @@ public class TextFormattingUtils
         returns success.
      */
     public static boolean testOkAndFormat(InfoForCommand infoForCommand,
-                  ExecutionStatus executionStatus,
-                  boolean failWithWarningToo,
-                  boolean ignoreComments,
-                  StringBuilder response,
-                  Optional<String> optionalSuccessSentence,
-                  boolean askToTeachIfFails,
-                  TopDMAllActions.InternalState internalState)
+                                          ExecutionStatus executionStatus,
+                                          boolean failWithWarningToo,
+                                          boolean ignoreComments,
+                                          StringBuilder response,
+                                          Optional<String> optionalSuccessSentence,
+                                          boolean askToTeachIfFails,
+                                          TopDMAllActions.InternalState internalState)
     {
         boolean isInLearningPhase = internalState.isInLearningMode();
         ExecutionStatus.RetStatus retStatus = executionStatus.getStatus();
@@ -66,10 +66,11 @@ public class TextFormattingUtils
                     response.append("Sorry, but " + statusAndMessage.message.get() + ".");
                     if (isInLearningPhase)
                     {
-                        response.append("\nWhat should I do instead (when executing: \""+ internalState.lastCommandOrLearningCommand + "\")?");
+                        response.append("\nWhat should I do instead (when executing: \"" + internalState.lastCommandOrLearningCommand + "\")?");
                     }
                 }
-            } else if (executionStatus.isError())
+            }
+            else if (executionStatus.isError())
             {
                 response.append("There was some kind of error.");
             }
@@ -85,7 +86,7 @@ public class TextFormattingUtils
         {
             response.append(optionalSuccessSentence.get());
             if (isInLearningPhase)
-                response.append("\nWhat shall I do next (when executing: \""+ internalState.lastCommandOrLearningCommand + "\")?");
+                response.append("\nWhat shall I do next (when executing: \"" + internalState.lastCommandOrLearningCommand + "\")?");
         }
 
 

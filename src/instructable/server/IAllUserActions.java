@@ -90,10 +90,13 @@ public interface IAllUserActions
 
 
     ActionResponse deleteConcept(InfoForCommand infoForCommand, String conceptName);
+
     ActionResponse deleteInstance(InfoForCommand infoForCommand, String instanceName);
+
     ActionResponse deleteInstance(InfoForCommand infoForCommand, String conceptName, String instanceName);
 
     ActionResponse nextEmailMessage(InfoForCommand infoForCommand);
+
     ActionResponse previousEmailMessage(InfoForCommand infoForCommand);
 
 

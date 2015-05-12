@@ -71,6 +71,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             return internalStateMode == InternalStateMode.pendOnLearning;
         }
+
         public boolean isInLearningMode()
         {
             return internalStateMode == InternalStateMode.learning;
@@ -171,7 +172,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             //composeEmail(infoForCommand);
             return createInstanceByConceptName(infoForCommand, OutgoingEmail.strOutgoingEmailTypeAndName);
-        } else if (internalState.isPendingOnLearning())
+        }
+        else if (internalState.isPendingOnLearning())
         {
             String lastCommand = internalState.startLearning();
             return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first?", true);
@@ -208,12 +210,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);
         StringBuilder response = new StringBuilder();
-        if(TextFormattingUtils.testOkAndFormat(infoForCommand,
+        if (TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
                 response,
-                Optional.of("Got instance \"" + instanceName + "\" of concept \"" + conceptName +"\"."),
+                Optional.of("Got instance \"" + instanceName + "\" of concept \"" + conceptName + "\"."),
                 false,
                 internalState))
         {
@@ -228,7 +230,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<FieldHolder> field = instance.getField(executionStatus, fieldName);
         StringBuilder response = new StringBuilder();
-        if(TextFormattingUtils.testOkAndFormat(infoForCommand,
+        if (TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
@@ -251,7 +253,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty(), false);
         StringBuilder response = new StringBuilder();
-        if(TextFormattingUtils.testOkAndFormat(infoForCommand,
+        if (TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
@@ -296,7 +298,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 successStr = "Got field \"" + fieldName + "\" from instance \"" + field.get().getParentInstanceName() + "\".";
         }
         StringBuilder response = new StringBuilder();
-        if(TextFormattingUtils.testOkAndFormat(infoForCommand,
+        if (TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
@@ -437,15 +439,23 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 theField.set(executionStatus, val.get(), false);
         }
 
-        String valForOutput;
-        if (jsonVal.isPresent())
-            valForOutput = FieldHolder.fieldFromJSonForUser(jsonVal.get());
-        else
-            valForOutput = val.get();
 
-        String successStr = "The \"" + theField.getFieldName() + "\" field in \"" + theField.getParentInstanceName() + "\" was set to: \"" + valForOutput + "\".";
-        if (addToExisting)
-            successStr = "\"" + valForOutput + "\" was added to the \"" + theField.getFieldName() + "\" field in \"" +  theField.getParentInstanceName() + "\".";
+        String successStr;
+        if (executionStatus.noError() && !addToExisting)
+        {
+            String valForSet = FieldHolder.fieldFromJSonForUser(theField.getFieldVal());
+            successStr = "The \"" + theField.getFieldName() + "\" field in \"" + theField.getParentInstanceName() + "\" was set to: \"" + valForSet + "\".";
+        }
+        else
+        {
+            String valForOutput;
+            if (jsonVal.isPresent())
+                valForOutput = FieldHolder.fieldFromJSonForUser(jsonVal.get());
+            else
+                valForOutput = val.get();
+            successStr = "\"" + valForOutput + "\" was added to the \"" + theField.getFieldName() + "\" field in \"" + theField.getParentInstanceName() + "\".";
+        }
+
         StringBuilder response = new StringBuilder();
         boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
@@ -468,14 +478,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         StringBuilder response = new StringBuilder();
         boolean success =
-        TextFormattingUtils.testOkAndFormat(infoForCommand,
-                executionStatus,
-                true,
-                true,
-                response,
-                Optional.of("Concept \"" + newConceptName + "\" was created successfully. Please define its fields."),
-                false,
-                internalState);
+                TextFormattingUtils.testOkAndFormat(infoForCommand,
+                        executionStatus,
+                        true,
+                        true,
+                        response,
+                        Optional.of("Concept \"" + newConceptName + "\" was created successfully. Please define its fields."),
+                        false,
+                        internalState);
         if (success)
         {
             commandsToParser.newConceptDefined(newConceptName);
@@ -574,7 +584,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
     private String listFieldsOfConcept(String conceptName)
     {
-        return "\""+conceptName+"\" fields are: " + userFriendlyList(conceptContainer.getFields(conceptName)) + ".";
+        return "\"" + conceptName + "\" fields are: " + userFriendlyList(conceptContainer.getFields(conceptName)) + ".";
     }
 
     @Override
@@ -631,7 +641,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
 
             commandsToParser.addTrainingEg(commandBeingLearnt, commandsLearnt);
-            return new ActionResponse("I now know what to do when you say (for example): \"" + commandBeingLearnt +"\"!", true);
+            return new ActionResponse("I now know what to do when you say (for example): \"" + commandBeingLearnt + "\"!", true);
         }
         return new ActionResponse("I'm afraid that I didn't learn anything.", false);
 
