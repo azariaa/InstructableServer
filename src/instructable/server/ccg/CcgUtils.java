@@ -103,6 +103,14 @@ public class CcgUtils
         constantsToIgnore, 0, 2);
   }
 
+    public static void updateParserGrammar(String newLexicon, ParserSettings parserSettings)
+    {
+        List<String> lexiconAsList = new LinkedList<String>();
+        lexiconAsList.add(newLexicon);
+        List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
+        updateParserGrammar(lexiconEntries, new LinkedList<CcgUnaryRule>(), parserSettings);
+    }
+
 
   /**
    * Adds new lexicon entries and unary rules to the grammar of the
@@ -117,7 +125,7 @@ public class CcgUtils
     settings.lexicon.addAll(lexiconEntries);
     settings.unaryRules.addAll(unaryRules);
 
-    ParametricCcgParser newFamily = buildParametricCcgParser(settings.lexicon, settings.unaryRules,settings.posUsed);
+    ParametricCcgParser newFamily = buildParametricCcgParser(settings.lexicon, settings.unaryRules, settings.posUsed);
     SufficientStatistics newParameters = newFamily.getNewSufficientStatistics();
     newParameters.transferParameters(settings.parserParameters);
     settings.parserParameters = newParameters;

@@ -25,20 +25,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="CcgUtils.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="CcgUtils.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.6220735" vertical-offset="2932" max-vertical-offset="7157">
-              <caret line="201" column="56" selection-start-line="201" selection-start-column="56" selection-end-line="201" selection-end-column="56" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1615" max-vertical-offset="7293">
+              <caret line="105" column="41" selection-start-line="105" selection-start-column="41" selection-end-line="105" selection-end-column="41" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#2364#2372#0" expanded="true" />
                 <element signature="e#3372#3388#0" expanded="true" />
-                <element signature="e#6443#6451#0" expanded="true" />
-                <element signature="e#6492#6501#0" expanded="true" />
-                <element signature="e#6526#6535#0" expanded="true" />
-                <element signature="e#12910#12937#0" expanded="true" />
+                <element signature="e#4154#4162#0" expanded="true" />
+                <element signature="e#6838#6846#0" expanded="true" />
+                <element signature="e#6887#6896#0" expanded="true" />
+                <element signature="e#6921#6930#0" expanded="true" />
+                <element signature="e#13305#13332#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Environment.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/lisp/Environment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="224" max-vertical-offset="1139">
+              <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -55,33 +66,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChartCost.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/chart/ChartCost.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="39" max-vertical-offset="595">
-              <caret line="27" column="24" selection-start-line="27" selection-start-column="6" selection-end-line="27" selection-end-column="24" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="ParserSettings.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/ParserSettings.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="544">
-              <caret line="20" column="34" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="34" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LispExecutor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/LispExecutor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1906" max-vertical-offset="2431">
-              <caret line="128" column="0" selection-start-line="128" selection-start-column="0" selection-end-line="128" selection-end-column="0" />
+              <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -99,40 +88,47 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CcgExactHashTableChart.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/chart/CcgExactHashTableChart.java">
+      <file leaf-file-name="TestWithParser.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/testing/TestWithParser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1868" max-vertical-offset="3179">
-              <caret line="124" column="34" selection-start-line="124" selection-start-column="34" selection-end-line="124" selection-end-column="34" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="408" max-vertical-offset="11543">
+              <caret line="44" column="40" selection-start-line="44" selection-start-column="40" selection-end-line="44" selection-end-column="40" />
               <folding>
-                <element signature="e#3236#3237#0" expanded="true" />
-                <element signature="e#3298#3299#0" expanded="true" />
-                <element signature="e#3386#3387#0" expanded="true" />
-                <element signature="e#3432#3433#0" expanded="true" />
-                <element signature="e#3655#3656#0" expanded="true" />
-                <element signature="e#3702#3703#0" expanded="true" />
-                <element signature="e#3932#3933#0" expanded="true" />
-                <element signature="e#3963#3964#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AbstractCcgLexicon.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/lexicon/AbstractCcgLexicon.java">
+      <file leaf-file-name="CommandsToParser.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/instructable/server/CommandsToParser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1868" max-vertical-offset="2907">
-              <caret line="144" column="0" selection-start-line="144" selection-start-column="0" selection-end-line="144" selection-end-column="0" />
+            <state vertical-scroll-proportion="1.1871657" vertical-offset="15" max-vertical-offset="884">
+              <caret line="27" column="40" selection-start-line="27" selection-start-column="40" selection-end-line="27" selection-end-column="40" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#404#405#0" expanded="true" />
+                <element signature="e#456#457#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CommandLine.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/testing/CommandLine.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="109" max-vertical-offset="765">
+              <caret line="34" column="13" selection-start-line="34" selection-start-column="13" selection-end-line="34" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TestWithParser.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/testing/TestWithParser.java">
+      <file leaf-file-name="TopDMAllActions.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="800" max-vertical-offset="11713">
-              <caret line="104" column="32" selection-start-line="104" selection-start-column="32" selection-end-line="104" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="7951" max-vertical-offset="11339">
+              <caret line="508" column="40" selection-start-line="508" selection-start-column="40" selection-end-line="508" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -157,7 +153,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/instructable/server/fieldTypes/StringField.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/OutgoingEmail.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/FieldDescription.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/EmailMessage.java" />
@@ -185,7 +180,6 @@
         <option value="$PROJECT_DIR$/src/com/jayantkrish/jklol/lisp/Environment.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/EmailAddress.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/ICommandsToParser.java" />
-        <option value="$PROJECT_DIR$/src/testing/CommandLine.java" />
         <option value="$PROJECT_DIR$/src/testing/TestScenario.java" />
         <option value="$PROJECT_DIR$/src/testing/TestScenarioWithParser.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/ActionResponse.java" />
@@ -207,7 +201,9 @@
         <option value="$PROJECT_DIR$/src/instructable/server/ccg/ParserSettings.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/ccg/InstructableChartCost.java" />
         <option value="$PROJECT_DIR$/src/testing/TestWithParser.java" />
+        <option value="$PROJECT_DIR$/src/testing/CommandLine.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/CommandsToParser.java" />
       </list>
     </option>
   </component>
@@ -397,7 +393,7 @@
       <recent name="testing" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.TestWithParser">
+  <component name="RunManager" selected="Application.CommandLine">
     <configuration default="false" name="TestDirectly" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
@@ -642,9 +638,9 @@
     </list>
     <recent_temporary>
       <list size="3">
-        <item index="0" class="java.lang.String" itemvalue="Application.TestWithParser" />
-        <item index="1" class="java.lang.String" itemvalue="Application.TestDirectly" />
-        <item index="2" class="java.lang.String" itemvalue="Application.CommandLine" />
+        <item index="0" class="java.lang.String" itemvalue="Application.CommandLine" />
+        <item index="1" class="java.lang.String" itemvalue="Application.TestWithParser" />
+        <item index="2" class="java.lang.String" itemvalue="Application.TestDirectly" />
       </list>
     </recent_temporary>
   </component>
@@ -660,7 +656,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1050" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -672,16 +668,16 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.59423506" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.5487805" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2090909" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.42081448" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19654427" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2513369" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3337104" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -754,7 +750,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/testing/TestWithParser.java</url>
-          <line>557</line>
+          <line>532</line>
           <properties />
           <option name="timeStamp" value="81" />
         </line-breakpoint>
@@ -772,22 +768,29 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java</url>
-          <line>243</line>
+          <line>251</line>
           <properties />
           <option name="timeStamp" value="95" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java</url>
+          <line>376</line>
+          <properties />
+          <option name="timeStamp" value="96" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java</url>
+          <line>107</line>
+          <properties />
+          <option name="timeStamp" value="98" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="96" />
+      <option name="time" value="99" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
-        <watch expression="parse" />
-        <watch expression="tokens" />
-        <watch expression="argumentValues" />
-        <watch expression="expression" />
-        <watch expression="dependencyHeadPosVar.getDiscreteVariables().get(0)" />
-        <watch expression="dependencyHeadPosVar" />
-        <watch expression="tokensAndPOS" />
+        <watch expression="symbolTable" />
+        <watch expression="parserSettings.symbolTable" />
       </configuration>
     </watches-manager>
   </component>
@@ -796,24 +799,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/StringField.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="935">
-          <caret line="15" column="30" selection-start-line="15" selection-start-column="30" selection-end-line="15" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/ExecutionStatus.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="878" max-vertical-offset="1530">
-          <caret line="90" column="80" selection-start-line="90" selection-start-column="80" selection-end-line="90" selection-end-column="80" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/util/HashMap.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33278957" vertical-offset="8177" max-vertical-offset="39372">
@@ -902,17 +887,6 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="442">
           <caret line="19" column="27" selection-start-line="19" selection-start-column="27" selection-end-line="19" selection-end-column="27" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/testing/CommandLine.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="37" max-vertical-offset="935">
-          <caret line="47" column="54" selection-start-line="47" selection-start-column="54" selection-end-line="47" selection-end-column="54" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="class#594:1120" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1063,29 +1037,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="6921" max-vertical-offset="11458">
-          <caret line="447" column="9" selection-start-line="447" selection-start-column="9" selection-end-line="447" selection-end-column="9" />
-          <folding>
-            <element signature="e#2582#2583#0" expanded="false" />
-            <element signature="e#2666#2667#0" expanded="false" />
-            <element signature="e#2719#2720#0" expanded="false" />
-            <element signature="e#2797#2798#0" expanded="false" />
-            <element signature="e#2850#2851#0" expanded="false" />
-            <element signature="e#2934#2935#0" expanded="false" />
-            <element signature="e#2982#2983#0" expanded="false" />
-            <element signature="e#3058#3059#0" expanded="false" />
-            <element signature="e#3097#3098#0" expanded="false" />
-            <element signature="e#3163#3164#0" expanded="false" />
-            <element signature="e#25511#25512#0" expanded="false" />
-            <element signature="e#25538#25539#0" expanded="false" />
-            <element signature="e#25652#25653#0" expanded="false" />
-            <element signature="e#25679#25680#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/models/DiscreteVariable.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1479" max-vertical-offset="2261">
@@ -1230,33 +1181,72 @@
     <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/ParserSettings.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="544">
-          <caret line="20" column="34" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="34" />
+          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="7951" max-vertical-offset="11339">
+          <caret line="508" column="40" selection-start-line="508" selection-start-column="40" selection-end-line="508" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/testing/TestWithParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="800" max-vertical-offset="11713">
-          <caret line="104" column="32" selection-start-line="104" selection-start-column="32" selection-end-line="104" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="408" max-vertical-offset="11543">
+          <caret line="44" column="40" selection-start-line="44" selection-start-column="40" selection-end-line="44" selection-end-column="40" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/lisp/Environment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="151" max-vertical-offset="1139">
+          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/testing/CommandLine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="153" max-vertical-offset="765">
+          <caret line="34" column="13" selection-start-line="34" selection-start-column="13" selection-end-line="34" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.6220735" vertical-offset="2932" max-vertical-offset="7157">
-          <caret line="201" column="56" selection-start-line="201" selection-start-column="56" selection-end-line="201" selection-end-column="56" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1615" max-vertical-offset="7293">
+          <caret line="105" column="41" selection-start-line="105" selection-start-column="41" selection-end-line="105" selection-end-column="41" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#2364#2372#0" expanded="true" />
             <element signature="e#3372#3388#0" expanded="true" />
-            <element signature="e#6443#6451#0" expanded="true" />
-            <element signature="e#6492#6501#0" expanded="true" />
-            <element signature="e#6526#6535#0" expanded="true" />
-            <element signature="e#12910#12937#0" expanded="true" />
+            <element signature="e#4154#4162#0" expanded="true" />
+            <element signature="e#6838#6846#0" expanded="true" />
+            <element signature="e#6887#6896#0" expanded="true" />
+            <element signature="e#6921#6930#0" expanded="true" />
+            <element signature="e#13305#13332#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/CommandsToParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.1871657" vertical-offset="15" max-vertical-offset="884">
+          <caret line="27" column="40" selection-start-line="27" selection-start-column="40" selection-end-line="27" selection-end-column="40" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#404#405#0" expanded="true" />
+            <element signature="e#456#457#0" expanded="true" />
           </folding>
         </state>
       </provider>

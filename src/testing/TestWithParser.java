@@ -1,6 +1,5 @@
 package testing;
 
-import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.*;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
@@ -32,36 +31,12 @@ public class TestWithParser
 
     private static void runTest() throws Exception
     {
-        IAllUserActions allUserActions = new TopDMAllActions(new ICommandsToParser()
-        {
-            @Override
-            public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt)
-            {
-
-            }
-
-            @Override
-            public void newConceptDefined(String conceptName)
-            {
-
-            }
-
-            @Override
-            public void newFieldDefined(String fieldName)
-            {
-
-            }
-
-            @Override
-            public void newInstanceDefined(String instanceName)
-            {
-
-            }
-        });
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
 
         ParserSettings parserSettings = createParser();
+
+        IAllUserActions allUserActions = new TopDMAllActions(new CommandsToParser(parserSettings));
 
         sendingBasicEmail(allUserActions, testHelpers, parserSettings);
 
