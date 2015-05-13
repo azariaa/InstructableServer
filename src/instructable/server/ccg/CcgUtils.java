@@ -30,8 +30,8 @@ import instructable.server.LispExecutor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.nio.file.Path;
 import java.util.*;
+
 
 public class CcgUtils
 {
@@ -56,49 +56,81 @@ public class CcgUtils
             tree.getAllExpressions(allExpressions);
         }
 
-        FeatureVectorGenerator<Expression2> featureVectorGen = DictionaryFeatureVectorGenerator
-                .createFromData(allExpressions, new ExpressionTokenFeatureGenerator(Collections.<String>emptySet()), false);
 
-        // TODO: add an option to the alignment model that allows it to
-        // align strings in the expressions to the same string in the
-        // input text.
-        int ngramLength = 1;
-        ParametricCfgAlignmentModel pam = ParametricCfgAlignmentModel.buildAlignmentModelWithNGrams(
-                examples, featureVectorGen, ngramLength);
 
-        SufficientStatistics smoothing = pam.getNewSufficientStatistics();
-        smoothing.increment(0.1);
 
-        SufficientStatistics initial = pam.getNewSufficientStatistics();
-        initial.increment(1);
+    FeatureVectorGenerator<Expression2> featureVectorGen = DictionaryFeatureVectorGenerator
+        .createFromData(allExpressions, new ExpressionTokenFeatureGenerator(Collections.<String>emptySet()), false);
 
-        ExpectationMaximization em = new ExpectationMaximization(10, new NullLogFunction());
-        SufficientStatistics trainedParameters = em.train(new CfgAlignmentEmOracle(pam, smoothing),
-                initial, examples);
+    // TODO: add an option to the alignment model that allows it to
+    // align strings in the expressions to the same string in the
+    // input text.
+    int ngramLength = 1;
+    ParametricCfgAlignmentModel pam = ParametricCfgAlignmentModel.buildAlignmentModelWithNGrams(
+          examples, featureVectorGen, ngramLength);
+    
+    SufficientStatistics smoothing = pam.getNewSufficientStatistics();
+    smoothing.increment(0.1);
 
-        CfgAlignmentModel model = pam.getModelFromParameters(trainedParameters);
-        PairCountAccumulator<List<String>, LexiconEntry> alignments = AlignmentLexiconInduction
-                .generateLexiconFromAlignmentModel(model, examples, Maps.<String, String>newHashMap());
+    SufficientStatistics initial = pam.getNewSufficientStatistics();
+    initial.increment(1);
 
-        List<LexiconEntry> entries = Lists.newArrayList();
-        entries.addAll(alignments.getKeyValueMultimap().values());
+    ExpectationMaximization em = new ExpectationMaximization(10, new NullLogFunction());
+    SufficientStatistics trainedParameters = em.train(new CfgAlignmentEmOracle(pam, smoothing),
+        initial, examples);
 
-        return entries;
-    }
+    CfgAlignmentModel model = pam.getModelFromParameters(trainedParameters);
+    PairCountAccumulator<List<String>, LexiconEntry> alignments = AlignmentLexiconInduction
+        .generateLexiconFromAlignmentModel(model, examples, Maps.<String, String>newHashMap());
+    
+    List<LexiconEntry> entries = Lists.newArrayList();
+    entries.addAll(alignments.getKeyValueMultimap().values());
+    
+    return entries;
+  }
 
-    /**
-     * @param expression
-     * @return
-     */
-    private static ExpressionTree expressionToExpressionTree(Expression2 expression)
-    {
-        ExpressionSimplifier simplifier = getExpressionSimplifier();
-        Set<String> constantsToIgnore = Sets.newHashSet();
-        Map<String, String> typeReplacements = Maps.newHashMap();
+  /**
+   * 
+   * @param expression
+   * @return
+   */
+  private static ExpressionTree expressionToExpressionTree(Expression2 expression) {
+    ExpressionSimplifier simplifier = getExpressionSimplifier();
+    Set<String> constantsToIgnore = Sets.newHashSet();
+    Map<String, String> typeReplacements = Maps.newHashMap();
+    
+    return ExpressionTree.fromExpression(expression, simplifier, typeReplacements,
+        constantsToIgnore, 0, 2);
+  }
 
-        return ExpressionTree.fromExpression(expression, simplifier, typeReplacements,
-                constantsToIgnore, 0, 2);
-    }
+
+  /**
+   * Adds new lexicon entries and unary rules to the grammar of the
+   * CCG parser in {@code settings}.
+   * 
+   * @param lexiconEntries
+   * @param unaryRules
+   * @param settings
+   */
+  public static void updateParserGrammar(List<LexiconEntry> lexiconEntries, List<CcgUnaryRule> unaryRules,
+      ParserSettings settings) {
+    settings.lexicon.addAll(lexiconEntries);
+    settings.unaryRules.addAll(unaryRules);
+
+    ParametricCcgParser newFamily = buildParametricCcgParser(settings.lexicon, settings.unaryRules,settings.posUsed);
+    SufficientStatistics newParameters = newFamily.getNewSufficientStatistics();
+    newParameters.transferParameters(settings.parserParameters);
+    settings.parserParameters = newParameters;
+    settings.parser = newFamily.getModelFromParameters(newParameters);
+  }
+
+  public static CcgExample createCcgExample(List<String> tokens, Expression2 expression) {
+      List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
+      SupertaggedSentence sentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, pos);
+
+      return new CcgExample(sentence, null, null, expression, null);
+  }
+
 
     /**
      * Creates a family of CCG parsing models given a collection
@@ -150,16 +182,13 @@ public class CcgUtils
      * @param trainingExamples
      * @return
      */
-    public static CcgParser train(ParametricCcgParser parametricCcgParser,
-                                  List<CcgExample> trainingExamples)
-    {
+    public static SufficientStatistics train(ParametricCcgParser parametricCcgParser,
+                                             List<CcgExample> trainingExamples) {
         ExpressionSimplifier simplifier = getExpressionSimplifier();
         ExpressionComparator comparator = new SimplificationComparator(simplifier);
 
         int beamSize = 5000;
-        //final int length = supertaggedSentence.size();
-        CcgInference inferenceAlgorithm = new CcgBeamSearchInference(new InstChartCost(),
-                comparator, beamSize,
+        CcgInference inferenceAlgorithm = new CcgBeamSearchInference(null, comparator, beamSize,
                 -1, Integer.MAX_VALUE, Runtime.getRuntime().availableProcessors(), false);
         GradientOracle<CcgParser, CcgExample> oracle = new CcgPerceptronOracle(parametricCcgParser,
                 inferenceAlgorithm, 0.0);
@@ -172,7 +201,7 @@ public class CcgUtils
                 trainingExamples);
         //to see the parameters that were actually used:
         //parametricCcgParser.getParameterDescription(parameters)
-        return parametricCcgParser.getModelFromParameters(parameters);
+        return parameters;
     }
 
     public static CcgExample createCcgExample(String sentence, Expression2 expression, Set<String> usedPOS)
@@ -307,7 +336,10 @@ public class CcgUtils
 
         parserSettings.posUsed = posUsed;
         ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon, unaryRulesList, posUsed);
-        parserSettings.parser = CcgUtils.train(family, ccgExamples);
+        parserSettings.lexicon = lexicon;
+        parserSettings.unaryRules = unaryRulesList;
+        parserSettings.parserParameters = CcgUtils.train(family, ccgExamples);
+        parserSettings.parser = family.getModelFromParameters(parserSettings.parserParameters);
         return parserSettings;
     }
 
@@ -340,7 +372,7 @@ public class CcgUtils
     }
 
 
-    public static List<String[]> loadExamples(Path filePath)
+    public static List<String[]> loadExamples(java.nio.file.Path filePath)
     {
         final String cvsSplitBy = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
         List<String[]> retVal = new LinkedList<>();
