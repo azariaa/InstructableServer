@@ -4,6 +4,8 @@ import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -11,6 +13,7 @@ import java.util.List;
  */
 public class CommandsToParser implements ICommandsToParser
 {
+    static final String tempFileName = "learntCommands.csv";
     ParserSettings parserSettings;
     public CommandsToParser(ParserSettings parserSettings)
     {
@@ -19,7 +22,17 @@ public class CommandsToParser implements ICommandsToParser
     @Override
     public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt)
     {
-
+        Expression2 expression = CcgUtils.combineCommands(commandsLearnt);
+        FileWriter out = null;
+        try
+        {
+            out = new FileWriter(tempFileName, true);
+            out.write(originalCommand + "," + expression.toString() + "\n");
+            out.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -40,7 +53,7 @@ public class CommandsToParser implements ICommandsToParser
     @Override
     public void newInstanceDefined(String instanceName)
     {
-        CcgUtils.updateParserGrammar(instanceName+",InstanceName{0},"+instanceName, parserSettings);
+        CcgUtils.updateParserGrammar(instanceName + ",InstanceName{0}," + instanceName, parserSettings);
         parserSettings.env.bindName(instanceName, instanceName.replace("_", " "), parserSettings.symbolTable);
     }
 }

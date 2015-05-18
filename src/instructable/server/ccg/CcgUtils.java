@@ -1,5 +1,6 @@
 package instructable.server.ccg;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -158,7 +159,7 @@ public class CcgUtils
                                                                Set<String> posSet)
     {
         CcgCategory stringCategory = CcgCategory.parseFrom("String{0},(lambda $0 $0),0 special:string");
-        //CcgCategory stringCategory = CcgCategory.parseFrom("S{0},(lambda $0 (unknownCommand),0 unknownCommand");
+        //CcgCategory stringCategory = CcgCategory.parseFrom("S{0},(lambda $0 (unknownCommand)),0 unknownCommand");
 
         List<Set<String>> assignments = Lists.newArrayList();
         assignments.add(Sets.newHashSet(ParametricCcgParser.SKIP_PREDICATE));
@@ -419,5 +420,18 @@ public class CcgUtils
     private CcgUtils()
     {
         // Prevent instantiation.
+    }
+
+    public static Expression2 combineCommands(List<Expression2> toCombine)
+    {
+        Preconditions.checkState(toCombine.size() > 0);
+        Expression2 retExpression = toCombine.get(0);
+        for (int i = 1; i < toCombine.size(); i++)
+        {
+            //TODO: should be a better way to combine Expressions
+            retExpression = ExpressionParser.expression2().parseSingleExpression("(doSeq" + retExpression.toString() + " " + toCombine.get(i).toString() + ")");
+        }
+
+        return retExpression;
     }
 }

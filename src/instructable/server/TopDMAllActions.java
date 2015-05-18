@@ -61,6 +61,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         private InternalStateMode internalStateMode;
         List<Expression2> expressionsLearnt = new LinkedList<>();
         String lastCommandOrLearningCommand = "";
+        int lastInfoForCommandHashCode;
 
         public boolean isPendingOnEmailCreation()
         {
@@ -90,6 +91,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         public void reset()
         {
             internalStateMode = InternalStateMode.none;
+            expressionsLearnt = new LinkedList<>();
         }
 
         public String startLearning()
@@ -102,8 +104,15 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             if (internalStateMode == InternalStateMode.learning)
             {
+                //TODO: not the best way to do this, since some actions in the same expression may succeed and some not. also what if the user end the last command with "and that's it"?
                 if (success)
-                    expressionsLearnt.add(infoForCommand.expression);
+                {
+                    if(infoForCommand.hashCode() != lastInfoForCommandHashCode)
+                    {
+                        lastInfoForCommandHashCode = infoForCommand.hashCode();
+                        expressionsLearnt.add(infoForCommand.expression);
+                    }
+                }
             }
             else
             {
@@ -196,8 +205,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse cancel(InfoForCommand infoForCommand)
     {
-        internalState.reset();
-        return new ActionResponse("Ok, I'll stop.", true);
+        if (internalState.isInLearningMode())
+        {
+            internalState.reset();
+            return new ActionResponse("Ok, I won't learn it.", true);
+        }
+        return new ActionResponse("There is nothing that I can cancel.", true);
     }
 
     @Override

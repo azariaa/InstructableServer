@@ -5,6 +5,7 @@ sure,S{0},(yes)
 finish,S{0},(end)
 end,S{0},(end)
 "that 's it",S{0},(end)
+cancel,S{0},(cancel)
 "compose","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 "create","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 create,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
@@ -44,6 +45,7 @@ email,InstanceName{0},outgoing_email,0 outgoing_email
 email,ConceptName{0},outgoing_email,0 outgoing_email
 recipient,FieldName{0},recipient_list,0 recipient_list
 subject,FieldName{0},subject,0 subject
+sender,FieldName{0},sender,0 sender
 bob,InstanceName{0},bob,0 bob
 contact,ConceptName{0},contact
 email,FieldName{0},email

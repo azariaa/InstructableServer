@@ -32,7 +32,7 @@ public class LispExecutor
 
     public static List<String> allFunctionNames()
     {
-        List<String> allFunctionNames = Arrays.asList(IAllUserActions.class.getMethods()).stream().map(x -> x.getName()).collect(Collectors.toList());
+        List<String> allFunctionNames = Arrays.asList(IAllUserActions.class.getMethods()).stream().map(Method::getName).collect(Collectors.toList());
         allFunctionNames.add(doSeq);
         return allFunctionNames;
     }
