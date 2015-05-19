@@ -70,15 +70,15 @@ public class GenericInstance
     /*
     should be called only if a new field was added to the conceptName
      */
-    public ExecutionStatus addFieldToObject(FieldDescription fieldToAdd)
+    public void addFieldToObject(ExecutionStatus executionStatus, FieldDescription fieldToAdd)
     {
         lastAccess = System.nanoTime();
         if (!fields.containsKey(fieldToAdd.fieldName))
         {
             fields.put(fieldToAdd.fieldName, new FieldHolder(fieldToAdd, this));
-            return new ExecutionStatus();
+            return ;
         }
-        return new ExecutionStatus(ExecutionStatus.RetStatus.error, "the field cannot be found");
+        executionStatus.add(ExecutionStatus.RetStatus.error, "the field cannot be found");
     }
 
     public boolean fieldExists(String fieldName)

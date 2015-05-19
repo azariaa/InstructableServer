@@ -67,6 +67,7 @@ public interface IAllUserActions
 
     ActionResponse defineConcept(InfoForCommand infoForCommand, String newConceptName);
 
+    //not sure this is needed, it is resonable to require the conceptName that is getting a new field
     ActionResponse addFieldToProbConcept(InfoForCommand infoForCommand, String newFieldName);
 
     //I will try to learn field type and isList from the fieldName?

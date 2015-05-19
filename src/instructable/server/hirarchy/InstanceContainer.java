@@ -135,4 +135,17 @@ public class InstanceContainer
         }
         executionStatus.add(ExecutionStatus.RetStatus.warning, "the instance was not found");
     }
+
+    public void fieldAddedToConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription newFieldDescription)
+    {
+        if (conceptToInstance.containsKey(conceptName))
+        {
+            //it's ok if no instances are found
+            Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
+            for (GenericInstance instance : instances.values())
+            {
+                instance.addFieldToObject(executionStatus, newFieldDescription);
+            }
+        }
+    }
 }

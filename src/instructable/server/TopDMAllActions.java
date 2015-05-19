@@ -554,7 +554,10 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList, boolean mutable)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
-        conceptContainer.addFieldToConcept(executionStatus, conceptName, new FieldDescription(fieldName, possibleFieldType, isList, mutable));
+        FieldDescription fieldDescription = new FieldDescription(fieldName, possibleFieldType, isList, mutable);
+        conceptContainer.addFieldToConcept(executionStatus, conceptName, fieldDescription);
+        if (executionStatus.noError())
+            instanceContainer.fieldAddedToConcept(executionStatus, conceptName, fieldDescription);
 
         StringBuilder response = new StringBuilder();
         boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,

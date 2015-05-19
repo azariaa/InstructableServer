@@ -3,7 +3,6 @@ package testing;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.*;
 import instructable.server.ccg.ParserSettings;
-import instructable.server.hirarchy.EmailMessage;
 import instructable.server.hirarchy.IncomingEmail;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,7 +21,7 @@ import java.util.List;
 public class TestDirectly
 {
     static boolean testingMode = true;
-    static String fileName = "May1test.txt";
+    static String fileName = "May19test.txt";
 
     public static void main(String[] args) throws Exception
     {
@@ -74,9 +73,12 @@ public class TestDirectly
 
         learningToForwardAnEmail(allUserActions, testHelpers, parserSettings);
 
+        smallUpdates(allUserActions,testHelpers,parserSettings);
+
         testHelpers.endTest();
         //emailSomeoneSomeText()
     }
+
 
     private static void sendingBasicEmail(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
     {
@@ -531,6 +533,54 @@ public class TestDirectly
         userSays = "that's it, you're done!";
         testHelpers.userSays(userSays);
         response = allUserActions.end(new InfoForCommand(userSays, null));
+        testHelpers.systemSays(response.getSayToUser());
+
+    }
+
+
+    private static void smallUpdates(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
+    {
+        testHelpers.newSection("smallUpdates");
+        String userSays;
+        ActionResponse response;
+
+        userSays = "next message";
+        testHelpers.userSays(userSays);
+        response = allUserActions.nextEmailMessage(new InfoForCommand(userSays, null));
+        testHelpers.systemSays(response.getSayToUser());
+
+        userSays = "read incoming email";
+        testHelpers.userSays(userSays);
+        response = allUserActions.getProbInstanceByName(new InfoForCommand(userSays, null), "inbox");
+        if (response.isSuccess())
+            response = allUserActions.readInstance(new InfoForCommand(userSays, null), response.getInstance());
+        testHelpers.systemSays(response.getSayToUser());
+
+        userSays = "add tasks to contact";
+        testHelpers.userSays(userSays);
+        response = allUserActions.addFieldToConcept(new InfoForCommand(userSays, null), "contact", "tasks");
+        testHelpers.systemSays(response.getSayToUser());
+
+        //tasks is plural, so will be assigned a list
+        userSays = "set bob's tasks to dealing with complaints";
+        testHelpers.userSays(userSays);
+        response = allUserActions.getProbMutableFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "tasks");
+        if (response.isSuccess())
+            response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "dealing with complaints");
+        testHelpers.systemSays(response.getSayToUser());
+
+        userSays = "add helping new workers to bob's tasks";
+        testHelpers.userSays(userSays);
+        response = allUserActions.getProbMutableFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "tasks");
+        if (response.isSuccess())
+            response = allUserActions.addToFieldFromString(new InfoForCommand(userSays, null), response.getField(), "helping new workers");
+        testHelpers.systemSays(response.getSayToUser());
+
+        userSays = "what are bob's tasks";
+        testHelpers.userSays(userSays);
+        response = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "tasks");
+        if (response.isSuccess())
+            response = allUserActions.evalField(new InfoForCommand(userSays, null), response.getField());
         testHelpers.systemSays(response.getSayToUser());
 
     }
