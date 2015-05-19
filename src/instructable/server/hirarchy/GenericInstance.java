@@ -11,11 +11,11 @@ import java.util.*;
 public class GenericInstance
 {
 
-    public GenericInstance(String type, String instanceName, List<FieldDescription> fieldsInType)
+    public GenericInstance(String conceptName, String instanceName, List<FieldDescription> fieldsInType)
     {
         name = instanceName;
         lastAccess = System.nanoTime(); //System.currentTimeMillis(); doesn't work because in test may execute several commands in same millisecond
-        this.type = type;
+        this.conceptName = conceptName;
         fields = new HashMap<String, FieldHolder>();
         for (FieldDescription fieldDescription : fieldsInType)
         {
@@ -24,13 +24,18 @@ public class GenericInstance
     }
 
     String name;
-    String type; //class, concept
+    String conceptName; //type, class, concept
     long lastAccess;
     private Map<String, FieldHolder> fields;
 
     public String getName()
     {
         return name;
+    }
+
+    public String getConceptName()
+    {
+        return conceptName;
     }
 
     /*
@@ -63,7 +68,7 @@ public class GenericInstance
 
 
     /*
-    should be called only if a new field was added to the type
+    should be called only if a new field was added to the conceptName
      */
     public ExecutionStatus addFieldToObject(FieldDescription fieldToAdd)
     {

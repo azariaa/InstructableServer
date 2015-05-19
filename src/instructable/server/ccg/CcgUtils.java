@@ -295,8 +295,7 @@ public class CcgUtils
 
         //upto here
         CcgParse parse = inferenceAlg.getBestParse(parser, supertaggedSentence, new InstChartCost(), new NullLogFunction());
-        //TODO: if parse is empty we may want to call unknownCommand, but if there is no parse, this might be a problem.
-        //TODO: we may want just to return an error.
+        //TODO: if parse is empty we may want to call unknownCommand - better define a way to capture all parses
         return simplifier.apply(parse.getLogicalForm());
     }
 
@@ -429,7 +428,7 @@ public class CcgUtils
         for (int i = 1; i < toCombine.size(); i++)
         {
             //TODO: should be a better way to combine Expressions
-            retExpression = ExpressionParser.expression2().parseSingleExpression("(doSeq" + retExpression.toString() + " " + toCombine.get(i).toString() + ")");
+            retExpression = ExpressionParser.expression2().parseSingleExpression("(" + LispExecutor.doSeq + retExpression.toString() + " " + toCombine.get(i).toString() + ")");
         }
 
         return retExpression;

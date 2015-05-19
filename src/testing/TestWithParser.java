@@ -85,6 +85,7 @@ public class TestWithParser
                 //"FieldVal{0} S{0},(lambda x x)", //TODO: bring this back once it works
                 "MutableField{0} FieldVal{0},(lambda x (evalField x))",
                 "FieldName{0} Field{0},(lambda x (getProbFieldByFieldName x))",
+                "InstanceName{0} Instance{0},(lambda x (getProbInstanceByName x))",
                 "FieldName{0} MutableField{0},(lambda x (getProbMutableFieldByFieldName x))",
                 "String{0} S{0},(lambda x (unknownCommand))" //TODO: remove this, once it's added in: buildParametricCcgParser (so only full sentence will be transferred to S)
         };

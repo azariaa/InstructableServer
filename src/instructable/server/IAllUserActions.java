@@ -78,6 +78,7 @@ public interface IAllUserActions
 
     ActionResponse createInstanceByFullNames(InfoForCommand infoForCommand, String conceptName, String newInstanceName);
 
+    //doesn't sound like a good idea (though could use last used concept, or just give an error.
     ActionResponse createInstanceByInstanceName(InfoForCommand infoForCommand, String newInstanceName);
 
     ActionResponse setFieldTypeKnownConcept(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);

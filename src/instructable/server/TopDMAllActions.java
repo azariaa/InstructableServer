@@ -16,12 +16,12 @@ import static instructable.server.TextFormattingUtils.userFriendlyList;
  */
 public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlling
 {
-    OutEmailCommandController dMContextAndExecution;
     ConceptContainer conceptContainer;
     InstanceContainer instanceContainer;
     ICommandsToParser commandsToParser;
-    int currentIncomingEmailIdx = 0;
-    static final String emailMessageNameStart = "inbox";
+    OutEmailCommandController outEmailCommandController;
+    InboxCommandController inboxCommandController;
+    static final String userEmailAddress = "myemail@gmail.com";
 
     Optional<JSONObject> previousFieldEval = Optional.empty();
 
@@ -29,20 +29,16 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         conceptContainer = new ConceptContainer();
         instanceContainer = new InstanceContainer(conceptContainer);
-        dMContextAndExecution = new OutEmailCommandController("myemail@gmail.com", conceptContainer, instanceContainer);
+        outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer);
+        inboxCommandController = new InboxCommandController(conceptContainer, instanceContainer);
         this.commandsToParser = commandsToParser;
         internalState = new InternalState();
-        //TODO: should really have a class controlling all incoming email
-        conceptContainer.defineConcept(new ExecutionStatus(), IncomingEmail.incomingEmailType, IncomingEmail.getFieldDescriptions());
     }
 
     @Override
     public void addEmailMessageToInbox(IncomingEmail emailMessage)
     {
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        int numOfMessages = instanceContainer.getAllInstances(IncomingEmail.incomingEmailType).size();
-        emailMessage.setName(emailMessageNameStart + numOfMessages);
-        instanceContainer.addInstance(executionStatus, emailMessage);
+        inboxCommandController.addEmailMessageToInbox(emailMessage);
     }
 
     //TODO: may want to allow to pend on function delegates.
@@ -139,7 +135,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         StringBuilder retSentences = new StringBuilder();
         ExecutionStatus executionStatus = new ExecutionStatus();
-        dMContextAndExecution.sendEmail(executionStatus);
+        outEmailCommandController.sendEmail(executionStatus);
         ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
         if (executionStatus.isError())
         {
@@ -218,7 +214,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
 
         instanceName = AliasMapping.instanceNameMapping(instanceName);
-        instanceName = addCounterToEmailMessageIdIfRequired(instanceName);
+        instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName);
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);
@@ -261,7 +257,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse getProbInstanceByName(InfoForCommand infoForCommand, String instanceName)
     {
         instanceName = AliasMapping.instanceNameMapping(instanceName);
-        instanceName = addCounterToEmailMessageIdIfRequired(instanceName);
+        instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName);
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty(), false);
@@ -297,7 +293,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (instanceName.isPresent())
         {
             //instanceName = Optional.of(AliasMapping.instanceNameMapping(instanceName.get()));
-            instanceName = Optional.of(addCounterToEmailMessageIdIfRequired(instanceName.get()));
+            instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName.get()));
         }
 
         ExecutionStatus executionStatus = new ExecutionStatus();
@@ -370,8 +366,28 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse readInstance(InfoForCommand infoForCommand, GenericInstance instance)
     {
-        //TODO:
-        return null;
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        StringBuilder instanceContent = new StringBuilder();
+        instanceContent.append("instance: \""+instance.getName()+"\" (of concept \"" + instance.getConceptName() + "\").\n");
+        for (String fieldName : instance.getAllFieldNames())
+        {
+            Optional<FieldHolder> field = instance.getField(executionStatus, fieldName);
+            if (field.isPresent())
+            {
+                instanceContent.append(fieldName + ": " + field.get().fieldValForUser() + "\n");
+            }
+        }
+        StringBuilder response = new StringBuilder();
+        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+                new ExecutionStatus(),
+                true,
+                true,
+                response,
+                Optional.of(instanceContent.toString()),
+                false, //shouldn't fail
+                internalState
+        );
+        return new ActionResponse(response.toString(), success);
     }
 
     @Override
@@ -555,9 +571,9 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
         {
             ExecutionStatus executionStatus = new ExecutionStatus();
-            dMContextAndExecution.createNewEmail(executionStatus);
+            outEmailCommandController.createNewEmail(executionStatus);
             StringBuilder response = new StringBuilder();
-            List<String> emailFieldNames = dMContextAndExecution.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
+            List<String> emailFieldNames = outEmailCommandController.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
             boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
                     executionStatus,
                     false,
@@ -661,13 +677,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
 
-    private String addCounterToEmailMessageIdIfRequired(String instanceName)
-    {
-        if (instanceName.equals(emailMessageNameStart))
-            return emailMessageNameStart + currentIncomingEmailIdx;
-        return instanceName;
-    }
-
     @Override
     public ActionResponse deleteConcept(InfoForCommand infoForCommand, String conceptName)
     {
@@ -690,15 +699,36 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse nextEmailMessage(InfoForCommand infoForCommand)
     {
-        //if (instanceContainer.hasInstance(currentIncomingEmailIdx)
-        //TODO: check if has next email, if so advance counter, otherwise return error.
-        return null;
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        inboxCommandController.setToNextEmail(executionStatus);
+
+        StringBuilder response = new StringBuilder();
+        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+                executionStatus,
+                true,
+                true,
+                response,
+                Optional.of("Set to next incoming email successfully."),
+                false,
+                internalState);
+        return new ActionResponse(response.toString(), success);
     }
 
     @Override
     public ActionResponse previousEmailMessage(InfoForCommand infoForCommand)
     {
-        //TODO: check if has previous email, if so reduce counter, otherwise return error.
-        return null;
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        inboxCommandController.setToPrevEmail(executionStatus);
+
+        StringBuilder response = new StringBuilder();
+        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+                executionStatus,
+                true,
+                true,
+                response,
+                Optional.of("Set to previous incoming email successfully."),
+                false,
+                internalState);
+        return new ActionResponse(response.toString(), success);
     }
 }

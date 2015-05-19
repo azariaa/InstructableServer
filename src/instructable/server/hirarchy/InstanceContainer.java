@@ -102,7 +102,7 @@ public class InstanceContainer
 
     public void addInstance(ExecutionStatus executionStatus, GenericInstance conceptInstance)
     {
-        String conceptName = conceptInstance.type;
+        String conceptName = conceptInstance.conceptName;
         if (!conceptContainer.doesConceptExist(conceptName))
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "there is no concept with the name \"" + conceptName + "\" is defined, please define it first");
@@ -111,10 +111,10 @@ public class InstanceContainer
         {
             if (!conceptToInstance.containsKey(conceptName))
             {
-                conceptToInstance.put(conceptInstance.type, new HashMap<>());
+                conceptToInstance.put(conceptInstance.conceptName, new HashMap<>());
             }
 
-            conceptToInstance.get(conceptInstance.type).put(conceptInstance.name, conceptInstance);
+            conceptToInstance.get(conceptInstance.conceptName).put(conceptInstance.name, conceptInstance);
         }
 
     }

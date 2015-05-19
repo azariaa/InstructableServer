@@ -22,7 +22,7 @@ public class LispExecutor
     IAllUserActions allUserActions;
     InfoForCommand infoForCommand;
 
-    static final String doSeq = "doSeq";
+    public static final String doSeq = "doSeq";
 
     public LispExecutor(IAllUserActions allUserActions, InfoForCommand infoForCommand)
     {

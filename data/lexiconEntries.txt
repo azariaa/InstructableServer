@@ -6,6 +6,10 @@ finish,S{0},(end)
 end,S{0},(end)
 "that 's it",S{0},(end)
 cancel,S{0},(cancel)
+"next email",S{0},(nextEmailMessage)
+"next message",S{0},(nextEmailMessage)
+"previous email",S{0},(previousEmailMessage)
+"previous message",S{0},(previousEmailMessage)
 "compose","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 "create","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 create,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
@@ -16,6 +20,7 @@ add,((S{0}/ConceptName{2}){0}/String{1}), (lambda $1 $2 (addFieldToConcept $2 $1
 add,((S{0}/PP_MutableField{2}){0}/String{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
 what,(S{0}/Field{1}){0},(lambda $1 (evalField $1))
 take,(FieldVal{0}/Field{1}){0},(lambda $1 (evalField $1))
+read,(S{0}/Instance{1}){0},(lambda $1 (readInstance $1))
 "set","((S{0}/PP_String{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
 "set","((S{0}/PP_FieldVal{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $1 $2))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2"
 "set","((S{0}/PP_MutableField{2}){0}/String{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"

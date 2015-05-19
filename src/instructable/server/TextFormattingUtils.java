@@ -10,9 +10,11 @@ import java.util.Optional;
  */
 public class TextFormattingUtils
 {
+    final public static String uiListSepSymbol = ";";
+
     /*
-        separates with commas and adds "and" instead of last comma.
-     */
+            separates with commas and adds "and" instead of last comma.
+         */
     public static String userFriendlyList(List<String> givenList)
     {
         if (givenList == null || givenList.size() == 0)
