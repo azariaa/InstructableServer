@@ -537,8 +537,15 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         boolean isList = false;
         if (fieldName.contains("email"))
             possibleFieldType = PossibleFieldType.emailAddress;
-        if (conceptName.endsWith("list") || conceptName.endsWith("s")) //TODO: should use plural vs. singular not just use s!
+        if (fieldName.endsWith(" list"))
             isList = true;
+        else
+        {
+            InstUtils.Plurality plurality = InstUtils.wordPlurality(fieldName);
+            //TODO: we may want to alert the user and ask for confirmation if the fieldName is not in the dictionary (unknown).
+            if (plurality == InstUtils.Plurality.plural || plurality == InstUtils.Plurality.unknown && fieldName.endsWith("s"))
+                isList = true;
+        }
 
         return addFieldToConceptWithType(infoForCommand, conceptName, fieldName, possibleFieldType, isList, true);
     }
