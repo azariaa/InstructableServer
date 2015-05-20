@@ -1,12 +1,13 @@
 package testing;
 
-import instructable.server.*;
+import instructable.EnvironmentCreatorUtils;
+import instructable.server.ActionResponse;
+import instructable.server.CommandsToParser;
+import instructable.server.IAllUserActions;
+import instructable.server.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
-import instructable.server.hirarchy.IncomingEmail;
 
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
@@ -17,11 +18,11 @@ public class CommandLine
     public static void main(String[] args) throws Exception
     {
 
-        ParserSettings parserSettings = TestWithParser.createParser();
+        ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
         TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettings));
         IAllUserActions allUserActions = topDMAllActions;
 
-        addInboxEmails(topDMAllActions);
+        EnvironmentCreatorUtils.addInboxEmails(topDMAllActions);
 
         Scanner scanIn = new Scanner(System.in);
         System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
@@ -46,20 +47,4 @@ public class CommandLine
 
     }
 
-    public static void addInboxEmails(IIncomingEmailControlling incomingEmailControlling)
-    {
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("bob7@myjob.com",
-                "department party",
-                Arrays.asList(new String[]{"you@myjob.com"}),
-                new LinkedList<String>(),
-                "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse."
-        ));
-
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("dan@myjob.com",
-                "another email",
-                Arrays.asList(new String[]{"you@myjob.com"}),
-                new LinkedList<String>(),
-                "sending another email."
-        ));
-    }
 }
