@@ -20,7 +20,6 @@ public interface IAllUserActions
 
     ActionResponse cancel(InfoForCommand infoForCommand);
 
-    //the following functions will usually be used only internally
     ActionResponse getInstance(InfoForCommand infoForCommand, String conceptName, String instanceName);
 
     ActionResponse getFieldFromInstance(InfoForCommand infoForCommand, GenericInstance instance, String fieldName);

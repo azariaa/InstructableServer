@@ -41,7 +41,7 @@ S: Sorry, but "my spouse" is not an email address.
 S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
 U: I want to teach you what a contact is
-S: Concept "contact" was created successfully. Please define its fields.
+S: Concept "contact" was defined successfully. Please add fields to it.
 
 U: Define contact!
 S: Sorry, but the concept "contact" is already defined. Its fields are: none.

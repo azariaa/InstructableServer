@@ -17,6 +17,7 @@ create,((S{0}/ConceptName{2}){0}/String{1}), (lambda $1 $2 (createInstanceByFull
 define,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
 teach,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
 add,((S{0}/ConceptName{2}){0}/String{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
+has,((S{0}\ConceptName{2}){0}/String{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
 add,((S{0}/PP_MutableField{2}){0}/String{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
 what,(S{0}/Field{1}){0},(lambda $1 (evalField $1))
 take,(FieldVal{0}/Field{1}){0},(lambda $1 (evalField $1))

@@ -512,7 +512,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                         true,
                         true,
                         response,
-                        Optional.of("Concept \"" + newConceptName + "\" was created successfully. Please define its fields."),
+                        Optional.of("Concept \"" + newConceptName + "\" was defined successfully. Please add fields to it."),
                         false,
                         internalState);
         if (success)
