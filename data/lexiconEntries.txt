@@ -33,6 +33,8 @@ of,((MutableField{0}\FieldName{2}){0}/InstanceName{1}){0},(lambda $1 $2 (getProb
 "the value",String/String,(lambda $1 $1)
 's,((Field{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $2 $1))
 's,((MutableField{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $2 $1))
+is,"((S{0}/String{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromString $1 $2))
+is,"((S{0}/FieldVal{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromFieldVal $1 $2))
 it,FieldVal{0},(getProbFieldVal),0 getProbFieldVal
 to,PP_String/String,(lambda $1 $1)
 to,PP_Field/Field,(lambda $1 $1)

@@ -1,8 +1,6 @@
 package instructable;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.*;
 import instructable.server.ActionResponse;
 import instructable.server.CommandsToParser;
 import instructable.server.IAllUserActions;
@@ -10,13 +8,14 @@ import instructable.server.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,6 +26,7 @@ public class Service
     static public final int portToUse = 18892;
     static public final String contextSay = "say";
     static public final String userSaysParam = "userSays";
+    //TODO: add userID as a mandatory field (need to clone original parser and create a new TopDMAllActions for evey new user).
 
     public static void main(String[] args)
     {
@@ -43,7 +43,8 @@ public class Service
         try
         {
             HttpServer server = HttpServer.create(new InetSocketAddress(portToListenOn), 0);
-            server.createContext("/" + contextSay, new MyHandler(allUserActions, parserSettings));
+            HttpContext context = server.createContext("/" + contextSay, new MyHandler(allUserActions, parserSettings));
+            context.getFilters().add(new ParameterFilter());
             server.setExecutor(null); // creates a default executor
             server.start();
         }
@@ -67,13 +68,15 @@ public class Service
 
         public void handle(HttpExchange httpExchange) throws IOException
         {
-            Map<String, String> parameters = queryToMap(httpExchange.getRequestURI().getQuery());
+            //Map<String, String> parameters = queryToMap(httpExchange.getRequestURI().getQuery());
+            Map<String, Object> parameters =
+                    (Map<String, Object>)httpExchange.getAttribute(ParameterFilter.parametersStr);
             String systemReply = null;
             if (parameters.containsKey(userSaysParam))
             {
                 try
                 {
-                    ActionResponse response = CcgUtils.ParseAndEval(allUserActions, parserSettings, parameters.get(userSaysParam));
+                    ActionResponse response = CcgUtils.ParseAndEval(allUserActions, parserSettings, parameters.get(userSaysParam).toString());
                     systemReply = response.getSayToUser();
                 } catch (Exception ex)
                 {
@@ -90,37 +93,90 @@ public class Service
             os.write(systemReply.getBytes());
             os.close();
         }
+    }
 
 
-        /**
-         * returns the url parameters in a map
-         *
-         * @param query
-         * @return map
-         */
-        public static Map<String, String> queryToMap(String query)
+        static public class ParameterFilter extends Filter
         {
-            Map<String, String> result = new HashMap<String, String>();
-            for (String param : query.split("&"))
-            {
-                String pair[] = param.split("=");
-                if (pair.length > 1)
-                {
-                    try
-                    {
-                        result.put(pair[0], URLDecoder.decode(pair[1], StandardCharsets.UTF_8.name()));
-                    } catch (UnsupportedEncodingException e)
-                    {
-                        result.put(pair[0], "");
-                        e.printStackTrace();
-                    }
-                }
-                else
-                {
-                    result.put(pair[0], "");
+            public static final String parametersStr = "parameters";
+
+            @Override
+            public String description() {
+                return "Parses the requested URI for parameters";
+            }
+
+            @Override
+            public void doFilter(HttpExchange exchange, Chain chain)
+                    throws IOException {
+                parseGetParameters(exchange);
+                parsePostParameters(exchange);
+                chain.doFilter(exchange);
+            }
+
+            private void parseGetParameters(HttpExchange exchange)
+                    throws UnsupportedEncodingException {
+
+                Map<String, Object> parameters = new HashMap<String, Object>();
+                URI requestedUri = exchange.getRequestURI();
+                String query = requestedUri.getRawQuery();
+                parseQuery(query, parameters);
+                exchange.setAttribute(parametersStr, parameters);
+            }
+
+            private void parsePostParameters(HttpExchange exchange)
+                    throws IOException {
+
+                if ("post".equalsIgnoreCase(exchange.getRequestMethod())) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> parameters =
+                            (Map<String, Object>)exchange.getAttribute(parametersStr);
+                    InputStreamReader isr =
+                            new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8.name());
+                    BufferedReader br = new BufferedReader(isr);
+                    String query = br.readLine();
+                    parseQuery(query, parameters);
                 }
             }
-            return result;
-        }
+
+            @SuppressWarnings("unchecked")
+            private void parseQuery(String query, Map<String, Object> parameters)
+                    throws UnsupportedEncodingException {
+
+                if (query != null) {
+                    String pairs[] = query.split("[&]");
+
+                    for (String pair : pairs) {
+                        String param[] = pair.split("[=]");
+
+                        String key = null;
+                        String value = null;
+                        if (param.length > 0) {
+                            key = URLDecoder.decode(param[0],
+                                    System.getProperty("file.encoding"));
+                        }
+
+                        if (param.length > 1) {
+                            value = URLDecoder.decode(param[1],
+                                    System.getProperty("file.encoding"));
+                        }
+
+                        if (parameters.containsKey(key)) {
+                            Object obj = parameters.get(key);
+                            if(obj instanceof List<?>) {
+                                List<String> values = (List<String>)obj;
+                                values.add(value);
+                            } else if(obj instanceof String) {
+                                List<String> values = new ArrayList<String>();
+                                values.add((String)obj);
+                                values.add(value);
+                                parameters.put(key, values);
+                            }
+                        } else {
+                            parameters.put(key, value);
+                        }
+                    }
+                }
+            }
+
     }
 }
