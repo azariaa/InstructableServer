@@ -1,7 +1,7 @@
 package instructable;
 
+import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.*;
-import instructable.server.ActionResponse;
 import instructable.server.CommandsToParser;
 import instructable.server.IAllUserActions;
 import instructable.server.TopDMAllActions;
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.*;
 
 /**
  * Created by Amos Azaria on 20-May-15.
@@ -27,9 +28,12 @@ public class Service
     static public final String contextSay = "say";
     static public final String userSaysParam = "userSays";
     //TODO: add userID as a mandatory field (need to clone original parser and create a new TopDMAllActions for evey new user).
+    private static final Logger LOGGER = Logger.getLogger(Service.class.getName());
+    static private final String loggingFile = "./logging/service.log";
 
     public static void main(String[] args)
     {
+        configLogger();
         ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
         TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettings));
         IAllUserActions allUserActions = topDMAllActions;
@@ -38,60 +42,100 @@ public class Service
         running(portToUse, allUserActions, parserSettings);
     }
 
+    private static void configLogger()
+    {
+        Handler consoleHandler = null;
+        Handler fileHandler  = null;
+        //Creating consoleHandler and fileHandler
+        consoleHandler = new ConsoleHandler();
+        try
+        {
+            fileHandler  = new FileHandler(loggingFile);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        // Creating SimpleFormatter
+        Formatter simpleFormatter = new SimpleFormatter();
+        // Setting formatter to the handler
+        fileHandler.setFormatter(simpleFormatter);
+        //Assigning handlers to LOGGER object
+        LOGGER.addHandler(consoleHandler);
+        LOGGER.addHandler(fileHandler);
+
+        //Setting levels to handlers and LOGGER
+        consoleHandler.setLevel(Level.ALL);
+        fileHandler.setLevel(Level.ALL);
+        LOGGER.setLevel(Level.ALL);
+
+        LOGGER.config("Configuration done.");
+    }
+
     public static void running(int portToListenOn, IAllUserActions allUserActions, ParserSettings parserSettings)
     {
         try
         {
             HttpServer server = HttpServer.create(new InetSocketAddress(portToListenOn), 0);
-            HttpContext context = server.createContext("/" + contextSay, new MyHandler(allUserActions, parserSettings));
+            HttpContext context = server.createContext("/" + contextSay, new HandlerForHttp(allUserActions, parserSettings));
             context.getFilters().add(new ParameterFilter());
             server.setExecutor(null); // creates a default executor
             server.start();
         }
-        // If anything goes wrong, print an error message
-        catch (Exception e)
+        catch (Exception ex)
         {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "an exception was thrown", ex);
         }
     }
 
-    static class MyHandler implements HttpHandler
+    static class HandlerForHttp implements HttpHandler
     {
         IAllUserActions allUserActions;
         ParserSettings parserSettings;
 
-        MyHandler(IAllUserActions allUserActions, ParserSettings parserSettings)
+        HandlerForHttp(IAllUserActions allUserActions, ParserSettings parserSettings)
         {
             this.allUserActions = allUserActions;
             this.parserSettings = parserSettings;
         }
 
-        public void handle(HttpExchange httpExchange) throws IOException
+        public void handle(HttpExchange httpExchange)
         {
-            //Map<String, String> parameters = queryToMap(httpExchange.getRequestURI().getQuery());
-            Map<String, Object> parameters =
-                    (Map<String, Object>)httpExchange.getAttribute(ParameterFilter.parametersStr);
-            String systemReply = null;
-            if (parameters.containsKey(userSaysParam))
+            try
             {
-                try
+                //Map<String, String> parameters = queryToMap(httpExchange.getRequestURI().getQuery());
+                Map<String, Object> parameters =
+                        (Map<String, Object>) httpExchange.getAttribute(ParameterFilter.parametersStr);
+                String systemReply = null;
+                if (parameters.containsKey(userSaysParam))
                 {
-                    ActionResponse response = CcgUtils.ParseAndEval(allUserActions, parserSettings, parameters.get(userSaysParam).toString());
-                    systemReply = response.getSayToUser();
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    systemReply = "Sorry, but I got some error...";
+                    try
+                    {
+                        LOGGER.info("UserID:" + "?" + ". User says: " + parameters.get(userSaysParam).toString());
+                        CcgUtils.SayAndExpression response = CcgUtils.ParseAndEval(allUserActions, parserSettings, parameters.get(userSaysParam).toString());
+                        systemReply = response.sayToUser;
+                        LOGGER.info("UserID:" + "?" + ". Lambda expression: " + response.lExpression);
+                        LOGGER.info("UserID:" + "?" + ". System reply: " + systemReply);
+                    } catch (Exception ex)
+                    {
+                        LOGGER.log(Level.SEVERE, "an exception was thrown", ex);
+                        systemReply = "Sorry, but I got some error...";
+                    }
                 }
+                else
+                {
+                    LOGGER.warning("UserID:" + "?" + ". User has no " + userSaysParam);
+                    systemReply = "Hello, how can I help you?";
+                    LOGGER.info("UserID:" + "?" + ". System reply: " + systemReply);
+                }
+                httpExchange.sendResponseHeaders(200, systemReply.length());
+                OutputStream os = httpExchange.getResponseBody();
+                os.write(systemReply.getBytes());
+                os.close();
             }
-            else
+            catch (Exception ex)
             {
-                systemReply = "Hello, how can I help you?";
+                LOGGER.log(Level.SEVERE, "an exception was thrown", ex);
             }
-            httpExchange.sendResponseHeaders(200, systemReply.length());
-            OutputStream os = httpExchange.getResponseBody();
-            os.write(systemReply.getBytes());
-            os.close();
         }
     }
 

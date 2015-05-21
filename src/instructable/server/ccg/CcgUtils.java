@@ -404,15 +404,25 @@ public class CcgUtils
         return retVal;
     }
 
+    public static class SayAndExpression
+    {
+        public SayAndExpression(String sayToUser, String lExpression)
+        {
+            this.sayToUser = sayToUser;
+            this.lExpression = lExpression;
+        }
+        public String sayToUser;
+        public String lExpression;
+    }
 
-    public static ActionResponse ParseAndEval(IAllUserActions allUserActions, ParserSettings parserSettings, String userSays)
+    public static SayAndExpression ParseAndEval(IAllUserActions allUserActions, ParserSettings parserSettings, String userSays)
     {
         Expression2 expression;
         ActionResponse response;
         expression = CcgUtils.parse(parserSettings.parser, userSays, parserSettings.posUsed);
-        System.out.println("debug:" + expression.toString());
+        //System.out.println("debug:" + expression.toString());
         response = CcgUtils.evaluate(allUserActions, userSays, expression, parserSettings);
-        return response;
+        return new SayAndExpression(response.getSayToUser(), expression.toString());
     }
 
 

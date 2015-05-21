@@ -1,7 +1,6 @@
 package testing;
 
 import instructable.EnvironmentCreatorUtils;
-import instructable.server.ActionResponse;
 import instructable.server.CommandsToParser;
 import instructable.server.IAllUserActions;
 import instructable.server.TopDMAllActions;
@@ -33,11 +32,11 @@ public class CommandLine
             String userSays = scanIn.nextLine();
             if (userSays.equals("exit"))
                 break;
-            ActionResponse response;
+            CcgUtils.SayAndExpression response;
             try
             {
                 response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
-                System.out.println("S:" + response.getSayToUser() + "\n");
+                System.out.println("S:" + response.sayToUser + "\n");
             } catch (Exception ex)
             {
                 ex.printStackTrace();
