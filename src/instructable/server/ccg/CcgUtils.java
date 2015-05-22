@@ -152,6 +152,7 @@ public class CcgUtils {
   public static ParametricCcgParser buildParametricCcgParser(List<LexiconEntry> lexiconEntries,
                                                              List<CcgUnaryRule> inputUnaryRules) {
     CcgCategory stringCategory = CcgCategory.parseFrom("String{0},(lambda $0 $0),0 special:string");
+    List<LexiconEntry> unknownLexiconEntries = Lists.newArrayList();
     
     List<Set<String>> assignments = Lists.newArrayList();
     assignments.add(Sets.newHashSet(ParametricCcgParser.SKIP_PREDICATE));
@@ -169,8 +170,8 @@ public class CcgUtils {
     boolean skipWords = true;
     boolean normalFormOnly = false;
 
-    return ParametricCcgParser.parseFromLexicon(lexiconEntries, binaryRules, unaryRules,
-        featureFactory, null, allowComposition, null, skipWords, normalFormOnly);
+    return ParametricCcgParser.parseFromLexicon(lexiconEntries, unknownLexiconEntries, binaryRules,
+        unaryRules, featureFactory, null, allowComposition, null, skipWords, normalFormOnly);
   }
 
   /**
