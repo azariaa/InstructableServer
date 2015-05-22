@@ -10,7 +10,7 @@ import java.util.*;
 public class InstanceContainer
 {
 
-    Map<String,Map<String,GenericInstance>> conceptToInstance = new HashMap<>(); //TODO: should be stored in DB
+    Map<String, Map<String, GenericInstance>> conceptToInstance = new HashMap<>(); //TODO: should be stored in DB
 
     ConceptContainer conceptContainer;
 
@@ -61,7 +61,7 @@ public class InstanceContainer
             {
                 for (GenericInstance genericInstance : conceptToInstance.get(concept).values())
                 {
-                    if (!instanceName.isPresent()  || genericInstance.name.equals(instanceName.get()))
+                    if (!instanceName.isPresent() || genericInstance.name.equals(instanceName.get()))
                         allPossibleInstances.add(genericInstance);
                 }
             }
@@ -73,17 +73,17 @@ public class InstanceContainer
     {
         if (conceptToInstance.containsKey(conceptName))
         {
-            Map<String,GenericInstance> instances = conceptToInstance.get(conceptName);
+            Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
             if (instances.containsKey(instanceName))
                 return Optional.of(instances.get(instanceName));
             else
             {
-                executionStatus.add(ExecutionStatus.RetStatus.error, "there is no instance of \""+conceptName+"\" with name \"" +instanceName + "\", please create one first");
+                executionStatus.add(ExecutionStatus.RetStatus.error, "there is no instance of \"" + conceptName + "\" with name \"" + instanceName + "\", please create one first");
             }
         }
         else
         {
-            executionStatus.add(ExecutionStatus.RetStatus.error, "there are no instances of \""+conceptName+"\", please create an instance first (with name \"" +instanceName + "\")");
+            executionStatus.add(ExecutionStatus.RetStatus.error, "there are no instances of \"" + conceptName + "\", please create an instance first (with name \"" + instanceName + "\")");
         }
         return Optional.empty();
     }
@@ -92,7 +92,7 @@ public class InstanceContainer
     {
         if (!conceptContainer.doesConceptExist(conceptName))
         {
-            executionStatus.add(ExecutionStatus.RetStatus.error,"there is no concept with the name \"" + "\", please define it first");
+            executionStatus.add(ExecutionStatus.RetStatus.error, "there is no concept with the name \"" + "\", please define it first");
             return;
         }
         GenericInstance instance = new GenericInstance(conceptName, instanceName, conceptContainer.conceptFieldMap.get(conceptName));
@@ -102,19 +102,19 @@ public class InstanceContainer
 
     public void addInstance(ExecutionStatus executionStatus, GenericInstance conceptInstance)
     {
-        String conceptName = conceptInstance.type;
+        String conceptName = conceptInstance.conceptName;
         if (!conceptContainer.doesConceptExist(conceptName))
         {
-            executionStatus.add(ExecutionStatus.RetStatus.error,"there is no concept with the name \"" + conceptName + "\" is defined, please define it first");
+            executionStatus.add(ExecutionStatus.RetStatus.error, "there is no concept with the name \"" + conceptName + "\" is defined, please define it first");
         }
         else
         {
             if (!conceptToInstance.containsKey(conceptName))
             {
-                conceptToInstance.put(conceptInstance.type, new HashMap<>());
+                conceptToInstance.put(conceptInstance.conceptName, new HashMap<>());
             }
 
-            conceptToInstance.get(conceptInstance.type).put(conceptInstance.name, conceptInstance);
+            conceptToInstance.get(conceptInstance.conceptName).put(conceptInstance.name, conceptInstance);
         }
 
     }
@@ -134,5 +134,18 @@ public class InstanceContainer
             }
         }
         executionStatus.add(ExecutionStatus.RetStatus.warning, "the instance was not found");
+    }
+
+    public void fieldAddedToConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription newFieldDescription)
+    {
+        if (conceptToInstance.containsKey(conceptName))
+        {
+            //it's ok if no instances are found
+            Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
+            for (GenericInstance instance : instances.values())
+            {
+                instance.addFieldToObject(executionStatus, newFieldDescription);
+            }
+        }
     }
 }

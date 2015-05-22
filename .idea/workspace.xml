@@ -25,57 +25,48 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TestScenario.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/testing/TestScenario.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.41979522" vertical-offset="1284" max-vertical-offset="8755">
-              <caret line="90" column="16" selection-start-line="90" selection-start-column="16" selection-end-line="90" selection-end-column="104" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="InMindCcgFeatureFactory.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/InMindCcgFeatureFactory.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="111" max-vertical-offset="3230">
-              <caret line="183" column="11" selection-start-line="183" selection-start-column="11" selection-end-line="183" selection-end-column="11" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LispExecutor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/LispExecutor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="236" max-vertical-offset="1105">
-              <caret line="43" column="29" selection-start-line="43" selection-start-column="29" selection-end-line="43" selection-end-column="29" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GenericConcept.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/GenericConcept.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="272" max-vertical-offset="2125">
-              <caret line="16" column="112" selection-start-line="16" selection-start-column="112" selection-end-line="16" selection-end-column="112" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="CcgUtils.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3738" max-vertical-offset="4284">
-              <caret line="239" column="0" selection-start-line="239" selection-start-column="0" selection-end-line="239" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="6872" max-vertical-offset="7684">
+              <caret line="417" column="34" selection-start-line="417" selection-start-column="18" selection-end-line="417" selection-end-column="34" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#2409#2417#0" expanded="true" />
+                <element signature="e#3417#3433#0" expanded="true" />
+                <element signature="e#4199#4207#0" expanded="true" />
+                <element signature="e#6884#6892#0" expanded="true" />
+                <element signature="e#6933#6942#0" expanded="true" />
+                <element signature="e#6967#6976#0" expanded="true" />
+                <element signature="e#13290#13317#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Service.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/instructable/Service.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1581" max-vertical-offset="3842">
+              <caret line="110" column="68" selection-start-line="110" selection-start-column="68" selection-end-line="110" selection-end-column="68" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#5116#5117#0" expanded="true" />
+                <element signature="e#5196#5197#0" expanded="true" />
+                <element signature="e#5667#5683#0" expanded="true" />
+                <element signature="e#6141#6171#1" expanded="true" />
+                <element signature="e#6676#6706#0" expanded="true" />
+                <element signature="e#7996#8004#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ServiceDataAndControl.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/instructable/ServiceDataAndControl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="833">
+              <caret line="39" column="34" selection-start-line="39" selection-start-column="34" selection-end-line="39" selection-end-column="34" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -83,21 +74,31 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="InstanceContainer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java">
+      <file leaf-file-name="ParserSettings.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/ParserSettings.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="445" max-vertical-offset="2363">
-              <caret line="53" column="0" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="408">
+              <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="IAllUserActions.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/IAllUserActions.java">
+      <file leaf-file-name="URLDecoder.java" pinned="false" current-in-tab="false">
+        <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/net/URLDecoder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="121" max-vertical-offset="1785">
-              <caret line="20" column="19" selection-start-line="20" selection-start-column="19" selection-end-line="20" selection-end-column="19" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1642" max-vertical-offset="3230">
+              <caret line="143" column="15" selection-start-line="143" selection-start-column="15" selection-end-line="143" selection-end-column="15" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ConnectToService.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/testing/ConnectToService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.5781513" vertical-offset="387" max-vertical-offset="1496">
+              <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -105,11 +106,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FieldHolder.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/FieldHolder.java">
+      <file leaf-file-name="StandardCharsets.java" pinned="false" current-in-tab="false">
+        <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/nio/charset/StandardCharsets.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3487" max-vertical-offset="4012">
-              <caret line="219" column="0" selection-start-line="219" selection-start-column="0" selection-end-line="219" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="217" max-vertical-offset="799">
+              <caret line="51" column="27" selection-start-line="51" selection-start-column="27" selection-end-line="51" selection-end-column="27" />
+              <folding>
+                <element signature="e#0#1626#0" expanded="false" />
+                <element signature="e#554#555#0" expanded="false" />
+                <element signature="e#653#654#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestWithParser.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/testing/TestWithParser.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="8120" max-vertical-offset="10727">
+              <caret line="558" column="64" selection-start-line="558" selection-start-column="64" selection-end-line="558" selection-end-column="64" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -117,23 +132,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TopDMAllActions.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java">
+      <file leaf-file-name="CommandLine.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/testing/CommandLine.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3746" max-vertical-offset="11645">
-              <caret line="250" column="51" selection-start-line="250" selection-start-column="51" selection-end-line="250" selection-end-column="51" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state vertical-scroll-proportion="0.0" vertical-offset="15" max-vertical-offset="816">
+              <caret line="27" column="25" selection-start-line="27" selection-start-column="25" selection-end-line="27" selection-end-column="25" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AliasMapping.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/instructable/server/AliasMapping.java">
+      <file leaf-file-name="Charset.java" pinned="false" current-in-tab="false">
+        <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/nio/charset/Charset.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="408">
-              <caret line="15" column="28" selection-start-line="15" selection-start-column="28" selection-end-line="15" selection-end-column="28" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="3733" max-vertical-offset="14569">
+              <caret line="284" column="65" selection-start-line="284" selection-start-column="65" selection-end-line="284" selection-end-column="65" />
               <folding />
             </state>
           </provider>
@@ -148,57 +161,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/instructable/server/fieldTypes/MultiLineString.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/fieldTypes/SingleLineString.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/fieldTypes/PossibleFieldTypes.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/CommandExecuter.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/CommandExecutor.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/DMCoreFunctions.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/TopDM.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/ExecutionRetVal.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/fieldTypes/FieldType.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/fieldTypes/EmailAddress.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/FieldHolder.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/fieldTypes/StringField.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/OutgoingEmail.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/FieldDescription.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/EmailMessage.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/ConceptQueries.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/GenericConcept.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/InstanceContainer.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/ConceptContainer.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/DMContextAndExecution.java" />
-        <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/src/instructable/server/staticUtils.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/FieldDescription.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/StaticUtils.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/StringField.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/FieldType.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/EmailAddress.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/ConceptContainer.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/ExecutionStatus.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/ActionResponse.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/OutEmailCommandController.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/TestScenario.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/IIncomingEmailControling.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/IIncomingEmailControlling.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/ccg/InMindCcgFeatureFactory.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/LispToCommand.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/LispExecuter.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/InfoForCommand.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/TextFormattingUtils.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/ICommandsToParser.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/LispExecutor.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/IAllUserActions.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/FieldHolder.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/EmailMessage.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/OutgoingEmail.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/GenericConcept.java" />
         <option value="$PROJECT_DIR$/src/instructable/server/AliasMapping.java" />
-        <option value="$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/GenericConcept.java" />
+        <option value="$PROJECT_DIR$/src/com/jayantkrish/jklol/cli/AbstractCli.java" />
+        <option value="$PROJECT_DIR$/src/com/jayantkrish/jklol/lisp/LispEval.java" />
+        <option value="$PROJECT_DIR$/src/com/jayantkrish/jklol/lisp/Environment.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/EmailAddress.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/ICommandsToParser.java" />
         <option value="$PROJECT_DIR$/src/testing/TestScenario.java" />
+        <option value="$PROJECT_DIR$/src/testing/TestScenarioWithParser.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/ActionResponse.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/FieldType.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/FieldDescription.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/IIncomingEmailControlling.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/ConceptContainer.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/OutEmailCommandController.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/OutgoingEmail.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/EmailMessage.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/IncomingEmail.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/ccg/ParserSettings.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/ccg/InstructableChartCost.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/CommandsToParser.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/LispExecutor.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/IncomingEmailController.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/FieldHolder.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/TextFormattingUtils.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/InboxCommandController.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/InstUtils.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/GenericInstance.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java" />
+        <option value="$PROJECT_DIR$/src/testing/TestDirectly.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/IAllUserActions.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java" />
+        <option value="$PROJECT_DIR$/May1test.txt" />
+        <option value="$PROJECT_DIR$/May19test.txt" />
+        <option value="$PROJECT_DIR$/src/instructable/server/Service.java" />
+        <option value="$PROJECT_DIR$/src/instructable/CreateEnvironment.java" />
+        <option value="$PROJECT_DIR$/src/instructable/EnvironmentCreatorUtils.java" />
+        <option value="$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java" />
+        <option value="$PROJECT_DIR$/src/testing/TestWithParser.java" />
+        <option value="$PROJECT_DIR$/src/testing/CommandLine.java" />
+        <option value="$PROJECT_DIR$/src/instructable/Service.java" />
+        <option value="$PROJECT_DIR$/src/instructable/ServiceDataAndControl.java" />
+        <option value="$PROJECT_DIR$/src/testing/ConnectToService.java" />
       </list>
     </option>
   </component>
@@ -231,8 +244,8 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -283,7 +296,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
+              <option name="myItemId" value="instructable" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -301,11 +314,39 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
+              <option name="myItemId" value="instructable" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="ccg" />
+              <option name="myItemId" value="server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="InstructableServer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="InstructableServer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="InstructableServer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="InstructableServer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -336,34 +377,39 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="OverrideImplement.combined" value="true" />
     <property name="OverrideImplement.overriding.sorted" value="false" />
-    <property name="options.lastSelected" value="project.propVCSSupport.Issue.Navigation" />
+    <property name="options.lastSelected" value="preferences.sourceCode.Java" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="recentsLimit" value="5" />
     <property name="dynamic.classpath" value="false" />
     <property name="extract.method.default.visibility" value="private" />
     <property name="LayoutCode.rearrangeEntriesJava" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.0" />
     <property name="findjar.last.used.dir" value="$PROJECT_DIR$/lib" />
+    <property name="LayoutCode.rearrangeEntries" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\InMind\TasksLongGoals\software\InstructableServer\resources" />
       <recent name="C:\InMind\TasksLongGoals\software\InstructableServer\lib" />
       <recent name="C:\InMind\TasksLongGoals\software\InstructableServer\src" />
     </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="testing" />
+    </key>
   </component>
-  <component name="RunManager" selected="Application.TestScenario">
-    <configuration default="false" name="TestScenario" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Application.ConnectToService">
+    <configuration default="false" name="TestDirectly" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
           <option name="PATTERN" value="instructable.server.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="MAIN_CLASS_NAME" value="testing.TestScenario" />
+      <option name="MAIN_CLASS_NAME" value="testing.TestDirectly" />
       <option name="VM_PARAMETERS" />
       <option name="PROGRAM_PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -381,6 +427,112 @@
       </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="CommandLine" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="testing.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="testing.CommandLine" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="InstructableServer" />
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="TestWithParser" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="testing.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="testing.TestWithParser" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="InstructableServer" />
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Service" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="instructable.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="instructable.Service" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="InstructableServer" />
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="ConnectToService" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="testing.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="testing.ConnectToService" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="InstructableServer" />
+      <envs />
+      <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
@@ -537,12 +689,20 @@
       <listeners />
       <method />
     </configuration>
-    <list size="1">
-      <item index="0" class="java.lang.String" itemvalue="Application.TestScenario" />
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="Application.TestDirectly" />
+      <item index="1" class="java.lang.String" itemvalue="Application.CommandLine" />
+      <item index="2" class="java.lang.String" itemvalue="Application.TestWithParser" />
+      <item index="3" class="java.lang.String" itemvalue="Application.Service" />
+      <item index="4" class="java.lang.String" itemvalue="Application.ConnectToService" />
     </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="Application.TestScenario" />
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Application.ConnectToService" />
+        <item index="1" class="java.lang.String" itemvalue="Application.Service" />
+        <item index="2" class="java.lang.String" itemvalue="Application.TestDirectly" />
+        <item index="3" class="java.lang.String" itemvalue="Application.CommandLine" />
+        <item index="4" class="java.lang.String" itemvalue="Application.TestWithParser" />
       </list>
     </recent_temporary>
   </component>
@@ -556,34 +716,54 @@
     </task>
     <servers />
   </component>
+  <component name="TodoView" selected-index="0">
+    <todo-panel id="selected-file">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="default-changelist">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1050" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23170732" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.22616407" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29046562" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21122995" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.1711663" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.29933482" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3037694" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292683" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18983957" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27937916" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17593583" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33924612" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24973261" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20288248" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24972972" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -615,23 +795,60 @@
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/testing/TestScenario.java</url>
-          <line>502</line>
+          <url>file://$PROJECT_DIR$/src/testing/TestDirectly.java</url>
+          <line>653</line>
           <properties />
           <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/testing/TestScenario.java</url>
-          <line>120</line>
+          <url>file://$PROJECT_DIR$/src/testing/TestDirectly.java</url>
+          <line>473</line>
           <properties />
-          <option name="timeStamp" value="31" />
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/com/jayantkrish/jklol/lisp/Environment.java</url>
+          <line>79</line>
+          <properties />
+          <option name="timeStamp" value="45" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/com/jayantkrish/jklol/lisp/LispEval.java</url>
+          <line>83</line>
+          <properties />
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/com/jayantkrish/jklol/lisp/LispEval.java</url>
+          <line>46</line>
+          <properties />
+          <option name="timeStamp" value="52" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/testing/TestDirectly.java</url>
+          <line>199</line>
+          <properties />
+          <option name="timeStamp" value="73" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/testing/TestWithParser.java</url>
+          <line>538</line>
+          <properties />
+          <option name="timeStamp" value="81" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java</url>
+          <line>252</line>
+          <properties />
+          <option name="timeStamp" value="95" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="32" />
+      <option name="time" value="129" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="Application">
-        <watch expression="expression" />
+        <watch expression="httpExchange.getRequestURI().getQuery()" />
+        <watch expression="httpExchange.getResponseBody()" language="JAVA" custom="" />
       </configuration>
     </watches-manager>
   </component>
@@ -640,446 +857,463 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/EmailAddress.java">
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/CcgExample.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="561" max-vertical-offset="1445">
-          <caret line="37" column="19" selection-start-line="37" selection-start-column="19" selection-end-line="37" selection-end-column="19" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="626" max-vertical-offset="1938">
+          <caret line="55" column="59" selection-start-line="55" selection-start-column="48" selection-end-line="55" selection-end-column="59" />
+          <folding>
+            <element signature="e#3999#4000#0" expanded="false" />
+            <element signature="e#4027#4028#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/FieldType.java">
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/CcgCategory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="170" max-vertical-offset="340">
-          <caret line="10" column="96" selection-start-line="10" selection-start-column="96" selection-end-line="10" selection-end-column="96" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/PossibleFieldType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="85" max-vertical-offset="221">
-          <caret line="5" column="12" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/StringField.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="379" max-vertical-offset="952">
-          <caret line="43" column="32" selection-start-line="43" selection-start-column="32" selection-end-line="43" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="828" max-vertical-offset="1666">
-          <caret line="84" column="124" selection-start-line="84" selection-start-column="124" selection-end-line="84" selection-end-column="124" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1510" max-vertical-offset="6681">
+          <caret line="123" column="28" selection-start-line="123" selection-start-column="28" selection-end-line="123" selection-end-column="28" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/GenericConcept.java">
+    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/lang/System.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="200" max-vertical-offset="2278">
-          <caret line="28" column="11" selection-start-line="28" selection-start-column="11" selection-end-line="28" selection-end-column="11" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/OutEmailCommandController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="119" max-vertical-offset="255">
-          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/OutgoingEmail.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="85" max-vertical-offset="1054">
-          <caret line="5" column="20" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="7693" max-vertical-offset="20485">
+          <caret line="507" column="29" selection-start-line="507" selection-start-column="29" selection-end-line="507" selection-end-column="29" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/FieldHolder.java">
+    <entry file="jar://$PROJECT_DIR$/lib/guava-13.0.1.jar!/com/google/common/base/Preconditions.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="119" max-vertical-offset="255">
-          <caret line="7" column="36" selection-start-line="7" selection-start-column="36" selection-end-line="7" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/EmailAddress.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="16" max-vertical-offset="1054">
-          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/util/Collection.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="6228" max-vertical-offset="9843">
-          <caret line="408" column="20" selection-start-line="408" selection-start-column="20" selection-end-line="408" selection-end-column="20" />
-          <folding>
-            <element signature="e#0#27819#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#26270#26271#0" expanded="false" />
-            <element signature="e#26326#26327#0" expanded="false" />
-            <element signature="e#26957#26958#0" expanded="false" />
-            <element signature="e#27022#27023#0" expanded="false" />
-            <element signature="e#27751#27752#0" expanded="false" />
-            <element signature="e#27815#27816#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/util/Map.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3083" max-vertical-offset="19771">
-          <caret line="239" column="6" selection-start-line="239" selection-start-column="6" selection-end-line="239" selection-end-column="6" />
-          <folding>
-            <element signature="e#0#53227#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/EmailMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="16" max-vertical-offset="867">
-          <caret line="22" column="105" selection-start-line="22" selection-start-column="105" selection-end-line="22" selection-end-column="105" />
+        <state vertical-scroll-proportion="-14.16" vertical-offset="2281" max-vertical-offset="2737">
+          <caret line="164" column="0" selection-start-line="164" selection-start-column="0" selection-end-line="164" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/util/Map.java">
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/lisp/Environment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3083" max-vertical-offset="19771">
-          <caret line="239" column="6" selection-start-line="239" selection-start-column="6" selection-end-line="239" selection-end-column="6" />
-          <folding>
-            <element signature="e#0#53227#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="450" max-vertical-offset="1139">
+          <caret line="44" column="5" selection-start-line="44" selection-start-column="5" selection-end-line="44" selection-end-column="5" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/util/Collection.java">
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/CommandsToParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="6228" max-vertical-offset="9843">
-          <caret line="408" column="20" selection-start-line="408" selection-start-column="20" selection-end-line="408" selection-end-column="20" />
-          <folding>
-            <element signature="e#0#27819#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#26270#26271#0" expanded="false" />
-            <element signature="e#26326#26327#0" expanded="false" />
-            <element signature="e#26957#26958#0" expanded="false" />
-            <element signature="e#27022#27023#0" expanded="false" />
-            <element signature="e#27751#27752#0" expanded="false" />
-            <element signature="e#27815#27816#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/jre/lib/deploy.jar!/com/sun/deploy/util/StringUtils.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.55537975" vertical-offset="295" max-vertical-offset="952">
-          <caret line="43" column="25" selection-start-line="43" selection-start-column="25" selection-end-line="43" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/PossibleFieldType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="204">
-          <caret line="5" column="12" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/util/Set.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3322884" vertical-offset="3613" max-vertical-offset="6698">
-          <caret line="248" column="12" selection-start-line="248" selection-start-column="12" selection-end-line="248" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../../Git/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-18.16" vertical-offset="1110" max-vertical-offset="1666">
-          <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.1618705" vertical-offset="0" max-vertical-offset="901">
-          <caret line="38" column="8" selection-start-line="38" selection-start-column="8" selection-end-line="38" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/FieldDescription.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="425">
-          <caret line="12" column="11" selection-start-line="12" selection-start-column="11" selection-end-line="12" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/jre/lib/ext/nashorn.jar!/jdk/nashorn/internal/ir/Node.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1550152" vertical-offset="0" max-vertical-offset="1989">
-          <caret line="17" column="22" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/jre/lib/ext/nashorn.jar!/jdk/nashorn/internal/parser/JSONParser.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3449848" vertical-offset="657" max-vertical-offset="4743">
-          <caret line="70" column="12" selection-start-line="70" selection-start-column="12" selection-end-line="70" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/StringField.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="935">
-          <caret line="15" column="30" selection-start-line="15" selection-start-column="30" selection-end-line="15" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/FieldType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="442">
-          <caret line="9" column="21" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/fieldTypes/EmailAddress.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="571" max-vertical-offset="1411">
-          <caret line="49" column="0" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/ConceptContainer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="486" max-vertical-offset="2380">
-          <caret line="61" column="189" selection-start-line="61" selection-start-column="189" selection-end-line="61" selection-end-column="189" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="223" max-vertical-offset="1105">
+          <caret line="35" column="5" selection-start-line="35" selection-start-column="5" selection-end-line="35" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="false" />
+            <element signature="e#520#521#0" expanded="false" />
+            <element signature="e#572#573#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/ExecutionStatus.java">
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/CcgFeatureFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="878" max-vertical-offset="1530">
-          <caret line="90" column="80" selection-start-line="90" selection-start-column="80" selection-end-line="90" selection-end-column="80" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#970#988#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3145">
+          <caret line="22" column="56" selection-start-line="22" selection-start-column="56" selection-end-line="22" selection-end-column="56" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/ActionResponse.java">
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/lexicon/ParametricCombiningLexicon.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="459">
-          <caret line="17" column="28" selection-start-line="17" selection-start-column="28" selection-end-line="17" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1326">
+          <caret line="19" column="9" selection-start-line="19" selection-start-column="9" selection-end-line="19" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/CcgInference.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="867">
+          <caret line="28" column="18" selection-start-line="28" selection-start-column="18" selection-end-line="28" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/CcgBeamSearchInference.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="595" max-vertical-offset="2159">
+          <caret line="58" column="18" selection-start-line="58" selection-start-column="18" selection-end-line="58" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/ParametricCcgParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="5752" max-vertical-offset="13073">
+          <caret line="383" column="0" selection-start-line="383" selection-start-column="0" selection-end-line="384" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/lexicon/StringLexicon.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="663">
+          <caret line="32" column="5" selection-start-line="32" selection-start-column="5" selection-end-line="32" selection-end-column="5" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/IIncomingEmailControlling.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="289">
-          <caret line="9" column="9" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="9" />
+          <caret line="9" column="45" selection-start-line="9" selection-start-column="45" selection-end-line="9" selection-end-column="45" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/util/HashMap.java">
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/ActionResponse.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33278957" vertical-offset="8177" max-vertical-offset="39372">
-          <caret line="532" column="19" selection-start-line="532" selection-start-column="19" selection-end-line="532" selection-end-column="19" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="102" max-vertical-offset="1411">
+          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/OutEmailCommandController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="1156">
-          <caret line="19" column="8" selection-start-line="19" selection-start-column="8" selection-end-line="19" selection-end-column="137" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/jklol.jar!/com/jayantkrish/jklol/ccg/lambda2/Expression2.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.08" vertical-offset="0" max-vertical-offset="4216">
-          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/lib/jklol.jar!/com/jayantkrish/jklol/lisp/FunctionValue.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.14977974" vertical-offset="0" max-vertical-offset="681">
-          <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/InfoForCommand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="391">
-          <caret line="7" column="27" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="27" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1105">
+          <caret line="19" column="141" selection-start-line="19" selection-start-column="141" selection-end-line="19" selection-end-column="141" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/TextFormattingUtils.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="382" max-vertical-offset="1853">
-          <caret line="57" column="53" selection-start-line="57" selection-start-column="53" selection-end-line="57" selection-end-column="53" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/ICommandsToParser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="425">
-          <caret line="13" column="47" selection-start-line="13" selection-start-column="47" selection-end-line="13" selection-end-column="47" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/util/Collections.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3321739" vertical-offset="5487" max-vertical-offset="87176">
-          <caret line="373" column="23" selection-start-line="373" selection-start-column="23" selection-end-line="373" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/EmailMessage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="222" max-vertical-offset="1122">
-          <caret line="43" column="105" selection-start-line="43" selection-start-column="105" selection-end-line="43" selection-end-column="105" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/OutgoingEmail.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="204" max-vertical-offset="1173">
-          <caret line="18" column="96" selection-start-line="18" selection-start-column="96" selection-end-line="18" selection-end-column="96" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1853">
+          <caret line="12" column="53" selection-start-line="12" selection-start-column="53" selection-end-line="12" selection-end-column="53" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/FieldHolder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3487" max-vertical-offset="4012">
-          <caret line="219" column="0" selection-start-line="219" selection-start-column="0" selection-end-line="219" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2121" max-vertical-offset="4556">
+          <caret line="168" column="13" selection-start-line="168" selection-start-column="13" selection-end-line="168" selection-end-column="13" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#5221#5222#0" expanded="false" />
+            <element signature="e#5279#5280#0" expanded="false" />
+            <element signature="e#8572#8573#0" expanded="false" />
+            <element signature="e#8604#8605#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/IAllUserActions.java">
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/ICommandsToParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="121" max-vertical-offset="1785">
-          <caret line="20" column="19" selection-start-line="20" selection-start-column="19" selection-end-line="20" selection-end-column="19" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/lang/System.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.4711033" vertical-offset="5212" max-vertical-offset="20485">
-          <caret line="398" column="30" selection-start-line="398" selection-start-column="30" selection-end-line="398" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="442">
+          <caret line="9" column="17" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java">
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/InboxCommandController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="445" max-vertical-offset="2363">
-          <caret line="53" column="0" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/GenericConcept.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="272" max-vertical-offset="2125">
-          <caret line="16" column="112" selection-start-line="16" selection-start-column="112" selection-end-line="16" selection-end-column="112" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="389" max-vertical-offset="1258">
+          <caret line="50" column="38" selection-start-line="50" selection-start-column="38" selection-end-line="50" selection-end-column="38" />
           <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/InMindCcgFeatureFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2528" max-vertical-offset="3196">
-          <caret line="183" column="11" selection-start-line="183" selection-start-column="11" selection-end-line="183" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3725" max-vertical-offset="4284">
-          <caret line="239" column="0" selection-start-line="239" selection-start-column="0" selection-end-line="239" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/AliasMapping.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="408">
-          <caret line="15" column="28" selection-start-line="15" selection-start-column="28" selection-end-line="15" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3746" max-vertical-offset="11645">
-          <caret line="250" column="51" selection-start-line="250" selection-start-column="51" selection-end-line="250" selection-end-column="51" />
-          <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/instructable/server/LispExecutor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="236" max-vertical-offset="1105">
-          <caret line="43" column="29" selection-start-line="43" selection-start-column="29" selection-end-line="43" selection-end-column="29" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1886" max-vertical-offset="2431">
+          <caret line="125" column="0" selection-start-line="125" selection-start-column="0" selection-end-line="125" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/testing/TestScenario.java">
+    <entry file="file://$PROJECT_DIR$/resources/english-left3words-distsim.tagger.props">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.41979522" vertical-offset="1284" max-vertical-offset="8755">
-          <caret line="90" column="16" selection-start-line="90" selection-start-column="16" selection-end-line="90" selection-end-column="104" />
+        <state vertical-scroll-proportion="0.025525525" vertical-offset="0" max-vertical-offset="697">
+          <caret line="1" column="27" selection-start-line="1" selection-start-column="27" selection-end-line="1" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/nio/file/Files.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33203885" vertical-offset="53464" max-vertical-offset="63036">
+          <caret line="3240" column="31" selection-start-line="3240" selection-start-column="31" selection-end-line="3240" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/InstUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="151" max-vertical-offset="1020">
+          <caret line="24" column="38" selection-start-line="24" selection-start-column="38" selection-end-line="24" selection-end-column="38" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/GenericInstance.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="851" max-vertical-offset="2278">
+          <caret line="80" column="8" selection-start-line="80" selection-start-column="8" selection-end-line="80" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/hirarchy/InstanceContainer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1872" max-vertical-offset="2584">
+          <caret line="142" column="19" selection-start-line="142" selection-start-column="19" selection-end-line="142" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/testing/TestDirectly.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="323" max-vertical-offset="10914">
+          <caret line="22" column="37" selection-start-line="22" selection-start-column="37" selection-end-line="22" selection-end-column="37" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="class#842:1368" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/InstChartCost.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="527">
+          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/training/NullLogFunction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="782">
+          <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/CcgExactInference.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="391" max-vertical-offset="1190">
+          <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/chart/AbstractCcgChart.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.100196466" vertical-offset="51" max-vertical-offset="4301">
+          <caret line="18" column="3" selection-start-line="18" selection-start-column="3" selection-end-line="18" selection-end-column="3" />
+          <folding>
+            <element signature="e#2395#2396#0" expanded="false" />
+            <element signature="e#2428#2429#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/IAllUserActions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="771" max-vertical-offset="1853">
+          <caret line="63" column="44" selection-start-line="63" selection-start-column="44" selection-end-line="63" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/201505120528fail.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="560" max-vertical-offset="2992">
+          <caret line="43" column="54" selection-start-line="43" selection-start-column="54" selection-end-line="43" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/TopDMAllActions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="8163" max-vertical-offset="12291">
+          <caret line="517" column="20" selection-start-line="517" selection-start-column="20" selection-end-line="517" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/May1test.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="579" max-vertical-offset="2992">
+          <caret line="43" column="72" selection-start-line="43" selection-start-column="72" selection-end-line="43" selection-end-column="72" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/May19test.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="596" max-vertical-offset="3417">
+          <caret line="49" column="48" selection-start-line="49" selection-start-column="48" selection-end-line="49" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/EnvironmentCreatorUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="110" max-vertical-offset="1751">
+          <caret line="18" column="1" selection-start-line="18" selection-start-column="1" selection-end-line="18" selection-end-column="1" />
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/chart/CcgExactHashTableChart.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2318" max-vertical-offset="3043">
+          <caret line="170" column="0" selection-start-line="170" selection-start-column="0" selection-end-line="170" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/CcgParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="18877" max-vertical-offset="38964">
+          <caret line="1180" column="0" selection-start-line="1180" selection-start-column="0" selection-end-line="1180" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../jklol-1.1/src/com/jayantkrish/jklol/ccg/lexicon/AbstractCcgLexicon.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1914" max-vertical-offset="2907">
+          <caret line="151" column="5" selection-start-line="151" selection-start-column="5" selection-end-line="151" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/net/URLEncoder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2577" max-vertical-offset="4454">
+          <caret line="199" column="25" selection-start-line="199" selection-start-column="25" selection-end-line="199" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/InstCcgFeatureFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1627" max-vertical-offset="3485">
+          <caret line="126" column="0" selection-start-line="126" selection-start-column="0" selection-end-line="126" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/nio/charset/StandardCharsets.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="217" max-vertical-offset="799">
+          <caret line="51" column="27" selection-start-line="51" selection-start-column="27" selection-end-line="51" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#1626#0" expanded="false" />
+            <element signature="e#554#555#0" expanded="false" />
+            <element signature="e#653#654#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/nio/charset/Charset.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="3733" max-vertical-offset="14569">
+          <caret line="284" column="65" selection-start-line="284" selection-start-column="65" selection-end-line="284" selection-end-column="65" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Programs/Java/jdk1.8.0_20/src.zip!/java/net/URLDecoder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1642" max-vertical-offset="3230">
+          <caret line="143" column="15" selection-start-line="143" selection-start-column="15" selection-end-line="143" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/CcgUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="6872" max-vertical-offset="7684">
+          <caret line="417" column="34" selection-start-line="417" selection-start-column="18" selection-end-line="417" selection-end-column="34" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2409#2417#0" expanded="true" />
+            <element signature="e#3417#3433#0" expanded="true" />
+            <element signature="e#4199#4207#0" expanded="true" />
+            <element signature="e#6884#6892#0" expanded="true" />
+            <element signature="e#6933#6942#0" expanded="true" />
+            <element signature="e#6967#6976#0" expanded="true" />
+            <element signature="e#13290#13317#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/testing/TestWithParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="8120" max-vertical-offset="10727">
+          <caret line="558" column="64" selection-start-line="558" selection-start-column="64" selection-end-line="558" selection-end-column="64" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/testing/CommandLine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="15" max-vertical-offset="816">
+          <caret line="27" column="25" selection-start-line="27" selection-start-column="25" selection-end-line="27" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/server/ccg/ParserSettings.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="408">
+          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/Service.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1581" max-vertical-offset="3842">
+          <caret line="110" column="68" selection-start-line="110" selection-start-column="68" selection-end-line="110" selection-end-column="68" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#5116#5117#0" expanded="true" />
+            <element signature="e#5196#5197#0" expanded="true" />
+            <element signature="e#5667#5683#0" expanded="true" />
+            <element signature="e#6141#6171#1" expanded="true" />
+            <element signature="e#6676#6706#0" expanded="true" />
+            <element signature="e#7996#8004#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/instructable/ServiceDataAndControl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="833">
+          <caret line="39" column="34" selection-start-line="39" selection-start-column="34" selection-end-line="39" selection-end-column="34" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/testing/ConnectToService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5781513" vertical-offset="387" max-vertical-offset="1496">
+          <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

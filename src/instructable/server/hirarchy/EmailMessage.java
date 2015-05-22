@@ -14,6 +14,7 @@ abstract public class EmailMessage extends GenericInstance
     public static final String senderStr = "sender";
     public static final String recipientListStr = "recipient list";
     public static final String copyListStr = "copy list";
+
     protected static FieldDescription[] getFieldDescriptions(boolean mutable)
     {
         return new FieldDescription[]

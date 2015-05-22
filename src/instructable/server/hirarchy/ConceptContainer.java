@@ -8,14 +8,14 @@ import static instructable.server.TextFormattingUtils.userFriendlyList;
 
 /**
  * Created by Amos Azaria on 21-Apr-15.
- *
+ * <p>
  * This class has access to all defined concepts and their fields and types.
  * This class has the required information for creating an instance of a concept.
  * This class can access the data base
  */
 public class ConceptContainer
 {
-    Map<String,List<FieldDescription>> conceptFieldMap;
+    Map<String, List<FieldDescription>> conceptFieldMap;
 
     public ConceptContainer()
     {
@@ -69,7 +69,7 @@ public class ConceptContainer
     {
         if (conceptFieldMap.containsKey(conceptName))
         {
-            executionStatus.add(ExecutionStatus.RetStatus.warning, "the concept \""+conceptName + "\" is already defined. "
+            executionStatus.add(ExecutionStatus.RetStatus.warning, "the concept \"" + conceptName + "\" is already defined. "
                     + "Its fields are: " + userFriendlyList(getFields(conceptName)));
         }
         else
@@ -89,7 +89,7 @@ public class ConceptContainer
 
     public void addFieldToConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription fieldDescription)
     {
-        addFieldsToConcept(executionStatus, conceptName, new FieldDescription[] {fieldDescription});
+        addFieldsToConcept(executionStatus, conceptName, new FieldDescription[]{fieldDescription});
     }
 
     public void addFieldsToConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription[] fieldDescriptions)
@@ -106,7 +106,7 @@ public class ConceptContainer
         {
             if (doesFieldExistInConcept(conceptName, fieldDescription.fieldName))
             {
-                executionStatus.add(ExecutionStatus.RetStatus.warning, "the concept \"" + conceptName + "\" already has the field \""+fieldDescription.fieldName + "\"");
+                executionStatus.add(ExecutionStatus.RetStatus.warning, "the concept \"" + conceptName + "\" already has the field \"" + fieldDescription.fieldName + "\"");
             }
             else
                 conceptFields.add(fieldDescription);
@@ -117,7 +117,7 @@ public class ConceptContainer
     {
         //TODO: check all these...
         List<FieldDescription> currentFields = conceptFieldMap.get(conceptName);
-        currentFields.removeIf( x -> x.fieldName == fieldName);
+        currentFields.removeIf(x -> x.fieldName == fieldName);
     }
 
 
@@ -133,7 +133,7 @@ public class ConceptContainer
                 fieldNames.add(fieldDescription.fieldName);
             }
         }
-        return  fieldNames;
+        return fieldNames;
     }
 
     //can't fail, but can return empty list
@@ -141,6 +141,6 @@ public class ConceptContainer
     {
         List<String> conceptNames = new LinkedList<>();
         conceptNames.addAll(conceptFieldMap.keySet());
-        return  conceptNames;
+        return conceptNames;
     }
 }

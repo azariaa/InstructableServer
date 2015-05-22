@@ -20,7 +20,6 @@ public interface IAllUserActions
 
     ActionResponse cancel(InfoForCommand infoForCommand);
 
-    //the following functions will usually be used only internally
     ActionResponse getInstance(InfoForCommand infoForCommand, String conceptName, String instanceName);
 
     ActionResponse getFieldFromInstance(InfoForCommand infoForCommand, GenericInstance instance, String fieldName);
@@ -67,6 +66,7 @@ public interface IAllUserActions
 
     ActionResponse defineConcept(InfoForCommand infoForCommand, String newConceptName);
 
+    //not sure this is needed, it is resonable to require the conceptName that is getting a new field
     ActionResponse addFieldToProbConcept(InfoForCommand infoForCommand, String newFieldName);
 
     //I will try to learn field type and isList from the fieldName?
@@ -78,6 +78,7 @@ public interface IAllUserActions
 
     ActionResponse createInstanceByFullNames(InfoForCommand infoForCommand, String conceptName, String newInstanceName);
 
+    //doesn't sound like a good idea (though could use last used concept, or just give an error.
     ActionResponse createInstanceByInstanceName(InfoForCommand infoForCommand, String newInstanceName);
 
     ActionResponse setFieldTypeKnownConcept(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
@@ -90,10 +91,13 @@ public interface IAllUserActions
 
 
     ActionResponse deleteConcept(InfoForCommand infoForCommand, String conceptName);
+
     ActionResponse deleteInstance(InfoForCommand infoForCommand, String instanceName);
+
     ActionResponse deleteInstance(InfoForCommand infoForCommand, String conceptName, String instanceName);
 
     ActionResponse nextEmailMessage(InfoForCommand infoForCommand);
+
     ActionResponse previousEmailMessage(InfoForCommand infoForCommand);
 
 

@@ -1,6 +1,7 @@
 package instructable.server.hirarchy;
 
 import instructable.server.ExecutionStatus;
+import instructable.server.TextFormattingUtils;
 import instructable.server.hirarchy.fieldTypes.EmailAddress;
 import instructable.server.hirarchy.fieldTypes.FieldType;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 15-Apr-15.
- *
+ * <p>
  * This class is like a union of FieldType and List<FieldType>.
  * In future may add a pointer to a different instance.
  */
@@ -121,12 +122,12 @@ public class FieldHolder
             if (toEnd)
                 fieldList.add(toBeAdded);
             else
-                fieldList.add(0,toBeAdded);
+                fieldList.add(0, toBeAdded);
             return;
         }
         else
         {
-            field.appendTo(executionStatus, toAdd,toEnd);
+            field.appendTo(executionStatus, toAdd, toEnd);
             return;
         }
     }
@@ -151,15 +152,32 @@ public class FieldHolder
         if (jsonObject.isEmpty() || (!jsonObject.containsKey(fieldListForJson) && !jsonObject.containsKey(fieldForJson)))
             return "";
         boolean isFromList = false;
-        if (jsonObject.containsKey(isListForJson) && (boolean)jsonObject.get(isListForJson) ||
+        if (jsonObject.containsKey(isListForJson) && (boolean) jsonObject.get(isListForJson) ||
                 !jsonObject.containsKey(isListForJson) && jsonObject.containsKey(fieldListForJson))
             isFromList = true;
         String retVal;
         if (isFromList)
-            retVal = (((JSONArray)jsonObject.get(fieldListForJson)).get(0)).toString();
+        {
+            retVal = "<empty>";
+            JSONArray jsonArray = (JSONArray) jsonObject.get(fieldListForJson);
+            if (jsonArray.size() >= 1)
+            {
+                //if has only one, won't have separation symbol
+                retVal = (jsonArray.get(0)).toString();
+                for (int i = 1; i < jsonArray.size(); i++)
+                    retVal = retVal + TextFormattingUtils.uiListSepSymbol + (jsonArray.get(i)).toString();
+            }
+        }
         else
+        {
             retVal = jsonObject.get(fieldForJson).toString();
+        }
         return retVal;
+    }
+
+    public String fieldValForUser()
+    {
+        return fieldFromJSonForUser(getFieldVal());
     }
 
     public JSONObject getFieldVal()
@@ -189,7 +207,7 @@ public class FieldHolder
             return;
         }
         boolean mustSetFromList = false;
-        if (jsonObject.containsKey(isListForJson) && (boolean)jsonObject.get(isListForJson) ||
+        if (jsonObject.containsKey(isListForJson) && (boolean) jsonObject.get(isListForJson) ||
                 !jsonObject.containsKey(isListForJson) && jsonObject.containsKey(fieldListForJson))
             mustSetFromList = true;
         if (mustSetFromList)
@@ -208,7 +226,8 @@ public class FieldHolder
                 {
                     appendTo(executionStatus, singleField, appendToEnd, setAlsoImmutable);
                 }
-            } else
+            }
+            else
             {
                 //if input is a list (array), and this isn't a list,
                 if (fieldListAsString.length >= 1)
@@ -257,6 +276,6 @@ public class FieldHolder
     @Override
     public String toString()
     {
-        return  fieldName;
+        return fieldName;
     }
 }
