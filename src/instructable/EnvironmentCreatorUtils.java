@@ -3,14 +3,16 @@ package instructable;
 import instructable.server.IIncomingEmailControlling;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
+import instructable.server.ccg.StringFeatureGenerator;
 import instructable.server.hirarchy.IncomingEmail;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.google.common.io.Files;
+import com.sun.tools.javac.util.Paths;
 
 /**
  * Created by Amos Azaria on 20-May-15.
@@ -67,7 +69,8 @@ public class EnvironmentCreatorUtils
 //                {"and set it as jane's email","(setFieldFromPreviousEval (getProbFieldByInstanceNameAndFieldName jane email))"}
 //        };
 
-        return CcgUtils.getParserSettings(lexiconEntries, unaryRules, CcgUtils.loadExamples(Paths.get("data/examples.csv")));
+        return CcgUtils.getParserSettings(lexiconEntries, unaryRules, new StringFeatureGenerator(),
+            CcgUtils.loadExamples(Paths.get("data/examples.csv")));
     }
 
 

@@ -1,28 +1,5 @@
 package instructable.server.ccg;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.jayantkrish.jklol.ccg.*;
-import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
-import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.*;
-import com.jayantkrish.jklol.ccg.lexinduct.*;
-import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
-import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
-import com.jayantkrish.jklol.lisp.Environment;
-import com.jayantkrish.jklol.lisp.LispEval;
-import com.jayantkrish.jklol.lisp.SExpression;
-import com.jayantkrish.jklol.models.DiscreteVariable;
-import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
-import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
-import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
-import com.jayantkrish.jklol.training.*;
-import com.jayantkrish.jklol.util.CsvParser;
-import com.jayantkrish.jklol.util.IndexedList;
-import com.jayantkrish.jklol.util.PairCountAccumulator;
-import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import instructable.server.ActionResponse;
 import instructable.server.IAllUserActions;
 import instructable.server.InfoForCommand;
@@ -31,7 +8,69 @@ import instructable.server.LispExecutor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
+import com.jayantkrish.jklol.ccg.CcgBinaryRule;
+import com.jayantkrish.jklol.ccg.CcgCategory;
+import com.jayantkrish.jklol.ccg.CcgExactInference;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
+import com.jayantkrish.jklol.ccg.CcgInference;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.CcgPerceptronOracle;
+import com.jayantkrish.jklol.ccg.CcgUnaryRule;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
+import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
+import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
+import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer;
+import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
+import com.jayantkrish.jklol.ccg.lexinduct.AlignmentExample;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentEmOracle;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTokenFeatureGenerator;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTree;
+import com.jayantkrish.jklol.ccg.lexinduct.ParametricCfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
+import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
+import com.jayantkrish.jklol.lisp.Environment;
+import com.jayantkrish.jklol.lisp.LispEval;
+import com.jayantkrish.jklol.lisp.SExpression;
+import com.jayantkrish.jklol.models.DiscreteVariable;
+import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
+import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
+import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
+import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
+import com.jayantkrish.jklol.training.ExpectationMaximization;
+import com.jayantkrish.jklol.training.GradientOptimizer;
+import com.jayantkrish.jklol.training.GradientOracle;
+import com.jayantkrish.jklol.training.NullLogFunction;
+import com.jayantkrish.jklol.training.StochasticGradientTrainer;
+import com.jayantkrish.jklol.util.CsvParser;
+import com.jayantkrish.jklol.util.IndexedList;
+import com.jayantkrish.jklol.util.PairCountAccumulator;
+
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 
 public class CcgUtils
@@ -104,45 +143,6 @@ public class CcgUtils
         constantsToIgnore, 0, 2);
   }
 
-  /**
-   * Creates a family of CCG parsing models given a collection
-   * of lexicon entries. The returned {@code ParametricCcgParser} must
-   * be trained before it can be used for semantic parsing. See the
-   * {@link #train} method.
-   * 
-   * <p>
-   * The returned object is an infinite family of CCG parsers, where
-   * each CCG parser is defined by a particular parameter vector.
-   * 
-   * @param lexiconEntries
-   * @return
-   */
-  public static ParametricCcgParser buildParametricCcgParser(List<LexiconEntry> lexiconEntries,
-                                                             List<CcgUnaryRule> inputUnaryRules) {
-    CcgCategory stringCategory = CcgCategory.parseFrom("String{0},(lambda $0 $0),0 special:string");
-    List<LexiconEntry> unknownLexiconEntries = Lists.newArrayList();
-    
-    List<Set<String>> assignments = Lists.newArrayList();
-    assignments.add(Sets.newHashSet(ParametricCcgParser.SKIP_PREDICATE));
-    CcgCategory stringSkipCategory = new CcgCategory(ParametricCcgParser.SKIP_CAT,
-        ParametricCcgParser.SKIP_LF, Collections.<String>emptyList(),
-        Collections.<Integer>emptyList(), Collections.<Integer>emptyList(), assignments); 
-    CcgFeatureFactory featureFactory = new InMindCcgFeatureFactory(Arrays.asList(stringCategory, stringSkipCategory));
-    // Read in the lexicon to instantiate the model.
-
-    List<CcgBinaryRule> binaryRules = Lists.newArrayList();
-    List<CcgUnaryRule> unaryRules = Lists.newArrayList(inputUnaryRules);
-    unaryRules.add(CcgUnaryRule.parseFrom("DUMMY{0} DUMMY{0},(lambda x x)"));
-
-    boolean allowComposition = true;
-    boolean skipWords = true;
-    boolean normalFormOnly = false;
-
-    return ParametricCcgParser.parseFromLexicon(lexiconEntries, unknownLexiconEntries, binaryRules,
-        unaryRules, featureFactory, null, allowComposition, null, skipWords, normalFormOnly);
-  }
-
-  
   public static void updateParserGrammar(String newLexicon, ParserSettings parserSettings)
   {
     List<String> lexiconAsList = new LinkedList<String>();
@@ -164,7 +164,8 @@ public class CcgUtils
     settings.lexicon.addAll(lexiconEntries);
     settings.unaryRules.addAll(unaryRules);
 
-    ParametricCcgParser newFamily = buildParametricCcgParser(settings.lexicon, settings.unaryRules, settings.posUsed);
+    ParametricCcgParser newFamily = buildParametricCcgParser(settings.lexicon, settings.unaryRules,
+        settings.posUsed, settings.featureVectorGenerator);
     SufficientStatistics newParameters = newFamily.getNewSufficientStatistics();
     newParameters.transferParameters(settings.parserParameters);
     settings.parserParameters = newParameters;
@@ -194,17 +195,20 @@ public class CcgUtils
      */
     public static ParametricCcgParser buildParametricCcgParser(List<LexiconEntry> lexiconEntries,
                                                                List<CcgUnaryRule> inputUnaryRules,
-                                                               Set<String> posSet)
+                                                               Set<String> posSet,
+                                                               FeatureVectorGenerator<StringContext> featureVectorGenerator)
     {
         CcgCategory stringCategory = CcgCategory.parseFrom("String{0},(lambda $0 $0),0 special:string");
         //CcgCategory stringCategory = CcgCategory.parseFrom("S{0},(lambda $0 (unknownCommand)),0 unknownCommand");
+        List<LexiconEntry> unknownWordLexiconEntries = Lists.newArrayList();
 
         List<Set<String>> assignments = Lists.newArrayList();
         assignments.add(Sets.newHashSet(ParametricCcgParser.SKIP_PREDICATE));
         CcgCategory stringSkipCategory = new CcgCategory(ParametricCcgParser.SKIP_CAT,
                 ParametricCcgParser.SKIP_LF, Collections.<String>emptyList(),
                 Collections.<Integer>emptyList(), Collections.<Integer>emptyList(), assignments);
-        CcgFeatureFactory featureFactory = new InstCcgFeatureFactory(Arrays.asList(stringCategory, stringSkipCategory));
+        CcgFeatureFactory featureFactory = new InstCcgFeatureFactory(Arrays.asList(stringCategory, stringSkipCategory),
+            featureVectorGenerator);
         // Read in the lexicon to instantiate the model.
 
         List<CcgBinaryRule> binaryRules = Lists.newArrayList();
@@ -215,8 +219,9 @@ public class CcgUtils
         boolean skipWords = true;
         boolean normalFormOnly = false;
 
-        return ParametricCcgParser.parseFromLexicon(lexiconEntries, binaryRules, unaryRules,
-                featureFactory, posSet, allowComposition, null, skipWords, normalFormOnly);
+        return ParametricCcgParser.parseFromLexicon(lexiconEntries, unknownWordLexiconEntries,
+            binaryRules, unaryRules, featureFactory, posSet, allowComposition, null, skipWords,
+            normalFormOnly);
     }
 
     /**
@@ -345,15 +350,14 @@ public class CcgUtils
     }
 
 
-    public static ParserSettings getParserSettings(List<String> lexiconEntries, String[] unaryRules, List<String[]> examplesList)
+    public static ParserSettings getParserSettings(List<String> lexiconEntries, String[] unaryRules,
+        FeatureGenerator<StringContext, String> featureGenerator, List<String[]> examplesList)
     {
         ParserSettings parserSettings = new ParserSettings();
         parserSettings.env = Environment.empty();
         parserSettings.symbolTable = IndexedList.create();
 
-
         List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(lexiconEntries);
-
 
         List<CcgUnaryRule> unaryRulesList = Lists.newArrayList();
         for (String unaryRule : unaryRules)
@@ -379,11 +383,17 @@ public class CcgUtils
             }
             //StaticAnalysis.inferType() //TODO: Jayant will add this functionality
         }
+        
+        List<StringContext> allContexts = FeaturizedLexiconScorer.getContextsFromExamples(ccgExamples);
+        FeatureVectorGenerator<StringContext> featureVectorGenerator = DictionaryFeatureVectorGenerator
+            .createFromData(allContexts, featureGenerator, true);
 
         parserSettings.posUsed = posUsed;
-        ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon, unaryRulesList, posUsed);
+        ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon, unaryRulesList,
+            posUsed, featureVectorGenerator);
         parserSettings.lexicon = lexicon;
         parserSettings.unaryRules = unaryRulesList;
+        parserSettings.featureVectorGenerator = featureVectorGenerator; 
         parserSettings.parserParameters = CcgUtils.train(family, ccgExamples);
         parserSettings.parser = family.getModelFromParameters(parserSettings.parserParameters);
         return parserSettings;
