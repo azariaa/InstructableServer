@@ -10,6 +10,8 @@ import org.json.simple.JSONObject;
  */
 public interface IAllUserActions
 {
+    final String unknownCommandStr = "unknownCommand";
+
     ActionResponse sendEmail(InfoForCommand infoForCommand);
 
     //ActionResponse composeEmail(InfoForCommand infoForCommand);

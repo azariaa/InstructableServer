@@ -35,10 +35,10 @@ public class Service
 
     private static void configLogger()
     {
-        Handler consoleHandler = null;
+        //Handler consoleHandler = null;
         Handler fileHandler  = null;
         //Creating consoleHandler and fileHandler
-        consoleHandler = new ConsoleHandler();
+        //consoleHandler = new ConsoleHandler();
         try
         {
             fileHandler  = new FileHandler(loggingFile);
@@ -51,11 +51,11 @@ public class Service
         // Setting formatter to the handler
         fileHandler.setFormatter(simpleFormatter);
         //Assigning handlers to logger object
-        logger.addHandler(consoleHandler);
+        //logger.addHandler(consoleHandler); //don't need console handler, it is added automatically
         logger.addHandler(fileHandler);
 
         //Setting levels to handlers and logger
-        consoleHandler.setLevel(Level.ALL);
+        //consoleHandler.setLevel(Level.ALL);
         fileHandler.setLevel(Level.ALL);
         logger.setLevel(Level.ALL);
 
