@@ -2,6 +2,7 @@ package instructable.server.ccg;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,7 @@ import com.jayantkrish.jklol.ccg.lexicon.ParametricStringLexicon;
 import com.jayantkrish.jklol.ccg.lexicon.ParametricSyntaxLexiconScorer;
 import com.jayantkrish.jklol.ccg.lexicon.ParametricTableLexicon;
 import com.jayantkrish.jklol.ccg.lexicon.StringLexicon;
+import com.jayantkrish.jklol.ccg.lexicon.StringLexicon.CategorySpanConfig;
 import com.jayantkrish.jklol.models.DiscreteFactor;
 import com.jayantkrish.jklol.models.DiscreteVariable;
 import com.jayantkrish.jklol.models.TableFactor;
@@ -39,14 +41,16 @@ import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
 public class InstCcgFeatureFactory implements CcgFeatureFactory
 {
 
-    private final List<CcgCategory> stringCategories;
+  private final List<CcgCategory> stringCategories;
+  private final List<CcgCategory> unknownCommandCategories;
     private final List<String> stringCategoryPredicates;
     private final FeatureVectorGenerator<StringContext> featureGenerator;
 
     public InstCcgFeatureFactory(List<CcgCategory> stringCategories,
-        FeatureVectorGenerator<StringContext> featureGenerator)
+        List<CcgCategory> unknownCommandCategories, FeatureVectorGenerator<StringContext> featureGenerator)
     {
         this.stringCategories = Preconditions.checkNotNull(stringCategories);
+        this.unknownCommandCategories = Preconditions.checkNotNull(unknownCommandCategories);
         this.stringCategoryPredicates = Lists.newArrayList();
         for (CcgCategory stringCategory : stringCategories)
         {
@@ -159,9 +163,16 @@ public class InstCcgFeatureFactory implements CcgFeatureFactory
         ParametricCcgLexicon tableLexicon = new ParametricTableLexicon(terminalWordVar,
                 ccgCategoryVar, terminalParametricFactor);
         lexicons.add(tableLexicon);
+        
+        List<CcgCategory> allStringLexiconCategories = Lists.newArrayList();
+        List<CategorySpanConfig> config = Lists.newArrayList();
+        allStringLexiconCategories.addAll(stringCategories);
+        config.addAll(Collections.nCopies(stringCategories.size(), CategorySpanConfig.ALL_SPANS));
+        allStringLexiconCategories.addAll(unknownCommandCategories);
+        config.addAll(Collections.nCopies(unknownCommandCategories.size(), CategorySpanConfig.WHOLE_SENTENCE));
 
         // Add a lexicon that instantiates strings in the parse.
-        StringLexicon stringLexicon = new StringLexicon(terminalWordVar, stringCategories);
+        StringLexicon stringLexicon = new StringLexicon(terminalWordVar, allStringLexiconCategories, config);
         ParametricCcgLexicon parametricStringLexicon = new ParametricStringLexicon(stringLexicon);
         lexicons.add(parametricStringLexicon);
 
