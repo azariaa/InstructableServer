@@ -164,7 +164,6 @@ public class CcgUtils
     {
         CcgCategory stringCategory = CcgCategory.parseFrom("String{0},(lambda $0 $0),0 special:string");
         CcgCategory unknownCommandCategory = CcgCategory.parseFrom("S{0},(lambda $0 (unknownCommand)),0 unknownCommand");
-        //CcgCategory unknownCommandCategory = CcgCategory.parseFrom("Unknown{0},(lambda $0 $0),0 special:string");
         List<LexiconEntry> unknownWordLexiconEntries = Lists.newArrayList();
 
         List<Set<String>> assignments = Lists.newArrayList();

@@ -52,7 +52,10 @@ public class InstCcgFeatureFactory implements CcgFeatureFactory
         this.stringCategories = Preconditions.checkNotNull(stringCategories);
         this.unknownCommandCategories = Preconditions.checkNotNull(unknownCommandCategories);
         this.stringCategoryPredicates = Lists.newArrayList();
-        for (CcgCategory stringCategory : stringCategories)
+        List<CcgCategory> allStringCategories = Lists.newArrayList();
+        allStringCategories.addAll(stringCategories);
+        allStringCategories.addAll(unknownCommandCategories);
+        for (CcgCategory stringCategory : allStringCategories)
         {
             this.stringCategoryPredicates.addAll(stringCategory.getSemanticHeads());
             for (Set<String> assignment : stringCategory.getAssignment())
@@ -60,7 +63,7 @@ public class InstCcgFeatureFactory implements CcgFeatureFactory
                 this.stringCategoryPredicates.addAll(assignment);
             }
         }
-        
+
         this.featureGenerator = Preconditions.checkNotNull(featureGenerator);
     }
 
