@@ -163,7 +163,8 @@ public class CcgUtils
                                                                FeatureVectorGenerator<StringContext> featureVectorGenerator)
     {
         CcgCategory stringCategory = CcgCategory.parseFrom("String{0},(lambda $0 $0),0 special:string");
-        //CcgCategory stringCategory = CcgCategory.parseFrom("S{0},(lambda $0 (unknownCommand)),0 unknownCommand");
+        CcgCategory unknownCommandCategory = CcgCategory.parseFrom("S{0},(lambda $0 (unknownCommand)),0 unknownCommand");
+        //CcgCategory unknownCommandCategory = CcgCategory.parseFrom("Unknown{0},(lambda $0 $0),0 special:string");
         List<LexiconEntry> unknownWordLexiconEntries = Lists.newArrayList();
 
         List<Set<String>> assignments = Lists.newArrayList();
@@ -172,7 +173,7 @@ public class CcgUtils
                 ParametricCcgParser.SKIP_LF, Collections.<String>emptyList(),
                 Collections.<Integer>emptyList(), Collections.<Integer>emptyList(), assignments);
         CcgFeatureFactory featureFactory = new InstCcgFeatureFactory(Arrays.asList(stringCategory, stringSkipCategory),
-            featureVectorGenerator);
+            Arrays.asList(unknownCommandCategory), featureVectorGenerator);
         // Read in the lexicon to instantiate the model.
 
         List<CcgBinaryRule> binaryRules = Lists.newArrayList();
