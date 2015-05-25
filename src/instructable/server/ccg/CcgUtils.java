@@ -302,8 +302,13 @@ public class CcgUtils
 
         //upto here
         CcgParse parse = inferenceAlg.getBestParse(parser, supertaggedSentence, new InstChartCost(), new NullLogFunction());
-        //TODO: if parse is empty we may want to call unknownCommand - better define a way to capture all parses
-        return simplifier.apply(parse.getLogicalForm());
+        //if parse is empty we want to parse to unknownCommand
+        Expression2 expression;
+        if (parse == null)
+            expression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
+        else
+            expression = parse.getLogicalForm();
+        return simplifier.apply(expression);
     }
 
     public static ExpressionSimplifier getExpressionSimplifier()
