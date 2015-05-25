@@ -7,12 +7,12 @@ import instructable.server.ccg.StringFeatureGenerator;
 import instructable.server.hirarchy.IncomingEmail;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.common.io.Files;
-import com.sun.tools.javac.util.Paths;
 
 /**
  * Created by Amos Azaria on 20-May-15.
