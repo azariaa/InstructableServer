@@ -3,8 +3,8 @@ package instructable.server.ccg;
 import com.google.common.collect.Maps;
 import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
 import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
+import instructable.server.InstUtils;
 
-import java.util.List;
 import java.util.Map;
 
 public class StringFeatureGenerator implements FeatureGenerator<StringContext, String> {
@@ -15,15 +15,31 @@ public class StringFeatureGenerator implements FeatureGenerator<StringContext, S
 
     Map<String, Double> featureValues = Maps.newHashMap();
     featureValues.put("length=" + getStringLength(context), 1.0);
-    featureValues.put("orgLength=" + context.getWords().size(), 1.0);
-    featureValues.put("baseVerbCount=" + verbCount(context, true), 1.0);
-    featureValues.put("totVerbCount=" + verbCount(context, false), 1.0);
-    featureValues.put("endsAtEndOfSentence=" + endsAtEndOfSentence(context), 1.0);
-    featureValues.put("startsAtBegOfSentence=" + (context.getSpanStart() == 0 ? 1 : 0), 1.0);
+    featureValues.put("orgLength", (double)context.getWords().size());
+    featureValues.put("baseVerbCount", (double)verbCount(context, true));
+    featureValues.put("totVerbCount", (double)verbCount(context, false));
+    featureValues.put("endsAtEndOfSentence", (double)endsAtEndOfSentence(context));
+    featureValues.put("startsAtBegOfSentence", (context.getSpanStart() == 0 ? 1.0 : 0.0));
+    if (getStringLength(context) == 1)
+    {
+        String words = getRelevantWords(context);
+        featureValues.put("isOnlyEmailAddress", InstUtils.isEmailAddress(words) ? 1.0 : 0.0);
+    }
+    //featureValues.put("containsAlsoEmailAddress", hasEmailAddress(context.getSpanStart() == 0 ? 1.0 : 0.0));
     //featureValues.put("rootConstituency=" + getRootConstituency(context), 1.0);
 
     return featureValues;
   }
+
+    private String getRelevantWords(StringContext context)
+    {
+        StringBuilder words = new StringBuilder();
+        for (int idx = context.getSpanEnd(); idx <= context.getSpanEnd(); idx++)
+        {
+            words.append(context.getWords().get(idx));
+        }
+        return words.toString();
+    }
 
     private int endsAtEndOfSentence(StringContext context)
     {
@@ -38,14 +54,10 @@ public class StringFeatureGenerator implements FeatureGenerator<StringContext, S
         int baseVerbCounter = 0;
         for (int idx = context.getSpanEnd(); idx <= context.getSpanEnd(); idx++)
         {
-            List<String> poss = context.getPos();
-            if (poss != null) //TODO: Jayant why is POS sometimes null?
-            {
-                String pos = poss.get(idx);
-                if (pos.equals("VB") ||
-                        !onlyBase && pos.startsWith("VB")) //could be: VB, VBD, VBG, VBN, VBP, VBZ
-                    baseVerbCounter++;
-            }
+            String pos = context.getPos().get(idx);
+            if (pos.equals("VB") ||
+                    !onlyBase && pos.startsWith("VB")) //could be: VB, VBD, VBG, VBN, VBP, VBZ
+                baseVerbCounter++;
         }
         return baseVerbCounter;
     }

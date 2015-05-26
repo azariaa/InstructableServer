@@ -6,6 +6,8 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Amos Azaria on 19-May-15.
@@ -45,6 +47,18 @@ public class InstUtils
             e.printStackTrace();
         }
         return new HashSet<>(fileAsList);
+    }
+
+    private static final String EMAIL_PATTERN =
+            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+    private static Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+
+    public static boolean isEmailAddress(String addr)
+    {
+        Matcher matcher = pattern.matcher(addr);
+        return matcher.matches();
     }
 
     private InstUtils()

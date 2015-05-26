@@ -1,9 +1,7 @@
 package instructable.server.hirarchy.fieldTypes;
 
 import instructable.server.ExecutionStatus;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import instructable.server.InstUtils;
 
 
 /**
@@ -13,23 +11,13 @@ import java.util.regex.Pattern;
  */
 public class EmailAddress extends FieldType
 {
-    private static final String EMAIL_PATTERN =
-            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
-    private boolean testAddress(String addr)
-    {
-        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-        Matcher matcher = pattern.matcher(addr);
-        return matcher.matches();
-    }
 
     /*
     returns true if manged to set
      */
     public void setAddress(ExecutionStatus executionStatus, String val)
     {
-        if (testAddress(val))
+        if (InstUtils.isEmailAddress(val))
         {
             fieldVal = val;
             return;
@@ -39,7 +27,7 @@ public class EmailAddress extends FieldType
         String FixedVal = val.replace(" at ", " @ ");
         FixedVal = FixedVal.replace(" dot ", " . ");
         FixedVal = FixedVal.trim().replace(" ", "");
-        if (testAddress(FixedVal))
+        if (InstUtils.isEmailAddress(FixedVal))
         {
             fieldVal = FixedVal;
             executionStatus.add(ExecutionStatus.RetStatus.comment, "minor email fixes were performed");
