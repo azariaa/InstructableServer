@@ -338,7 +338,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (previousFieldEval.isPresent())
             return new ActionResponse("It is: " + FieldHolder.fieldFromJSonForUser(previousFieldEval.get()), true, previousFieldEval.get());
-        return new ActionResponse("There is no previously evaluated field." + FieldHolder.fieldFromJSonForUser(previousFieldEval.get()), false);
+        return new ActionResponse("There is no previously evaluated field.", false);
     }
 
     @Override

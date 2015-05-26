@@ -391,6 +391,7 @@ public class CcgUtils
 
         LispEval eval = new LispEval(parserSettings.symbolTable);
         SExpression sExpression = ExpressionParser.sExpression(parserSettings.symbolTable).parseSingleExpression(expression.toString());
+        System.out.println(sExpression.toString());
         LispEval.EvalResult result = eval.eval(sExpression, parserSettings.env);
 
         return (ActionResponse) result.getValue();

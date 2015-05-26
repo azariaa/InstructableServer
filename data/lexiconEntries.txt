@@ -12,6 +12,7 @@ cancel,S{0},(cancel)
 "previous message",S{0},(previousEmailMessage)
 "compose","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 "create","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
+compose,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
 create,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
 create,((S{0}/ConceptName{2}){0}/String{1}), (lambda $1 $2 (createInstanceByFullNames $2 $1))
 define,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
