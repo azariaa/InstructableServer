@@ -6,6 +6,8 @@ import edu.stanford.nlp.parser.shiftreduce.ShiftReduceParser;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.stanford.nlp.trees.Tree;
+import opennlp.tools.tokenize.DetokenizationDictionary;
+import opennlp.tools.tokenize.DictionaryDetokenizer;
 
 import java.io.StringReader;
 import java.util.List;
@@ -16,7 +18,34 @@ import java.util.Scanner;
  */
 public class Temp
 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
+        String tokensToMove[] = new String[]{".", "!", "?", ",", "$", "(", ")", "[", "]", "\"", "'", ":", "n't", "'m", "'s", "n't"};
+        DetokenizationDictionary.Operation operations[] = new DetokenizationDictionary.Operation[]{
+                DetokenizationDictionary.Operation.MOVE_LEFT,
+                DetokenizationDictionary.Operation.MOVE_LEFT,
+                DetokenizationDictionary.Operation.MOVE_LEFT,
+                DetokenizationDictionary.Operation.MOVE_LEFT,
+                DetokenizationDictionary.Operation.MOVE_RIGHT,
+                DetokenizationDictionary.Operation.MOVE_RIGHT,
+                DetokenizationDictionary.Operation.MOVE_LEFT,
+                DetokenizationDictionary.Operation.MOVE_RIGHT,
+                DetokenizationDictionary.Operation.MOVE_LEFT,
+                DetokenizationDictionary.Operation.RIGHT_LEFT_MATCHING,
+                DetokenizationDictionary.Operation.MOVE_LEFT,
+                DetokenizationDictionary.Operation.MOVE_LEFT,
+                DetokenizationDictionary.Operation.MOVE_LEFT,
+                DetokenizationDictionary.Operation.MOVE_LEFT,
+                DetokenizationDictionary.Operation.MOVE_LEFT,
+                DetokenizationDictionary.Operation.MOVE_LEFT
+        };
+        DictionaryDetokenizer detokenizer = new DictionaryDetokenizer(new DetokenizationDictionary(tokensToMove, operations));
+        String org = detokenizer.detokenize(new String[]{"I", "said",":", "\"", "I","'m", "thinking", "that", "I", "ca", "n't", "\"",".", "What", "did", "you", "?"}, null);
+        System.out.println(org);
+        //constituency(args);
+    }
+
+    private static void constituency(String[] args)
+    {
         String modelPath = "resources/englishSR.ser.gz";
         String taggerPath = "resources/english-left3words-distsim.tagger";
 

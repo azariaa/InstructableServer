@@ -14,7 +14,7 @@ public class StringFeatureGenerator implements FeatureGenerator<StringContext, S
   public Map<String, Double> generateFeatures(StringContext context) {
 
     Map<String, Double> featureValues = Maps.newHashMap();
-    featureValues.put("length=" + getStringLength(context), 1.0);
+    featureValues.put("length", (double)getStringLength(context));
     featureValues.put("orgLength", (double)context.getWords().size());
     featureValues.put("baseVerbCount", (double)verbCount(context, true));
     featureValues.put("totVerbCount", (double)verbCount(context, false));
@@ -22,6 +22,7 @@ public class StringFeatureGenerator implements FeatureGenerator<StringContext, S
     featureValues.put("startsAtBegOfSentence", (context.getSpanStart() == 0 ? 1.0 : 0.0));
     if (getStringLength(context) == 1)
     {
+        featureValues.put("length=1", 1.0); //treat length=1 different than all the rest
         String words = getRelevantWords(context);
         featureValues.put("isOnlyEmailAddress", InstUtils.isEmailAddress(words) ? 1.0 : 0.0);
     }
@@ -43,7 +44,7 @@ public class StringFeatureGenerator implements FeatureGenerator<StringContext, S
 
     private int endsAtEndOfSentence(StringContext context)
     {
-        if (context.getWords().size() == context.getSpanEnd())
+        if (context.getWords().size() == context.getSpanEnd() + 1)
             return 1;
         return 0;
     }

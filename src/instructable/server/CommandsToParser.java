@@ -35,25 +35,30 @@ public class CommandsToParser implements ICommandsToParser
         }
     }
 
+    private enum ConceptFieldInstance {Concept,Field,Instance}
+
     @Override
     public void newConceptDefined(String conceptName)
     {
-        //maybe convert to one function.
-        CcgUtils.updateParserGrammar(conceptName + ",ConceptName{0}," + conceptName, parserSettings);
-        parserSettings.env.bindName(conceptName, conceptName.replace("_", " "), parserSettings.symbolTable);
+        newDefined(ConceptFieldInstance.Concept, conceptName);
+    }
+
+    private void newDefined(ConceptFieldInstance conceptFieldInstance, String actualName)
+    {
+        String what = conceptFieldInstance.toString();
+        CcgUtils.updateParserGrammar(actualName + ","+what+"Name{0}," + actualName.replace(" ", "_"), parserSettings);
+        parserSettings.env.bindName(actualName.replace(" ", "_"), actualName.replace("_", " "), parserSettings.symbolTable);
     }
 
     @Override
     public void newFieldDefined(String fieldName)
     {
-        CcgUtils.updateParserGrammar(fieldName + ",FieldName{0}," + fieldName, parserSettings);
-        parserSettings.env.bindName(fieldName, fieldName.replace("_", " "), parserSettings.symbolTable);
+        newDefined(ConceptFieldInstance.Field, fieldName);
     }
 
     @Override
     public void newInstanceDefined(String instanceName)
     {
-        CcgUtils.updateParserGrammar(instanceName + ",InstanceName{0}," + instanceName, parserSettings);
-        parserSettings.env.bindName(instanceName, instanceName.replace("_", " "), parserSettings.symbolTable);
+        newDefined(ConceptFieldInstance.Instance, instanceName);
     }
 }

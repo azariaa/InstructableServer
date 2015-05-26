@@ -1,5 +1,8 @@
 package instructable.server;
 
+import opennlp.tools.tokenize.DetokenizationDictionary;
+import opennlp.tools.tokenize.DictionaryDetokenizer;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -59,6 +62,38 @@ public class InstUtils
     {
         Matcher matcher = pattern.matcher(addr);
         return matcher.matches();
+    }
+
+
+    static String tokensToMove[] = new String[]{".", "!", "?", ",", "$", "(", ")", "[", "]", "\"", "'", ":", "n't", "'m", "'s", "n't"};
+    static DetokenizationDictionary.Operation operations[] = new DetokenizationDictionary.Operation[]{
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_RIGHT,
+            DetokenizationDictionary.Operation.MOVE_RIGHT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_RIGHT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.RIGHT_LEFT_MATCHING,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT
+    };
+    static DictionaryDetokenizer detokenizer = new DictionaryDetokenizer(new DetokenizationDictionary(tokensToMove, operations));
+    /*
+    This function gets a list of tokens which was joint using " ", and hopefully returns the string that originated these tokens.
+    This uses DictionaryDetokenizer from OpenNLP, however, I couldn't find a public DetokenizationDictionary.
+     */
+    public static String detokenizer(String malDetokenizedStr)
+    {
+        StringBuilder outputStr = new StringBuilder();
+        String[] tokens = malDetokenizedStr.split(" ");
+        return detokenizer.detokenize(tokens, null);
     }
 
     private InstUtils()
