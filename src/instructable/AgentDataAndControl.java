@@ -13,13 +13,13 @@ import java.util.logging.Logger;
 /**
  * Created by Amos Azaria on 21-May-15.
  */
-public class ServiceDataAndControl
+public class AgentDataAndControl
 {
     private ParserSettings parserSettings;
     private Map<String,IAllUserActions> allUserActionsMap;
-    private Logger logger;
+    protected Logger logger;
 
-    public ServiceDataAndControl(Logger logger)
+    public AgentDataAndControl(Logger logger)
     {
         this.logger = logger;
         parserSettings = EnvironmentCreatorUtils.createParser();
