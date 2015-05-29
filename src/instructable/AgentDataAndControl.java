@@ -26,17 +26,17 @@ public class AgentDataAndControl
         allUserActionsMap = new HashMap<>();
     }
 
-    public String executeSentenceForUser(String userId, String userSays)
+    public String executeSentenceForUser(String gameId, String userSays)
     {
-        if (!allUserActionsMap.containsKey(userId))
+        if (!allUserActionsMap.containsKey(gameId))
         {
             TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettings));
             EnvironmentCreatorUtils.addInboxEmails(topDMAllActions);
-            allUserActionsMap.put(userId, topDMAllActions);
+            allUserActionsMap.put(gameId, topDMAllActions);
         }
 
-        CcgUtils.SayAndExpression response = CcgUtils.ParseAndEval(allUserActionsMap.get(userId), parserSettings, userSays);
-        logger.info("UserID:" + userId + ". Lambda expression: " + response.lExpression);
+        CcgUtils.SayAndExpression response = CcgUtils.ParseAndEval(allUserActionsMap.get(gameId), parserSettings, userSays);
+        logger.info("GameID:" + gameId + ". Lambda expression: " + response.lExpression);
         return response.sayToUser;
     }
 

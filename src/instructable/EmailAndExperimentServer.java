@@ -19,11 +19,11 @@ public class EmailAndExperimentServer implements HttpHandler
 {
     enum TasksToComplete {sendTest,forwardToAll}
     static final int numOfTasks = TasksToComplete.values().length;
-    static public final String userIdParam = "userId";
+    static public final String gameIdParam = "gameId";
     static public final String actionParam = "action";
-    static public final String getUserScoreStr = "getUserScore";
-    static public final String newUserJoinedStr = "newUserJoined";
-    static public final String sendEmailForUserStr = "sendEmailForUser";
+    static public final String getGameScoreStr = "getGameScore";
+    static public final String newGameJoinedStr = "newGameJoined";
+    static public final String sendEmailInGameStr = "sendEmailInGame";
     Logger logger;
 
     Object mapLock = new Object();
@@ -40,32 +40,32 @@ public class EmailAndExperimentServer implements HttpHandler
         //TODO: add all tasks!!!
         Map<String, Object> parameters =
                 (Map<String, Object>) httpExchange.getAttribute(Service.ParameterFilter.parametersStr);
-        if (!parameters.containsKey(userIdParam))
+        if (!parameters.containsKey(gameIdParam))
         {
-            logger.warning("no userId");
+            logger.warning("no gameId");
             return;
         }
-        String userId = parameters.get(userIdParam).toString();
+        String gameId = parameters.get(gameIdParam).toString();
         if (!parameters.containsKey(actionParam))
         {
-            logger.warning("no action, userId:" + userId);
+            logger.warning("no action, gameId:" + gameId);
             return;
         }
-        String action = parameters.get(userIdParam).toString();
-        if (action.equals(getUserScoreStr))
+        String action = parameters.get(gameIdParam).toString();
+        if (action.equals(getGameScoreStr))
         {
-            Integer score = getUserScore(userId);
+            Integer score = getGameScore(gameId);
             String systemReply = score.toString();
             httpExchange.sendResponseHeaders(200, systemReply.length());
             OutputStream os = httpExchange.getResponseBody();
             os.write(systemReply.getBytes());
             os.close();
         }
-        else if (action.equals(newUserJoinedStr))
+        else if (action.equals(newGameJoinedStr))
         {
-            newUserJoined(userId);
+            newGameStarted(gameId);
         }
-        else if (action.equals(sendEmailForUserStr))
+        else if (action.equals(sendEmailInGameStr))
         {
             if (!parameters.containsKey(EmailMessage.subjectStr) ||
                     !parameters.containsKey(EmailMessage.bodyStr) ||
@@ -73,10 +73,10 @@ public class EmailAndExperimentServer implements HttpHandler
                     !parameters.containsKey(EmailMessage.recipientListStr) ||
                     !parameters.containsKey(EmailMessage.senderStr))
             {
-                logger.warning("something is missing in the email, userId:" + userId);
+                logger.warning("something is missing in the email, gameId:" + gameId);
                 return;
             }
-            sendEmailForUser(userId,
+            sendEmailForUser(gameId,
                     parameters.get(EmailMessage.subjectStr).toString(),
                     parameters.get(EmailMessage.bodyStr).toString(),
                     parameters.get(EmailMessage.copyListStr).toString(),
@@ -86,53 +86,53 @@ public class EmailAndExperimentServer implements HttpHandler
         }
         else
         {
-            logger.warning("unknown action, userId:" + userId + ". action:" + action);
+            logger.warning("unknown action, gameId:" + gameId + ". action:" + action);
             return;
         }
     }
 
-    private int getUserScore(String userId)
+    private int getGameScore(String gameId)
     {
-        Set<TasksToComplete> userTasks = getUserTasks(userId);
+        Set<TasksToComplete> userTasks = getUserTasks(gameId);
 
         return userTasks.size();
         //return (int)userScores.values().stream().filter(x -> x==true).count(); //should work, but need to test it first...
     }
 
-    private Set<TasksToComplete> getUserTasks(String userId)
+    private Set<TasksToComplete> getUserTasks(String gameId)
     {
         Set<TasksToComplete> userScores = null;
         synchronized(mapLock)
         {
-            if (missionsCompletedByUser.containsKey(userId))
-                userScores = missionsCompletedByUser.get(userId);
+            if (missionsCompletedByUser.containsKey(gameId))
+                userScores = missionsCompletedByUser.get(gameId);
         }
         if (userScores == null)
         {
-            logger.warning("userId not in map. user:" + userId + ". adding it now");
-            newUserJoined(userId);
+            logger.warning("gameId not in map. user:" + gameId + ". adding it now");
+            newGameStarted(gameId);
         }
         return userScores;
     }
 
-    private void newUserJoined(String userId)
+    private void newGameStarted(String gameId)
     {
         synchronized(mapLock)
         {
-            if (missionsCompletedByUser.containsKey(userId))
+            if (missionsCompletedByUser.containsKey(gameId))
             {
-                logger.warning("userId already in map. user:" + userId + ".");
+                logger.warning("gameId already in map. user:" + gameId + ".");
                 return;
             }
-            logger.info("userId added to map. user:" + userId + ".");
-            missionsCompletedByUser.put(userId, new HashSet<>());
+            logger.info("gameId added to map. gameId:" + gameId + ".");
+            missionsCompletedByUser.put(gameId, new HashSet<>());
         }
 
     }
 
-    private void sendEmailForUser(String userId, String subject, String body, String copyList, String recipientList, String sender)
+    private void sendEmailForUser(String gameId, String subject, String body, String copyList, String recipientList, String sender)
     {
-        Set<TasksToComplete> userTasks = getUserTasks(userId);
+        Set<TasksToComplete> userTasks = getUserTasks(gameId);
         //TODO: fill out all the experiment!!!!
         boolean completedTaskforwardToAll = true;
         if (completedTaskforwardToAll)

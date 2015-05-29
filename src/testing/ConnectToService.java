@@ -1,5 +1,6 @@
 package testing;
 
+import instructable.AgentServer;
 import instructable.Service;
 
 import java.io.BufferedReader;
@@ -39,8 +40,8 @@ public class ConnectToService
                 con.setRequestProperty("User-Agent", USER_AGENT);
                 con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-                String parameters =  Service.userIdParam + "=" + "amos";
-                parameters += "&" + Service.userSaysParam + "=" + URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
+                String parameters =  AgentServer.gameIdParam + "=" + "8784";
+                parameters += "&" + AgentServer.userSaysParam + "=" + URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
 
                 // Send post request
                 con.setDoOutput(true);
