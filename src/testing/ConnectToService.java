@@ -30,7 +30,7 @@ public class ConnectToService
                 if (userSays.equals("exit"))
                     break;
 
-                String url = "http://localhost:"+ Service.portToUse + "/" + Service.contextAgentSay;// + "?" + Service.userSaysParam + "=" +URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
+                String url = "http://localhost:"+ Service.portToUse + "/" + Service.contextSayToAgent;// + "?" + Service.userSaysParam + "=" +URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
 
                 URL obj = new URL(url);
                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();

@@ -21,7 +21,7 @@ public class EmailAndExperimentServer implements HttpHandler
     static final int numOfTasks = TasksToComplete.values().length;
     static public final String gameIdParam = "gameId";
     static public final String actionParam = "action";
-    static public final String getGameScoreStr = "getGameScore";
+    static public final String getTasksCompletedStr = "getTasksCompleted";
     static public final String newGameJoinedStr = "newGameJoined";
     static public final String sendEmailInGameStr = "sendEmailInGame";
     Logger logger;
@@ -52,7 +52,7 @@ public class EmailAndExperimentServer implements HttpHandler
             return;
         }
         String action = parameters.get(gameIdParam).toString();
-        if (action.equals(getGameScoreStr))
+        if (action.equals(getTasksCompletedStr))
         {
             Integer score = getGameScore(gameId);
             String systemReply = score.toString();
