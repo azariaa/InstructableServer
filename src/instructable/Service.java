@@ -69,7 +69,7 @@ public class Service
             AgentDataAndControl agentDataAndControl = new AgentDataAndControl(logger);
             HttpContext agentContext = server.createContext("/" + contextSayToAgent, new AgentServer(agentDataAndControl));
             agentContext.getFilters().add(new ParameterFilter());
-            HttpContext emailAndExperimentContext = server.createContext("/" + contextEmailAndExperiment, new EmailAndExperimentServer(logger));
+            HttpContext emailAndExperimentContext = server.createContext("/" + contextEmailAndExperiment, new EmailAndExperimentServer(agentDataAndControl));
             emailAndExperimentContext.getFilters().add(new ParameterFilter());
             server.setExecutor(null); // creates a default executor
             server.start();

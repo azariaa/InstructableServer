@@ -7,6 +7,8 @@ import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -15,28 +17,85 @@ import java.util.logging.Logger;
  */
 public class AgentDataAndControl
 {
-    private ParserSettings parserSettings;
-    private Map<String,IAllUserActions> allUserActionsMap;
+    private class ParserSetAndActions
+    {
+        ParserSetAndActions(ParserSettings parserSettings, IAllUserActions allUserActions)
+        {
+            this.parserSettings = parserSettings;
+            this.allUserActions = allUserActions;
+        }
+        ParserSettings parserSettings;
+        IAllUserActions allUserActions;
+    }
+
+    ParserSettings originalParserSettings;
+    final private Map<String,ParserSetAndActions> parserSetAndActionsMap;
     protected Logger logger;
+    List<ResponseToUserListener> responseToUserListenerList = new LinkedList<>();
 
     public AgentDataAndControl(Logger logger)
     {
         this.logger = logger;
-        parserSettings = EnvironmentCreatorUtils.createParser();
-        allUserActionsMap = new HashMap<>();
+        parserSetAndActionsMap = new HashMap<>();
+        originalParserSettings = EnvironmentCreatorUtils.createParser();
+        logger.info("Agent Ready!");
+    }
+
+    public ParserSetAndActions addNewGame(String gameId)
+    {
+        ParserSettings parserSettingsCopy = originalParserSettings.clone();
+        TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettingsCopy));
+        EnvironmentCreatorUtils.addInboxEmails(topDMAllActions);
+        ParserSetAndActions parserSetAndActions =  new ParserSetAndActions(parserSettingsCopy, topDMAllActions);
+        synchronized(parserSetAndActionsMap)
+        {
+            parserSetAndActionsMap.put(gameId,parserSetAndActions);
+        }
+        return parserSetAndActions;
+    }
+
+    interface ResponseToUserListener
+    {
+        void responseSentToUser(String gameId, String agentResponse);
+    }
+
+    public void addResponseToUserListener(ResponseToUserListener responseToUserListener)
+    {
+        if (!responseToUserListenerList.contains(responseToUserListener))
+            responseToUserListenerList.add(responseToUserListener);
+        if (responseToUserListenerList.size() > 1)
+            logger.warning("shouldn't happen that responseToUserListenerList.size() is: " + responseToUserListenerList.size());
     }
 
     public String executeSentenceForUser(String gameId, String userSays)
     {
-        if (!allUserActionsMap.containsKey(gameId))
+        logger.info("GameID:" + gameId + ". User says: " + userSays);
+        boolean needToAddToMap = false;
+        //setting to null in order to avoid "variable might not have been initialized"
+        ParserSetAndActions parserSetAndActions = null;
+        synchronized(parserSetAndActionsMap)
         {
-            TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettings));
-            EnvironmentCreatorUtils.addInboxEmails(topDMAllActions);
-            allUserActionsMap.put(gameId, topDMAllActions);
+            if (parserSetAndActionsMap.containsKey(gameId))
+            {
+                parserSetAndActions = parserSetAndActionsMap.get(gameId);
+            }
+            else
+            {
+                logger.warning("GameId not found in map, adding now. GameId: " + gameId);
+                needToAddToMap = true;
+            }
+        }
+        if (needToAddToMap)
+        {
+            parserSetAndActions = addNewGame(gameId);
         }
 
-        CcgUtils.SayAndExpression response = CcgUtils.ParseAndEval(allUserActionsMap.get(gameId), parserSettings, userSays);
+        CcgUtils.SayAndExpression response = CcgUtils.ParseAndEval(parserSetAndActions.allUserActions, parserSetAndActions.parserSettings, userSays);
         logger.info("GameID:" + gameId + ". Lambda expression: " + response.lExpression);
+        for (ResponseToUserListener responseToUserListener : responseToUserListenerList)
+        {
+            responseToUserListener.responseSentToUser(gameId, response.sayToUser);
+        }
         return response.sayToUser;
     }
 

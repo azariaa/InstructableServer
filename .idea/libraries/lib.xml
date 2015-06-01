@@ -8,6 +8,9 @@
       <root url="file://$PROJECT_DIR$/../jklol-1.1/performance" />
       <root url="file://$PROJECT_DIR$/../jklol-1.1/src" />
       <root url="file://$PROJECT_DIR$/../jklol-1.1/test" />
+      <root url="file://$PROJECT_DIR$/../jklol/performance" />
+      <root url="file://$PROJECT_DIR$/../jklol/src" />
+      <root url="file://$PROJECT_DIR$/../jklol/test" />
     </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
   </library>

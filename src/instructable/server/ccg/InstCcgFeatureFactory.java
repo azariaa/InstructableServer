@@ -1,25 +1,13 @@
 package instructable.server.ccg;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgCategory;
 import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
 import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
-import com.jayantkrish.jklol.ccg.lexicon.ParametricCcgLexicon;
-import com.jayantkrish.jklol.ccg.lexicon.ParametricFeaturizedLexiconScorer;
-import com.jayantkrish.jklol.ccg.lexicon.ParametricLexiconScorer;
-import com.jayantkrish.jklol.ccg.lexicon.ParametricStringLexicon;
-import com.jayantkrish.jklol.ccg.lexicon.ParametricSyntaxLexiconScorer;
-import com.jayantkrish.jklol.ccg.lexicon.ParametricTableLexicon;
-import com.jayantkrish.jklol.ccg.lexicon.StringLexicon;
+import com.jayantkrish.jklol.ccg.lexicon.*;
 import com.jayantkrish.jklol.ccg.lexicon.StringLexicon.CategorySpanConfig;
 import com.jayantkrish.jklol.models.DiscreteFactor;
 import com.jayantkrish.jklol.models.DiscreteVariable;
@@ -32,6 +20,10 @@ import com.jayantkrish.jklol.models.parametric.CombiningParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ConstantParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ParametricFactor;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
+import opennlp.tools.tokenize.DetokenizationDictionary;
+import opennlp.tools.tokenize.DictionaryDetokenizer;
+
+import java.util.*;
 
 /**
  * Creates the features for a CCG parser.
@@ -175,11 +167,40 @@ public class InstCcgFeatureFactory implements CcgFeatureFactory
         config.addAll(Collections.nCopies(unknownCommandCategories.size(), CategorySpanConfig.WHOLE_SENTENCE));
 
         // Add a lexicon that instantiates strings in the parse.
-        StringLexicon stringLexicon = new StringLexicon(terminalWordVar, allStringLexiconCategories, config);
+        StringLexicon stringLexicon = new StringLexicon(terminalWordVar, allStringLexiconCategories, config, x->detokenizeToExpression(x));
         ParametricCcgLexicon parametricStringLexicon = new ParametricStringLexicon(stringLexicon);
         lexicons.add(parametricStringLexicon);
 
         return lexicons;
+    }
+
+    static String tokensToMove[] = new String[]{".", "!", "?", ",", "$", "(", ")", "[", "]", "\"", "'", ":", "n't", "'m", "'s", "n't"};
+    static DetokenizationDictionary.Operation operations[] = new DetokenizationDictionary.Operation[]{
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_RIGHT,
+            DetokenizationDictionary.Operation.MOVE_RIGHT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_RIGHT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.RIGHT_LEFT_MATCHING,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
+            DetokenizationDictionary.Operation.MOVE_LEFT
+    };
+    static DictionaryDetokenizer detokenizer = new DictionaryDetokenizer(new DetokenizationDictionary(tokensToMove, operations));
+    /*
+    This function gets a list of tokens which was joint using " ", and hopefully returns the string that originated these tokens.
+    This uses DictionaryDetokenizer from OpenNLP, however, I couldn't find a public DetokenizationDictionary.
+     */
+    public static Expression2 detokenizeToExpression(List<String> tokenizedStr)
+    {
+        return Expression2.constant("\"" + detokenizer.detokenize(tokenizedStr.toArray(new String[0]), null) + "\"");
     }
     
     @Override

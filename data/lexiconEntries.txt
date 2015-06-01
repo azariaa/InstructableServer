@@ -34,6 +34,8 @@ of,((MutableField{0}\FieldName{2}){0}/InstanceName{1}){0},(lambda $1 $2 (getProb
 "the value",String/String,(lambda $1 $1)
 's,((Field{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $2 $1))
 's,((MutableField{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $2 $1))
+',((Field{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $2 $1))
+',((MutableField{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $2 $1))
 is,"((S{0}/String{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromString $1 $2))
 is,"((S{0}/FieldVal{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromFieldVal $1 $2))
 it,FieldVal{0},(getProbFieldVal),0 getProbFieldVal
@@ -49,6 +51,7 @@ and,"(S/S)\S",(lambda $1 $2 (doSeq $1 $2))
 and,"(S/S)\FieldVal",(lambda $1 $2 (doSeq $1 $2))
 body,FieldName{0},body,0 body
 "incoming email",InstanceName{0},inbox
+message,InstanceName{0},inbox
 inbox,InstanceName{0},inbox
 email,InstanceName{0},outgoing_email,0 outgoing_email
 email,ConceptName{0},outgoing_email,0 outgoing_email
