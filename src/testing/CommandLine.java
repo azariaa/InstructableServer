@@ -18,7 +18,7 @@ public class CommandLine
     {
 
         ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
-        TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettings));
+        TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {});
         IAllUserActions allUserActions = topDMAllActions;
 
         EnvironmentCreatorUtils.addInboxEmails(topDMAllActions);

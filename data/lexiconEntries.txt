@@ -49,6 +49,12 @@ in,PP_MutableField/MutableField,(lambda $1 $1)
 inside,PP_MutableField/MutableField,(lambda $1 $1)
 and,"(S/S)\S",(lambda $1 $2 (doSeq $1 $2))
 and,"(S/S)\FieldVal",(lambda $1 $2 (doSeq $1 $2))
+concept, ConceptName/ConceptName,(lambda $1 $1)
+concept, String/String,(lambda $1 $1)
+field, FieldName/FieldName,(lambda $1 $1)
+field, String/String,(lambda $1 $1)
+instance, InstanceName/InstanceName,(lambda $1 $1)
+instance, String/String,(lambda $1 $1)
 body,FieldName{0},body,0 body
 "incoming email",InstanceName{0},inbox
 message,InstanceName{0},inbox

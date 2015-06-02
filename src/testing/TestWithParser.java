@@ -35,7 +35,7 @@ public class TestWithParser
 
         ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
 
-        IAllUserActions allUserActions = new TopDMAllActions(new CommandsToParser(parserSettings));
+        IAllUserActions allUserActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {});
 
         sendingBasicEmail(allUserActions, testHelpers, parserSettings);
 

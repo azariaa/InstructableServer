@@ -1,5 +1,6 @@
 package instructable.server.hirarchy;
 
+import instructable.server.ExecutionStatus;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 
 import java.util.Arrays;
@@ -59,5 +60,30 @@ abstract public class EmailMessage extends GenericInstance
     public boolean hasSubject()
     {
         return !fieldIsEmpty(subjectStr);
+    }
+
+    public String getRecipient()
+    {
+        return getFieldWithoutChecking(recipientListStr);
+    }
+
+    public String getCopy()
+    {
+        return getFieldWithoutChecking(copyListStr);
+    }
+
+    public String getBody()
+    {
+        return getFieldWithoutChecking(bodyStr);
+    }
+
+    public String getSubject()
+    {
+        return getFieldWithoutChecking(subjectStr);
+    }
+
+    private String getFieldWithoutChecking(String fieldName)
+    {
+        return getField(new ExecutionStatus(), fieldName).get().fieldValForUser();
     }
 }

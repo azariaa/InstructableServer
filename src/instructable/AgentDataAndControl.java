@@ -2,6 +2,7 @@ package instructable;
 
 import instructable.server.CommandsToParser;
 import instructable.server.IAllUserActions;
+import instructable.server.IEmailSender;
 import instructable.server.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
@@ -41,11 +42,11 @@ public class AgentDataAndControl
         logger.info("Agent Ready!");
     }
 
-    public ParserSetAndActions addNewGame(String gameId)
+    public ParserSetAndActions addNewGame(String gameId, IEmailSender emailSender, IAddInboxEmails addInboxEmails)
     {
         ParserSettings parserSettingsCopy = originalParserSettings.clone();
-        TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettingsCopy));
-        EnvironmentCreatorUtils.addInboxEmails(topDMAllActions);
+        TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettingsCopy), emailSender);
+        addInboxEmails.addInboxEmails(topDMAllActions);
         ParserSetAndActions parserSetAndActions =  new ParserSetAndActions(parserSettingsCopy, topDMAllActions);
         synchronized(parserSetAndActionsMap)
         {
@@ -75,19 +76,7 @@ public class AgentDataAndControl
         ParserSetAndActions parserSetAndActions = null;
         synchronized(parserSetAndActionsMap)
         {
-            if (parserSetAndActionsMap.containsKey(gameId))
-            {
                 parserSetAndActions = parserSetAndActionsMap.get(gameId);
-            }
-            else
-            {
-                logger.warning("GameId not found in map, adding now. GameId: " + gameId);
-                needToAddToMap = true;
-            }
-        }
-        if (needToAddToMap)
-        {
-            parserSetAndActions = addNewGame(gameId);
         }
 
         CcgUtils.SayAndExpression response = CcgUtils.ParseAndEval(parserSetAndActions.allUserActions, parserSetAndActions.parserSettings, userSays);

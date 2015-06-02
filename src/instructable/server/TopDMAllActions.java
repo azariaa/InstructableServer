@@ -25,11 +25,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
     Optional<JSONObject> previousFieldEval = Optional.empty();
 
-    public TopDMAllActions(ICommandsToParser commandsToParser)
+    public TopDMAllActions(ICommandsToParser commandsToParser, IEmailSender emailSender)
     {
         conceptContainer = new ConceptContainer();
         instanceContainer = new InstanceContainer(conceptContainer);
-        outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer);
+        outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer, emailSender);
         inboxCommandController = new InboxCommandController(conceptContainer, instanceContainer);
         this.commandsToParser = commandsToParser;
         internalState = new InternalState();

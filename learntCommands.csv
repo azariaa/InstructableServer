@@ -7,3 +7,5 @@ who is inbox's sender,(evalField (getProbFieldByInstanceNameAndFieldName inbox s
 send email to mat@gmail.com with subject urgent and body I'm waiting for too long for the report,"(doSeq (doSeq (doSeq (doSeq (createInstanceByConceptName outgoing_email) (setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""mat@gmail.com"")) (setFieldFromString (getProbMutableFieldByFieldName subject) ""urgent"")) (setFieldFromString (getProbMutableFieldByFieldName body) ""I'm waiting for too long for the report"")) (sendEmail))"
 read next incoming message,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
 add email to spouse,(addFieldToConcept contact "email")
+read me the next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
+read next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))

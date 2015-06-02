@@ -13,12 +13,14 @@ public class OutEmailCommandController
     private String myEmail;
     InstanceContainer instanceContainer;
     int numOfEmailsSent = 0;
+    IEmailSender emailSender;
 
-    OutEmailCommandController(String myEmail, ConceptContainer conceptContainer, InstanceContainer instanceContainer)
+    OutEmailCommandController(String myEmail, ConceptContainer conceptContainer, InstanceContainer instanceContainer, IEmailSender emailSender)
     {
         this.myEmail = myEmail;
         conceptContainer.defineConcept(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.getFieldDescriptions());
         this.instanceContainer = instanceContainer;
+        this.emailSender = emailSender;
     }
 
     public Optional<OutgoingEmail> getEmailBeingComposed(ExecutionStatus executionStatus)
@@ -40,13 +42,22 @@ public class OutEmailCommandController
         Optional<OutgoingEmail> email = getEmailBeingComposed(executionStatus);
         if (email.isPresent())
         {
-            email.get().sendEmail(executionStatus);
+            email.get().checkSendingPrerequisites(executionStatus, true);
             if (executionStatus.noError())
             {
-                numOfEmailsSent++;
-                instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName, "sent" + numOfEmailsSent);
+                sendThisEmail(executionStatus, email.get());
+                if (executionStatus.noError())
+                {
+                    numOfEmailsSent++;
+                    instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName, "sent" + numOfEmailsSent);
+                }
             }
         }
+    }
+
+    private void sendThisEmail(ExecutionStatus executionStatus, OutgoingEmail outgoingEmail)
+    {
+        emailSender.sendEmail(outgoingEmail.getSubject(),outgoingEmail.getBody(),outgoingEmail.getCopy(),outgoingEmail.getRecipient());
     }
 
     public void createNewEmail(ExecutionStatus executionStatus)

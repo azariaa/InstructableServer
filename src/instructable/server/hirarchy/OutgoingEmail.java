@@ -24,20 +24,8 @@ public class OutgoingEmail extends EmailMessage
         return getFieldDescriptions(true);
     }
 
-    public void sendEmail(ExecutionStatus executionStatus)
-    {
-        checkSendingPrerequisites(executionStatus, true);
-        if (!executionStatus.isError())
-        {
-            //TODO: sendEmail
 
-            return;
-        }
-        return;
-    }
-
-
-    private void checkSendingPrerequisites(ExecutionStatus executionStatus, boolean testWarnings)
+    public void checkSendingPrerequisites(ExecutionStatus executionStatus, boolean testWarnings)
     {
         if ((hasRecipient() || hasCopy()))
         {

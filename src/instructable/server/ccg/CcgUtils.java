@@ -235,6 +235,7 @@ public class CcgUtils
     static MaxentTagger maxentTagger = new MaxentTagger("resources/english-left3words-distsim.tagger");
 
     /*
+    returns outTokens in lowercase!
     if training, any POS used are added to allowedOrUsedPOS.
     if train == false, uses only POS from allowedOrUsedPOS
      */
@@ -254,7 +255,7 @@ public class CcgUtils
             //String token = ptbTokenizer.next().toString().toLowerCase();
 
             int idx = tokenAndPOS.lastIndexOf('_');//can't use split because might have '_' in the token
-            String token = tokenAndPOS.substring(0, idx);
+            String token = tokenAndPOS.substring(0, idx).toLowerCase(); //converts all tokens to lowercase!
             String POS = tokenAndPOS.substring(idx + 1);
             if (!excludeTokens.contains(token))
             {

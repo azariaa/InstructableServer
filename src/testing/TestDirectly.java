@@ -55,7 +55,15 @@ public class TestDirectly
             {
 
             }
-        });
+        },
+                new IEmailSender()
+                {
+                    @Override
+                    public void sendEmail(String subject, String body, String copyList, String recipientList)
+                    {
+                        //do nothing
+                    }
+                });
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
 
