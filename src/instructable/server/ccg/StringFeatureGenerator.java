@@ -5,9 +5,7 @@ import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
 import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 import instructable.server.InstUtils;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StringFeatureGenerator implements FeatureGenerator<StringContext, String>
 {
@@ -20,8 +18,13 @@ public class StringFeatureGenerator implements FeatureGenerator<StringContext, S
         Map<String, Double> featureValues = Maps.newHashMap();
         featureValues.put("length", (double) getStringLength(context));
         featureValues.put("orgLength", (double) context.getWords().size());
-        featureValues.put("baseVerbCount", (double) verbCount(context, true));
-        featureValues.put("totVerbCount", (double) verbCount(context, false));
+        int[] semiPosCount = semiPosCount(context);
+        for (PosForFeatures posForFeatures : PosForFeatures.values())
+        {
+            featureValues.put("tot" + posForFeatures.toString(), (double) semiPosCount[posForFeatures.ordinal()]);
+        }
+        featureValues.put("atStart"+getPosForFeatures(context.getPos().get(context.getSpanStart())).toString(), 1.0);
+        featureValues.put("atEnd"+getPosForFeatures(context.getPos().get(context.getSpanEnd())).toString(), 1.0);
         featureValues.put("endsAtEndOfSentence", (double) endsAtEndOfSentence(context));
         featureValues.put("startsAtBegOfSentence", (context.getSpanStart() == 0 ? 1.0 : 0.0));
         List<String> tokens = getRelevantTokens(context);
@@ -63,18 +66,41 @@ public class StringFeatureGenerator implements FeatureGenerator<StringContext, S
         return 0;
     }
 
-    //base verbs (like "set", "send", "forward", etc.) are more likely to be commands
-    private int verbCount(StringContext context, boolean onlyBase)
+    enum PosForFeatures
     {
-        int baseVerbCounter = 0;
-        for (int idx = context.getSpanEnd(); idx <= context.getSpanEnd(); idx++)
+        baseVerb, //VB base verbs (like "set", "send", "forward", etc.) are more likely to be commands
+        otherVerbs, //could be: VBD, VBG, VBN, VBP, VBZ
+        nouns, //NN, NNS
+        prpNprps,
+        adverbs, //RB,RBR,RBS
+        dt,
+        different
+    }
+
+    private PosForFeatures getPosForFeatures(String pos)
+    {
+        if (pos.equals("VB"))
+            return PosForFeatures.baseVerb;
+        else if (pos.startsWith("VB"))
+            return PosForFeatures.otherVerbs;
+        else if (pos.startsWith("NN"))
+            return PosForFeatures.nouns;
+        else if (pos.startsWith("PRP"))
+            return PosForFeatures.prpNprps;
+        else if (pos.startsWith("RB"))
+            return PosForFeatures.adverbs;
+        return PosForFeatures.different;
+    }
+
+    private int[] semiPosCount(StringContext context)
+    {
+        int[] semiPosCounter = new int[PosForFeatures.values().length];
+        for (int idx = context.getSpanStart(); idx <= context.getSpanEnd(); idx++)
         {
             String pos = context.getPos().get(idx);
-            if (pos.equals("VB") ||
-                    !onlyBase && pos.startsWith("VB")) //could be: VB, VBD, VBG, VBN, VBP, VBZ
-                baseVerbCounter++;
+            semiPosCounter[getPosForFeatures(pos).ordinal()]++;
         }
-        return baseVerbCounter;
+        return semiPosCounter;
     }
 
     private int getStringLength(StringContext context)

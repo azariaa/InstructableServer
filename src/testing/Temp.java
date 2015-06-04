@@ -6,19 +6,41 @@ import edu.stanford.nlp.parser.shiftreduce.ShiftReduceParser;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.stanford.nlp.trees.Tree;
+import instructable.server.ccg.CcgUtils;
 import opennlp.tools.tokenize.DetokenizationDictionary;
 import opennlp.tools.tokenize.DictionaryDetokenizer;
 
 import java.io.StringReader;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Created by Amos Azaria on 25-May-15.
  */
 public class Temp
 {
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception
+    {
+        Scanner scanIn = new Scanner(System.in);
+
+        while (true)
+        {
+            String text = scanIn.nextLine();
+            if (text.equals("exit"))
+                break;
+
+            List<String> tokens = new LinkedList<>();
+            List<String> POSs = new LinkedList<>();
+            Set<String> dummy = new HashSet<>();
+            CcgUtils.tokenizeAndPOS(text, tokens,POSs, true, dummy);
+            POSs.stream().forEach(x->System.out.print(x + " "));
+            System.out.println();
+        }
+        //detokenizing();
+        //constituency(args);
+    }
+
+    private static void detokenizing()
+    {
         String tokensToMove[] = new String[]{".", "!", "?", ",", "$", "(", ")", "[", "]", "\"", "'", ":", "n't", "'m", "'s", "n't"};
         DetokenizationDictionary.Operation operations[] = new DetokenizationDictionary.Operation[]{
                 DetokenizationDictionary.Operation.MOVE_LEFT,
@@ -41,7 +63,6 @@ public class Temp
         DictionaryDetokenizer detokenizer = new DictionaryDetokenizer(new DetokenizationDictionary(tokensToMove, operations));
         String org = detokenizer.detokenize(new String[]{"I", "said",":", "\"", "I","'m", "thinking", "that", "I", "ca", "n't", "\"",".", "What", "did", "you", "?"}, null);
         System.out.println(org);
-        //constituency(args);
     }
 
     private static void constituency(String[] args)
