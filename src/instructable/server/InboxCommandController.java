@@ -13,7 +13,7 @@ import java.util.Optional;
 public class InboxCommandController
 {
     int currentIncomingEmailIdx = 0;
-    static final String emailMessageNameStart = "inbox";
+    static public final String emailMessageNameStart = "inbox";
     ConceptContainer conceptContainer;
     InstanceContainer instanceContainer;
 

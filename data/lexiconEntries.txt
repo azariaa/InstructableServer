@@ -14,7 +14,7 @@ cancel,S{0},(cancel)
 "create","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 compose,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
 create,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
-create,((S{0}/ConceptName{2}){0}/String{1}), (lambda $1 $2 (createInstanceByFullNames $2 $1))
+create,((S{0}/PP_ConceptName{2}){0}/String{1}), (lambda $1 $2 (createInstanceByFullNames $2 $1))
 define,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
 teach,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
 add,((S{0}/ConceptName{2}){0}/String{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
@@ -45,21 +45,24 @@ to,PP_MutableField/MutableField,(lambda $1 $1)
 to,PP_FieldVal/FieldVal,(lambda $1 $1)
 as,PP_String/String,(lambda $1 $1)
 as,PP_MutableField/MutableField,(lambda $1 $1)
+as,PP_ConceptName/ConceptName,(lambda $1 $1)
 in,PP_MutableField/MutableField,(lambda $1 $1)
 inside,PP_MutableField/MutableField,(lambda $1 $1)
 and,"(S/S)\S",(lambda $1 $2 (doSeq $1 $2))
 and,"(S/S)\FieldVal",(lambda $1 $2 (doSeq $1 $2))
-concept, ConceptName/ConceptName,(lambda $1 $1)
-concept, String/String,(lambda $1 $1)
-field, FieldName/FieldName,(lambda $1 $1)
-field, String/String,(lambda $1 $1)
-instance, InstanceName/InstanceName,(lambda $1 $1)
-instance, String/String,(lambda $1 $1)
+concept,ConceptName/ConceptName,(lambda $1 $1)
+concept,String/String,(lambda $1 $1)
+field,FieldName/FieldName,(lambda $1 $1)
+field,String/String,(lambda $1 $1)
+instance,InstanceName/InstanceName,(lambda $1 $1)
+instance,String/String,(lambda $1 $1)
 body,FieldName{0},body,0 body
 "incoming email",InstanceName{0},inbox
 message,InstanceName{0},inbox
 inbox,InstanceName{0},inbox
+email,InstanceName{0},inbox
 email,InstanceName{0},outgoing_email,0 outgoing_email
+"outgoing email",InstanceName{0},outgoing_email,0 outgoing_email
 email,ConceptName{0},outgoing_email,0 outgoing_email
 recipient,FieldName{0},recipient_list,0 recipient_list
 subject,FieldName{0},subject,0 subject

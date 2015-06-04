@@ -1,6 +1,7 @@
 package instructable.server.hirarchy;
 
 import instructable.server.ExecutionStatus;
+import instructable.server.InstUtils;
 import instructable.server.TextFormattingUtils;
 import instructable.server.hirarchy.fieldTypes.EmailAddress;
 import instructable.server.hirarchy.fieldTypes.FieldType;
@@ -9,7 +10,6 @@ import instructable.server.hirarchy.fieldTypes.StringField;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -212,7 +212,7 @@ public class FieldHolder
             mustSetFromList = true;
         if (mustSetFromList)
         {
-            String[] fieldListAsString = (String[]) jsonObject.get(fieldListForJson);
+            List<String> fieldListAsString = InstUtils.convertJArrToStrList((JSONArray)jsonObject.get(fieldListForJson));
             if (isList)
             {
                 if (!addToExisting)
@@ -221,7 +221,7 @@ public class FieldHolder
                 }
                 //if need to append to beginning, need first to reverse the array.
                 if (!appendToEnd)
-                    Collections.reverse(Arrays.asList(fieldListAsString));
+                    Collections.reverse(fieldListAsString);
                 for (String singleField : fieldListAsString)
                 {
                     appendTo(executionStatus, singleField, appendToEnd, setAlsoImmutable);
@@ -230,20 +230,20 @@ public class FieldHolder
             else
             {
                 //if input is a list (array), and this isn't a list,
-                if (fieldListAsString.length >= 1)
+                if (fieldListAsString.size() >= 1)
                 {
-                    if (fieldListAsString.length > 1)
+                    if (fieldListAsString.size() > 1)
                     {
-                        executionStatus.add(ExecutionStatus.RetStatus.warning, "taking only first item out of" + fieldListAsString.length);
+                        executionStatus.add(ExecutionStatus.RetStatus.warning, "taking only first item out of " + fieldListAsString.size());
                     }
                     //if it has only one item, take it,
                     if (addToExisting)
                     {
-                        appendTo(executionStatus, fieldListAsString[0], appendToEnd, setAlsoImmutable);
+                        appendTo(executionStatus, fieldListAsString.get(0), appendToEnd, setAlsoImmutable);
                     }
                     else
                     {
-                        set(executionStatus, fieldListAsString[0], setAlsoImmutable);
+                        set(executionStatus, fieldListAsString.get(0), setAlsoImmutable);
                     }
                 }
                 else

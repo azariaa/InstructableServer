@@ -9,6 +9,7 @@ import java.util.logging.Level;
 
 /**
  * Created by Amos Azaria on 28-May-15.
+ * Not in use in (MTurk) experiment, for real use.
  */
 public class AgentServer implements HttpHandler
 {

@@ -26,10 +26,16 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         nextEmailInInbox,
         previousEmailInInbox,
         teachReadNextInbox, //not relevant when not in learning mode.
-        forwardToSpouse,
+        eAbbieReply,
+        eSpouseReply,
+        eForwardToSpouse,
+        eForwardToAllWorkers,
         allCompleted
     }
     //static final int numOfTasks = TasksToComplete.values().length;
+
+    boolean unsuccessfulSend = false;
+    int unsuccessfulCount = 0;
 
     LinkedHashSet<TasksToComplete> userTasks = new LinkedHashSet<>();
     String gameId;
@@ -45,6 +51,8 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     //the order in the LinkedHashSet is the order which was entered
     public String getRecentTaskName()
     {
+        if (unsuccessfulSend)
+            return "unsuccessfulSend" + unsuccessfulCount;
         if (userTasks.size() > 0)
             return userTasks.toArray()[userTasks.size()-1].toString();
         return "none";
@@ -94,7 +102,11 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 //this shouldn't actually ever happen
                 return "Congratulations: You have completed all possible tasks!";
             default:
+            {
+                if (unsuccessfulSend)
+                    return "Previously sent email did not complete any task. Check email's subject, body, and recipient address.";
                 return "Main Task: reading through all incoming emails and acting accordingly";
+            }
         }
     }
 
@@ -122,49 +134,74 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
 
     //should actually be named "emailSent"
     @Override
-    public void sendEmail(String subject, String body, String copyList, String recipientList)
+    public void sendEmail(String subject1, String body1, String copyList, String recipientList)
     {
+        String subject = subject1.toLowerCase();
+        String body = body1.toLowerCase();
+        unsuccessfulSend = false;
         //may want to actually send the email in real environment right here.
-        if (body.contains("hello"))// && recipientList.contains("abemail7@bestdomain.com"))
+        if (body.contains("hello"))// && recipientList.contains("abemail7@bestemails.com"))
             userTasks.add(TasksToComplete.sendTestEmail);
+        else if (subject.contains("working hours") && recipientList.contains("abemail7@myworkplace.com") && !body.isEmpty())
+            userTasks.add(TasksToComplete.eAbbieReply);
+        else if (subject.contains("are you") && !body.isEmpty() && recipientList.contains("caseyousoon@bestemails.com"))
+            userTasks.add(TasksToComplete.eSpouseReply);
+        else if (subject.contains("your vacation") && recipientList.contains("caseyousoon@bestemails.com") && body.contains("approved"))
+            userTasks.add(TasksToComplete.eForwardToSpouse);
+        else if (subject.contains("department party") && body.contains("department party") && body.contains("wednesday") &&
+                recipientList.contains("bobtheman4@myworkplace.com") && recipientList.contains("annthebest3@myworkplace.com") && recipientList.contains("samlikestodrum@myworkplace.com"))
+            userTasks.add(TasksToComplete.eForwardToAllWorkers);
+        else
+        {
+            unsuccessfulSend = true;
+            unsuccessfulCount++;
+        }
+
     }
 
     @Override
     public void addInboxEmails(IIncomingEmailControlling incomingEmailControlling)
     {
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("manor73@myjob.com",
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("manor73@myworkplace.com",
                 "Hi there",
                 Arrays.asList(new String[]{"you@myjob.com"}),
                 new LinkedList<String>(),
                 "I'm feeling well today."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("manor73@myjob.com",
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("manor73@myworkplace.com",
                 "Another email",
-                Arrays.asList(new String[]{"you@myjob.com"}),
+                Arrays.asList(new String[]{"you@myworkplace.com"}),
                 new LinkedList<String>(),
                 "I felt like sending you another email."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("abemail7@bestdomain.com",
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("abemail7@myworkplace.com",
                 "Working hours",
-                Arrays.asList(new String[]{"you@myjob.com"}),
+                Arrays.asList(new String[]{"you@myworkplace.com"}),
                 new LinkedList<String>(),
-                "I need to know if you will be coming working next week. Please reply immediately."
+                "I need to know if you will be working next week. Please reply immediately (make sure to use the same subject, as you should always do when replying to emails :)."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("bob7@myjob.com",
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("caseyousoon@bestemails.com",
+                "Are you ok?",
+                Arrays.asList(new String[]{"you@myworkplace.com"}),
+                new LinkedList<String>(),
+                "I didn't hear from you in a while, is everything ok? Please reply as soon as possible."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("bob7@bestemails.com",
                 "Your vacation",
-                Arrays.asList(new String[]{"you@myjob.com"}),
+                Arrays.asList(new String[]{"you@myworkplace.com"}),
                 new LinkedList<String>(),
-                "Your vacation has been approved. Please forward this email to your spouse."
+                "Your vacation has been approved. Please forward this email to your spouse (make sure to use the same subject, and include the whole body, as you should always do when forwarding an email :)."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("bob7@myjob.com",
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("abemail7@myworkplace.com",
                 "department party",
-                Arrays.asList(new String[]{"you@myjob.com"}),
+                Arrays.asList(new String[]{"you@myworkplace.com"}),
                 new LinkedList<String>(),
-                "We will have our department party next Wednesday at 4:00pm. Please forward this email to all people who report to you."
+                "We will have our department party next Wednesday at 4:00pm. Please forward this email to all people who report to you (make sure that they all appear together as recipients in the email)."
         ));
 
     }

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -19,6 +21,8 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
     static public final String actionParam = "action";
     static public final String getTasksInfoStr = "getTasksInfo";
     static public final String newGameJoinedStr = "newGameJoined";
+    static public final String sayToAgentStr = "sayToAgent";
+    static public final String userSaysParam = "userSays";
     static public final String gameScoreStr = "gameScore";
     static public final String gameTaskStr = "gameTask";
     static public final String recentTaskCompletedStr = "recentTaskCompleted";
@@ -53,23 +57,44 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
             return;
         }
         String action = parameters.get(actionParam).toString();
+        Optional<ExperimentTaskController> opExperimentTaskController = getUserTasks(gameId);
+        if (!opExperimentTaskController.isPresent())
+        {
+            if (!action.equals(newGameJoinedStr))
+                logger.warning("gameId not in map, adding now. gameId:" + gameId);
+            ExperimentTaskController experimentTaskControl = newGameStarted(gameId);
+            agentDataAndControl.addNewGame(gameId,experimentTaskControl,experimentTaskControl);
+        }
+        ExperimentTaskController experimentTaskController = getUserTasks(gameId).get();
         String responseToSend = "";
         switch (action)
         {
             case getTasksInfoStr:
-                ExperimentTaskController experimentTaskController = getUserTasks(gameId);
                 Integer score = experimentTaskController.getGameScore();
-                String currentTask = experimentTaskController.getCurrentTaskText();
+                String currentTaskText = experimentTaskController.getCurrentTaskText();
                 String recentTask = experimentTaskController.getRecentTaskName();
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put(gameScoreStr,score);
-                jsonObject.put(gameTaskStr,currentTask);
+                jsonObject.put(gameTaskStr,currentTaskText);
                 jsonObject.put(recentTaskCompletedStr,recentTask);
                 responseToSend = jsonObject.toJSONString();
                 break;
             case newGameJoinedStr:
-                ExperimentTaskController experimentTaskControl = newGameStarted(gameId);
-                agentDataAndControl.addNewGame(gameId,experimentTaskControl,experimentTaskControl);
+                break;
+            case sayToAgentStr:
+                if (parameters.containsKey(userSaysParam))
+                {
+                    try
+                    {
+                        String userSays = parameters.get(userSaysParam).toString();
+                        responseToSend = agentDataAndControl.executeSentenceForUser(gameId, userSays);
+                    } catch (Exception ex)
+                    {
+                        agentDataAndControl.logger.log(Level.SEVERE, "an exception was thrown", ex);
+                        responseToSend = "Sorry, but I got some error...";
+                    }
+                    agentDataAndControl.logger.info("GameID:" + gameId + ". System reply: " + responseToSend);
+                }
                 break;
             default:
                 logger.warning("unknown action, gameId:" + gameId + ". action:" + action);
@@ -82,12 +107,13 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
         os.close();
     }
 
-    private ExperimentTaskController getUserTasks(String gameId)
+    private Optional<ExperimentTaskController> getUserTasks(String gameId)
     {
-        ExperimentTaskController userScores = null;
+        Optional<ExperimentTaskController> userScores = Optional.empty();
         synchronized(mapLock)
         {
-               userScores = missionsCompletedByUser.get(gameId);
+            if (missionsCompletedByUser.containsKey(gameId))
+               userScores = Optional.of(missionsCompletedByUser.get(gameId));
         }
         return userScores;
     }

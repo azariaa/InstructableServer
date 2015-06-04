@@ -9,3 +9,6 @@ read next incoming message,(doSeq (nextEmailMessage) (readInstance (getProbInsta
 add email to spouse,(addFieldToConcept contact "email")
 read me the next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
 read next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
+read the next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
+read the next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
+read next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))

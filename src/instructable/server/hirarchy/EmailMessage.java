@@ -4,6 +4,7 @@ import instructable.server.ExecutionStatus;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Amos Azaria on 15-Apr-15.
@@ -14,18 +15,27 @@ abstract public class EmailMessage extends GenericInstance
     public static final String bodyStr = "body";
     public static final String senderStr = "sender";
     public static final String recipientListStr = "recipient list";
+    public static boolean useCopy = false;//removed copy: not needed for experiments
     public static final String copyListStr = "copy list";
 
     protected static FieldDescription[] getFieldDescriptions(boolean mutable)
     {
-        return new FieldDescription[]
+
+        FieldDescription[] fieldDescriptions = new FieldDescription[]
                 {
                         new FieldDescription(subjectStr, PossibleFieldType.singleLineString, false, mutable),
                         new FieldDescription(bodyStr, PossibleFieldType.multiLineString, false, mutable),
                         new FieldDescription(senderStr, PossibleFieldType.emailAddress, false, mutable),
-                        new FieldDescription(recipientListStr, PossibleFieldType.emailAddress, true, mutable),
-                        new FieldDescription(copyListStr, PossibleFieldType.emailAddress, true, mutable)
+                        new FieldDescription(recipientListStr, PossibleFieldType.emailAddress, true, mutable)//,
+                        //new FieldDescription(copyListStr, PossibleFieldType.emailAddress, true, mutable)
                 };
+        if (useCopy)
+        {
+            List<FieldDescription> fieldDescriptionList = Arrays.asList(fieldDescriptions);
+            fieldDescriptionList.add(new FieldDescription(copyListStr, PossibleFieldType.emailAddress, true, mutable));
+            fieldDescriptions = fieldDescriptionList.toArray(new FieldDescription[0]);
+        }
+        return  fieldDescriptions;
     }
 
 
@@ -49,7 +59,9 @@ abstract public class EmailMessage extends GenericInstance
 
     public boolean hasCopy()
     {
-        return !fieldIsEmpty(copyListStr);
+        if (useCopy)
+            return !fieldIsEmpty(copyListStr);
+        return false;
     }
 
     public boolean hasBody()
@@ -69,7 +81,9 @@ abstract public class EmailMessage extends GenericInstance
 
     public String getCopy()
     {
-        return getFieldWithoutChecking(copyListStr);
+        if (useCopy)
+            return getFieldWithoutChecking(copyListStr);
+        return "";
     }
 
     public String getBody()

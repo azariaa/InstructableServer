@@ -1,8 +1,11 @@
 package instructable.server;
 
+import org.json.simple.JSONArray;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -59,6 +62,15 @@ public class InstUtils
     {
         Matcher matcher = pattern.matcher(addr);
         return matcher.matches();
+    }
+
+    public static List<String> convertJArrToStrList(JSONArray jsonArray)
+    {
+        List<String> list = new ArrayList<String>();
+        for (int i=0; i<jsonArray.size(); i++) {
+            list.add( jsonArray.get(i).toString() );
+        }
+        return list;
     }
 
     private InstUtils()

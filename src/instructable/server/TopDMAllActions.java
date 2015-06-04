@@ -139,8 +139,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
         if (executionStatus.isError())
         {
-            if (testNoEmailBeingComposed(retSentences, statusAndMessage))
+            if (!outEmailCommandController.isAnEmailBeingComposed())
+            {
+                TextFormattingUtils.noEmailFound(retSentences, internalState);
                 return new ActionResponse(retSentences.toString(), false);
+            }
         }
 
 
@@ -156,20 +159,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         return new ActionResponse(response.toString(), success);
     }
-
-    private boolean testNoEmailBeingComposed(StringBuilder retSentences, ExecutionStatus.StatusAndMessage statusAndMessage)
-    {
-        if (statusAndMessage.message.isPresent())
-        {
-            if (statusAndMessage.message.get().startsWith("there are no instances of") || statusAndMessage.message.get().startsWith("there is no email") || statusAndMessage.message.get().startsWith("there is no"))//TODO: bad bad bad!
-            {
-                TextFormattingUtils.noEmailFound(retSentences, internalState);
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     public ActionResponse yes(InfoForCommand infoForCommand)
     {
@@ -212,12 +201,33 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse getInstance(InfoForCommand infoForCommand, String conceptName, String instanceName)
     {
-
         instanceName = AliasMapping.instanceNameMapping(instanceName);
         instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName);
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);
+        if (!instance.isPresent())
+        {
+            if (conceptName.equals(IncomingEmail.incomingEmailType)) //this might happen if for some reason didn't use current inbox message
+            {
+                instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(InboxCommandController.emailMessageNameStart);
+                instance = instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, OutgoingEmail.strOutgoingEmailTypeAndName);
+            }
+            if (instanceName.contains(InboxCommandController.emailMessageNameStart)) //this might happen if concept mismatches the instanceName
+            {
+                instance = instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, instanceName);
+            }
+            if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName) || instanceName.equals(OutgoingEmail.strOutgoingEmailTypeAndName)) //this might happen if concept mismatches the instanceName
+            {
+                instance = instanceContainer.getInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
+                if (!instance.isPresent())
+                {
+                    StringBuilder retSentences = new StringBuilder();
+                    TextFormattingUtils.noEmailFound(retSentences, internalState);
+                    return new ActionResponse(retSentences.toString(), false);
+                }
+            }
+        }
         StringBuilder response = new StringBuilder();
         if (TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
@@ -368,7 +378,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
         StringBuilder instanceContent = new StringBuilder();
-        instanceContent.append("instance: \""+instance.getName()+"\" (of concept \"" + instance.getConceptName() + "\").\n");
+        if (!instance.getConceptName().equals(IncomingEmail.incomingEmailType)) //TODO: should be done in a more modular way
+            instanceContent.append("instance: \"" + instance.getName() + "\" (of concept \"" + instance.getConceptName() + "\").\n");
         for (String fieldName : instance.getAllFieldNames())
         {
             Optional<FieldHolder> field = instance.getField(executionStatus, fieldName);
@@ -580,28 +591,37 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
         {
-            ExecutionStatus executionStatus = new ExecutionStatus();
-            outEmailCommandController.createNewEmail(executionStatus);
-            StringBuilder response = new StringBuilder();
-            List<String> emailFieldNames = outEmailCommandController.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
-            boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
-                    executionStatus,
-                    false,
-                    true,
-                    response,
-                    Optional.of("Composing new email. " + "\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + "."),
-                    true,
-                    internalState);
-
-            return new ActionResponse(response.toString(), success);
+            return createNewEmail(infoForCommand, conceptName);
         }
         return new ActionResponse("Creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name).", false);
+    }
+
+    private ActionResponse createNewEmail(InfoForCommand infoForCommand, String conceptName)
+    {
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        outEmailCommandController.createNewEmail(executionStatus);
+        StringBuilder response = new StringBuilder();
+        List<String> emailFieldNames = outEmailCommandController.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
+        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+                executionStatus,
+                false,
+                true,
+                response,
+                Optional.of("Composing new email. " + "\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + "."),
+                true,
+                internalState);
+
+        return new ActionResponse(response.toString(), success);
     }
 
     @Override
     public ActionResponse createInstanceByFullNames(InfoForCommand infoForCommand, String conceptName, String newInstanceName)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
+        if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+        {
+            return createNewEmail(infoForCommand, conceptName);
+        }
         instanceContainer.addInstance(executionStatus, conceptName, newInstanceName);
 
         StringBuilder response = new StringBuilder();

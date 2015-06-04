@@ -23,6 +23,11 @@ public class OutEmailCommandController
         this.emailSender = emailSender;
     }
 
+    public boolean isAnEmailBeingComposed()
+    {
+        return getEmailBeingComposed(new ExecutionStatus()).isPresent();
+    }
+
     public Optional<OutgoingEmail> getEmailBeingComposed(ExecutionStatus executionStatus)
     {
         Optional<GenericInstance> emailBeingComposed = instanceContainer.getInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
