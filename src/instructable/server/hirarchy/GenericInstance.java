@@ -11,12 +11,13 @@ import java.util.*;
 public class GenericInstance
 {
 
-    public GenericInstance(String conceptName, String instanceName, List<FieldDescription> fieldsInType)
+    public GenericInstance(String conceptName, String instanceName, List<FieldDescription> fieldsInType, boolean mutable)
     {
         name = instanceName;
         lastAccess = System.nanoTime(); //System.currentTimeMillis(); doesn't work because in test may execute several commands in same millisecond
         this.conceptName = conceptName;
         fields = new HashMap<String, FieldHolder>();
+        this.mutable = mutable;
         for (FieldDescription fieldDescription : fieldsInType)
         {
             fields.put(fieldDescription.fieldName, new FieldHolder(fieldDescription, this));
@@ -25,6 +26,7 @@ public class GenericInstance
 
     String name;
     String conceptName; //type, class, concept
+    boolean mutable;
     long lastAccess;
     private Map<String, FieldHolder> fields;
 

@@ -7,8 +7,13 @@ end,S{0},(end)
 "that 's it",S{0},(end)
 cancel,S{0},(cancel)
 "next email",S{0},(nextEmailMessage)
+"next inbox",S{0},(nextEmailMessage)
+"next incoming email",S{0},(nextEmailMessage)
 "next message",S{0},(nextEmailMessage)
+"set next email",S{0},(nextEmailMessage)
+"set next message",S{0},(nextEmailMessage)
 "previous email",S{0},(previousEmailMessage)
+"set previous email",S{0},(previousEmailMessage)
 "previous message",S{0},(previousEmailMessage)
 "compose","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 "create","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"

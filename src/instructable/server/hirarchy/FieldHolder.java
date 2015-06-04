@@ -10,6 +10,7 @@ import instructable.server.hirarchy.fieldTypes.StringField;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,6 +88,21 @@ public class FieldHolder
             executionStatus.add(ExecutionStatus.RetStatus.error, "\"" + fieldName + "\" is immutable");
             return;
         }
+
+        //special case for treating list of email addresses (I wish this could have been done in a more generic way)
+        if (fieldType == PossibleFieldType.emailAddress && isList)
+        {
+            List<String> simplyTokenized = Arrays.asList(toSet.split(" "));
+            if (simplyTokenized.size() > 1)
+            {
+                if (InstUtils.getEmailAddressRelation(simplyTokenized) == InstUtils.EmailAddressRelation.listOfEmails)
+                {
+                    setToList(executionStatus, InstUtils.getEmailsFromEmailList(simplyTokenized), setAlsoImmutable);
+                    return;
+                }
+            }
+        }
+
         FieldType toSetField = createNewField(fieldType);
         toSetField.setFromString(executionStatus, toSet);
         if (executionStatus.isError())
@@ -100,7 +116,17 @@ public class FieldHolder
         {
             field = toSetField;
         }
-        return;
+    }
+
+    private void setToList(ExecutionStatus executionStatus, List<String> listToSet, boolean setAlsoImmutable)
+    {
+        if (listToSet.size() <= 0)
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "the list is empty");
+        }
+        set(executionStatus,listToSet.get(0),setAlsoImmutable);
+        for (int i = 1; i < listToSet.size(); i++)
+            appendTo(executionStatus,listToSet.get(i),true,setAlsoImmutable);
     }
 
 

@@ -54,6 +54,7 @@ public class OutEmailCommandController
                 if (executionStatus.noError())
                 {
                     numOfEmailsSent++;
+                    instanceContainer.setMutability(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName, false);
                     instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName, "sent" + numOfEmailsSent);
                 }
             }

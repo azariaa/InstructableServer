@@ -12,6 +12,7 @@ import static instructable.server.TextFormattingUtils.userFriendlyList;
  * This class has access to all defined concepts and their fields and types.
  * This class has the required information for creating an instance of a concept.
  * This class can access the data base
+ * mutability on the field level.
  */
 public class ConceptContainer
 {

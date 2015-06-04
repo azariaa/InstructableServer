@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import static instructable.server.TextFormattingUtils.noEmailFound;
 import static instructable.server.TextFormattingUtils.userFriendlyList;
 
 /**
@@ -328,6 +329,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             return new ActionResponse(response.toString(), true, field.get());
         }
+        //if failed, but is trying to set to outgoing_email, ask if would like to create new email
+        if (mutableOnly && (instanceName.isPresent() && instanceName.get().equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+                || conceptContainer.findConceptsForField(new ExecutionStatus(),fieldName,mutableOnly).contains(OutgoingEmail.strOutgoingEmailTypeAndName))
+        {
+            noEmailFound(response.append("\n"), internalState);
+        }
         return new ActionResponse(response.toString(), false);
     }
 
@@ -453,7 +460,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             conceptOptions = conceptContainer.getAllConceptNames();
         }
 
-        return instanceContainer.getMostPlausibleInstance(executionStatus, conceptOptions, optionalInstanceName);
+        return instanceContainer.getMostPlausibleInstance(executionStatus, conceptOptions, optionalInstanceName, mutableOnly);
     }
 
     /*
@@ -622,7 +629,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             return createNewEmail(infoForCommand, conceptName);
         }
-        instanceContainer.addInstance(executionStatus, conceptName, newInstanceName);
+        instanceContainer.addInstance(executionStatus, conceptName, newInstanceName, true);
 
         StringBuilder response = new StringBuilder();
         boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,

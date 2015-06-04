@@ -25,7 +25,7 @@ abstract public class EmailMessage extends GenericInstance
                 {
                         new FieldDescription(subjectStr, PossibleFieldType.singleLineString, false, mutable),
                         new FieldDescription(bodyStr, PossibleFieldType.multiLineString, false, mutable),
-                        new FieldDescription(senderStr, PossibleFieldType.emailAddress, false, mutable),
+                        new FieldDescription(senderStr, PossibleFieldType.emailAddress, false, false), //sender is never mutable
                         new FieldDescription(recipientListStr, PossibleFieldType.emailAddress, true, mutable)//,
                         //new FieldDescription(copyListStr, PossibleFieldType.emailAddress, true, mutable)
                 };
@@ -46,10 +46,10 @@ abstract public class EmailMessage extends GenericInstance
     }
 
 
-    public EmailMessage(String messageType, String messageId, FieldDescription[] fieldDescriptions)
+    public EmailMessage(String messageType, String messageId, FieldDescription[] fieldDescriptions, boolean isMutable)
     {
         //TODO: may want to support adding fields to email messages. In that case, the field descriptions would need to come from the concept container
-        super(messageType, messageId, Arrays.asList((fieldDescriptions)));
+        super(messageType, messageId, Arrays.asList((fieldDescriptions)), isMutable);
     }
 
     public boolean hasRecipient()

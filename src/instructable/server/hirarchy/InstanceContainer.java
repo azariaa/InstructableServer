@@ -6,6 +6,7 @@ import java.util.*;
 
 /**
  * Created by Amos Azaria on 21-Apr-15.
+ * mutability is on the instance level (the field level is given by the FieldDescription.
  */
 public class InstanceContainer
 {
@@ -20,9 +21,9 @@ public class InstanceContainer
     }
 
     //save last access, and sort according to last access
-    public Optional<GenericInstance> getMostPlausibleInstance(ExecutionStatus executionStatus, List<String> conceptOptions, Optional<String> instanceName)
+    public Optional<GenericInstance> getMostPlausibleInstance(ExecutionStatus executionStatus, List<String> conceptOptions, Optional<String> instanceName, boolean mutableOnly)
     {
-        List<GenericInstance> allPossibleInstances = getAllPossibleInstances(conceptOptions, instanceName);
+        List<GenericInstance> allPossibleInstances = getAllPossibleInstances(conceptOptions, instanceName, mutableOnly);
         if (allPossibleInstances.isEmpty())
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "no relevant instances were found");
@@ -49,10 +50,10 @@ public class InstanceContainer
     {
         List<String> conceptOptions = new LinkedList<>();
         conceptOptions.add(concept);
-        return getAllPossibleInstances(conceptOptions, Optional.empty());
+        return getAllPossibleInstances(conceptOptions, Optional.empty(), false);
     }
 
-    private List<GenericInstance> getAllPossibleInstances(List<String> conceptOptions, Optional<String> instanceName)
+    private List<GenericInstance> getAllPossibleInstances(List<String> conceptOptions, Optional<String> instanceName, boolean mutableOnly)
     {
         List<GenericInstance> allPossibleInstances = new LinkedList<>();
         for (String concept : conceptToInstance.keySet())
@@ -61,7 +62,8 @@ public class InstanceContainer
             {
                 for (GenericInstance genericInstance : conceptToInstance.get(concept).values())
                 {
-                    if (!instanceName.isPresent() || genericInstance.name.equals(instanceName.get()))
+                    if ((!instanceName.isPresent() || genericInstance.name.equals(instanceName.get())) &&
+                            (!mutableOnly || genericInstance.mutable))
                         allPossibleInstances.add(genericInstance);
                 }
             }
@@ -88,14 +90,14 @@ public class InstanceContainer
         return Optional.empty();
     }
 
-    public void addInstance(ExecutionStatus executionStatus, String conceptName, String instanceName)
+    public void addInstance(ExecutionStatus executionStatus, String conceptName, String instanceName, boolean isMutable)
     {
         if (!conceptContainer.doesConceptExist(conceptName))
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "there is no concept with the name \"" + "\", please define it first");
             return;
         }
-        GenericInstance instance = new GenericInstance(conceptName, instanceName, conceptContainer.conceptFieldMap.get(conceptName));
+        GenericInstance instance = new GenericInstance(conceptName, instanceName, conceptContainer.conceptFieldMap.get(conceptName), isMutable);
 
         addInstance(executionStatus, instance);
     }
@@ -147,5 +149,20 @@ public class InstanceContainer
                 instance.addFieldToObject(executionStatus, newFieldDescription);
             }
         }
+    }
+
+    public void setMutability(ExecutionStatus executionStatus, String conceptName, String instanceName, boolean newMutability)
+    {
+        if (conceptToInstance.containsKey(conceptName))
+        {
+            Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
+            if (instances.containsKey(instanceName))
+            {
+                GenericInstance reqInstance = instances.get(instanceName);
+                reqInstance.mutable = newMutability;
+                return;
+            }
+        }
+        executionStatus.add(ExecutionStatus.RetStatus.warning, "the instance was not found");
     }
 }

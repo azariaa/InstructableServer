@@ -14,7 +14,7 @@ public class IncomingEmail extends EmailMessage
 
     public IncomingEmail(String sender, String subject, List<String> recipientList, List<String> copyList, String body)
     {
-        super(incomingEmailType, "TBD", getFieldDescriptions());
+        super(incomingEmailType, "TBD", getFieldDescriptions(), false);
         ExecutionStatus executionStatus = new ExecutionStatus();
         setField(executionStatus, senderStr, Optional.of(sender), Optional.empty(), false, true, true);
         setField(executionStatus, subjectStr, Optional.of(subject), Optional.empty(), false, true, true);

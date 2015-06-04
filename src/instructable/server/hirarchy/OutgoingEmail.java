@@ -15,7 +15,7 @@ public class OutgoingEmail extends EmailMessage
 
     public OutgoingEmail(ExecutionStatus executionStatus, String myEmail)
     {
-        super(strOutgoingEmailTypeAndName, strOutgoingEmailTypeAndName, getFieldDescriptions());
+        super(strOutgoingEmailTypeAndName, strOutgoingEmailTypeAndName, getFieldDescriptions(), true);
         setField(executionStatus, senderStr, Optional.of(myEmail), Optional.empty(), false, true, true);
     }
 
@@ -51,7 +51,6 @@ public class OutgoingEmail extends EmailMessage
             }
         }
         executionStatus.add(ExecutionStatus.RetStatus.error, "the message has no recipient");
-        return;
     }
 
 }
