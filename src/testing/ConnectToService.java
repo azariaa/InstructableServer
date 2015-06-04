@@ -1,6 +1,7 @@
 package testing;
 
 import instructable.AgentServer;
+import instructable.EmailAndExperimentServer;
 import instructable.Service;
 
 import java.io.BufferedReader;
@@ -17,9 +18,44 @@ import java.util.Scanner;
  */
 public class ConnectToService
 {
+    static private final String pGameId = "a992";
     static private final String USER_AGENT = "Mozilla/5.0";
 
     public static void main(String[] args) throws Exception
+    {
+        initializeGameId();
+        runRequestsInLoop();
+    }
+
+    private static void initializeGameId() throws Exception
+    {
+        String url = "http://localhost:"+ Service.portToUse + "/" + Service.contextEmailAndExperiment;// + "?" + Service.userSaysParam + "=" +URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
+
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        //using post
+        con.setRequestMethod("POST");
+        con.setRequestProperty("User-Agent", USER_AGENT);
+        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+
+        String parameters =  AgentServer.gameIdParam + "=" + pGameId;
+        parameters += "&" + EmailAndExperimentServer.actionParam + "=" + EmailAndExperimentServer.newGameJoinedStr;
+
+        // Send post request
+        con.setDoOutput(true);
+        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+        wr.writeBytes(parameters);
+        wr.flush();
+        wr.close();
+        int responseCode = con.getResponseCode();
+        if (responseCode != 200)
+        {
+            System.out.println("S: error. (response code is: "+responseCode + ")");
+        }
+    }
+
+    private static void runRequestsInLoop()
     {
         Scanner scanIn = new Scanner(System.in);
         while (true)
@@ -40,7 +76,7 @@ public class ConnectToService
                 con.setRequestProperty("User-Agent", USER_AGENT);
                 con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-                String parameters =  AgentServer.gameIdParam + "=" + "8784";
+                String parameters =  AgentServer.gameIdParam + "=" + pGameId;
                 parameters += "&" + AgentServer.userSaysParam + "=" + URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
 
                 // Send post request
