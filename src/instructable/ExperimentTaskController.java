@@ -83,7 +83,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case createEmail:
                 return "Training Task 1: creating a new outgoing email";
             case sendTestEmail:
-                return "Training Task 2: sending an outgoing email to Abbie with hello as the body and no subject. Abbie's email appears in the \"notes\" image.";
+                return "Training Task 2: sending an outgoing email to Abbie with hello as the body and no subject. Abbie's email appears in the \"notes\" image";
             case defineContact:
                 return "Training Task 3: defining the concept contact";
             case addEmailToContact:
@@ -97,7 +97,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case previousEmailInInbox:
                 return "Training Task 8: requesting the agent to move to the <b>previous</b> email in the inbox";
             case teachReadNextInbox:
-                return "Training Task 9: teaching the agent a <b>new command</b>: having it <b>read</b> the <b>next</b> email";
+                return "Training Task 9: teaching the agent a <b>new command</b>: having it both moving to the <b>next</b> email <b>and</b> reading it";
             case allCompleted:
                 //this shouldn't actually ever happen
                 return "Congratulations: You have completed all possible tasks!";
