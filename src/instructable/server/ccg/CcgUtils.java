@@ -172,11 +172,11 @@ public class CcgUtils
 		  }
 	  }
 	  
-	  System.out.println(spanStarts);
-	  System.out.println(spanEnds);
-	  System.out.println(spanStrings);
-	  System.out.println(spanExpressions);
-	  System.out.println(spanSyntacticCategories);
+	  // System.out.println(spanStarts);
+	  // System.out.println(spanEnds);
+	  // System.out.println(spanStrings);
+	  // System.out.println(spanExpressions);
+	  // System.out.println(spanSyntacticCategories);
 	  
 	  int[] numEntriesPerSpan = new int[spanStarts.size()];
 	  for (int i = 0; i < spanStarts.size(); i++) {
@@ -210,7 +210,7 @@ public class CcgUtils
 		      continue;
 		    }
 		    
-		    System.out.println(words.get(i) + "/" + pos.get(i));
+		    // System.out.println(words.get(i) + "/" + pos.get(i));
 		
 		    Expression2 lambdaExpression = substituted;
 		    List<Integer> leftArgEnds = Lists.newArrayList();
@@ -259,8 +259,8 @@ public class CcgUtils
 		    }
 
 		    cat = cat.getCanonicalForm();
-		    System.out.println(cat);
-		    System.out.println(lambdaExpression);
+		    // System.out.println(cat);
+		    // System.out.println(lambdaExpression);
 		    
 		    List<String> subjects = Lists.newArrayList();
 		    List<Integer> argumentNumbers = Lists.newArrayList();
