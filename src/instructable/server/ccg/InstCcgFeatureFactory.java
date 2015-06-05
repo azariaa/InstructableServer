@@ -1,12 +1,26 @@
 package instructable.server.ccg;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgCategory;
 import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
 import com.jayantkrish.jklol.ccg.LexiconEntry;
 import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
-import com.jayantkrish.jklol.ccg.lexicon.*;
+import com.jayantkrish.jklol.ccg.lexicon.ParametricCcgLexicon;
+import com.jayantkrish.jklol.ccg.lexicon.ParametricFeaturizedLexiconScorer;
+import com.jayantkrish.jklol.ccg.lexicon.ParametricLexiconScorer;
+import com.jayantkrish.jklol.ccg.lexicon.ParametricStringLexicon;
+import com.jayantkrish.jklol.ccg.lexicon.ParametricSyntaxLexiconScorer;
+import com.jayantkrish.jklol.ccg.lexicon.ParametricTableLexicon;
+import com.jayantkrish.jklol.ccg.lexicon.ParametricUnknownWordLexicon;
+import com.jayantkrish.jklol.ccg.lexicon.StringLexicon;
 import com.jayantkrish.jklol.ccg.lexicon.StringLexicon.CategorySpanConfig;
 import com.jayantkrish.jklol.models.DiscreteFactor;
 import com.jayantkrish.jklol.models.DiscreteVariable;
@@ -19,8 +33,6 @@ import com.jayantkrish.jklol.models.parametric.CombiningParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ConstantParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ParametricFactor;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
-
-import java.util.*;
 
 /**
  * Creates the features for a CCG parser.
@@ -155,6 +167,12 @@ public class InstCcgFeatureFactory implements CcgFeatureFactory
         ParametricCcgLexicon tableLexicon = new ParametricTableLexicon(terminalWordVar,
                 ccgCategoryVar, terminalParametricFactor);
         lexicons.add(tableLexicon);
+        
+        ParametricFactor unknownTerminalFamily = new IndicatorLogLinearFactor(
+            terminalPosVar.union(ccgCategoryVar), unknownWordLexiconIndicatorFactor);
+        ParametricCcgLexicon unknownLexicon = new ParametricUnknownWordLexicon(terminalWordVar,
+            terminalPosVar, ccgCategoryVar, unknownTerminalFamily);
+        lexicons.add(unknownLexicon);
         
         List<CcgCategory> allStringLexiconCategories = Lists.newArrayList();
         List<CategorySpanConfig> config = Lists.newArrayList();

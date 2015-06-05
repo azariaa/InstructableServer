@@ -50,3 +50,4 @@ logging/
 
 #workspace
 .idea/workspace.xml
+/bin/
