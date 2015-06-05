@@ -1,3 +1,4 @@
+start_symbol,START{0},**skip**,0 **skip**
 "send","S{0}","(sendEmail)","0 sendEmail"
 yes,S{0},(yes)
 ok,S{0},(yes)

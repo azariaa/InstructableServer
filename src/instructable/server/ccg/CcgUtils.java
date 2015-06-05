@@ -1,16 +1,59 @@
 package instructable.server.ccg;
 
+import instructable.server.ActionResponse;
+import instructable.server.IAllUserActions;
+import instructable.server.InfoForCommand;
+import instructable.server.LispExecutor;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.jayantkrish.jklol.ccg.*;
+import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
+import com.jayantkrish.jklol.ccg.CcgBinaryRule;
+import com.jayantkrish.jklol.ccg.CcgCategory;
+import com.jayantkrish.jklol.ccg.CcgExactInference;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
+import com.jayantkrish.jklol.ccg.CcgInference;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.CcgPerceptronOracle;
+import com.jayantkrish.jklol.ccg.CcgUnaryRule;
+import com.jayantkrish.jklol.ccg.HeadedSyntacticCategory;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
+import com.jayantkrish.jklol.ccg.SyntacticCategory.Direction;
 import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.*;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
+import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
 import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer;
 import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
-import com.jayantkrish.jklol.ccg.lexinduct.*;
+import com.jayantkrish.jklol.ccg.lexinduct.AlignmentExample;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentEmOracle;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTokenFeatureGenerator;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTree;
+import com.jayantkrish.jklol.ccg.lexinduct.ParametricCfgAlignmentModel;
 import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
 import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
 import com.jayantkrish.jklol.lisp.Environment;
@@ -21,24 +64,24 @@ import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
-import com.jayantkrish.jklol.training.*;
+import com.jayantkrish.jklol.training.ExpectationMaximization;
+import com.jayantkrish.jklol.training.GradientOptimizer;
+import com.jayantkrish.jklol.training.GradientOracle;
+import com.jayantkrish.jklol.training.NullLogFunction;
+import com.jayantkrish.jklol.training.StochasticGradientTrainer;
 import com.jayantkrish.jklol.util.CsvParser;
 import com.jayantkrish.jklol.util.IndexedList;
+import com.jayantkrish.jklol.util.IntegerArrayIterator;
 import com.jayantkrish.jklol.util.PairCountAccumulator;
-import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import instructable.server.ActionResponse;
-import instructable.server.IAllUserActions;
-import instructable.server.InfoForCommand;
-import instructable.server.LispExecutor;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.*;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 
 public class CcgUtils
 {
+  
+  private static Set<String> POS_TAGS_TO_SKIP_IN_LEXICON_INDUCTION = Sets.newHashSet("DT", "IN", "TO", "CC");
+  private static String START_POS_TAG = "START";
 
     /**
      * Induces a collection of lexicon entries from a data set of text
@@ -49,49 +92,209 @@ public class CcgUtils
      */
     public static List<LexiconEntry> induceLexiconEntriesFromExamples(List<CcgExample> ccgExamples)
     {
-        List<AlignmentExample> examples = Lists.newArrayList();
-        Set<Expression2> allExpressions = Sets.newHashSet();
+    	List<AlignmentExample> examples = Lists.newArrayList();
+    	Set<Expression2> allExpressions = Sets.newHashSet();
 
-        for (CcgExample ccgExample : ccgExamples)
-        {
-            ExpressionTree tree = expressionToExpressionTree(ccgExample.getLogicalForm());
-            examples.add(new AlignmentExample(ccgExample.getSentence().getWords(), tree));
+    	for (CcgExample ccgExample : ccgExamples)
+    	{
+    		ExpressionTree tree = expressionToExpressionTree(ccgExample.getLogicalForm());
+    		examples.add(new AlignmentExample(ccgExample.getSentence().getWords(), tree));
 
-            tree.getAllExpressions(allExpressions);
-        }
+    		tree.getAllExpressions(allExpressions);
+    	}
 
+    	FeatureVectorGenerator<Expression2> featureVectorGen = DictionaryFeatureVectorGenerator
+    			.createFromData(allExpressions, new ExpressionTokenFeatureGenerator(Collections.<String>emptySet()), false);
 
+    	// TODO: add an option to the alignment model that allows it to
+    	// align strings in the expressions to the same string in the
+    	// input text.
+    	int ngramLength = 1;
+    	ParametricCfgAlignmentModel pam = ParametricCfgAlignmentModel.buildAlignmentModelWithNGrams(
+    			examples, featureVectorGen, ngramLength);
 
+    	SufficientStatistics smoothing = pam.getNewSufficientStatistics();
+    	smoothing.increment(0.1);
 
-    FeatureVectorGenerator<Expression2> featureVectorGen = DictionaryFeatureVectorGenerator
-        .createFromData(allExpressions, new ExpressionTokenFeatureGenerator(Collections.<String>emptySet()), false);
+    	SufficientStatistics initial = pam.getNewSufficientStatistics();
+    	initial.increment(1);
 
-    // TODO: add an option to the alignment model that allows it to
-    // align strings in the expressions to the same string in the
-    // input text.
-    int ngramLength = 1;
-    ParametricCfgAlignmentModel pam = ParametricCfgAlignmentModel.buildAlignmentModelWithNGrams(
-          examples, featureVectorGen, ngramLength);
+    	ExpectationMaximization em = new ExpectationMaximization(10, new NullLogFunction());
+    	SufficientStatistics trainedParameters = em.train(new CfgAlignmentEmOracle(pam, smoothing),
+    			initial, examples);
+
+    	CfgAlignmentModel model = pam.getModelFromParameters(trainedParameters);
+    	PairCountAccumulator<List<String>, LexiconEntry> alignments = AlignmentLexiconInduction
+    			.generateLexiconFromAlignmentModel(model, examples, Maps.<String, String>newHashMap());
+
+    	List<LexiconEntry> entries = Lists.newArrayList();
+    	entries.addAll(alignments.getKeyValueMultimap().values());
+
+    	return entries;
+    }
     
-    SufficientStatistics smoothing = pam.getNewSufficientStatistics();
-    smoothing.increment(0.1);
+  public static List<LexiconEntry> induceLexiconEntriesHeuristic(CcgExample example, CcgParser parser)  {
+	  ExpressionSimplifier simplifier = getExpressionSimplifier();
+	  
+	  List<String> words = example.getSentence().getWords();
+	  List<String> pos = example.getSentence().getPosTags();
+	  Expression2 lf = simplifier.apply(example.getLogicalForm());
+	  
+	  List<Integer> spanStarts = Lists.newArrayList();
+	  List<Integer> spanEnds = Lists.newArrayList();
+	  List<List<String>> spanStrings = Lists.newArrayList();
+	  List<List<Expression2>> spanExpressions = Lists.newArrayList();
+	  List<List<HeadedSyntacticCategory>> spanSyntacticCategories = Lists.newArrayList();
+	  
+	  for (int i = 0; i < words.size(); i++) {
+		  for (int j = i; j < words.size(); j++) {
+			  List<String> subwords = words.subList(i, j + 1);
+			  List<String> subpos = pos.subList(i, j + 1);
+			  List<LexiconEntry> entries = parser.getLexiconEntries(subwords, subpos);
 
-    SufficientStatistics initial = pam.getNewSufficientStatistics();
-    initial.increment(1);
+			  List<Expression2> matchedExpressions = Lists.newArrayList();
+			  List<HeadedSyntacticCategory> matchedSyntacticCategories = Lists.newArrayList();
+			  for (LexiconEntry entry : entries) {
+				  Expression2 lexLf = simplifier.apply(entry.getCategory().getLogicalForm());
+				  if (hasSubexpression(lf, lexLf)) {
+					  matchedExpressions.add(lexLf);
+					  matchedSyntacticCategories.add(entry.getCategory().getSyntax());
+				  }
+			  }
 
-    ExpectationMaximization em = new ExpectationMaximization(10, new NullLogFunction());
-    SufficientStatistics trainedParameters = em.train(new CfgAlignmentEmOracle(pam, smoothing),
-        initial, examples);
+			  if (matchedExpressions.size() > 0) {
+				  spanStarts.add(i);
+				  spanEnds.add(j);
+				  spanStrings.add(subwords);
+				  spanExpressions.add(matchedExpressions);
+				  spanSyntacticCategories.add(matchedSyntacticCategories);
+			  }
+		  }
+	  }
+	  
+	  System.out.println(spanStarts);
+	  System.out.println(spanEnds);
+	  System.out.println(spanStrings);
+	  System.out.println(spanExpressions);
+	  System.out.println(spanSyntacticCategories);
+	  
+	  int[] numEntriesPerSpan = new int[spanStarts.size()];
+	  for (int i = 0; i < spanStarts.size(); i++) {
+		  numEntriesPerSpan[i] = spanExpressions.get(i).size();
+	  }
 
-    CfgAlignmentModel model = pam.getModelFromParameters(trainedParameters);
-    PairCountAccumulator<List<String>, LexiconEntry> alignments = AlignmentLexiconInduction
-        .generateLexiconFromAlignmentModel(model, examples, Maps.<String, String>newHashMap());
-    
-    List<LexiconEntry> entries = Lists.newArrayList();
-    entries.addAll(alignments.getKeyValueMultimap().values());
-    
-    return entries;
+	  List<LexiconEntry> newEntries = Lists.newArrayList();
+	  Iterator<int[]> subsetIter = new IntegerArrayIterator(numEntriesPerSpan, new int[0]);
+	  while (subsetIter.hasNext()) {
+		  int[] indexes = subsetIter.next();
+		  Expression2 substituted = lf;
+		  for (int i = 0; i < spanStarts.size(); i++) {
+			  Expression2 var = Expression2.constant("$" + i);
+			  substituted = replaceSubexpression(substituted, spanExpressions.get(i).get(indexes[i]), var);
+		  }
+		  
+		  for (int i = 1; i < words.size(); i++) {
+		    boolean containedInSpan = false;
+		    for (int j = 0 ; j < spanStarts.size(); j++) {
+		      if (i >= spanStarts.get(j) && i <= spanEnds.get(j)) {
+		        containedInSpan = true;
+		        break;
+		      }
+		    }
+		    
+		    if (containedInSpan) {
+		      continue;
+		    }
+		    
+		    if (POS_TAGS_TO_SKIP_IN_LEXICON_INDUCTION.contains(pos.get(i))) {
+		      continue;
+		    }
+		    
+		    System.out.println(words.get(i) + "/" + pos.get(i));
+		
+		    Expression2 lambdaExpression = substituted;
+		    List<Integer> leftArgEnds = Lists.newArrayList();
+		    List<Integer> rightArgStarts = Lists.newArrayList();
+		    for (int j = 0; j < spanStarts.size(); j++) {
+		      if (spanStarts.get(j) > i) {
+		        rightArgStarts.add(spanStarts.get(j));
+		      } else {
+		        leftArgEnds.add(spanEnds.get(j));
+		      }
+		    }
+		    
+		    Collections.sort(leftArgEnds);
+		    Collections.sort(rightArgStarts);
+		    Collections.reverse(rightArgStarts);
+		    
+		    HeadedSyntacticCategory cat = HeadedSyntacticCategory.parseFrom("S{0}");
+		    for (int j = 0; j < leftArgEnds.size(); j++) {
+		      HeadedSyntacticCategory argCat = null;
+		      int argCatIndex = -1;
+		      for (int k = 0; k < spanStarts.size(); k++) {
+		        if (spanEnds.get(k) == leftArgEnds.get(j)) {
+		          argCat = spanSyntacticCategories.get(k).get(indexes[k]);
+		          argCatIndex = k;
+		        }
+		      }
+		      
+		      cat = cat.addArgument(argCat, Direction.LEFT, 0);
+		      lambdaExpression = Expression2.nested(Expression2.constant("lambda"),
+		          Expression2.constant("$" + argCatIndex), lambdaExpression);
+		    }
+		    
+		    for (int j = 0; j < rightArgStarts.size(); j++) {
+		      HeadedSyntacticCategory argCat = null;
+		      int argCatIndex = -1;
+		      for (int k = 0; k < spanStarts.size(); k++) {
+		        if (spanStarts.get(k) == rightArgStarts.get(j)) {
+		          argCat = spanSyntacticCategories.get(k).get(indexes[k]);
+		          argCatIndex = k;
+		        }
+		      }
+
+		      cat = cat.addArgument(argCat, Direction.RIGHT, 0);
+		      lambdaExpression = Expression2.nested(Expression2.constant("lambda"),
+		          Expression2.constant("$" + argCatIndex), lambdaExpression);
+		    }
+
+		    cat = cat.getCanonicalForm();
+		    System.out.println(cat);
+		    System.out.println(lambdaExpression);
+		    
+		    List<String> subjects = Lists.newArrayList();
+		    List<Integer> argumentNumbers = Lists.newArrayList();
+		    List<Integer> objects = Lists.newArrayList();
+		    int numVars = cat.getUniqueVariables().length;
+		    List<Set<String>> assignments = Lists.newArrayList();
+		    for (int j = 0; j < numVars; j++) {
+		      assignments.add(Collections.<String>emptySet());
+		    }
+		    CcgCategory ccgCategory = new CcgCategory(cat, lambdaExpression, subjects, argumentNumbers, objects, assignments);
+		    newEntries.add(new LexiconEntry(words.subList(i, i + 1), ccgCategory));
+		  }
+	  }
+
+	  return newEntries;
   }
+  
+  // These are really hacky ways of solving this problem...
+  public static boolean hasSubexpression(Expression2 expression, Expression2 subexpression) {
+	  String expressionString = expression.toString();
+	  String subexpressionString = subexpression.toString();
+
+	  return expressionString.contains(subexpressionString);
+  }
+  
+  public static Expression2 replaceSubexpression(Expression2 expression, Expression2 subexpression, Expression2 replacement) {
+	  String expressionString = expression.toString();
+	  String subexpressionString = subexpression.toString();
+	  String replacementString = replacement.toString();
+	  
+	  return ExpressionParser.expression2().parseSingleExpression(expressionString.replace(
+			  subexpressionString, replacementString));
+  }
+
 
   /**
    * 
@@ -133,6 +336,7 @@ public class CcgUtils
     SufficientStatistics newParameters = newFamily.getNewSufficientStatistics();
     newParameters.transferParameters(settings.parserParameters);
     settings.parserParameters = newParameters;
+    settings.parserFamily = newFamily; 
     settings.parser = newFamily.getModelFromParameters(newParameters);
   }
 
@@ -166,12 +370,7 @@ public class CcgUtils
         CcgCategory unknownCommandCategory = CcgCategory.parseFrom("S{0},(lambda $0 (unknownCommand)),0 unknownCommand");
         List<LexiconEntry> unknownWordLexiconEntries = Lists.newArrayList();
 
-        List<Set<String>> assignments = Lists.newArrayList();
-        assignments.add(Sets.newHashSet(ParametricCcgParser.SKIP_PREDICATE));
-        CcgCategory stringSkipCategory = new CcgCategory(ParametricCcgParser.SKIP_CAT,
-                ParametricCcgParser.SKIP_LF, Collections.<String>emptyList(),
-                Collections.<Integer>emptyList(), Collections.<Integer>emptyList(), assignments);
-        CcgFeatureFactory featureFactory = new InstCcgFeatureFactory(Arrays.asList(stringCategory, stringSkipCategory),
+        CcgFeatureFactory featureFactory = new InstCcgFeatureFactory(Arrays.asList(stringCategory),
             Arrays.asList(unknownCommandCategory), featureVectorGenerator);
         // Read in the lexicon to instantiate the model.
 
@@ -209,7 +408,9 @@ public class CcgUtils
         GradientOracle<CcgParser, CcgExample> oracle = new CcgPerceptronOracle(parametricCcgParser,
                 inferenceAlgorithm, 0.0);
 
-        int numIterations = 10 * trainingExamples.size();
+        // TODO undo this.
+        // int numIterations = 10 * trainingExamples.size();
+        int numIterations = 3 * trainingExamples.size();
         double l2Regularization = 0.01;
         GradientOptimizer trainer = StochasticGradientTrainer.createWithL2Regularization(numIterations,
                 1, 1.0, true, true, l2Regularization, new NullLogFunction());
@@ -225,6 +426,8 @@ public class CcgUtils
         //List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
         List<String> tokens = new LinkedList<>();
         List<String> poss = new LinkedList<>();
+        tokens.add("start_symbol");
+        poss.add(START_POS_TAG);
         tokenizeAndPOS(sentence, tokens, poss, true, usedPOS);
         SupertaggedSentence supertaggedSentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, poss);
 
@@ -337,6 +540,7 @@ public class CcgUtils
 
         Set<String> posUsed = new HashSet<>();
         posUsed.add(ParametricCcgParser.DEFAULT_POS_TAG);
+        posUsed.add(START_POS_TAG);
         List<CcgExample> ccgExamples = Lists.newArrayList();
         for (int i = 0; i < examplesList.size(); i++)
         {
@@ -366,6 +570,7 @@ public class CcgUtils
         parserSettings.featureVectorGenerator = featureVectorGenerator; 
         parserSettings.parserParameters = CcgUtils.train(family, ccgExamples);
         parserSettings.parser = family.getModelFromParameters(parserSettings.parserParameters);
+        parserSettings.parserFamily = family;
         return parserSettings;
     }
 
