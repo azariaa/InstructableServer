@@ -408,9 +408,7 @@ public class CcgUtils
         GradientOracle<CcgParser, CcgExample> oracle = new CcgPerceptronOracle(parametricCcgParser,
                 inferenceAlgorithm, 0.0);
 
-        // TODO undo this.
-        // int numIterations = 10 * trainingExamples.size();
-        int numIterations = 3 * trainingExamples.size();
+        int numIterations = 10 * trainingExamples.size();
         double l2Regularization = 0.01;
         GradientOptimizer trainer = StochasticGradientTrainer.createWithL2Regularization(numIterations,
                 1, 1.0, true, true, l2Regularization, new NullLogFunction());
