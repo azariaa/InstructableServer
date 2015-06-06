@@ -36,6 +36,7 @@ import com.jayantkrish.jklol.ccg.HeadedSyntacticCategory;
 import com.jayantkrish.jklol.ccg.LexiconEntry;
 import com.jayantkrish.jklol.ccg.ParametricCcgParser;
 import com.jayantkrish.jklol.ccg.SyntacticCategory.Direction;
+import com.jayantkrish.jklol.ccg.chart.CcgBeamSearchChart;
 import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
@@ -146,19 +147,20 @@ public class CcgUtils
 	  List<List<Expression2>> spanExpressions = Lists.newArrayList();
 	  List<List<HeadedSyntacticCategory>> spanSyntacticCategories = Lists.newArrayList();
 	  
-	  for (int i = 0; i < words.size(); i++) {
-		  for (int j = i; j < words.size(); j++) {
+	  CcgBeamSearchChart chart = new CcgBeamSearchChart(example.getSentence(), -1, 100);
+	  parser.parseCommon(chart, example.getSentence(), null, null, -1, 1);
+	  for (int i = 1; i < words.size(); i++) {
+		  for (int j = words.size() - 1; j >= i; j--) {
 			  List<String> subwords = words.subList(i, j + 1);
-			  List<String> subpos = pos.subList(i, j + 1);
-			  List<LexiconEntry> entries = parser.getLexiconEntries(subwords, subpos);
 
 			  List<Expression2> matchedExpressions = Lists.newArrayList();
 			  List<HeadedSyntacticCategory> matchedSyntacticCategories = Lists.newArrayList();
-			  for (LexiconEntry entry : entries) {
-				  Expression2 lexLf = simplifier.apply(entry.getCategory().getLogicalForm());
+			  List<CcgParse> parses = chart.decodeBestParsesForSpan(i, j, 100, parser);
+			  for (CcgParse parse : parses) {
+			    Expression2 lexLf = simplifier.apply(parse.getLogicalForm());
 				  if (hasSubexpression(lf, lexLf)) {
 					  matchedExpressions.add(lexLf);
-					  matchedSyntacticCategories.add(entry.getCategory().getSyntax());
+					  matchedSyntacticCategories.add(parse.getHeadedSyntacticCategory());
 				  }
 			  }
 
@@ -168,15 +170,18 @@ public class CcgUtils
 				  spanStrings.add(subwords);
 				  spanExpressions.add(matchedExpressions);
 				  spanSyntacticCategories.add(matchedSyntacticCategories);
+
+				  i = j + 1;
+				  break;
 			  }
 		  }
 	  }
 	  
-	  // System.out.println(spanStarts);
-	  // System.out.println(spanEnds);
-	  // System.out.println(spanStrings);
-	  // System.out.println(spanExpressions);
-	  // System.out.println(spanSyntacticCategories);
+	  System.out.println(spanStarts);
+	  System.out.println(spanEnds);
+	  System.out.println(spanStrings);
+	  System.out.println(spanExpressions);
+	  System.out.println(spanSyntacticCategories);
 	  
 	  int[] numEntriesPerSpan = new int[spanStarts.size()];
 	  for (int i = 0; i < spanStarts.size(); i++) {
@@ -212,7 +217,6 @@ public class CcgUtils
 		    
 		    // System.out.println(words.get(i) + "/" + pos.get(i));
 		
-		    Expression2 lambdaExpression = substituted;
 		    List<Integer> leftArgEnds = Lists.newArrayList();
 		    List<Integer> rightArgStarts = Lists.newArrayList();
 		    for (int j = 0; j < spanStarts.size(); j++) {
@@ -226,6 +230,7 @@ public class CcgUtils
 		    Collections.sort(leftArgEnds);
 		    Collections.sort(rightArgStarts);
 		    Collections.reverse(rightArgStarts);
+		    List<Expression2> args = Lists.newArrayList();
 		    
 		    HeadedSyntacticCategory cat = HeadedSyntacticCategory.parseFrom("S{0}");
 		    for (int j = 0; j < leftArgEnds.size(); j++) {
@@ -237,10 +242,9 @@ public class CcgUtils
 		          argCatIndex = k;
 		        }
 		      }
-		      
+
 		      cat = cat.addArgument(argCat, Direction.LEFT, 0);
-		      lambdaExpression = Expression2.nested(Expression2.constant("lambda"),
-		          Expression2.constant("$" + argCatIndex), lambdaExpression);
+		      args.add(Expression2.constant("$" + argCatIndex));
 		    }
 		    
 		    for (int j = 0; j < rightArgStarts.size(); j++) {
@@ -254,11 +258,14 @@ public class CcgUtils
 		      }
 
 		      cat = cat.addArgument(argCat, Direction.RIGHT, 0);
-		      lambdaExpression = Expression2.nested(Expression2.constant("lambda"),
-		          Expression2.constant("$" + argCatIndex), lambdaExpression);
+		      args.add(Expression2.constant("$" + argCatIndex));
 		    }
 
 		    cat = cat.getCanonicalForm();
+		    args.add(Expression2.constant("lambda"));
+		    Collections.reverse(args);
+		    args.add(substituted);
+		    Expression2 lambdaExpression = Expression2.nested(args);
 		    // System.out.println(cat);
 		    // System.out.println(lambdaExpression);
 		    
