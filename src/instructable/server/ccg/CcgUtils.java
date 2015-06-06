@@ -496,6 +496,8 @@ public class CcgUtils
         //List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
         List<String> tokens = new LinkedList<>();
         List<String> poss = new LinkedList<>();
+        tokens.add("start_symbol");
+        poss.add(START_POS_TAG);
         tokenizeAndPOS(sentence, tokens, poss, false, posAllowed);
         SupertaggedSentence supertaggedSentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, poss);
 
