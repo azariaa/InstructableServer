@@ -69,7 +69,7 @@ public class EnvironmentCreatorUtils
 //                {"and set it as jane's email","(setFieldFromPreviousEval (getProbFieldByInstanceNameAndFieldName jane email))"}
 //        };
 
-        return CcgUtils.getParserSettings(lexiconEntries, unaryRules, new StringFeatureGenerator(),
+        return new ParserSettings(lexiconEntries, unaryRules, new StringFeatureGenerator(),
             CcgUtils.loadExamples(Paths.get("data/examples.csv")));
     }
 

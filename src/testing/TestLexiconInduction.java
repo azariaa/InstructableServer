@@ -1,12 +1,5 @@
 package testing;
 
-import instructable.EnvironmentCreatorUtils;
-import instructable.server.ccg.CcgUtils;
-import instructable.server.ccg.ParserSettings;
-
-import java.nio.file.Paths;
-import java.util.List;
-
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgExample;
 import com.jayantkrish.jklol.ccg.CcgParse;
@@ -16,6 +9,12 @@ import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
+import instructable.EnvironmentCreatorUtils;
+import instructable.server.ccg.CcgUtils;
+import instructable.server.ccg.ParserSettings;
+
+import java.nio.file.Paths;
+import java.util.List;
 
 public class TestLexiconInduction {
     public static void main(String[] args) throws Exception
@@ -42,7 +41,7 @@ public class TestLexiconInduction {
     		newEntries.addAll(CcgUtils.induceLexiconEntriesHeuristic(example, parser));
     	}
     	
-    	CcgUtils.updateParserGrammar(newEntries, Lists.newArrayList(), parserSettings);
+    	parserSettings.updateParserGrammar(newEntries, Lists.newArrayList());
     	SufficientStatistics newParameters = CcgUtils.train(parserSettings.parserFamily, examples);
     	
     	CcgParser newParser = parserSettings.parserFamily.getModelFromParameters(newParameters);

@@ -1,88 +1,43 @@
 package instructable.server.ccg;
 
-import instructable.server.ActionResponse;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.jayantkrish.jklol.ccg.*;
+import com.jayantkrish.jklol.ccg.SyntacticCategory.Direction;
+import com.jayantkrish.jklol.ccg.chart.CcgBeamSearchChart;
+import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
+import com.jayantkrish.jklol.ccg.lambda2.*;
+import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
+import com.jayantkrish.jklol.ccg.lexinduct.*;
+import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
+import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
+import com.jayantkrish.jklol.models.DiscreteVariable;
+import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
+import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
+import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
+import com.jayantkrish.jklol.training.*;
+import com.jayantkrish.jklol.util.CsvParser;
+import com.jayantkrish.jklol.util.IntegerArrayIterator;
+import com.jayantkrish.jklol.util.PairCountAccumulator;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import instructable.server.IAllUserActions;
-import instructable.server.InfoForCommand;
 import instructable.server.LispExecutor;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
-import com.jayantkrish.jklol.ccg.CcgBinaryRule;
-import com.jayantkrish.jklol.ccg.CcgCategory;
-import com.jayantkrish.jklol.ccg.CcgExactInference;
-import com.jayantkrish.jklol.ccg.CcgExample;
-import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
-import com.jayantkrish.jklol.ccg.CcgInference;
-import com.jayantkrish.jklol.ccg.CcgParse;
-import com.jayantkrish.jklol.ccg.CcgParser;
-import com.jayantkrish.jklol.ccg.CcgPerceptronOracle;
-import com.jayantkrish.jklol.ccg.CcgUnaryRule;
-import com.jayantkrish.jklol.ccg.HeadedSyntacticCategory;
-import com.jayantkrish.jklol.ccg.LexiconEntry;
-import com.jayantkrish.jklol.ccg.ParametricCcgParser;
-import com.jayantkrish.jklol.ccg.SyntacticCategory.Direction;
-import com.jayantkrish.jklol.ccg.chart.CcgBeamSearchChart;
-import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
-import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
-import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
-import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
-import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
-import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
-import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer;
-import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
-import com.jayantkrish.jklol.ccg.lexinduct.AlignmentExample;
-import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentEmOracle;
-import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentModel;
-import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTokenFeatureGenerator;
-import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTree;
-import com.jayantkrish.jklol.ccg.lexinduct.ParametricCfgAlignmentModel;
-import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
-import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
-import com.jayantkrish.jklol.lisp.Environment;
-import com.jayantkrish.jklol.lisp.LispEval;
-import com.jayantkrish.jklol.lisp.SExpression;
-import com.jayantkrish.jklol.models.DiscreteVariable;
-import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
-import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
-import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
-import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
-import com.jayantkrish.jklol.training.ExpectationMaximization;
-import com.jayantkrish.jklol.training.GradientOptimizer;
-import com.jayantkrish.jklol.training.GradientOracle;
-import com.jayantkrish.jklol.training.NullLogFunction;
-import com.jayantkrish.jklol.training.StochasticGradientTrainer;
-import com.jayantkrish.jklol.util.CsvParser;
-import com.jayantkrish.jklol.util.IndexedList;
-import com.jayantkrish.jklol.util.IntegerArrayIterator;
-import com.jayantkrish.jklol.util.PairCountAccumulator;
-
-import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import java.util.*;
 
 
 public class CcgUtils
 {
-  
+
   private static Set<String> POS_TAGS_TO_SKIP_IN_LEXICON_INDUCTION = Sets.newHashSet("DT", "IN", "TO", "CC");
-  private static String START_POS_TAG = "START";
+  final public static String START_POS_TAG = "START";
+  final static String startSymbol = "start_symbol";
 
     /**
      * Induces a collection of lexicon entries from a data set of text
@@ -133,20 +88,20 @@ public class CcgUtils
 
     	return entries;
     }
-    
+
   public static List<LexiconEntry> induceLexiconEntriesHeuristic(CcgExample example, CcgParser parser)  {
 	  ExpressionSimplifier simplifier = getExpressionSimplifier();
-	  
+
 	  List<String> words = example.getSentence().getWords();
 	  List<String> pos = example.getSentence().getPosTags();
 	  Expression2 lf = simplifier.apply(example.getLogicalForm());
-	  
+
 	  List<Integer> spanStarts = Lists.newArrayList();
 	  List<Integer> spanEnds = Lists.newArrayList();
 	  List<List<String>> spanStrings = Lists.newArrayList();
 	  List<List<Expression2>> spanExpressions = Lists.newArrayList();
 	  List<List<HeadedSyntacticCategory>> spanSyntacticCategories = Lists.newArrayList();
-	  
+
 	  CcgBeamSearchChart chart = new CcgBeamSearchChart(example.getSentence(), -1, 100);
 	  parser.parseCommon(chart, example.getSentence(), null, null, -1, 1);
 	  for (int i = 1; i < words.size(); i++) {
@@ -176,13 +131,13 @@ public class CcgUtils
 			  }
 		  }
 	  }
-	  
+
 	  System.out.println(spanStarts);
 	  System.out.println(spanEnds);
 	  System.out.println(spanStrings);
 	  System.out.println(spanExpressions);
 	  System.out.println(spanSyntacticCategories);
-	  
+
 	  int[] numEntriesPerSpan = new int[spanStarts.size()];
 	  for (int i = 0; i < spanStarts.size(); i++) {
 		  numEntriesPerSpan[i] = spanExpressions.get(i).size();
@@ -197,7 +152,7 @@ public class CcgUtils
 			  Expression2 var = Expression2.constant("$" + i);
 			  substituted = replaceSubexpression(substituted, spanExpressions.get(i).get(indexes[i]), var);
 		  }
-		  
+
 		  for (int i = 1; i < words.size(); i++) {
 		    boolean containedInSpan = false;
 		    for (int j = 0 ; j < spanStarts.size(); j++) {
@@ -206,17 +161,17 @@ public class CcgUtils
 		        break;
 		      }
 		    }
-		    
+
 		    if (containedInSpan) {
 		      continue;
 		    }
-		    
+
 		    if (POS_TAGS_TO_SKIP_IN_LEXICON_INDUCTION.contains(pos.get(i))) {
 		      continue;
 		    }
-		    
+
 		    // System.out.println(words.get(i) + "/" + pos.get(i));
-		
+
 		    List<Integer> leftArgEnds = Lists.newArrayList();
 		    List<Integer> rightArgStarts = Lists.newArrayList();
 		    for (int j = 0; j < spanStarts.size(); j++) {
@@ -226,12 +181,12 @@ public class CcgUtils
 		        leftArgEnds.add(spanEnds.get(j));
 		      }
 		    }
-		    
+
 		    Collections.sort(leftArgEnds);
 		    Collections.sort(rightArgStarts);
 		    Collections.reverse(rightArgStarts);
 		    List<Expression2> args = Lists.newArrayList();
-		    
+
 		    HeadedSyntacticCategory cat = HeadedSyntacticCategory.parseFrom("S{0}");
 		    for (int j = 0; j < leftArgEnds.size(); j++) {
 		      HeadedSyntacticCategory argCat = null;
@@ -246,7 +201,7 @@ public class CcgUtils
 		      cat = cat.addArgument(argCat, Direction.LEFT, 0);
 		      args.add(Expression2.constant("$" + argCatIndex));
 		    }
-		    
+
 		    for (int j = 0; j < rightArgStarts.size(); j++) {
 		      HeadedSyntacticCategory argCat = null;
 		      int argCatIndex = -1;
@@ -268,7 +223,7 @@ public class CcgUtils
 		    Expression2 lambdaExpression = Expression2.nested(args);
 		    // System.out.println(cat);
 		    // System.out.println(lambdaExpression);
-		    
+
 		    List<String> subjects = Lists.newArrayList();
 		    List<Integer> argumentNumbers = Lists.newArrayList();
 		    List<Integer> objects = Lists.newArrayList();
@@ -284,7 +239,7 @@ public class CcgUtils
 
 	  return newEntries;
   }
-  
+
   // These are really hacky ways of solving this problem...
   public static boolean hasSubexpression(Expression2 expression, Expression2 subexpression) {
 	  String expressionString = expression.toString();
@@ -292,62 +247,34 @@ public class CcgUtils
 
 	  return expressionString.contains(subexpressionString);
   }
-  
+
   public static Expression2 replaceSubexpression(Expression2 expression, Expression2 subexpression, Expression2 replacement) {
 	  String expressionString = expression.toString();
 	  String subexpressionString = subexpression.toString();
 	  String replacementString = replacement.toString();
-	  
+
 	  return ExpressionParser.expression2().parseSingleExpression(expressionString.replace(
 			  subexpressionString, replacementString));
   }
 
 
   /**
-   * 
+   *
    * @param expression
    * @return
    */
-  private static ExpressionTree expressionToExpressionTree(Expression2 expression) {
+  private static ExpressionTree expressionToExpressionTree(Expression2 expression)
+  {
     ExpressionSimplifier simplifier = getExpressionSimplifier();
     Set<String> constantsToIgnore = Sets.newHashSet();
     Map<String, String> typeReplacements = Maps.newHashMap();
-    
+
     return ExpressionTree.fromExpression(expression, simplifier, typeReplacements,
         constantsToIgnore, 0, 2);
   }
 
-  public static void updateParserGrammar(String newLexicon, ParserSettings parserSettings)
-  {
-    List<String> lexiconAsList = new LinkedList<String>();
-    lexiconAsList.add(newLexicon);
-    List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
-    updateParserGrammar(lexiconEntries, new LinkedList<CcgUnaryRule>(), parserSettings);
-  }
-
-  /**
-   * Adds new lexicon entries and unary rules to the grammar of the
-   * CCG parser in {@code settings}.
-   * 
-   * @param lexiconEntries
-   * @param unaryRules
-   * @param settings
-   */
-  public static void updateParserGrammar(List<LexiconEntry> lexiconEntries, List<CcgUnaryRule> unaryRules,
-      ParserSettings settings) {
-    settings.lexicon.addAll(lexiconEntries);
-    settings.unaryRules.addAll(unaryRules);
-
-    ParametricCcgParser newFamily = buildParametricCcgParser(settings.lexicon, settings.unaryRules,
-        settings.posUsed, settings.featureVectorGenerator);
-    SufficientStatistics newParameters = newFamily.getNewSufficientStatistics();
-    newParameters.transferParameters(settings.parserParameters);
-    settings.parserParameters = newParameters;
-    settings.parserFamily = newFamily; 
-    settings.parser = newFamily.getModelFromParameters(newParameters);
-  }
-
-  public static CcgExample createCcgExample(List<String> tokens, Expression2 expression) {
+    public static CcgExample createCcgExample(List<String> tokens, Expression2 expression)
+    {
       List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
       SupertaggedSentence sentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, pos);
 
@@ -431,7 +358,7 @@ public class CcgUtils
         //List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
         List<String> tokens = new LinkedList<>();
         List<String> poss = new LinkedList<>();
-        tokens.add("start_symbol");
+        tokens.add(startSymbol);
         poss.add(START_POS_TAG);
         tokenizeAndPOS(sentence, tokens, poss, true, usedPOS);
         SupertaggedSentence supertaggedSentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, poss);
@@ -503,7 +430,7 @@ public class CcgUtils
         //List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
         List<String> tokens = new LinkedList<>();
         List<String> poss = new LinkedList<>();
-        tokens.add("start_symbol");
+        tokens.add(startSymbol);
         poss.add(START_POS_TAG);
         tokenizeAndPOS(sentence, tokens, poss, false, posAllowed);
         SupertaggedSentence supertaggedSentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, poss);
@@ -527,87 +454,6 @@ public class CcgUtils
         return new ExpressionSimplifier(Arrays.
                 <ExpressionReplacementRule>asList(new LambdaApplicationReplacementRule(),
                         new VariableCanonicalizationReplacementRule()));
-    }
-
-
-    public static ParserSettings getParserSettings(List<String> lexiconEntries, String[] unaryRules,
-        FeatureGenerator<StringContext, String> featureGenerator, List<String[]> examplesList)
-    {
-        ParserSettings parserSettings = new ParserSettings();
-        parserSettings.env = Environment.empty();
-        parserSettings.symbolTable = IndexedList.create();
-
-        List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(lexiconEntries);
-
-        List<CcgUnaryRule> unaryRulesList = Lists.newArrayList();
-        for (String unaryRule : unaryRules)
-        {
-            unaryRulesList.add(CcgUnaryRule.parseFrom(unaryRule));
-        }
-
-        Set<String> posUsed = new HashSet<>();
-        posUsed.add(ParametricCcgParser.DEFAULT_POS_TAG);
-        posUsed.add(START_POS_TAG);
-        List<CcgExample> ccgExamples = Lists.newArrayList();
-        for (int i = 0; i < examplesList.size(); i++)
-        {
-            Expression2 expression = ExpressionParser.expression2().parseSingleExpression(examplesList.get(i)[1]);
-            CcgExample example = CcgUtils.createCcgExample(examplesList.get(i)[0], expression, posUsed);
-            ccgExamples.add(example);
-            List<String> allFunctionNames = LispExecutor.allFunctionNames();
-            Set<String> freeSet = StaticAnalysis.getFreeVariables(example.getLogicalForm());
-            for (String free : freeSet)
-            {
-                //add all that's not a function name and not a string (starts and ends with ")
-                if (!(free.startsWith("\"") && free.endsWith("\"")) && !allFunctionNames.contains(free))
-                    parserSettings.env.bindName(free, free.replace("_", " "), parserSettings.symbolTable);
-            }
-            //StaticAnalysis.inferType() //TODO: Jayant will add this functionality
-        }
-        
-        List<StringContext> allContexts = FeaturizedLexiconScorer.getContextsFromExamples(ccgExamples);
-        FeatureVectorGenerator<StringContext> featureVectorGenerator = DictionaryFeatureVectorGenerator
-            .createFromData(allContexts, featureGenerator, true);
-
-        parserSettings.posUsed = posUsed;
-        ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon, unaryRulesList,
-            posUsed, featureVectorGenerator);
-        parserSettings.lexicon = lexicon;
-        parserSettings.unaryRules = unaryRulesList;
-        parserSettings.featureVectorGenerator = featureVectorGenerator; 
-        parserSettings.parserParameters = CcgUtils.train(family, ccgExamples);
-        parserSettings.parser = family.getModelFromParameters(parserSettings.parserParameters);
-        parserSettings.parserFamily = family;
-        return parserSettings;
-    }
-
-    public static ActionResponse evaluate(IAllUserActions allUserActions, String userSays, Expression2 expression, ParserSettings parserSettings)
-    {
-
-        LispExecutor lispExecutor = new LispExecutor(allUserActions, new InfoForCommand(userSays, expression));
-
-        //env.bindName("sendEmail", lispExecutor.getFunction("sendEmail"), symbolTable);
-        //env.bindName("setFieldFromString", lispExecutor.getFunction("setFieldFromString"), symbolTable);
-        //env.bindName("getProbFieldByInstanceNameAndFieldName", lispExecutor.getFunction("getProbFieldByInstanceNameAndFieldName"), symbolTable);
-
-        List<LispExecutor.FunctionToExecute> functionToExecutes = lispExecutor.getAllFunctions();
-        //this is ok, since we use the same function name it should override any old definition
-        functionToExecutes.forEach(function -> parserSettings.env.bindName(function.getFunctionName(), function, parserSettings.symbolTable));
-
-        //change in evaluation that every unknown name will change to it as a string (changing "_" with " ")
-
-        //env.bindName("body", "body", symbolTable);
-        //env.bindName("outgoing_email", "outgoing email", symbolTable);
-        //env.bindName("recipient_list", "recipient list", symbolTable);
-        //env.bindName("subject", "subject", symbolTable);
-        //env.bindName("bob", "bob", symbolTable);
-
-        LispEval eval = new LispEval(parserSettings.symbolTable);
-        SExpression sExpression = ExpressionParser.sExpression(parserSettings.symbolTable).parseSingleExpression(expression.toString());
-        System.out.println(sExpression.toString());
-        LispEval.EvalResult result = eval.eval(sExpression, parserSettings.env);
-
-        return (ActionResponse) result.getValue();
     }
 
 
@@ -644,16 +490,6 @@ public class CcgUtils
         }
         public String sayToUser;
         public String lExpression;
-    }
-
-    public static SayAndExpression ParseAndEval(IAllUserActions allUserActions, ParserSettings parserSettings, String userSays)
-    {
-        Expression2 expression;
-        ActionResponse response;
-        expression = CcgUtils.parse(parserSettings.parser, userSays, parserSettings.posUsed);
-        //System.out.println("debug:" + expression.toString());
-        response = CcgUtils.evaluate(allUserActions, userSays, expression, parserSettings);
-        return new SayAndExpression(response.getSayToUser(), expression.toString());
     }
 
 

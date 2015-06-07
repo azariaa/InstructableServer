@@ -79,7 +79,7 @@ public class AgentDataAndControl
                 parserSetAndActions = parserSetAndActionsMap.get(gameId);
         }
 
-        CcgUtils.SayAndExpression response = CcgUtils.ParseAndEval(parserSetAndActions.allUserActions, parserSetAndActions.parserSettings, userSays);
+        CcgUtils.SayAndExpression response = parserSetAndActions.parserSettings.ParseAndEval(parserSetAndActions.allUserActions, userSays);
         logger.info("GameID:" + gameId + ". Lambda expression: " + response.lExpression);
         for (ResponseToUserListener responseToUserListener : responseToUserListenerList)
         {

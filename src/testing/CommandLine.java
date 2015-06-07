@@ -35,7 +35,7 @@ public class CommandLine
             CcgUtils.SayAndExpression response;
             try
             {
-                response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
+                response = parserSettings.ParseAndEval(allUserActions, userSays);
                 System.out.println("S:" + response.sayToUser + "\n");
             } catch (Exception ex)
             {
