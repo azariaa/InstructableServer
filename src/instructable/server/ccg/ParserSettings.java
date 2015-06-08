@@ -1,7 +1,21 @@
 package instructable.server.ccg;
 
+import instructable.server.ActionResponse;
+import instructable.server.IAllUserActions;
+import instructable.server.InfoForCommand;
+import instructable.server.LispExecutor;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import com.google.common.collect.Lists;
-import com.jayantkrish.jklol.ccg.*;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.CcgUnaryRule;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
@@ -15,15 +29,6 @@ import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
 import com.jayantkrish.jklol.util.IndexedList;
-import instructable.server.ActionResponse;
-import instructable.server.IAllUserActions;
-import instructable.server.InfoForCommand;
-import instructable.server.LispExecutor;
-
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Amos Azaria on 05-May-15.
@@ -77,10 +82,10 @@ public class ParserSettings implements Cloneable
         this.posUsed = posUsed;
         ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon, unaryRulesList,
                 posUsed, featureVectorGenerator);
-        this.lexicon = lexicon;
-        this.unaryRules = unaryRulesList;
+        this.lexicon = Lists.newArrayList(lexicon);
+        this.unaryRules = Lists.newArrayList(unaryRulesList);
         this.featureVectorGenerator = featureVectorGenerator;
-        this.parserParameters = CcgUtils.train(family, ccgExamples);
+        this.parserParameters = CcgUtils.train(family, ccgExamples, 10);
         this.parser = family.getModelFromParameters(this.parserParameters);
         this.parserFamily = family;
     }
@@ -133,9 +138,9 @@ public class ParserSettings implements Cloneable
      */
   public void updateParserGrammar(List<LexiconEntry> lexiconEntries, List<CcgUnaryRule> unaryRules) {
     lexicon.addAll(lexiconEntries);
-    unaryRules.addAll(unaryRules);
+    this.unaryRules.addAll(unaryRules);
 
-    ParametricCcgParser newFamily = CcgUtils.buildParametricCcgParser(lexicon, unaryRules,
+    ParametricCcgParser newFamily = CcgUtils.buildParametricCcgParser(lexicon, this.unaryRules,
             posUsed, featureVectorGenerator);
     SufficientStatistics newParameters = newFamily.getNewSufficientStatistics();
     newParameters.transferParameters(parserParameters);

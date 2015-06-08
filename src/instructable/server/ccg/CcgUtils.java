@@ -1,35 +1,71 @@
 package instructable.server.ccg;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.jayantkrish.jklol.ccg.*;
-import com.jayantkrish.jklol.ccg.SyntacticCategory.Direction;
-import com.jayantkrish.jklol.ccg.chart.CcgBeamSearchChart;
-import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
-import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.*;
-import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
-import com.jayantkrish.jklol.ccg.lexinduct.*;
-import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
-import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
-import com.jayantkrish.jklol.models.DiscreteVariable;
-import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
-import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
-import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
-import com.jayantkrish.jklol.training.*;
-import com.jayantkrish.jklol.util.CsvParser;
-import com.jayantkrish.jklol.util.IntegerArrayIterator;
-import com.jayantkrish.jklol.util.PairCountAccumulator;
-import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import instructable.server.IAllUserActions;
 import instructable.server.LispExecutor;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
+import com.jayantkrish.jklol.ccg.CcgBinaryRule;
+import com.jayantkrish.jklol.ccg.CcgCategory;
+import com.jayantkrish.jklol.ccg.CcgExactInference;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
+import com.jayantkrish.jklol.ccg.CcgInference;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.CcgPerceptronOracle;
+import com.jayantkrish.jklol.ccg.CcgUnaryRule;
+import com.jayantkrish.jklol.ccg.HeadedSyntacticCategory;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
+import com.jayantkrish.jklol.ccg.SyntacticCategory.Direction;
+import com.jayantkrish.jklol.ccg.chart.CcgBeamSearchChart;
+import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
+import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
+import com.jayantkrish.jklol.ccg.lexinduct.AlignmentExample;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentEmOracle;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTokenFeatureGenerator;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTree;
+import com.jayantkrish.jklol.ccg.lexinduct.ParametricCfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
+import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
+import com.jayantkrish.jklol.models.DiscreteVariable;
+import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
+import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
+import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
+import com.jayantkrish.jklol.training.ExpectationMaximization;
+import com.jayantkrish.jklol.training.GradientOptimizer;
+import com.jayantkrish.jklol.training.GradientOracle;
+import com.jayantkrish.jklol.training.NullLogFunction;
+import com.jayantkrish.jklol.training.StochasticGradientTrainer;
+import com.jayantkrish.jklol.util.CsvParser;
+import com.jayantkrish.jklol.util.IntegerArrayIterator;
+import com.jayantkrish.jklol.util.PairCountAccumulator;
+
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 
 public class CcgUtils
@@ -217,10 +253,15 @@ public class CcgUtils
 		    }
 
 		    cat = cat.getCanonicalForm();
-		    args.add(Expression2.constant("lambda"));
-		    Collections.reverse(args);
-		    args.add(substituted);
-		    Expression2 lambdaExpression = Expression2.nested(args);
+		    Expression2 lambdaExpression = null;
+		    if (args.size() > 0) {
+		      args.add(Expression2.constant("lambda"));
+		      Collections.reverse(args);
+		      args.add(substituted);
+		      lambdaExpression = Expression2.nested(args);
+		    } else {
+		      lambdaExpression = substituted;
+		    }
 		    // System.out.println(cat);
 		    // System.out.println(lambdaExpression);
 
@@ -329,10 +370,12 @@ public class CcgUtils
      *
      * @param parametricCcgParser
      * @param trainingExamples
+     * @param numPasses
      * @return
      */
     public static SufficientStatistics train(ParametricCcgParser parametricCcgParser,
-                                             List<CcgExample> trainingExamples) {
+                                             List<CcgExample> trainingExamples,
+                                             int numPasses) {
         ExpressionSimplifier simplifier = getExpressionSimplifier();
         ExpressionComparator comparator = new SimplificationComparator(simplifier);
 
@@ -342,7 +385,7 @@ public class CcgUtils
         GradientOracle<CcgParser, CcgExample> oracle = new CcgPerceptronOracle(parametricCcgParser,
                 inferenceAlgorithm, 0.0);
 
-        int numIterations = 10 * trainingExamples.size();
+        int numIterations = numPasses * trainingExamples.size();
         double l2Regularization = 0.01;
         GradientOptimizer trainer = StochasticGradientTrainer.createWithL2Regularization(numIterations,
                 1, 1.0, true, true, l2Regularization, new NullLogFunction());
@@ -505,7 +548,7 @@ public class CcgUtils
         for (int i = 1; i < toCombine.size(); i++)
         {
             //TODO: should be a better way to combine Expressions
-            retExpression = ExpressionParser.expression2().parseSingleExpression("(" + LispExecutor.doSeq + retExpression.toString() + " " + toCombine.get(i).toString() + ")");
+            retExpression = ExpressionParser.expression2().parseSingleExpression("(" + LispExecutor.doSeq + " " + retExpression.toString() + " " + toCombine.get(i).toString() + ")");
         }
 
         return retExpression;
