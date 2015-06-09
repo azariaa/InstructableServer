@@ -1,15 +1,14 @@
 package instructable.server;
 
-import instructable.server.ccg.CcgUtils;
-import instructable.server.ccg.ParserSettings;
-
-import java.util.List;
-
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgExample;
 import com.jayantkrish.jklol.ccg.LexiconEntry;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
+import instructable.server.ccg.CcgUtils;
+import instructable.server.ccg.ParserSettings;
+
+import java.util.List;
 
 /**
  * Created by Amos Azaria on 13-May-15.

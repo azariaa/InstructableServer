@@ -139,16 +139,19 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
 
 
     @Override
-    public void responseSentToUser(String gameId, String agentResponse)
+    public void responseSentToUser(String gameId, String agentResponse, boolean success)
     {
-        ExperimentTaskController experimentTaskController;
-        synchronized(mapLock)
+        if (success)
         {
-            if (missionsCompletedByUser.containsKey(gameId))
-                experimentTaskController = missionsCompletedByUser.get(gameId);
-            else
-                return;
+            ExperimentTaskController experimentTaskController;
+            synchronized (mapLock)
+            {
+                if (missionsCompletedByUser.containsKey(gameId))
+                    experimentTaskController = missionsCompletedByUser.get(gameId);
+                else
+                    return;
+            }
+            experimentTaskController.responseSentToUser(agentResponse);
         }
-        experimentTaskController.responseSentToUser(agentResponse);
     }
 }

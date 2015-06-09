@@ -2,6 +2,7 @@ package instructable;
 
 import instructable.server.IEmailSender;
 import instructable.server.IIncomingEmailControlling;
+import instructable.server.TopDMAllActions;
 import instructable.server.hirarchy.IncomingEmail;
 
 import java.util.Arrays;
@@ -22,17 +23,45 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         defineContact,
         addEmailToContact,
         createContact,
+        seeMomsEmail,
         readEmailInInbox,
         nextEmailInInbox,
         previousEmailInInbox,
         teachReadNextInbox, //not relevant when not in learning mode.
-        eAbbieReply,
-        eSpouseReply,
-        eForwardToSpouse,
-        eForwardToAllWorkers,
+        eRepMomOk,
+        eRepBossTask,
+        eRepW2,
+        eRepW1,
+        eRepMomAtWork,
+        eRepW3,
+        eForwardToBoss,
+        eForwardToMom,
+        eForwardToW2,
+        eForwardToWParty,
+        eForwardToWWork,
+        eForwardToWRest,
         allCompleted
     }
     //static final int numOfTasks = TasksToComplete.values().length;
+
+
+    static final String bossName = "Alex";
+    static final String momName = "Mom"; //"Ash"
+    static final String worker1Name = "Casey";
+    static final String worker2Name = "Charlie";
+    //static final String worker3Name = "Aaron";
+    //static final String friendName = "Remy";
+
+    static final String bossEmail = "alextimetowork@myworkplace.com";
+    static final String momEmail = "momthebest7@bestemailsforall.com";
+    static final String worker1Email = "caseyousoon8@myworkplace.com";
+    static final String worker2Email = "charlieisasleep4@myworkplace.com";
+    static final String worker3Email = "aaronworkshard3@myworkplace.com";
+    static final String myEmail = TopDMAllActions.userEmailAddress;
+
+    static final String familyEventDate = "September 28th";
+
+    //or the notes appear bossEmail, momEmail and CharlieEmail only!
 
     boolean unsuccessfulSend = false;
     int unsuccessfulCount = 0;
@@ -83,21 +112,23 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case createEmail:
                 return "Training Task 1: creating a new outgoing email";
             case sendTestEmail:
-                return "Training Task 2: sending an outgoing email to Abbie with hello as the body and no subject. Abbie's email appears in the \"notes\" image";
+                return "Training Task 2: sending an outgoing email to "+ momName +" with hello as the body and no subject. "+momName+"'s email appears in the \"notes\" image";
             case defineContact:
                 return "Training Task 3: defining the concept contact";
             case addEmailToContact:
                 return "Training Task 4: adding the email field to the concept contact";
             case createContact:
-                return "Training Task 5: creating a contact for Abbie and adding her email address to it";
+                return "Training Task 5: creating a contact for "+ momName +" and adding the correct email address to it";
+            case seeMomsEmail:
+                return "Training Task 6: asking the agent for mom's email";
             case readEmailInInbox:
-                return "Training Task 6: requesting the agent to read the current email in the inbox";
+                return "Training Task 7: requesting the agent to read the current email in the inbox";
             case nextEmailInInbox:
-                return "Training Task 7: requesting the agent to move to the <b>next</b> email in the inbox";
+                return "Training Task 8: requesting the agent to move to the <b>next</b> email in the inbox";
             case previousEmailInInbox:
-                return "Training Task 8: requesting the agent to move to the <b>previous</b> email in the inbox";
+                return "Training Task 9: requesting the agent to move to the <b>previous</b> email in the inbox";
             case teachReadNextInbox:
-                return "Training Task 9: teaching the agent a <b>new command</b>: having it both moving to the <b>next</b> email <b>and</b> reading it";
+                return "Training Task 10: teaching the agent a <b>new command</b>: having it both moving to the <b>next</b> email <b>and</b> reading it";
             case allCompleted:
                 //this shouldn't actually ever happen
                 return "Congratulations: You have completed all possible tasks!";
@@ -120,8 +151,10 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             userTasks.add(TasksToComplete.defineContact);
         else if (agentResponse.contains("Field \"email\" was added to concept \"contact\""))
             userTasks.add(TasksToComplete.addEmailToContact);
-        else if (agentResponse.contains("The \"email\" field in \"abbie\" was set to:"))//("Instance \"abbie\" (of concept \"contact\") was created."))
+        else if (agentResponse.contains("email") && agentResponse.contains(momEmail))//\"abbie\" was set to:"))//("Instance \"abbie\" (of concept \"contact\") was created."))
             userTasks.add(TasksToComplete.createContact);
+        else if (agentResponse.contains("It is: "+momEmail))
+            userTasks.add(TasksToComplete.seeMomsEmail);
         else if (agentResponse.contains("subject:") && agentResponse.contains("sender:"))
             userTasks.add(TasksToComplete.readEmailInInbox);
         else if (agentResponse.contains("Set to next incoming email successfully"))
@@ -140,17 +173,33 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         String body = body1.toLowerCase();
         unsuccessfulSend = false;
         //may want to actually send the email in real environment right here.
-        if (body.contains("hello"))// && recipientList.contains("abemail7@bestemails.com"))
+        if (body.contains("hello") && recipientList.contains(momEmail) && !userTasks.contains(TasksToComplete.sendTestEmail))
             userTasks.add(TasksToComplete.sendTestEmail);
-        else if (subject.contains("working hours") && recipientList.contains("abemail7@myworkplace.com") && !body.isEmpty())
-            userTasks.add(TasksToComplete.eAbbieReply);
-        else if (subject.contains("are you") && !body.isEmpty() && recipientList.contains("caseyousoon@bestemails.com"))
-            userTasks.add(TasksToComplete.eSpouseReply);
-        else if (subject.contains("your vacation") && recipientList.contains("caseyousoon@bestemails.com") && body.contains("approved"))
-            userTasks.add(TasksToComplete.eForwardToSpouse);
-        else if (subject.contains("department party") && body.contains("department party") && body.contains("wednesday") &&
-                recipientList.contains("bobtheman4@myworkplace.com") && recipientList.contains("annthebest3@myworkplace.com") && recipientList.contains("samlikestodrum@myworkplace.com"))
-            userTasks.add(TasksToComplete.eForwardToAllWorkers);
+        else if (subject.contains("is everything fine") && recipientList.contains(momEmail) && !body.isEmpty())
+            userTasks.add(TasksToComplete.eRepMomOk);
+        else if (subject.contains("task I asked") && recipientList.contains(bossEmail) && !body.isEmpty())
+            userTasks.add(TasksToComplete.eRepBossTask);
+        else if (subject.contains("working tomorrow") && recipientList.contains(worker2Email) && !body.isEmpty())
+            userTasks.add(TasksToComplete.eRepW2);
+        else if (subject.contains("what to do") && recipientList.contains(worker1Email) && !body.isEmpty())
+            userTasks.add(TasksToComplete.eRepW1);
+        else if (subject.contains("are you still") && !body.isEmpty() && recipientList.contains(momEmail))
+            userTasks.add(TasksToComplete.eRepMomAtWork);
+        else if (subject.contains("do you like work") && recipientList.contains(worker3Email) && !body.isEmpty())
+            userTasks.add(TasksToComplete.eRepW3);
+        else if (subject.contains("family event") && recipientList.contains(bossEmail) && body.contains("vacation"))
+            userTasks.add(TasksToComplete.eForwardToBoss);
+        else if (subject.contains("your vacation") && recipientList.contains(momEmail) && body.contains("vacation"))
+            userTasks.add(TasksToComplete.eForwardToMom);
+        else if (subject.contains("party time") && body.contains("thursday") &&
+                recipientList.contains(worker1Email) && recipientList.contains(worker2Email) && recipientList.contains(worker3Email))
+            userTasks.add(TasksToComplete.eForwardToWParty);
+        else if (subject.contains("work before parting") && body.contains("monday") &&
+                recipientList.contains(worker1Email) && recipientList.contains(worker2Email) && recipientList.contains(worker3Email))
+            userTasks.add(TasksToComplete.eForwardToWWork);
+        else if (subject.contains("rest") && body.contains("well") &&
+                recipientList.contains(worker1Email) && recipientList.contains(worker2Email) && recipientList.contains(worker3Email))
+            userTasks.add(TasksToComplete.eForwardToWRest);
         else
         {
             unsuccessfulSend = true;
@@ -162,47 +211,112 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     @Override
     public void addInboxEmails(IIncomingEmailControlling incomingEmailControlling)
     {
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("manor73@myworkplace.com",
+        //no mission
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker1Email,
                 "Hi there",
-                Arrays.asList(new String[]{"you@myjob.com"}),
+                Arrays.asList(myEmail),
                 new LinkedList<String>(),
                 "I'm feeling well today."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("manor73@myworkplace.com",
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker1Email,
                 "Another email",
-                Arrays.asList(new String[]{"you@myworkplace.com"}),
-                new LinkedList<String>(),
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
                 "I felt like sending you another email."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("abemail7@myworkplace.com",
-                "Working hours",
-                Arrays.asList(new String[]{"you@myworkplace.com"}),
-                new LinkedList<String>(),
-                "I need to know if you will be working next week. Please reply immediately (make sure to use the same subject, as you should always do when replying to emails :)."
+
+        //replying
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(momEmail,
+                "Is everything fine?",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "I didn't hear from you in a while, is everything ok? Please reply as soon as possible (make sure to use the same subject, as you should always do when replying to emails :)."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("caseyousoon@bestemails.com",
-                "Are you ok?",
-                Arrays.asList(new String[]{"you@myworkplace.com"}),
-                new LinkedList<String>(),
-                "I didn't hear from you in a while, is everything ok? Please reply as soon as possible."
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
+                "Task I asked",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "Are you working on the task that I asked you to work on? Please reply immediately ."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("bob7@bestemails.com",
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker2Email,
+                "Working tomorrow",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "I don't feel like working tomorrow, do I have to? Please reply as soon as possible."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker1Email,
+                "What to do?",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "I'm done with all my tasks, what should I do next? Please reply as soon as possible."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(momEmail,
+                "Are you still at work?",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "I must know if you are still at work. Please reply as soon as possible."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker3Email,
+                "Do you like work?",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "I like my job. Please reply and let me know what you think, as soon as possible."
+        ));
+
+
+        //forwarding
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(momEmail,
+                "Family event",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "You must ask your boss to approve your vacation for the family event on "+familyEventDate+". Forward this email to your boss (make sure to use the same subject, and include the whole body, as you should always do when forwarding an email :)."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
                 "Your vacation",
-                Arrays.asList(new String[]{"you@myworkplace.com"}),
-                new LinkedList<String>(),
-                "Your vacation has been approved. Please forward this email to your spouse (make sure to use the same subject, and include the whole body, as you should always do when forwarding an email :)."
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "Your vacation has been approved. Please forward this email to your mom."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("abemail7@myworkplace.com",
-                "department party",
-                Arrays.asList(new String[]{"you@myworkplace.com"}),
-                new LinkedList<String>(),
-                "We will have our department party next Wednesday at 4:00pm. Please forward this email to all people who report to you (make sure that they all appear together as recipients in the email)."
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker1Email,
+                worker2Name,
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "I asked "+worker2Name+" to do what you said, but I see that it must come from you. Please forward this email to "+worker2Name + "."
         ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
+                "Party time!",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "We will have a party next Thursday at 4:00pm. Please forward this email to all people who report to you (make sure that they all appear together as recipients in the email)."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
+                "Work before parting",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "We will all have to work very hard next Monday, Tuesday and Wednesday. Please forward this email to all people who report to you."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
+                "Rest during the weekend",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "Don't forget to rest well on the weekend so you can work well on Monday, Tuesday and Wednesday. Please forward this email to all people who report to you."
+        ));
+
+
+        //tell someone something???
 
     }
 

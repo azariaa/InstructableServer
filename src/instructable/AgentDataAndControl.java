@@ -57,7 +57,7 @@ public class AgentDataAndControl
 
     interface ResponseToUserListener
     {
-        void responseSentToUser(String gameId, String agentResponse);
+        void responseSentToUser(String gameId, String agentResponse, boolean success);
     }
 
     public void addResponseToUserListener(ResponseToUserListener responseToUserListener)
@@ -83,7 +83,7 @@ public class AgentDataAndControl
         logger.info("GameID:" + gameId + ". Lambda expression: " + response.lExpression);
         for (ResponseToUserListener responseToUserListener : responseToUserListenerList)
         {
-            responseToUserListener.responseSentToUser(gameId, response.sayToUser);
+            responseToUserListener.responseSentToUser(gameId, response.sayToUser, response.success);
         }
         return response.sayToUser;
     }

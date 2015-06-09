@@ -22,7 +22,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     ICommandsToParser commandsToParser;
     OutEmailCommandController outEmailCommandController;
     InboxCommandController inboxCommandController;
-    static final String userEmailAddress = "myemail@gmail.com";
+    static public final String userEmailAddress = "you@myworkplace.com";
 
     Optional<JSONObject> previousFieldEval = Optional.empty();
 
