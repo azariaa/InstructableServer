@@ -1,5 +1,6 @@
 package instructable.server;
 
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.hirarchy.*;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
@@ -23,6 +24,9 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     OutEmailCommandController outEmailCommandController;
     InboxCommandController inboxCommandController;
     static public final String userEmailAddress = "you@myworkplace.com";
+
+    static private final String yesExpression = "(yes)";
+    static private final String createEmailExpression = "(createInstanceByConceptName outgoing_email)";
 
     Optional<JSONObject> previousFieldEval = Optional.empty();
 
@@ -49,58 +53,62 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public static class InternalState
     {
 
-        private static enum InternalStateMode
+        private static enum InternalLearningStateMode
 
         {
-            none, pendingOnEmailCreation, pendOnLearning, learning
+            none, pendOnLearning, learning
         }
 
-        private InternalStateMode internalStateMode;
+        private InternalLearningStateMode internalLearningStateMode;
+        private boolean pendingOnEmailCreation;
         List<Expression2> expressionsLearnt = new LinkedList<>();
         String lastCommandOrLearningCommand = "";
         int lastInfoForCommandHashCode;
 
         public boolean isPendingOnEmailCreation()
         {
-            return internalStateMode == InternalStateMode.pendingOnEmailCreation;
+            return pendingOnEmailCreation;
         }
 
         public boolean isPendingOnLearning()
         {
-            return internalStateMode == InternalStateMode.pendOnLearning;
+            return internalLearningStateMode == InternalLearningStateMode.pendOnLearning;
         }
 
         public boolean isInLearningMode()
         {
-            return internalStateMode == InternalStateMode.learning;
+            return internalLearningStateMode == InternalLearningStateMode.learning;
         }
 
         public void pendOnEmailCreation()
         {
-            internalStateMode = InternalStateMode.pendingOnEmailCreation;
+            pendingOnEmailCreation = true;
         }
 
         public void pendOnLearning()
         {
-            internalStateMode = InternalStateMode.pendOnLearning;
+            internalLearningStateMode = InternalLearningStateMode.pendOnLearning;
         }
 
         public void reset()
         {
-            internalStateMode = InternalStateMode.none;
+            internalLearningStateMode = InternalLearningStateMode.none;
+            pendingOnEmailCreation = false;
             expressionsLearnt = new LinkedList<>();
         }
 
         public String startLearning()
         {
-            internalStateMode = InternalStateMode.learning;
+            internalLearningStateMode = InternalLearningStateMode.learning;
             return lastCommandOrLearningCommand;
         }
 
         public void userGaveCommand(InfoForCommand infoForCommand, boolean success)
         {
-            if (internalStateMode == InternalStateMode.learning)
+            pendingOnEmailCreation = false;
+            if (internalLearningStateMode == InternalLearningStateMode.learning)
             {
+                //this saves the infoForCommand hashcode so it uses each expression only once.
                 //TODO: not the best way to do this, since some actions in the same expression may succeed and some not. also what if the user end the last command with "and that's it"?
                 if (success)
                 {
@@ -114,13 +122,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             else
             {
                 lastCommandOrLearningCommand = infoForCommand.userSentence;
-                internalStateMode = InternalStateMode.none;
             }
         }
 
         public List<Expression2> endLearningGetSentences()
         {
-            internalStateMode = InternalStateMode.none;
+            internalLearningStateMode = InternalLearningStateMode.none;
             List<Expression2> userSentences = expressionsLearnt;
             expressionsLearnt = new LinkedList<>();
             return userSentences;
@@ -165,6 +172,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (internalState.isPendingOnEmailCreation())
         {
+            //the following code replaces the "yes" command with the "create email" command for learning purposes
+            //not elegant at all...
+            if (internalState.isInLearningMode() && infoForCommand.expression.toString().equals(yesExpression))
+            {
+                infoForCommand.expression = ExpressionParser.expression2().parseSingleExpression(createEmailExpression);
+            }
             //composeEmail(infoForCommand);
             return createInstanceByConceptName(infoForCommand, OutgoingEmail.strOutgoingEmailTypeAndName);
         }

@@ -126,7 +126,14 @@ public class LispExecutor
                         invokeArgs.add(((ActionResponse) argumentValues.get(idxInArgs)).getInstance());
                     //Preconditions.checkArgument(arg);
                 }
-                return method.invoke(allUserActions, invokeArgs.toArray());
+                ActionResponse retVal =  (ActionResponse)method.invoke(allUserActions, invokeArgs.toArray());
+                if (!retVal.isSuccess())
+                {
+                    //Important!!! This runtime exception is actually a returnValue and is later caught in ParserSettings.evaluate.
+                    //This is done this way, in order to stop the execution of the rest of the expression (without interfering with LispEval.eval()
+                    throw retVal;
+                }
+                return retVal;
             } catch (NoSuchMethodException e)
             {
                 e.printStackTrace();

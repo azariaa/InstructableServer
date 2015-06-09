@@ -18,17 +18,17 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
 
     //should be written in the expected order of execution
     enum TasksToComplete {
-        createEmail,
-        sendTestEmail,
         defineContact,
         addEmailToContact,
         createContact,
         seeMomsEmail,
+        createEmail,
+        sendTestEmail,
         readEmailInInbox,
         nextEmailInInbox,
         previousEmailInInbox,
         teachReadNextInbox, //not relevant when not in learning mode.
-        eRepMomOk,
+        eRepMomShirt,
         eRepBossTask,
         eRepW2,
         eRepW1,
@@ -109,18 +109,18 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     {
         switch (currentTask())
         {
-            case createEmail:
-                return "Training Task 1: creating a new outgoing email";
-            case sendTestEmail:
-                return "Training Task 2: sending an outgoing email to "+ momName +" with hello as the body and no subject. "+momName+"'s email appears in the \"notes\" image";
             case defineContact:
-                return "Training Task 3: defining the concept contact";
+                return "Training Task 1: defining the concept contact";
             case addEmailToContact:
-                return "Training Task 4: adding the email field to the concept contact";
+                return "Training Task 2: adding the email field to the concept contact";
             case createContact:
-                return "Training Task 5: creating a contact for "+ momName +" and adding the correct email address to it";
+                return "Training Task 3: creating a contact for "+ momName +" and adding the correct email address to it. "+momName+"'s email appears in the \"notes\" image";
             case seeMomsEmail:
-                return "Training Task 6: asking the agent for mom's email";
+                return "Training Task 4: asking the agent for "+momName+"'s email";
+            case createEmail:
+                return "Training Task 5: creating a new outgoing email";
+            case sendTestEmail:
+                return "Training Task 6: sending an outgoing email to "+ momName +" with hello as the body and no subject. ";
             case readEmailInInbox:
                 return "Training Task 7: requesting the agent to read the current email in the inbox";
             case nextEmailInInbox:
@@ -151,7 +151,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             userTasks.add(TasksToComplete.defineContact);
         else if (agentResponse.contains("Field \"email\" was added to concept \"contact\""))
             userTasks.add(TasksToComplete.addEmailToContact);
-        else if (agentResponse.contains("email") && agentResponse.contains(momEmail))//\"abbie\" was set to:"))//("Instance \"abbie\" (of concept \"contact\") was created."))
+        else if (agentResponse.contains("\"email\"") && agentResponse.contains(momEmail))//\"abbie\" was set to:"))//("Instance \"abbie\" (of concept \"contact\") was created."))
             userTasks.add(TasksToComplete.createContact);
         else if (agentResponse.contains("It is: "+momEmail))
             userTasks.add(TasksToComplete.seeMomsEmail);
@@ -175,9 +175,9 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         //may want to actually send the email in real environment right here.
         if (body.contains("hello") && recipientList.contains(momEmail) && !userTasks.contains(TasksToComplete.sendTestEmail))
             userTasks.add(TasksToComplete.sendTestEmail);
-        else if (subject.contains("is everything fine") && recipientList.contains(momEmail) && !body.isEmpty())
-            userTasks.add(TasksToComplete.eRepMomOk);
-        else if (subject.contains("task I asked") && recipientList.contains(bossEmail) && !body.isEmpty())
+        else if (subject.contains("shirt color") && recipientList.contains(momEmail) && !body.isEmpty())
+            userTasks.add(TasksToComplete.eRepMomShirt);
+        else if (subject.contains("task i asked") && recipientList.contains(bossEmail) && !body.isEmpty())
             userTasks.add(TasksToComplete.eRepBossTask);
         else if (subject.contains("working tomorrow") && recipientList.contains(worker2Email) && !body.isEmpty())
             userTasks.add(TasksToComplete.eRepW2);
@@ -191,14 +191,16 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             userTasks.add(TasksToComplete.eForwardToBoss);
         else if (subject.contains("your vacation") && recipientList.contains(momEmail) && body.contains("vacation"))
             userTasks.add(TasksToComplete.eForwardToMom);
+        else if (subject.contains(worker2Name) && recipientList.contains(worker2Name) && body.contains("do what"))
+            userTasks.add(TasksToComplete.eForwardToW2);
         else if (subject.contains("party time") && body.contains("thursday") &&
-                recipientList.contains(worker1Email) && recipientList.contains(worker2Email) && recipientList.contains(worker3Email))
+                recipientList.contains(worker2Email))
             userTasks.add(TasksToComplete.eForwardToWParty);
         else if (subject.contains("work before parting") && body.contains("monday") &&
-                recipientList.contains(worker1Email) && recipientList.contains(worker2Email) && recipientList.contains(worker3Email))
+                recipientList.contains(worker2Email))
             userTasks.add(TasksToComplete.eForwardToWWork);
         else if (subject.contains("rest") && body.contains("well") &&
-                recipientList.contains(worker1Email) && recipientList.contains(worker2Email) && recipientList.contains(worker3Email))
+                recipientList.contains(worker2Email))
             userTasks.add(TasksToComplete.eForwardToWRest);
         else
         {
@@ -230,10 +232,10 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         //replying
 
         incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(momEmail,
-                "Is everything fine?",
+                "Shirt color",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
-                "I didn't hear from you in a while, is everything ok? Please reply as soon as possible (make sure to use the same subject, as you should always do when replying to emails :)."
+                "I need to know your favorite color for a shirt. Please reply as soon as possible (make sure to use the same subject, as you should always do when replying to emails :)."
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
@@ -298,21 +300,21 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 "Party time!",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
-                "We will have a party next Thursday at 4:00pm. Please forward this email to all people who report to you (make sure that they all appear together as recipients in the email)."
+                "We will have a party next Thursday at 4:00pm. Please forward this email to " + worker2Name + "."
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
                 "Work before parting",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
-                "We will all have to work very hard next Monday, Tuesday and Wednesday. Please forward this email to all people who report to you."
+                "We will all have to work very hard next Monday, Tuesday and Wednesday. Please forward this email to " + worker2Name + "."
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
                 "Rest during the weekend",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
-                "Don't forget to rest well on the weekend so you can work well on Monday, Tuesday and Wednesday. Please forward this email to all people who report to you."
+                "Don't forget to rest well on the weekend so you can work well on Monday, Tuesday and Wednesday. Please forward this email to " + worker2Name + "."
         ));
 
 

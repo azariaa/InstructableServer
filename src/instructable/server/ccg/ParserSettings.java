@@ -109,9 +109,19 @@ public class ParserSettings implements Cloneable
         LispEval lispEval = new LispEval(symbolTable);
         SExpression sExpression = ExpressionParser.sExpression(symbolTable).parseSingleExpression(expression.toString());
         System.out.println(sExpression.toString());
-        LispEval.EvalResult result = lispEval.eval(sExpression, env);
 
-        return (ActionResponse) result.getValue();
+        ActionResponse response;
+        try
+        {
+            LispEval.EvalResult result = lispEval.eval(sExpression, env);
+            response = (ActionResponse) result.getValue();
+        }
+        catch (ActionResponse actionResponse)
+        {
+            response = actionResponse;
+        }
+
+        return  response;
     }
 
     public CcgUtils.SayAndExpression ParseAndEval(IAllUserActions allUserActions, String userSays)
@@ -120,6 +130,7 @@ public class ParserSettings implements Cloneable
         ActionResponse response;
         expression = CcgUtils.parse(parser, userSays, posUsed);
         //System.out.println("debug:" + expression.toString());
+
         response = this.evaluate(allUserActions, userSays, expression);
         return new CcgUtils.SayAndExpression(response.getSayToUser(), expression.toString(), response.isSuccess());
     }
