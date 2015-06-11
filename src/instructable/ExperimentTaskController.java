@@ -205,7 +205,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         else if (subject.contains("rest") && body.contains("well") &&
                 recipientList.contains(worker2Email))
             userTasks.add(TasksToComplete.eForwardToWRest);
-        else if (subject.contains("cannot attend party") && body.contains("sorry") && recipientList.contains(bossEmail))
+        else if (subject.contains("cannot attend") && body.contains("sorry") && recipientList.contains(bossEmail))
             userTasks.add(TasksToComplete.eForwardWToBoss);
         else if (subject.contains("everyone ignores me") && !body.isEmpty() && recipientList.contains(worker3Email))
             userTasks.add(TasksToComplete.eRepW3Ignore);
