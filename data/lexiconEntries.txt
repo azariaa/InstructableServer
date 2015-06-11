@@ -61,6 +61,7 @@ concept,ConceptName/ConceptName,(lambda $1 $1)
 concept,String/String,(lambda $1 $1)
 field,FieldName/FieldName,(lambda $1 $1)
 field,String/String,(lambda $1 $1)
+field,String\String,(lambda $1 $1)
 instance,InstanceName/InstanceName,(lambda $1 $1)
 instance,String/String,(lambda $1 $1)
 body,FieldName{0},body,0 body

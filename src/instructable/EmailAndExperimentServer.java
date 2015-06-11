@@ -42,69 +42,77 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
     @Override
     public void handle(HttpExchange httpExchange) throws IOException
     {
-        //TODO: add all tasks!!!
-        Map<String, Object> parameters =
-                (Map<String, Object>) httpExchange.getAttribute(Service.ParameterFilter.parametersStr);
-        if (!parameters.containsKey(gameIdParam))
+        try
         {
-            logger.warning("no gameId");
-            return;
-        }
-        String gameId = parameters.get(gameIdParam).toString();
-        if (!parameters.containsKey(actionParam))
-        {
-            logger.warning("no action, gameId:" + gameId);
-            return;
-        }
-        String action = parameters.get(actionParam).toString();
-        Optional<ExperimentTaskController> opExperimentTaskController = getUserTasks(gameId);
-        if (!opExperimentTaskController.isPresent())
-        {
-            if (!action.equals(newGameJoinedStr))
-                logger.warning("gameId not in map, adding now. gameId:" + gameId);
-            ExperimentTaskController experimentTaskControl = newGameStarted(gameId);
-            agentDataAndControl.addNewGame(gameId,experimentTaskControl,experimentTaskControl);
-        }
-        ExperimentTaskController experimentTaskController = getUserTasks(gameId).get();
-        String responseToSend = "";
-        switch (action)
-        {
-            case getTasksInfoStr:
-                Integer score = experimentTaskController.getGameScore();
-                String currentTaskText = experimentTaskController.getCurrentTaskText();
-                String recentTask = experimentTaskController.getRecentTaskName();
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put(gameScoreStr,score);
-                jsonObject.put(gameTaskStr,currentTaskText);
-                jsonObject.put(recentTaskCompletedStr,recentTask);
-                responseToSend = jsonObject.toJSONString();
-                break;
-            case newGameJoinedStr:
-                break;
-            case sayToAgentStr:
-                if (parameters.containsKey(userSaysParam))
-                {
-                    try
+            //TODO: add all tasks!!!
+            Map<String, Object> parameters =
+                    (Map<String, Object>) httpExchange.getAttribute(Service.ParameterFilter.parametersStr);
+            if (!parameters.containsKey(gameIdParam))
+            {
+                logger.warning("no gameId");
+                return;
+            }
+            String gameId = parameters.get(gameIdParam).toString();
+            if (!parameters.containsKey(actionParam))
+            {
+                logger.warning("no action, gameId:" + gameId);
+                return;
+            }
+            String action = parameters.get(actionParam).toString();
+            Optional<ExperimentTaskController> opExperimentTaskController = getUserTasks(gameId);
+            if (!opExperimentTaskController.isPresent())
+            {
+                if (!action.equals(newGameJoinedStr))
+                    logger.warning("gameId not in map, adding now. gameId:" + gameId);
+                ExperimentTaskController experimentTaskControl = newGameStarted(gameId);
+                agentDataAndControl.addNewGame(gameId, experimentTaskControl, experimentTaskControl);
+            }
+            ExperimentTaskController experimentTaskController = getUserTasks(gameId).get();
+            String responseToSend = "";
+            switch (action)
+            {
+                case getTasksInfoStr:
+                    Integer score = experimentTaskController.getGameScore();
+                    String currentTaskText = experimentTaskController.getCurrentTaskText();
+                    String recentTask = experimentTaskController.getRecentTaskName();
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put(gameScoreStr, score);
+                    jsonObject.put(gameTaskStr, currentTaskText);
+                    jsonObject.put(recentTaskCompletedStr, recentTask);
+                    responseToSend = jsonObject.toJSONString();
+                    break;
+                case newGameJoinedStr:
+                    break;
+                case sayToAgentStr:
+                    if (parameters.containsKey(userSaysParam))
                     {
-                        String userSays = parameters.get(userSaysParam).toString();
-                        responseToSend = agentDataAndControl.executeSentenceForUser(gameId, userSays);
-                    } catch (Exception ex)
-                    {
-                        agentDataAndControl.logger.log(Level.SEVERE, "an exception was thrown", ex);
-                        responseToSend = "Sorry, but I got some error...";
+                        try
+                        {
+                            String userSays = parameters.get(userSaysParam).toString();
+                            responseToSend = agentDataAndControl.executeSentenceForUser(gameId, userSays);
+                        } catch (Exception ex)
+                        {
+                            agentDataAndControl.logger.log(Level.SEVERE, "an exception was thrown", ex);
+                            responseToSend = "Sorry, but I got some error...";
+                        }
+                        agentDataAndControl.logger.info("GameID:" + gameId + ". System reply: " + responseToSend);
                     }
-                    agentDataAndControl.logger.info("GameID:" + gameId + ". System reply: " + responseToSend);
-                }
-                break;
-            default:
-                logger.warning("unknown action, gameId:" + gameId + ". action:" + action);
-                break;
+                    break;
+                default:
+                    logger.warning("unknown action, gameId:" + gameId + ". action:" + action);
+                    break;
+            }
+            //We should always send a response even if it's empty!
+            httpExchange.sendResponseHeaders(200, responseToSend.length());
+            OutputStream os = httpExchange.getResponseBody();
+            os.write(responseToSend.getBytes());
+            os.flush();
+            os.close();
         }
-        //We should always send a response even if it's empty!
-        httpExchange.sendResponseHeaders(200, responseToSend.length());
-        OutputStream os = httpExchange.getResponseBody();
-        os.write(responseToSend.getBytes());
-        os.close();
+        catch (Exception ex)
+        {
+            logger.log(Level.SEVERE, "an exception was thrown", ex);
+        }
     }
 
     private Optional<ExperimentTaskController> getUserTasks(String gameId)

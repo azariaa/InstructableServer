@@ -34,12 +34,15 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         eRepW1,
         eRepMomAtWork,
         eRepW3,
-        eForwardToBoss,
+        eForwardMToBoss,
         eForwardToMom,
         eForwardToW2,
         eForwardToWParty,
         eForwardToWWork,
         eForwardToWRest,
+        eForwardWToBoss,
+        eRepW3Ignore,
+        eRepW1Attention,
         allCompleted
     }
     //static final int numOfTasks = TasksToComplete.values().length;
@@ -188,7 +191,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         else if (subject.contains("do you like work") && recipientList.contains(worker3Email) && !body.isEmpty())
             userTasks.add(TasksToComplete.eRepW3);
         else if (subject.contains("family event") && recipientList.contains(bossEmail) && body.contains("vacation"))
-            userTasks.add(TasksToComplete.eForwardToBoss);
+            userTasks.add(TasksToComplete.eForwardMToBoss);
         else if (subject.contains("your vacation") && recipientList.contains(momEmail) && body.contains("vacation"))
             userTasks.add(TasksToComplete.eForwardToMom);
         else if (subject.contains(worker2Name) && recipientList.contains(worker2Name) && body.contains("do what"))
@@ -202,6 +205,12 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         else if (subject.contains("rest") && body.contains("well") &&
                 recipientList.contains(worker2Email))
             userTasks.add(TasksToComplete.eForwardToWRest);
+        else if (subject.contains("cannot attend party") && body.contains("sorry") && recipientList.contains(bossEmail))
+            userTasks.add(TasksToComplete.eForwardWToBoss);
+        else if (subject.contains("everyone ignores me") && !body.isEmpty() && recipientList.contains(worker3Email))
+            userTasks.add(TasksToComplete.eRepW3Ignore);
+        else if (subject.contains("i like attention") && !body.isEmpty() && recipientList.contains(worker1Email))
+            userTasks.add(TasksToComplete.eRepW1Attention);
         else
         {
             unsuccessfulSend = true;
@@ -315,6 +324,27 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "Don't forget to rest well on the weekend so you can work well on Monday, Tuesday and Wednesday. Please forward this email to " + worker2Name + "."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker2Email,
+                "Cannot attend the party",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "I am sorry, but I can't attend next week's party. Please forward this email to " + bossName + "."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker3Email,
+                "Everyone ignores me",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "Thank you so much for not ignoring this email and reading it. Please reply and tell me that you saw it."
+        ));
+
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker1Email,
+                "I like attention",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "I'm happy that you are reading my email. Please reply and tell me that you saw it."
         ));
 
 

@@ -44,6 +44,11 @@ public class AgentDataAndControl
 
     public ParserSetAndActions addNewGame(String gameId, IEmailSender emailSender, IAddInboxEmails addInboxEmails)
     {
+        synchronized(parserSetAndActionsMap)
+        {
+            if (parserSetAndActionsMap.containsKey(gameId))
+                return parserSetAndActionsMap.get(gameId);
+        }
         ParserSettings parserSettingsCopy = originalParserSettings.clone();
         TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettingsCopy), emailSender);
         addInboxEmails.addInboxEmails(topDMAllActions);

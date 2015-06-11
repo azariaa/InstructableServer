@@ -14,7 +14,6 @@ import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
 import com.jayantkrish.jklol.ccg.lexinduct.*;
 import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
 import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
-import com.jayantkrish.jklol.models.DiscreteVariable;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
@@ -23,7 +22,6 @@ import com.jayantkrish.jklol.util.CsvParser;
 import com.jayantkrish.jklol.util.IntegerArrayIterator;
 import com.jayantkrish.jklol.util.PairCountAccumulator;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import instructable.server.IAllUserActions;
 import instructable.server.LispExecutor;
 
 import java.io.BufferedReader;
@@ -36,8 +34,8 @@ public class CcgUtils
 {
 
   private static Set<String> POS_TAGS_TO_SKIP_IN_LEXICON_INDUCTION = Sets.newHashSet("DT", "IN", "TO", "CC");
-  final public static String START_POS_TAG = "START";
-  final static String startSymbol = "start_symbol";
+    final public static String START_POS_TAG = "START";
+    final static String startSymbol = "start_symbol";
 
     /**
      * Induces a collection of lexicon entries from a data set of text
@@ -132,11 +130,11 @@ public class CcgUtils
 		  }
 	  }
 
-	  System.out.println(spanStarts);
-	  System.out.println(spanEnds);
-	  System.out.println(spanStrings);
-	  System.out.println(spanExpressions);
-	  System.out.println(spanSyntacticCategories);
+	  //System.out.println(spanStarts);
+	  //System.out.println(spanEnds);
+	  //System.out.println(spanStrings);
+	  //System.out.println(spanExpressions);
+	  //System.out.println(spanSyntacticCategories);
 
 	  int[] numEntriesPerSpan = new int[spanStarts.size()];
 	  for (int i = 0; i < spanStarts.size(); i++) {
@@ -153,22 +151,40 @@ public class CcgUtils
 			  substituted = replaceSubexpression(substituted, spanExpressions.get(i).get(indexes[i]), var);
 		  }
 
-		  for (int i = 1; i < words.size(); i++) {
-		    boolean containedInSpan = false;
-		    for (int j = 0 ; j < spanStarts.size(); j++) {
-		      if (i >= spanStarts.get(j) && i <= spanEnds.get(j)) {
-		        containedInSpan = true;
-		        break;
-		      }
-		    }
 
-		    if (containedInSpan) {
-		      continue;
-		    }
+          List<Integer> idxOfCandidates = new LinkedList<>();
+          //find command candidates
+		  for (int i = 1; i < words.size(); i++)
+          {
+              boolean containedInSpan = false;
+              for (int j = 0; j < spanStarts.size(); j++)
+              {
+                  if (i >= spanStarts.get(j) && i <= spanEnds.get(j))
+                  {
+                      containedInSpan = true;
+                      break;
+                  }
+              }
 
-		    if (POS_TAGS_TO_SKIP_IN_LEXICON_INDUCTION.contains(pos.get(i))) {
-		      continue;
-		    }
+              if (containedInSpan)
+              {
+                  continue;
+              }
+
+              if (POS_TAGS_TO_SKIP_IN_LEXICON_INDUCTION.contains(pos.get(i)))
+              {
+                  continue;
+              }
+              idxOfCandidates.add(i);
+          }
+
+          if (idxOfCandidates.isEmpty()) //must have at least one candidate.
+          {
+              idxOfCandidates.add(1);
+          }
+
+          for (int i : idxOfCandidates)
+          {
 
 		    // System.out.println(words.get(i) + "/" + pos.get(i));
 
@@ -360,14 +376,14 @@ public class CcgUtils
         return parameters;
     }
 
-    public static CcgExample createCcgExample(String sentence, Expression2 expression, Set<String> usedPOS)
+    public static CcgExample createCcgExample(String sentence, Expression2 expression, Set<String> usedPOS, boolean addNewPOS)
     {
         //List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
         List<String> tokens = new LinkedList<>();
         List<String> poss = new LinkedList<>();
         tokens.add(startSymbol);
         poss.add(START_POS_TAG);
-        tokenizeAndPOS(sentence, tokens, poss, true, usedPOS);
+        tokenizeAndPOS(sentence, tokens, poss, addNewPOS, usedPOS);
         SupertaggedSentence supertaggedSentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, poss);
 
         return new CcgExample(supertaggedSentence, null, null, expression, null);
@@ -376,12 +392,17 @@ public class CcgUtils
 
     static MaxentTagger maxentTagger = new MaxentTagger("resources/english-left3words-distsim.tagger");
 
-    /*
-    returns outTokens in lowercase!
-    if training, any POS used are added to allowedOrUsedPOS.
-    if train == false, uses only POS from allowedOrUsedPOS
+
+    /**
+     *
+     * @param sentence sentence to tokenize and POS
+     * @param outTokens in lowercase.
+     * @param outPOSs POS
+     * @param addNewPOS if addNewPOS, any POS used are added to allowedOrUsedPOS.
+                    if addNewPOS == false, uses only POS from allowedOrUsedPOS
+     * @param allowedOrUsedPOS either an object which all POS will be added to (if addNewPOS) or a set of allowed POS (if !addNewPOS)
      */
-    public static void tokenizeAndPOS(String sentence, List<String> outTokens, List<String> outPOSs, boolean train, Set<String> allowedOrUsedPOS)
+    public static void tokenizeAndPOS(String sentence, List<String> outTokens, List<String> outPOSs, boolean addNewPOS, Set<String> allowedOrUsedPOS)
     {
 
         final List<String> excludeTokens = Arrays.asList(new String[]{",", ".", "!", "(", ")", "!", "?","\"",":",";"}); //need to exclude this since they won't be available when using speech.
@@ -403,7 +424,7 @@ public class CcgUtils
             {
                 outTokens.add(token);
                 //POSs.add(POS);
-                if (train)
+                if (addNewPOS)
                 {
                     allowedOrUsedPOS.add(POS);
                     outPOSs.add(POS);
@@ -419,42 +440,6 @@ public class CcgUtils
         }
     }
 
-    /**
-     * Parses a sentence text using {@code parser} to produce a
-     * logical form. The text is represented by a list of tokens
-     * (e.g., obtained by splitting the input on spaces). The returned
-     * logical form is given in a LISP S-Expression format.
-     *
-     * @param parser
-     * @param sentence
-     * @return
-     */
-    public static Expression2 parse(CcgParser parser, String sentence, Set<String> posAllowed)
-    {
-        CcgInference inferenceAlg = new CcgExactInference(null, -1L, Integer.MAX_VALUE, 1);
-        ExpressionSimplifier simplifier = getExpressionSimplifier();
-
-        //List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
-        List<String> tokens = new LinkedList<>();
-        List<String> poss = new LinkedList<>();
-        tokens.add(startSymbol);
-        poss.add(START_POS_TAG);
-        tokenizeAndPOS(sentence, tokens, poss, false, posAllowed);
-        SupertaggedSentence supertaggedSentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, poss);
-
-        //      //if we want to return only sentences and fieldVal in upper level:
-        DiscreteVariable dv = parser.getSyntaxVarType();
-
-        //upto here
-        CcgParse parse = inferenceAlg.getBestParse(parser, supertaggedSentence, new InstChartCost(), new NullLogFunction());
-        //if parse is empty we want to parse to unknownCommand
-        Expression2 expression;
-        if (parse == null)
-            expression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
-        else
-            expression = parse.getLogicalForm();
-        return simplifier.apply(expression);
-    }
 
     public static ExpressionSimplifier getExpressionSimplifier()
     {

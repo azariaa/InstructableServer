@@ -4,16 +4,21 @@ import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.*;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
 import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer;
 import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
+import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
+import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
 import com.jayantkrish.jklol.lisp.Environment;
 import com.jayantkrish.jklol.lisp.LispEval;
 import com.jayantkrish.jklol.lisp.SExpression;
+import com.jayantkrish.jklol.models.DiscreteVariable;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
+import com.jayantkrish.jklol.training.NullLogFunction;
 import com.jayantkrish.jklol.util.IndexedList;
 import instructable.server.ActionResponse;
 import instructable.server.IAllUserActions;
@@ -30,14 +35,13 @@ import java.util.Set;
  */
 public class ParserSettings implements Cloneable
 {
-
     private ParserSettings()
     {
 
     }
 
     public ParserSettings (List<String> lexiconEntries, String[] unaryRules,
-                                                   FeatureGenerator<StringContext, String> featureGenerator, List<String[]> examplesList)
+                           FeatureGenerator<StringContext, String> featureGenerator, List<String[]> examplesList)
     {
         env = Environment.empty();
         symbolTable = IndexedList.create();
@@ -57,7 +61,7 @@ public class ParserSettings implements Cloneable
         for (int i = 0; i < examplesList.size(); i++)
         {
             Expression2 expression = ExpressionParser.expression2().parseSingleExpression(examplesList.get(i)[1]);
-            CcgExample example = CcgUtils.createCcgExample(examplesList.get(i)[0], expression, posUsed);
+            CcgExample example = CcgUtils.createCcgExample(examplesList.get(i)[0], expression, posUsed, true);
             ccgExamples.add(example);
             List<String> allFunctionNames = LispExecutor.allFunctionNames();
             Set<String> freeSet = StaticAnalysis.getFreeVariables(example.getLogicalForm());
@@ -128,7 +132,7 @@ public class ParserSettings implements Cloneable
     {
         Expression2 expression;
         ActionResponse response;
-        expression = CcgUtils.parse(parser, userSays, posUsed);
+        expression = parse(userSays);
         //System.out.println("debug:" + expression.toString());
 
         response = this.evaluate(allUserActions, userSays, expression);
@@ -161,6 +165,68 @@ public class ParserSettings implements Cloneable
       lexiconAsList.add(newLexicon);
       List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
       this.updateParserGrammar(lexiconEntries, new LinkedList<>());
+    }
+
+    /**
+     * Parses a sentence text using {@code parser} to produce a
+     * logical form. The text is represented by a list of tokens
+     * (e.g., obtained by splitting the input on spaces). The returned
+     * logical form is given in a LISP S-Expression format.
+     *
+     * @param sentence
+     * @return
+     */
+    private Expression2 parse(String sentence)
+    {
+        CcgInference inferenceAlg = new CcgExactInference(null, -1L, Integer.MAX_VALUE, 1);
+        ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
+
+        //List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
+        List<String> tokens = new LinkedList<>();
+        List<String> poss = new LinkedList<>();
+        tokens.add(CcgUtils.startSymbol);
+        poss.add(CcgUtils.START_POS_TAG);
+        CcgUtils.tokenizeAndPOS(sentence, tokens, poss, false, posUsed);
+        SupertaggedSentence supertaggedSentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, poss);
+
+        //      //if we want to return only sentences and fieldVal in upper level:
+        DiscreteVariable dv = parser.getSyntaxVarType();
+
+        //upto here
+        CcgParse parse = inferenceAlg.getBestParse(parser, supertaggedSentence, new InstChartCost(), new NullLogFunction());
+        //if parse is empty we want to parse to unknownCommand
+        Expression2 expression;
+        if (parse == null)
+            expression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
+        else
+            expression = parse.getLogicalForm();
+        return simplifier.apply(expression);
+    }
+
+    public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt)
+    {
+        Expression2 expressionLearnt = CcgUtils.combineCommands(commandsLearnt);
+//        FileWriter out = null;
+//        try
+//        {
+//            out = new FileWriter(tempFileName, true);
+//            out.write(originalCommand + "," + expression.toString() + "\n");
+//            out.close();
+//        } catch (IOException e)
+//        {
+//            e.printStackTrace();
+//        }
+
+        CcgExample example = CcgUtils.createCcgExample(originalCommand, expressionLearnt, posUsed, false);
+
+        List<LexiconEntry> newEntries = CcgUtils.induceLexiconEntriesHeuristic(example, parser);
+        System.out.println(newEntries);
+
+        updateParserGrammar(newEntries, Lists.newArrayList());
+        ccgExamples.add(example);
+        SufficientStatistics newParameters = CcgUtils.train(parserFamily, ccgExamples, 1);
+
+        parser = parserFamily.getModelFromParameters(newParameters);
     }
 
     @Override
