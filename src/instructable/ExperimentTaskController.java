@@ -25,9 +25,12 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         createEmail,
         sendTestEmail,
         readEmailInInbox,
+        setRecpToSender,
+        sendTestBody,
         nextEmailInInbox,
         previousEmailInInbox,
         teachReadNextInbox, //not relevant when not in learning mode.
+        tellBoss,
         eRepMomShirt,
         eRepBossTask,
         eRepW2,
@@ -113,25 +116,29 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         switch (currentTask())
         {
             case defineContact:
-                return "Training Task 1: defining the concept contact";
+                return "Your 1st training task is to define the concept contact";
             case addEmailToContact:
-                return "Training Task 2: adding the email field to the concept contact";
+                return "Your 2nd training task is to add the email field to the concept contact";
             case createContact:
-                return "Training Task 3: creating a contact for "+ momName +" and adding the correct email address to it. "+momName+"'s email appears in the \"notes\" image";
+                return "Your 3rd training task is to create a contact for "+ momName +" and add the correct email address to it. "+momName+"'s email appears in the \"notes\" image";
             case seeMomsEmail:
-                return "Training Task 4: asking the agent for "+momName+"'s email";
+                return "Your 4th training task is to ask the agent for "+momName+"'s email";
             case createEmail:
-                return "Training Task 5: creating a new outgoing email";
+                return "Your 5th training task is to create a new outgoing email";
             case sendTestEmail:
-                return "Training Task 6: sending an outgoing email to "+ momName +" with hello as the body and no subject. ";
+                return "Your 6th training task is to send an outgoing email to "+ momName +" with hello as the subject and no body";
             case readEmailInInbox:
-                return "Training Task 7: requesting the agent to read the current email in the inbox";
+                return "Your 7th training task is to read the current email in the inbox";
+            case setRecpToSender:
+                return "Your 8th training task is to create a new email and set the recipient to the current email's sender (don't type the email yourself)";
+            case sendTestBody:
+                return "Your 9th training task is to set the body to the current email's body (don't type in the body yourself, just use the current email's body), and send the email";
             case nextEmailInInbox:
-                return "Training Task 8: requesting the agent to move to the <b>next</b> email in the inbox";
+                return "Your 10th training task is to move to the <b>next</b> email in the inbox";
             case previousEmailInInbox:
-                return "Training Task 9: requesting the agent to move to the <b>previous</b> email in the inbox";
+                return "Your 11th training task is to move to the <b>previous</b> email in the inbox";
             case teachReadNextInbox:
-                return "Training Task 10: teaching the agent a <b>new command</b>: having it both moving to the <b>next</b> email <b>and</b> reading it";
+                return "Your 12th (and last) training task is to teach the agent a <b>new command</b>: having it both moving to the <b>next</b> email and reading it";
             case allCompleted:
                 //this shouldn't actually ever happen
                 return "Congratulations: You have completed all possible tasks!";
@@ -139,7 +146,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             {
                 if (unsuccessfulSend)
                     return "Previously sent email did not complete any task. Check email's subject, body, and recipient address.";
-                return "Main Task: reading through all incoming emails and acting accordingly";
+                return "Main Task: read through all incoming emails and acting accordingly.";
             }
         }
     }
@@ -148,8 +155,6 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     {
         if (agentResponse.contains("Composing new email"))
             userTasks.add(TasksToComplete.createEmail);
-        //else if (agentResponse.contains("Email sent successfully")) //this is done below in the emailSent function.
-            //userTasks.add(TasksToComplete.sendTestEmail);
         else if (agentResponse.contains("Concept \"contact\" was defined successfully"))
             userTasks.add(TasksToComplete.defineContact);
         else if (agentResponse.contains("Field \"email\" was added to concept \"contact\""))
@@ -160,12 +165,18 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             userTasks.add(TasksToComplete.seeMomsEmail);
         else if (agentResponse.contains("subject:") && agentResponse.contains("sender:"))
             userTasks.add(TasksToComplete.readEmailInInbox);
+        else if (agentResponse.contains("recipient") && agentResponse.contains(worker1Email))
+            userTasks.add(TasksToComplete.setRecpToSender);
         else if (agentResponse.contains("Set to next incoming email successfully"))
             userTasks.add(TasksToComplete.nextEmailInInbox);
         else if (agentResponse.contains("Set to previous incoming email successfully"))
             userTasks.add(TasksToComplete.previousEmailInInbox);
-        else if (agentResponse.contains("I now know what to do when you say (for example): ")) //might want to check in between, that actually taught correct task.
-            userTasks.add(TasksToComplete.teachReadNextInbox);
+        else if (agentResponse.contains("I now know what to do when you say (for example): "))
+        {
+            //make sure that it didn't teach something (probably not relevant) earlier.
+            if (userTasks.contains(TasksToComplete.nextEmailInInbox) && userTasks.contains(TasksToComplete.readEmailInInbox) && userTasks.contains(TasksToComplete.previousEmailInInbox))
+                userTasks.add(TasksToComplete.teachReadNextInbox);
+        }
     }
 
     //should actually be named "emailSent"
@@ -176,8 +187,12 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         String body = body1.toLowerCase();
         unsuccessfulSend = false;
         //may want to actually send the email in real environment right here.
-        if (body.contains("hello") && recipientList.contains(momEmail) && !userTasks.contains(TasksToComplete.sendTestEmail))
+        if (subject.contains("hello") && recipientList.contains(momEmail) && !userTasks.contains(TasksToComplete.sendTestEmail))
             userTasks.add(TasksToComplete.sendTestEmail);
+        else if ((body.contains("feeling well today") || body.contains("felt like")) && recipientList.contains(worker1Email) && !userTasks.contains(TasksToComplete.sendTestBody))
+            userTasks.add(TasksToComplete.sendTestBody);
+        else if (recipientList.contains(bossEmail) && (!body.isEmpty() || !subject.isEmpty()) && !userTasks.contains(TasksToComplete.tellBoss))
+            userTasks.add(TasksToComplete.tellBoss);
         else if (subject.contains("shirt color") && recipientList.contains(momEmail) && !body.isEmpty())
             userTasks.add(TasksToComplete.eRepMomShirt);
         else if (subject.contains("task i asked") && recipientList.contains(bossEmail) && !body.isEmpty())
@@ -227,15 +242,25 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 "Hi there",
                 Arrays.asList(myEmail),
                 new LinkedList<String>(),
-                "I'm feeling well today."
+                "I'm feeling well today. I hope I will also feel well tomorrow and anytime! Please ignore this email and read the next one."
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker1Email,
                 "Another email",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
-                "I felt like sending you another email."
+                "I felt like sending you another email. I hope that you don't mind. Please ignore this email too and read the next one."
         ));
+
+
+        //plain send
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker3Email,
+                "Tell Alex that I'm on my way",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "Please email Alex saying that I'll arrive on time. (I don't have the right email on me)."
+        ));
+
 
 
         //replying

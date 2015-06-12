@@ -162,7 +162,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 response,
                 Optional.of("Email sent successfully."),
-                true,
+                false,//true,
                 internalState);
 
         return new ActionResponse(response.toString(), success);
@@ -314,10 +314,15 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
     private ActionResponse getProbField(InfoForCommand infoForCommand, Optional<String> instanceName, String fieldName, boolean mutableOnly)
     {
-        if (instanceName.isPresent())
+        if (instanceName.isPresent() && inboxCommandController.isInboxInstanceName(instanceName.get()))
         {
-            //instanceName = Optional.of(AliasMapping.instanceNameMapping(instanceName.get()));
-            instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName.get()));
+            if (mutableOnly) //inbox is not mutable, so user probably wanted outgoing message. remove it, and let the system decide what to use.
+                instanceName = Optional.empty();
+            else
+            {
+                //instanceName = Optional.of(AliasMapping.instanceNameMapping(instanceName.get()));
+                instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName.get()));
+            }
         }
 
         ExecutionStatus executionStatus = new ExecutionStatus();
@@ -385,7 +390,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 response,
                 Optional.of("It is: " + FieldHolder.fieldFromJSonForUser(requestedField)),
-                true,
+                false,//changed to false, but this might be ok being true, (all other except unknownCommand are false.)
                 internalState
         );
         if (success)
@@ -523,7 +528,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 response,
                 Optional.of(successStr),
-                true,
+                false,//Don't want to teach, since it might keep failing, by parsing again to the same original command
                 internalState);
 
         return new ActionResponse(response.toString(), success);
@@ -628,7 +633,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 response,
                 Optional.of("Composing new email. " + "\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + "."),
-                true,
+                false,//true,
                 internalState);
 
         return new ActionResponse(response.toString(), success);
@@ -780,5 +785,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 false,
                 internalState);
         return new ActionResponse(response.toString(), success);
+    }
+
+    @Override
+    public ActionResponse say(InfoForCommand infoForCommand, String say)
+    {
+        return new ActionResponse(say, true);
     }
 }

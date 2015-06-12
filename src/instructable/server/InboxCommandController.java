@@ -32,6 +32,11 @@ public class InboxCommandController
         instanceContainer.addInstance(executionStatus, emailMessage);
     }
 
+    public boolean isInboxInstanceName(String instanceName)
+    {
+        return instanceName.equals(emailMessageNameStart);
+    }
+
     public String addCounterToEmailMessageIdIfRequired(String instanceName)
     {
         if (instanceName.equals(emailMessageNameStart))

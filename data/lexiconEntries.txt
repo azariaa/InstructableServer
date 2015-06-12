@@ -4,10 +4,13 @@ yes,S{0},(yes)
 ok,S{0},(yes)
 sure,S{0},(yes)
 finish,S{0},(end)
+done,S{0},(end)
+finished,S{0},(end)
 end,S{0},(end)
 "that 's it",S{0},(end)
 nothing,S{0},(end)
 cancel,S{0},(cancel)
+quit,S{0},(cancel)
 "next email",S{0},(nextEmailMessage)
 "next inbox",S{0},(nextEmailMessage)
 "next incoming email",S{0},(nextEmailMessage)
@@ -66,6 +69,8 @@ instance,InstanceName/InstanceName,(lambda $1 $1)
 instance,String/String,(lambda $1 $1)
 body,FieldName{0},body,0 body
 "incoming email",InstanceName{0},inbox
+my email,InstanceName{0},inbox
+current email,InstanceName{0},inbox
 message,InstanceName{0},inbox
 inbox,InstanceName{0},inbox
 email,InstanceName{0},inbox
@@ -80,3 +85,4 @@ contact,ConceptName{0},contact
 email,FieldName{0},email
 jane,InstanceName{0},jane
 "my spouse",InstanceName{0},my_spouse
+hi,S{0},(say "Sorry, but I don't do small-talk. Please give me a command.")
