@@ -85,4 +85,4 @@ contact,ConceptName{0},contact
 email,FieldName{0},email
 jane,InstanceName{0},jane
 "my spouse",InstanceName{0},my_spouse
-hi,S{0},(say "Sorry, but I don't do small-talk. Please give me a command.")
+hi,S{0},(replyTo)

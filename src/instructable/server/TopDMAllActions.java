@@ -788,8 +788,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
-    public ActionResponse say(InfoForCommand infoForCommand, String say)
+    public ActionResponse replyTo(InfoForCommand infoForCommand)
     {
-        return new ActionResponse(say, true);
+        String userSaid =infoForCommand.userSentence.toLowerCase();
+        if (userSaid.equals("hi") || userSaid.startsWith("hello"))
+            return new ActionResponse("Sorry, but I don't do small-talk. Please give me a command.", true);
+        return new ActionResponse("Don't know what to day", false);
     }
 }
