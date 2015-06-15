@@ -25,6 +25,7 @@ quit,S{0},(cancel)
 compose,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
 create,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
 create,((S{0}/PP_ConceptName{2}){0}/String{1}), (lambda $1 $2 (createInstanceByFullNames $2 $1))
+create,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
 define,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
 add,((S{0}/ConceptName{2}){0}/String{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
 has,((S{0}\ConceptName{2}){0}/String{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
@@ -80,9 +81,9 @@ email,ConceptName{0},outgoing_email,0 outgoing_email
 recipient,FieldName{0},recipient_list,0 recipient_list
 subject,FieldName{0},subject,0 subject
 sender,FieldName{0},sender,0 sender
+hi,S{0},(replyTo)
 bob,InstanceName{0},bob,0 bob
-contact,ConceptName{0},contact
-email,FieldName{0},email
+name,ConceptName{0},name
+classification,FieldName{0},classification
 jane,InstanceName{0},jane
 "my spouse",InstanceName{0},my_spouse
-hi,S{0},(replyTo)
