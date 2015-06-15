@@ -404,8 +404,8 @@ public class CcgUtils
      */
     public static void tokenizeAndPOS(String sentence, List<String> outTokens, List<String> outPOSs, boolean addNewPOS, Set<String> allowedOrUsedPOS)
     {
-
-        final List<String> excludeTokens = Arrays.asList(new String[]{",", ".", "!", "(", ")", "!", "?","\"",":",";"}); //need to exclude this since they won't be available when using speech.
+        final String slash = "/"; //is replaced with the first word.
+        final List<String> excludeTokens = Arrays.asList(new String[]{",", ".", "!", "(", ")", "!", "?","\"",":",";",slash,"\\"}); //need to exclude this since they won't be available when using speech.
 
         //List<String> tokens = new LinkedList<>();
         //PTBTokenizer ptbTokenizer = PTBTokenizer.newPTBTokenizer(new StringReader(sentence));
@@ -422,6 +422,8 @@ public class CcgUtils
             String POS = tokenAndPOS.substring(idx + 1);
             if (!excludeTokens.contains(token))
             {
+                if (token.contains(slash))
+                    token = token.substring(0,token.indexOf(slash));
                 outTokens.add(token);
                 //POSs.add(POS);
                 if (addNewPOS)
