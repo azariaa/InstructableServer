@@ -118,6 +118,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                         expressionsLearnt.add(infoForCommand.expression);
                     }
                 }
+                else //if failed need to remove current expression from list of expressions
+                {
+                    if(infoForCommand.hashCode() == lastInfoForCommandHashCode)
+                    {
+                        lastInfoForCommandHashCode = 0;
+                        expressionsLearnt.remove(expressionsLearnt.size()-1); //remove last
+                    }
+                }
             }
             else
             {
