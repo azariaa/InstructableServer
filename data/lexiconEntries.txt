@@ -68,6 +68,7 @@ field,String/String,(lambda $1 $1)
 field,String\String,(lambda $1 $1)
 instance,InstanceName/InstanceName,(lambda $1 $1)
 instance,String/String,(lambda $1 $1)
+please,S{0}/S{0},(lambda $1 $1)
 body,FieldName{0},body,0 body
 "incoming email",InstanceName{0},inbox
 my email,InstanceName{0},inbox

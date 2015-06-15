@@ -116,21 +116,21 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         switch (currentTask())
         {
             case defineContact:
-                return "Your 1st training task is to have the agent define/create the concept contact";
+                return "Your 1st training task is to have the agent define/create the concept \"contact\" (simply tell the agent to define the concept contact)";
             case addEmailToContact:
-                return "Your 2nd training task is to add the email field to the concept contact";
+                return "Your 2nd training task is to have the agent add the \"email\" field to the concept \"contact\" (simply tell the agent to add the email field to the concept contact)";
             case createContact:
-                return "Your 3rd training task is to create a contact for "+ momName +" and add the correct email address to it. "+momName+"'s email appears in the \"notes\" image";
+                return "Your 3rd training task is to <b>create</b> a contact for "+ momName +" and <b>set</b> \"+ momName +\"'s email correctly. "+momName+"'s email appears in the \"notes\" image";
             case seeMomsEmail:
                 return "Your 4th training task is to ask the agent for "+momName+"'s email";
             case createEmail:
                 return "Your 5th training task is to create a new outgoing email";
             case sendTestEmail:
-                return "Your 6th training task is to send an outgoing email to "+ momName +" with hello as the subject and no body";
+                return "Your 6th training task is to send an outgoing email to "+ momName +" with hello as the subject and no body (don't retype mom's email, simply set the recipient to mom's email)";
             case readEmailInInbox:
                 return "Your 7th training task is to read the current email in the inbox";
             case setRecpToSender:
-                return "Your 8th training task is to create a new email and set the recipient to the current email's sender (don't type the email yourself)";
+                return "Your 8th training task is to create a new email and set the recipient to the current email's sender (don't type the email yourself, use: \"email's sender\" instead)";
             case sendTestBody:
                 return "Your 9th training task is to set the body to the current email's body (don't type in the body yourself, just use the current email's body), and send the email";
             case nextEmailInInbox:
