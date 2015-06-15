@@ -123,7 +123,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                     if(infoForCommand.hashCode() == lastInfoForCommandHashCode)
                     {
                         lastInfoForCommandHashCode = 0;
-                        expressionsLearnt.remove(expressionsLearnt.size()-1); //remove last
+                        expressionsLearnt.remove(expressionsLearnt.size() - 1); //remove last
                     }
                 }
             }
@@ -355,9 +355,10 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             return new ActionResponse(response.toString(), true, field.get());
         }
-        //if failed, but is trying to set to outgoing_email, ask if would like to create new email
-        if (mutableOnly && (instanceName.isPresent() && instanceName.get().equals(OutgoingEmail.strOutgoingEmailTypeAndName))
-                || conceptContainer.findConceptsForField(new ExecutionStatus(),fieldName,mutableOnly).contains(OutgoingEmail.strOutgoingEmailTypeAndName))
+        //if failed, but is trying to set to outgoing_email (mutableOnly==true), and there is no email being composed, ask if would like to create a new email
+        if (mutableOnly && !outEmailCommandController.isAnEmailBeingComposed() &&
+                ((instanceName.isPresent() && instanceName.get().equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+                || conceptContainer.findConceptsForField(new ExecutionStatus(),fieldName,mutableOnly).contains(OutgoingEmail.strOutgoingEmailTypeAndName)))
         {
             noEmailFound(response.append("\n"), internalState);
         }
@@ -381,7 +382,24 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (previousFieldEval.isPresent())
             return new ActionResponse("It is: " + FieldHolder.fieldFromJSonForUser(previousFieldEval.get()), true, previousFieldEval.get());
-        return new ActionResponse("There is no previously evaluated field.", false);
+
+        return failWithMessage(infoForCommand, "There is no previously evaluated field.");
+    }
+
+    private ActionResponse failWithMessage(InfoForCommand infoForCommand, String sentence)
+    {
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        executionStatus.add(ExecutionStatus.RetStatus.error, sentence);
+        StringBuilder response = new StringBuilder();
+        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+                executionStatus,
+                true,
+                true,
+                response,
+                Optional.empty(), //will fail for sure
+                false,
+                internalState);
+        return new ActionResponse(response.toString(), success);
     }
 
     @Override
@@ -598,8 +616,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList, boolean mutable)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
+        if (conceptName.equals(IncomingEmail.incomingEmailType) || conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "fields cannot be added to email messages");
+        }
+
         FieldDescription fieldDescription = new FieldDescription(fieldName, possibleFieldType, isList, mutable);
-        conceptContainer.addFieldToConcept(executionStatus, conceptName, fieldDescription);
+        if (executionStatus.noError())
+            conceptContainer.addFieldToConcept(executionStatus, conceptName, fieldDescription);
         if (executionStatus.noError())
             instanceContainer.fieldAddedToConcept(executionStatus, conceptName, fieldDescription);
 
@@ -626,7 +650,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             return createNewEmail(infoForCommand, conceptName);
         }
-        return new ActionResponse("Creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name).", false);
+        return failWithMessage(infoForCommand, "creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name).");
     }
 
     private ActionResponse createNewEmail(InfoForCommand infoForCommand, String conceptName)

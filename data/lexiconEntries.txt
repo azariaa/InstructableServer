@@ -26,7 +26,6 @@ compose,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFul
 create,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
 create,((S{0}/PP_ConceptName{2}){0}/String{1}), (lambda $1 $2 (createInstanceByFullNames $2 $1))
 define,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
-teach,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
 add,((S{0}/ConceptName{2}){0}/String{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
 has,((S{0}\ConceptName{2}){0}/String{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
 add,((S{0}/PP_MutableField{2}){0}/String{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
@@ -48,6 +47,7 @@ of,((MutableField{0}\FieldName{2}){0}/InstanceName{1}){0},(lambda $1 $2 (getProb
 ',((MutableField{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $2 $1))
 is,"((S{0}/String{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromString $1 $2))
 is,"((S{0}/FieldVal{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromFieldVal $1 $2))
+is,"((S{0}/ConceptName{2}){0}\String{1})", (lambda $1 $2 (createInstanceByFullNames $2 $1))
 it,FieldVal{0},(getProbFieldVal),0 getProbFieldVal
 to,PP_String/String,(lambda $1 $1)
 to,PP_Field/Field,(lambda $1 $1)

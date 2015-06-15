@@ -116,7 +116,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         switch (currentTask())
         {
             case defineContact:
-                return "Your 1st training task is to define the concept contact";
+                return "Your 1st training task is to have the agent define the concept contact";
             case addEmailToContact:
                 return "Your 2nd training task is to add the email field to the concept contact";
             case createContact:
