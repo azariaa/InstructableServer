@@ -4,6 +4,7 @@ set the recipient list to myself@myjob.com,"(setFieldFromString (getProbMutableF
 set the subject of this outgoing email to hello,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName outgoing_email subject) ""hello"")"
 create tom as a name,"(createInstanceByFullNames name ""tom"")"
 create name david,"(createInstanceByFullNames name ""david"")"
+create name for david,"(createInstanceByFullNames name ""david"")"
 yes,(yes)
 ok,(yes)
 put this is a test in body,"(setFieldFromString (getProbMutableFieldByFieldName body) ""this is a test"")"
@@ -12,6 +13,7 @@ set myself@myjob.com as the recipient,"(setFieldFromString (getProbMutableFieldB
 set someone@myandyou.com as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""someone@myandyou.com"")"
 send,(sendEmail)
 compose a new email,(createInstanceByConceptName outgoing_email)
+create an outgoing email,(createInstanceByConceptName outgoing_email)
 define person!,"(defineConcept ""person"")"
 define the concept person,"(defineConcept ""person"")"
 define concept person,"(defineConcept ""person"")"
@@ -71,3 +73,5 @@ set the body to your vacation has been approved,"(setFieldFromString (getProbMut
 set the body to I didn't hear from you in a while is everything ok,"(setFieldFromString (getProbMutableFieldByFieldName body) ""I didn't hear from you in a while is everything ok"")"
 set the subject to working hours this week,"(setFieldFromString (getProbMutableFieldByFieldName subject) ""working hours this week"")"
 john is a name,"(createInstanceByFullNames name ""john"")"
+create a name for bill and set bill's classification to fdsdf@gmail.com,"(doSeq (createInstanceByFullNames name ""bill"") (setFieldFromString (getProbMutableFieldByFieldName classification) ""fdsdf@gmail.com""))"
+set recipient as name jane's classification,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getFieldFromInstance (getInstance name jane) classification)))

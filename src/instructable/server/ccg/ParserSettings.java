@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 05-May-15.
@@ -46,7 +47,9 @@ public class ParserSettings implements Cloneable
         env = Environment.empty();
         symbolTable = IndexedList.create();
 
-        List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(lexiconEntries);
+        // remove all that appears after a "//" (parseLexiconEntries only removes lines that start with "#")
+        List<String> lexiconWithoutComments = lexiconEntries.stream().map(e->(e.contains("//") ? e.substring(0,e.indexOf("//")) : e)).collect(Collectors.toList());
+        List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(lexiconWithoutComments);
 
         List<CcgUnaryRule> unaryRulesList = Lists.newArrayList();
         for (String unaryRule : unaryRules)

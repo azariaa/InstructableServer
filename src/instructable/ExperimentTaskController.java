@@ -128,7 +128,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case sendTestEmail:
                 return "Your 6th training task is to send an outgoing email to "+ momName +" with hello as the subject and no body (don't retype mom's email, simply set the recipient to mom's email)";
             case readEmailInInbox:
-                return "Your 7th training task is to read the current email in the inbox";
+                return "Your 7th training task is to read the current email (in the inbox)";
             case setRecpToSender:
                 return "Your 8th training task is to create a new email and set the recipient to the current email's sender (don't type the email yourself, use: \"email's sender\" instead)";
             case sendTestBody:

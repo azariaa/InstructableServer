@@ -224,7 +224,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse getInstance(InfoForCommand infoForCommand, String conceptName, String instanceName)
     {
         instanceName = AliasMapping.instanceNameMapping(instanceName);
-        instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName);
+        if (inboxCommandController.isInboxInstanceName(instanceName))
+        {
+            conceptName = IncomingEmail.incomingEmailType; //make sure is asking for the right concept
+            instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName);
+        }
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);

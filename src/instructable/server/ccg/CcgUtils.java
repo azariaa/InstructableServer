@@ -321,11 +321,12 @@ public class CcgUtils
                                                                Set<String> posSet,
                                                                FeatureVectorGenerator<StringContext> featureVectorGenerator)
     {
-        CcgCategory stringCategory = CcgCategory.parseFrom("String{0},(lambda $0 $0),0 special:string");
+        CcgCategory stringNCategory = CcgCategory.parseFrom("StringN{0},(lambda $0 $0),0 special:string");
+        CcgCategory stringVCategory = CcgCategory.parseFrom("StringV{0},(lambda $0 $0),0 special:string");
         CcgCategory unknownCommandCategory = CcgCategory.parseFrom("S{0},(lambda $0 (unknownCommand)),0 unknownCommand");
         List<LexiconEntry> unknownWordLexiconEntries = Lists.newArrayList();
 
-        CcgFeatureFactory featureFactory = new InstCcgFeatureFactory(Arrays.asList(stringCategory),
+        CcgFeatureFactory featureFactory = new InstCcgFeatureFactory(Arrays.asList(stringNCategory,stringVCategory),
             Arrays.asList(unknownCommandCategory), featureVectorGenerator);
         // Read in the lexicon to instantiate the model.
 
@@ -405,7 +406,7 @@ public class CcgUtils
     public static void tokenizeAndPOS(String sentence, List<String> outTokens, List<String> outPOSs, boolean addNewPOS, Set<String> allowedOrUsedPOS)
     {
         final String slash = "/"; //is replaced with the first word.
-        final List<String> excludeTokens = Arrays.asList(new String[]{",", ".", "!", "(", ")", "!", "?","\"",":",";",slash,"\\"}); //need to exclude this since they won't be available when using speech.
+        final List<String> excludeTokens = Arrays.asList(",", ".", "!", "(", ")", "!", "?","\"",":",";",slash,"\\"); //need to exclude this since they won't be available when using speech.
 
         //List<String> tokens = new LinkedList<>();
         //PTBTokenizer ptbTokenizer = PTBTokenizer.newPTBTokenizer(new StringReader(sentence));
