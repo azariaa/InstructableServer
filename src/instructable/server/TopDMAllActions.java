@@ -339,6 +339,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly);
+        if (instance.isPresent() && instance.get().getConceptName().equals(OutgoingEmail.strOutgoingEmailTypeAndName)&& !instanceName.isPresent() && !mutableOnly) //since the user didn't need mutable, and didn't explicitly mention the outgoing email, he probably wants the inbox
+        {
+            instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(InboxCommandController.emailMessageNameStart));
+            instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly);
+        }
         Optional<FieldHolder> field = Optional.empty();
         String successStr = "";
         if (instance.isPresent())

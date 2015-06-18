@@ -1,12 +1,17 @@
 send email,(sendEmail)
+set the body to the sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByFieldName sender)))
+set the outgoing email's recipient to sender,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email recipient_list) (evalField (getProbFieldByFieldName sender)))
+set the subject to I like this sender,"(setFieldFromString (getProbMutableFieldByFieldName subject) ""I like this sender"")"
 set the body to bar time for all,"(setFieldFromString (getProbMutableFieldByFieldName body) ""bar time for all"")"
 set the recipient list to myself@myjob.com,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""myself@myjob.com"")"
 set the subject of this outgoing email to hello,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName outgoing_email subject) ""hello"")"
+set the subject to the sender's email,(setFieldFromFieldVal (getProbMutableFieldByFieldName subject) (evalField (getProbFieldByFieldName sender)))
 create tom as a name,"(createInstanceByFullNames name ""tom"")"
 create name david,"(createInstanceByFullNames name ""david"")"
 create name for david,"(createInstanceByFullNames name ""david"")"
 yes,(yes)
 ok,(yes)
+sender,(evalField (getProbFieldByFieldName sender))
 put this is a test in body,"(setFieldFromString (getProbMutableFieldByFieldName body) ""this is a test"")"
 send the email,(sendEmail)
 set myself@myjob.com as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""myself@myjob.com"")"

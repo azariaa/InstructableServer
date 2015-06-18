@@ -39,6 +39,7 @@ public class EnvironmentCreatorUtils
                 //"FieldVal{0} S{0},(lambda x x)", //TODO: bring this back once it works
                 "MutableField{0} FieldVal{0},(lambda x (evalField x))",
                 "FieldName{0} Field{0},(lambda x (getProbFieldByFieldName x))",
+                "FieldName{0} FieldVal{0},(lambda x (evalField (getProbFieldByFieldName x)))", //TODO: this one just combines the two above (there seems to be a bug).
                 "InstanceName{0} Instance{0},(lambda x (getProbInstanceByName x))",
                 "FieldName{0} MutableField{0},(lambda x (getProbMutableFieldByFieldName x))",
                 "ConceptName{0} Instance{0}/InstanceName{0}, (lambda x (lambda y (getInstance x y)))"//,
