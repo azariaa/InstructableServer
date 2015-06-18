@@ -1,0 +1,24 @@
+# newWord, {meaning1,meaning2,...} (i.e, newWord = meaning1 U meaning2)
+# both newWords and meanings can't include a comma inside (",")
+set,{write,change}  // set hello world as the subject, set the subject to hello world
+put, {write} //put hello world in the subject 
+use, {write} //use hello world as the subject //use email's subject as the subject
+in, {inside} //put hello world in the subject
+as, {inside} // set hello world as the subject
+',{'s}
+ok,{yes}
+sure,{yes}
+finish,{end}
+done,{end}
+finished,{end}
+"that 's it",{end}
+nothing,{end}
+quit,{cancel}
+stop,{cancel}
+"next inbox",{"next email"}
+"next incoming email",{"next email"}
+"next message", {"next email"}
+"set next email", {"next email"}
+"set next message", {"next email"}
+"set previous email",{"previous email"}
+"previous message",{"previous email"}

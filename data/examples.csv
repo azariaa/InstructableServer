@@ -1,5 +1,5 @@
 send email,(sendEmail)
-set the body to bar time,"(setFieldFromString (getProbMutableFieldByFieldName body) ""bar time"")"
+set the body to bar time for all,"(setFieldFromString (getProbMutableFieldByFieldName body) ""bar time for all"")"
 set the recipient list to myself@myjob.com,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""myself@myjob.com"")"
 set the subject of this outgoing email to hello,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName outgoing_email subject) ""hello"")"
 create tom as a name,"(createInstanceByFullNames name ""tom"")"
@@ -20,7 +20,7 @@ define the concept person,"(defineConcept ""person"")"
 define concept person,"(defineConcept ""person"")"
 add email as a field in name,"(addFieldToConcept name ""email"")"
 "create a name, call it bob","(createInstanceByFullNames name ""bob"")"
-set bob's classification to baba,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""baba"")"
+set bob's classification to baba won't you,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""baba won't you"")"
 set bob's classification to bob@gmail.com,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""bob@gmail.com"")"
 what's bob's classification?,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
 create a name call it jane,"(createInstanceByFullNames name ""jane"")"
@@ -76,3 +76,5 @@ set the subject to working hours this week,"(setFieldFromString (getProbMutableF
 john is a name,"(createInstanceByFullNames name ""john"")"
 create a name for bill and set bill's classification to fdsdf@gmail.com,"(doSeq (createInstanceByFullNames name ""bill"") (setFieldFromString (getProbMutableFieldByFieldName classification) ""fdsdf@gmail.com""))"
 set recipient as name jane's classification,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getFieldFromInstance (getInstance name jane) classification)))
+write hello all in the body,"(setFieldFromString (getProbMutableFieldByFieldName body) ""hello all"")"
+use bob's classification as the subject,(setFieldFromFieldVal (getProbMutableFieldByFieldName subject) (evalField (getProbFieldByInstanceNameAndFieldName bob classification)))

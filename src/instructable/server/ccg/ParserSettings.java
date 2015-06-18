@@ -41,15 +41,45 @@ public class ParserSettings implements Cloneable
 
     }
 
-    public ParserSettings (List<String> lexiconEntries, String[] unaryRules,
+    public ParserSettings (List<String> lexiconEntries, List<String> synonyms, String[] unaryRules,
                            FeatureGenerator<StringContext, String> featureGenerator, List<String[]> examplesList)
     {
+        final String midRowComment = "//";
+        final String fullRowComment = "#";
         env = Environment.empty();
         symbolTable = IndexedList.create();
 
-        // remove all that appears after a "//" (parseLexiconEntries only removes lines that start with "#")
-        List<String> lexiconWithoutComments = lexiconEntries.stream().map(e->(e.contains("//") ? e.substring(0,e.indexOf("//")) : e)).collect(Collectors.toList());
-        List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(lexiconWithoutComments);
+        // remove all that appears after a "//" or starts with # (parseLexiconEntries only removes lines that start with "#")
+        List<String> lexiconWithoutComments = lexiconEntries.stream().filter(e->!e.contains(fullRowComment)).map(e -> (e.contains(midRowComment) ? e.substring(0, e.indexOf(midRowComment)) : e)).collect(Collectors.toList());
+
+        // add synonyms. format: newWord, {meaning1,meaning2,...} (i.e, newWord = meaning1 U meaning2)
+        List<String> lexEntriesFromSyn = new LinkedList<>();
+        for (String synonym : synonyms)
+        {
+            if (synonym.trim().length() <=1 || synonym.contains(fullRowComment) || synonym.trim().startsWith(midRowComment)) //comment row
+                continue;
+            String newWord = synonym.substring(0,synonym.indexOf(","));
+            //newWord.replace("\"","");
+            String[] meanings = synonym.substring(synonym.indexOf("{")+1,synonym.indexOf("}")).split(",");
+            for (String meaning : meanings)
+            {
+                String meaningWOQuotes = meaning.trim().replace("\"","");
+                for (String lexiconEntry : lexiconWithoutComments) //could save time if transferred all entries to a map, but this is anyway done only once
+                {
+                    String entryWord = lexiconEntry.substring(0,lexiconEntry.indexOf(",")).replace("\"", "");
+                    if (entryWord.equals(meaningWOQuotes))
+                    {
+                        String newLexiconEntry = newWord + lexiconEntry.substring(lexiconEntry.indexOf(","));
+                        lexEntriesFromSyn.add(newLexiconEntry);
+                    }
+                }
+            }
+        }
+
+        List<String> allLexiconEntries = new LinkedList<>(lexiconWithoutComments);
+        allLexiconEntries.addAll(lexEntriesFromSyn);
+
+        List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(allLexiconEntries);
 
         List<CcgUnaryRule> unaryRulesList = Lists.newArrayList();
         for (String unaryRule : unaryRules)
