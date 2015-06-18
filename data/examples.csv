@@ -23,8 +23,10 @@ create an outgoing email and set the subject to I'm on my way,"(doSeq (createIns
 define person!,"(defineConcept ""person"")"
 define the concept person,"(defineConcept ""person"")"
 define concept person,"(defineConcept ""person"")"
+add wings as a field in name,"(addFieldToConcept name ""wings"")"
 add email as a field in name,"(addFieldToConcept name ""email"")"
 "create a name, call it bob","(createInstanceByFullNames name ""bob"")"
+create a name call it wing,"(createInstanceByFullNames name ""wing"")"
 set bob's classification to baba won't you,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""baba won't you"")"
 set bob's classification to bob@gmail.com,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""bob@gmail.com"")"
 what's bob's classification?,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
@@ -83,3 +85,17 @@ create a name for bill and set bill's classification to fdsdf@gmail.com,"(doSeq 
 set recipient as name jane's classification,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getFieldFromInstance (getInstance name jane) classification)))
 write hello all in the body,"(setFieldFromString (getProbMutableFieldByFieldName body) ""hello all"")"
 use bob's classification as the subject,(setFieldFromFieldVal (getProbMutableFieldByFieldName subject) (evalField (getProbFieldByInstanceNameAndFieldName bob classification)))
+drive bob's classification to the subject,(unknownCommand)
+dive bob's name,(unknownCommand)
+eat the subject,(unknownCommand)
+split the sender,(unknownCommand)
+walk around the email,(unknownCommand)
+meet bob,(unknownCommand)
+establish the sender,(unknownCommand)
+strive to the recipient,(unknownCommand)
+pay for the sender,(unknownCommand)
+prepare the body,(unknownCommand)
+acknowledge the subject,(unknownCommand)
+bike to the sender,(unknownCommand)
+repair the subject,(unknownCommand)
+often remain with the recipient,(unknownCommand)
