@@ -25,6 +25,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     InboxCommandController inboxCommandController;
     static public final String userEmailAddress = "you@myworkplace.com";
 
+    static private final String ambiguousEmailInstanceName = "email"; //can either be outgoing email, or inbox
     static private final String yesExpression = "(yes)";
     static private final String createEmailExpression = "(createInstanceByConceptName outgoing_email)";
 
@@ -326,6 +327,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
     private ActionResponse getProbField(InfoForCommand infoForCommand, Optional<String> instanceName, String fieldName, boolean mutableOnly)
     {
+        if (instanceName.isPresent() && instanceName.get().equals(ambiguousEmailInstanceName)) //if got ambiguous "email" instance, select the better choice according to mutability.
+        {
+            if (mutableOnly)
+                instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(OutgoingEmail.strOutgoingEmailTypeAndName));
+            else
+                instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(InboxCommandController.emailMessageNameStart));
+        }
+
         if (instanceName.isPresent() && inboxCommandController.isInboxInstanceName(instanceName.get()))
         {
             if (mutableOnly) //inbox is not mutable, so user probably wanted outgoing message. remove it, and let the system decide what to use.

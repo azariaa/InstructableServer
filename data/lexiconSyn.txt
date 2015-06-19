@@ -22,3 +22,4 @@ stop,{cancel}
 "set next message", {"next email"}
 "set previous email",{"previous email"}
 "previous message",{"previous email"}
+the,{for} //skip in StringN

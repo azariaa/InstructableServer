@@ -65,10 +65,10 @@ body,FieldName{0},body,0 body
 "incoming email",InstanceName{0},inbox
 my email,InstanceName{0},inbox
 current email,InstanceName{0},inbox
-message,InstanceName{0},inbox
 inbox,InstanceName{0},inbox
-email,InstanceName{0},inbox
-email,InstanceName{0},outgoing_email,0 outgoing_email
+email,InstanceName{0},email
+email message,InstanceName{0},email
+message,InstanceName{0},email
 "outgoing email",InstanceName{0},outgoing_email,0 outgoing_email
 email,ConceptName{0},outgoing_email,0 outgoing_email
 recipient,FieldName{0},recipient_list,0 recipient_list
