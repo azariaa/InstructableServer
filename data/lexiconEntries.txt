@@ -17,7 +17,7 @@ has,((S{0}\ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $
 add,((S{0}/PP_MutableField{2}){0}/StringV{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
 what,(S{0}/Field{1}){0},(lambda $1 (evalField $1))
 take,(FieldVal{0}/Field{1}){0},(lambda $1 (evalField $1))
-read,(S{0}/Instance{1}){0},(lambda $1 (readInstance $1))
+read,(S{0}/Instance{1}){0},(lambda $1 (readInstance $1)) //Instance seems to always be immutable 
 write,"((S{0}/PP_MutableField{2}){0}/StringV{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"// write hello world in the subject
 write,"((S{0}/PP_MutableField{2}){0}/FieldVal{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $2 $1))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2"
 change,"((S{0}/PP_FieldVal{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $1 $2))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2" //change recipient to mom's email
