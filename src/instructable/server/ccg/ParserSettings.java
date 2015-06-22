@@ -265,7 +265,7 @@ public class ParserSettings implements Cloneable
 
         updateParserGrammar(newEntries, Lists.newArrayList());
         ccgExamples.add(example);
-        SufficientStatistics newParameters = CcgUtils.train(parserFamily, ccgExamples, 1);
+        SufficientStatistics newParameters = CcgUtils.train(parserFamily, ccgExamples, 2);
 
         parser = parserFamily.getModelFromParameters(newParameters);
     }
