@@ -1,0 +1,1 @@
+java -cp out/production/InstructableServer;lib/* instructable.Service

@@ -30,13 +30,13 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         nextEmailInInbox,
         previousEmailInInbox,
         teachReadNextInbox, //not relevant when not in learning mode.
-        tellBoss,
         eRepMomShirt,
         eRepBossTask,
         eRepW2,
         eRepW1,
         eRepMomAtWork,
         eRepW3,
+        tellBoss,
         eForwardMToBoss,
         eForwardToMom,
         eForwardToW2,
@@ -253,15 +253,6 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         ));
 
 
-        //plain send
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker3Email,
-                "Tell Alex that I'm on my way",
-                Arrays.asList(myEmail),
-                new LinkedList<>(),
-                "Please email Alex saying that I'll arrive on time. (I don't have the right email on me)."
-        ));
-
-
 
         //replying
 
@@ -305,6 +296,14 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "I like my job. Please reply and let me know what you think, as soon as possible."
+        ));
+
+        //plain send
+        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker2Email,
+                "Tell Alex that I'm on my way",
+                Arrays.asList(myEmail),
+                new LinkedList<>(),
+                "Please email Alex saying that I'm on my way. " + worker2Name
         ));
 
 
