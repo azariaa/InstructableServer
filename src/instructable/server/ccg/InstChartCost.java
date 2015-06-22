@@ -15,6 +15,7 @@ public class InstChartCost implements ChartCost
     {
         if (spanStart == 0 && spanEnd == sentenceLength - 1) {
             HeadedSyntacticCategory syntax = (HeadedSyntacticCategory) syntaxVarType.getValue(entry.getHeadedSyntax());
+
             if (syntax.toString().equals("S{0}") || syntax.toString().equals("FieldVal{0}")) //TODO: remove FieldVal once unary rules changed.
                 return 0;
             else
