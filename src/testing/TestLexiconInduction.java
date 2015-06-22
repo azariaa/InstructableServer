@@ -22,8 +22,8 @@ import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 public class TestLexiconInduction {
     public static void main(String[] args) throws Exception
     {
-      // runTest();
-      runTestCommandsToParser();
+      runTest();
+      // runTestCommandsToParser();
     }
 
     private static void runTest() throws Exception

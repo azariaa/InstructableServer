@@ -149,7 +149,7 @@ public class CcgUtils
 			  List<CcgParse> parses = chart.decodeBestParsesForSpan(i, j, 100, parser);
 			  for (CcgParse parse : parses) {
 			    Expression2 lexLf = simplifier.apply(parse.getLogicalForm());
-				  if (hasSubexpression(lf, lexLf)) {
+			    if (lf.hasSubexpression(lexLf)) {
 					  matchedExpressions.add(lexLf);
 					  matchedSyntacticCategories.add(parse.getHeadedSyntacticCategory());
 				  }
@@ -186,7 +186,7 @@ public class CcgUtils
 		  Expression2 substituted = lf;
 		  for (int i = 0; i < spanStarts.size(); i++) {
 			  Expression2 var = Expression2.constant("$" + i);
-			  substituted = replaceSubexpression(substituted, spanExpressions.get(i).get(indexes[i]), var);
+			  substituted = substituted.substitute(spanExpressions.get(i).get(indexes[i]), var);
 		  }
 
 		  for (int i = 1; i < words.size(); i++) {
@@ -288,16 +288,6 @@ public class CcgUtils
 
 	  return expressionString.contains(subexpressionString);
   }
-
-  public static Expression2 replaceSubexpression(Expression2 expression, Expression2 subexpression, Expression2 replacement) {
-	  String expressionString = expression.toString();
-	  String subexpressionString = subexpression.toString();
-	  String replacementString = replacement.toString();
-
-	  return ExpressionParser.expression2().parseSingleExpression(expressionString.replace(
-			  subexpressionString, replacementString));
-  }
-
 
   /**
    *
