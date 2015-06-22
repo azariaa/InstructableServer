@@ -224,7 +224,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse getInstance(InfoForCommand infoForCommand, String conceptName, String instanceName)
     {
-        instanceName = AliasMapping.instanceNameMapping(instanceName);
+        //instanceName = AliasMapping.instanceNameMapping(instanceName);
         if (inboxCommandController.isInboxInstanceName(instanceName))
         {
             conceptName = IncomingEmail.incomingEmailType; //make sure is asking for the right concept
@@ -293,8 +293,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse getProbInstanceByName(InfoForCommand infoForCommand, String instanceName)
     {
-        instanceName = AliasMapping.instanceNameMapping(instanceName);
-        instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName);
+        boolean mutableOnly = false; //it seems that Instance is always immutable.
+        if (instanceName.equals(ambiguousEmailInstanceName)) //if got ambiguous "email" instance, select the better choice according to mutability.
+        {
+            if (mutableOnly)
+                instanceName = OutgoingEmail.strOutgoingEmailTypeAndName;
+            else
+                instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(InboxCommandController.emailMessageNameStart);
+        }
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty(), false);
@@ -330,7 +336,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (instanceName.isPresent() && instanceName.get().equals(ambiguousEmailInstanceName)) //if got ambiguous "email" instance, select the better choice according to mutability.
         {
             if (mutableOnly)
-                instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(OutgoingEmail.strOutgoingEmailTypeAndName));
+                instanceName = Optional.of(OutgoingEmail.strOutgoingEmailTypeAndName);
             else
                 instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(InboxCommandController.emailMessageNameStart));
         }

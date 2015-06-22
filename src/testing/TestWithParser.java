@@ -585,6 +585,7 @@ public class TestWithParser
 
         userSays = "read incoming email";
         testHelpers.userSays(userSays);
+        userSays = "read email"; //TODO: want to check this!
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 

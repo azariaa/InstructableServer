@@ -138,7 +138,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case previousEmailInInbox:
                 return "Your 11th training task is to move to the <b>previous</b> email in the inbox";
             case teachReadNextInbox:
-                return "Your 12th (and last) training task is to teach the agent a <b>new command</b>: having it both moving to the <b>next</b> email and reading it";
+                return "Your 12th (and last) training task is to teach the agent a <b>new command</b> (e.g. \"go\"): having it both moving to the <b>next</b> email and reading it";
             case allCompleted:
                 //this shouldn't actually ever happen
                 return "Congratulations: You have completed all possible tasks!";
@@ -146,7 +146,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             {
                 if (unsuccessfulSend)
                     return "Previously sent email did not complete any task. Check email's subject, body, and recipient address.";
-                return "Main Task: read through all incoming emails and acting accordingly.";
+                return "Main Task: read through all incoming emails and act accordingly.";
             }
         }
     }
