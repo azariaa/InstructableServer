@@ -102,6 +102,8 @@ public interface IAllUserActions
 
     ActionResponse previousEmailMessage(InfoForCommand infoForCommand);
 
+    ActionResponse replyTo(InfoForCommand infoForCommand);
+
 
     //future work: ActionResponse undoLastAction(InfoForCommand infoForCommand);
 

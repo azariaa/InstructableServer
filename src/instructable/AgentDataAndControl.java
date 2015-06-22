@@ -44,6 +44,11 @@ public class AgentDataAndControl
 
     public ParserSetAndActions addNewGame(String gameId, IEmailSender emailSender, IAddInboxEmails addInboxEmails)
     {
+        synchronized(parserSetAndActionsMap)
+        {
+            if (parserSetAndActionsMap.containsKey(gameId))
+                return parserSetAndActionsMap.get(gameId);
+        }
         ParserSettings parserSettingsCopy = originalParserSettings.clone();
         TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettingsCopy), emailSender);
         addInboxEmails.addInboxEmails(topDMAllActions);
@@ -57,7 +62,7 @@ public class AgentDataAndControl
 
     interface ResponseToUserListener
     {
-        void responseSentToUser(String gameId, String agentResponse);
+        void responseSentToUser(String gameId, String agentResponse, boolean success);
     }
 
     public void addResponseToUserListener(ResponseToUserListener responseToUserListener)
@@ -83,7 +88,7 @@ public class AgentDataAndControl
         logger.info("GameID:" + gameId + ". Lambda expression: " + response.lExpression);
         for (ResponseToUserListener responseToUserListener : responseToUserListenerList)
         {
-            responseToUserListener.responseSentToUser(gameId, response.sayToUser);
+            responseToUserListener.responseSentToUser(gameId, response.sayToUser, response.success);
         }
         return response.sayToUser;
     }

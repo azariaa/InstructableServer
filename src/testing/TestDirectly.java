@@ -21,7 +21,7 @@ import java.util.List;
 public class TestDirectly
 {
     static boolean testingMode = true;
-    static String fileName = "May19test.txt";
+    static String fileName = "June18test.txt";
 
     public static void main(String[] args) throws Exception
     {
@@ -117,7 +117,7 @@ public class TestDirectly
 
         userSays = "put test in body";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "body");
+        response = allUserActions.getProbMutableFieldByFieldName(new InfoForCommand(userSays, null), "body");
         if (response.isSuccess())
         {
             response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "test");
@@ -131,7 +131,7 @@ public class TestDirectly
 
         userSays = "set myself as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+        response = allUserActions.getProbMutableFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
         if (response.isSuccess())
         {
             response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "myself");
@@ -141,7 +141,7 @@ public class TestDirectly
 
         userSays = "set myself@myjob.com as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+        response = allUserActions.getProbMutableFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
         if (response.isSuccess())
         {
             response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "myself@myjob.com");
@@ -174,7 +174,7 @@ public class TestDirectly
 
         userSays = "set my spouse as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+        response = allUserActions.getProbMutableFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
         if (response.isSuccess())
         {
             response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "my spouse");
@@ -295,7 +295,7 @@ public class TestDirectly
         testHelpers.userSays(userSays);
         //parser should translate to:
         //(set (get recipient_list) (eval (get bob email)))
-        ActionResponse recipientField = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+        ActionResponse recipientField = allUserActions.getProbMutableFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
         if (recipientField.isSuccess())
         {
             ActionResponse bobEmailField = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "bob", "email");
@@ -318,7 +318,7 @@ public class TestDirectly
         testHelpers.userSays(userSays);
         //parser should translate to:
         //(add (get recipient_list) "nana@gmail.com")
-        recipientField = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+        recipientField = allUserActions.getProbMutableFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
         if (recipientField.isSuccess())
         {
             response = allUserActions.addToFieldFromString(new InfoForCommand(userSays, null), recipientField.getField(), "nana@gmail.com");
@@ -373,7 +373,7 @@ public class TestDirectly
 
         userSays = "and set it as the recipient";
         testHelpers.userSays(userSays);
-        response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+        response = allUserActions.getProbMutableFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
         if (response.isSuccess())
         {
             //but then it will fail here...
@@ -399,7 +399,7 @@ public class TestDirectly
 
                 if (fieldEval.isSuccess())
                 {
-                    response = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+                    response = allUserActions.getProbMutableFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
                     if (response.isSuccess())
                     {
                         //but then it will fail here...
@@ -515,7 +515,7 @@ public class TestDirectly
         testHelpers.userSays(userSays);
         // should translate to: (set (get recipient_list) (eval (get my_spouse email)))
         {
-            ActionResponse recipientField = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
+            ActionResponse recipientField = allUserActions.getProbMutableFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
             if (recipientField.isSuccess())
             {
                 ActionResponse spouseEmailField = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "my spouse", "email");

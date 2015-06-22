@@ -1,5 +1,6 @@
 package instructable.server;
 
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.hirarchy.*;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
@@ -22,7 +23,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     ICommandsToParser commandsToParser;
     OutEmailCommandController outEmailCommandController;
     InboxCommandController inboxCommandController;
-    static final String userEmailAddress = "myemail@gmail.com";
+    static public final String userEmailAddress = "you@myworkplace.com";
+
+    static private final String ambiguousEmailInstanceName = "email"; //can either be outgoing email, or inbox
+    static private final String yesExpression = "(yes)";
+    static private final String createEmailExpression = "(createInstanceByConceptName outgoing_email)";
 
     Optional<JSONObject> previousFieldEval = Optional.empty();
 
@@ -49,58 +54,62 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public static class InternalState
     {
 
-        private static enum InternalStateMode
+        private static enum InternalLearningStateMode
 
         {
-            none, pendingOnEmailCreation, pendOnLearning, learning
+            none, pendOnLearning, learning
         }
 
-        private InternalStateMode internalStateMode;
+        private InternalLearningStateMode internalLearningStateMode;
+        private boolean pendingOnEmailCreation;
         List<Expression2> expressionsLearnt = new LinkedList<>();
         String lastCommandOrLearningCommand = "";
         int lastInfoForCommandHashCode;
 
         public boolean isPendingOnEmailCreation()
         {
-            return internalStateMode == InternalStateMode.pendingOnEmailCreation;
+            return pendingOnEmailCreation;
         }
 
         public boolean isPendingOnLearning()
         {
-            return internalStateMode == InternalStateMode.pendOnLearning;
+            return internalLearningStateMode == InternalLearningStateMode.pendOnLearning;
         }
 
         public boolean isInLearningMode()
         {
-            return internalStateMode == InternalStateMode.learning;
+            return internalLearningStateMode == InternalLearningStateMode.learning;
         }
 
         public void pendOnEmailCreation()
         {
-            internalStateMode = InternalStateMode.pendingOnEmailCreation;
+            pendingOnEmailCreation = true;
         }
 
         public void pendOnLearning()
         {
-            internalStateMode = InternalStateMode.pendOnLearning;
+            internalLearningStateMode = InternalLearningStateMode.pendOnLearning;
         }
 
         public void reset()
         {
-            internalStateMode = InternalStateMode.none;
+            internalLearningStateMode = InternalLearningStateMode.none;
+            pendingOnEmailCreation = false;
             expressionsLearnt = new LinkedList<>();
         }
 
         public String startLearning()
         {
-            internalStateMode = InternalStateMode.learning;
+            internalLearningStateMode = InternalLearningStateMode.learning;
             return lastCommandOrLearningCommand;
         }
 
         public void userGaveCommand(InfoForCommand infoForCommand, boolean success)
         {
-            if (internalStateMode == InternalStateMode.learning)
+            pendingOnEmailCreation = false;
+            if (internalLearningStateMode == InternalLearningStateMode.learning)
             {
+                //this saves the infoForCommand hashcode so it uses each expression only once.
                 //TODO: not the best way to do this, since some actions in the same expression may succeed and some not. also what if the user end the last command with "and that's it"?
                 if (success)
                 {
@@ -110,17 +119,24 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                         expressionsLearnt.add(infoForCommand.expression);
                     }
                 }
+                else //if failed need to remove current expression from list of expressions
+                {
+                    if(infoForCommand.hashCode() == lastInfoForCommandHashCode)
+                    {
+                        lastInfoForCommandHashCode = 0;
+                        expressionsLearnt.remove(expressionsLearnt.size() - 1); //remove last
+                    }
+                }
             }
             else
             {
                 lastCommandOrLearningCommand = infoForCommand.userSentence;
-                internalStateMode = InternalStateMode.none;
             }
         }
 
         public List<Expression2> endLearningGetSentences()
         {
-            internalStateMode = InternalStateMode.none;
+            internalLearningStateMode = InternalLearningStateMode.none;
             List<Expression2> userSentences = expressionsLearnt;
             expressionsLearnt = new LinkedList<>();
             return userSentences;
@@ -155,7 +171,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 response,
                 Optional.of("Email sent successfully."),
-                true,
+                false,//true,
                 internalState);
 
         return new ActionResponse(response.toString(), success);
@@ -165,6 +181,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (internalState.isPendingOnEmailCreation())
         {
+            //the following code replaces the "yes" command with the "create email" command for learning purposes
+            //not elegant at all...
+            if (internalState.isInLearningMode() && infoForCommand.expression.toString().equals(yesExpression))
+            {
+                infoForCommand.expression = ExpressionParser.expression2().parseSingleExpression(createEmailExpression);
+            }
             //composeEmail(infoForCommand);
             return createInstanceByConceptName(infoForCommand, OutgoingEmail.strOutgoingEmailTypeAndName);
         }
@@ -203,7 +225,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse getInstance(InfoForCommand infoForCommand, String conceptName, String instanceName)
     {
         instanceName = AliasMapping.instanceNameMapping(instanceName);
-        instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName);
+        if (inboxCommandController.isInboxInstanceName(instanceName))
+        {
+            conceptName = IncomingEmail.incomingEmailType; //make sure is asking for the right concept
+            instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName);
+        }
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);
@@ -301,14 +327,32 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
     private ActionResponse getProbField(InfoForCommand infoForCommand, Optional<String> instanceName, String fieldName, boolean mutableOnly)
     {
-        if (instanceName.isPresent())
+        if (instanceName.isPresent() && instanceName.get().equals(ambiguousEmailInstanceName)) //if got ambiguous "email" instance, select the better choice according to mutability.
         {
-            //instanceName = Optional.of(AliasMapping.instanceNameMapping(instanceName.get()));
-            instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName.get()));
+            if (mutableOnly)
+                instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(OutgoingEmail.strOutgoingEmailTypeAndName));
+            else
+                instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(InboxCommandController.emailMessageNameStart));
+        }
+
+        if (instanceName.isPresent() && inboxCommandController.isInboxInstanceName(instanceName.get()))
+        {
+            if (mutableOnly) //inbox is not mutable, so user probably wanted outgoing message. remove it, and let the system decide what to use.
+                instanceName = Optional.empty();
+            else
+            {
+                //instanceName = Optional.of(AliasMapping.instanceNameMapping(instanceName.get()));
+                instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName.get()));
+            }
         }
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly);
+        if (instance.isPresent() && instance.get().getConceptName().equals(OutgoingEmail.strOutgoingEmailTypeAndName)&& !instanceName.isPresent() && !mutableOnly) //since the user didn't need mutable, and didn't explicitly mention the outgoing email, he probably wants the inbox
+        {
+            instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(InboxCommandController.emailMessageNameStart));
+            instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly);
+        }
         Optional<FieldHolder> field = Optional.empty();
         String successStr = "";
         if (instance.isPresent())
@@ -329,9 +373,10 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             return new ActionResponse(response.toString(), true, field.get());
         }
-        //if failed, but is trying to set to outgoing_email, ask if would like to create new email
-        if (mutableOnly && (instanceName.isPresent() && instanceName.get().equals(OutgoingEmail.strOutgoingEmailTypeAndName))
-                || conceptContainer.findConceptsForField(new ExecutionStatus(),fieldName,mutableOnly).contains(OutgoingEmail.strOutgoingEmailTypeAndName))
+        //if failed, but is trying to set to outgoing_email (mutableOnly==true), and there is no email being composed, ask if would like to create a new email
+        if (mutableOnly && !outEmailCommandController.isAnEmailBeingComposed() &&
+                ((instanceName.isPresent() && instanceName.get().equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+                || conceptContainer.findConceptsForField(new ExecutionStatus(),fieldName,mutableOnly).contains(OutgoingEmail.strOutgoingEmailTypeAndName)))
         {
             noEmailFound(response.append("\n"), internalState);
         }
@@ -355,7 +400,24 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (previousFieldEval.isPresent())
             return new ActionResponse("It is: " + FieldHolder.fieldFromJSonForUser(previousFieldEval.get()), true, previousFieldEval.get());
-        return new ActionResponse("There is no previously evaluated field.", false);
+
+        return failWithMessage(infoForCommand, "There is no previously evaluated field.");
+    }
+
+    private ActionResponse failWithMessage(InfoForCommand infoForCommand, String sentence)
+    {
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        executionStatus.add(ExecutionStatus.RetStatus.error, sentence);
+        StringBuilder response = new StringBuilder();
+        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+                executionStatus,
+                true,
+                true,
+                response,
+                Optional.empty(), //will fail for sure
+                false,
+                internalState);
+        return new ActionResponse(response.toString(), success);
     }
 
     @Override
@@ -372,7 +434,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 response,
                 Optional.of("It is: " + FieldHolder.fieldFromJSonForUser(requestedField)),
-                true,
+                false,//changed to false, but this might be ok being true, (all other except unknownCommand are false.)
                 internalState
         );
         if (success)
@@ -510,7 +572,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 response,
                 Optional.of(successStr),
-                true,
+                false,//Don't want to teach, since it might keep failing, by parsing again to the same original command
                 internalState);
 
         return new ActionResponse(response.toString(), success);
@@ -572,8 +634,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList, boolean mutable)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
+        if (conceptName.equals(IncomingEmail.incomingEmailType) || conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "fields cannot be added to email messages");
+        }
+
         FieldDescription fieldDescription = new FieldDescription(fieldName, possibleFieldType, isList, mutable);
-        conceptContainer.addFieldToConcept(executionStatus, conceptName, fieldDescription);
+        if (executionStatus.noError())
+            conceptContainer.addFieldToConcept(executionStatus, conceptName, fieldDescription);
         if (executionStatus.noError())
             instanceContainer.fieldAddedToConcept(executionStatus, conceptName, fieldDescription);
 
@@ -600,7 +668,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             return createNewEmail(infoForCommand, conceptName);
         }
-        return new ActionResponse("Creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name).", false);
+        return failWithMessage(infoForCommand, "creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name).");
     }
 
     private ActionResponse createNewEmail(InfoForCommand infoForCommand, String conceptName)
@@ -615,7 +683,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 response,
                 Optional.of("Composing new email. " + "\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + "."),
-                true,
+                false,//true,
                 internalState);
 
         return new ActionResponse(response.toString(), success);
@@ -767,5 +835,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 false,
                 internalState);
         return new ActionResponse(response.toString(), success);
+    }
+
+    @Override
+    public ActionResponse replyTo(InfoForCommand infoForCommand)
+    {
+        String userSaid =infoForCommand.userSentence.toLowerCase();
+        if (userSaid.equals("hi") || userSaid.startsWith("hello"))
+            return new ActionResponse("Sorry, but I don't do small-talk. Please give me a command.", true);
+        return new ActionResponse("Don't know what to day", false);
     }
 }

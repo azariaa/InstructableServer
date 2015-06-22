@@ -3,6 +3,7 @@ package instructable.server.hirarchy;
 import instructable.server.ExecutionStatus;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static instructable.server.TextFormattingUtils.userFriendlyList;
 
@@ -45,6 +46,7 @@ public class ConceptContainer
 
     public List<String> findConceptsForField(ExecutionStatus executionStatus, String fieldName, boolean mutableOnly)
     {
+        Optional<String> foundImmutableConcept = Optional.empty();
         List<String> candidates = new LinkedList<>();
         for (String concept : conceptFieldMap.keySet())
         {
@@ -55,13 +57,18 @@ public class ConceptContainer
                 {
                     if (!mutableOnly || fieldDescription.mutable)
                         candidates.add(concept);
+                    else
+                        foundImmutableConcept = Optional.of(concept);
                     break;
                 }
             }
         }
         if (candidates.size() == 0)
         {
-            executionStatus.add(ExecutionStatus.RetStatus.error, "I am not familiar with any concept with a field \"" + fieldName + "\". Please define it first, or use a different field.");
+            if (mutableOnly && foundImmutableConcept.isPresent())
+                executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + "\" of the concept \""+ foundImmutableConcept.get() + "\" is immutable.");
+            else
+                executionStatus.add(ExecutionStatus.RetStatus.error, "I am not familiar with any concept with a field \"" + fieldName + "\". Please define it first, or use a different field.");
         }
         return candidates;
     }
@@ -118,23 +125,13 @@ public class ConceptContainer
     {
         //TODO: check all these...
         List<FieldDescription> currentFields = conceptFieldMap.get(conceptName);
-        currentFields.removeIf(x -> x.fieldName == fieldName);
+        currentFields.removeIf(x -> x.fieldName.equals(fieldName));
     }
 
 
     public List<String> getFields(String conceptName)
     {
-        //I wish I could use LinQ...
-        LinkedList<String> fieldNames = new LinkedList<>();
-        List<FieldDescription> fields = conceptFieldMap.get(conceptName);
-        if (fields != null)
-        {
-            for (FieldDescription fieldDescription : fields)
-            {
-                fieldNames.add(fieldDescription.fieldName);
-            }
-        }
-        return fieldNames;
+        return new LinkedList<>(conceptFieldMap.get(conceptName).stream().map(fieldDescription -> fieldDescription.fieldName).collect(Collectors.toList()));
     }
 
     //can't fail, but can return empty list

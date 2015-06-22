@@ -1,80 +1,84 @@
 start_symbol,START{0},**skip**,0 **skip**
 "send","S{0}","(sendEmail)","0 sendEmail"
 yes,S{0},(yes)
-ok,S{0},(yes)
-sure,S{0},(yes)
-finish,S{0},(end)
 end,S{0},(end)
-"that 's it",S{0},(end)
 cancel,S{0},(cancel)
 "next email",S{0},(nextEmailMessage)
-"next inbox",S{0},(nextEmailMessage)
-"next incoming email",S{0},(nextEmailMessage)
-"next message",S{0},(nextEmailMessage)
-"set next email",S{0},(nextEmailMessage)
-"set next message",S{0},(nextEmailMessage)
 "previous email",S{0},(previousEmailMessage)
-"set previous email",S{0},(previousEmailMessage)
-"previous message",S{0},(previousEmailMessage)
 "compose","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 "create","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
-compose,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
-create,((S{0}/String{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
-create,((S{0}/PP_ConceptName{2}){0}/String{1}), (lambda $1 $2 (createInstanceByFullNames $2 $1))
-define,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
-teach,(S{0}/String{1}){0},"(lambda $1 (defineConcept $1))"
-add,((S{0}/ConceptName{2}){0}/String{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
-has,((S{0}\ConceptName{2}){0}/String{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
-add,((S{0}/PP_MutableField{2}){0}/String{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
+compose,((S{0}/StringN{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
+create,((S{0}/StringN{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
+create,((S{0}/PP_ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (createInstanceByFullNames $2 $1))
+create,(S{0}/StringN{1}){0},"(lambda $1 (defineConcept $1))"
+define,(S{0}/StringN{1}){0},"(lambda $1 (defineConcept $1))"
+add,((S{0}/PP_ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
+has,((S{0}\ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
+add,((S{0}/PP_MutableField{2}){0}/StringV{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
 what,(S{0}/Field{1}){0},(lambda $1 (evalField $1))
 take,(FieldVal{0}/Field{1}){0},(lambda $1 (evalField $1))
 read,(S{0}/Instance{1}){0},(lambda $1 (readInstance $1))
-"set","((S{0}/PP_String{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
-"set","((S{0}/PP_FieldVal{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $1 $2))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2"
-"set","((S{0}/PP_MutableField{2}){0}/String{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
-"set","((S{0}/PP_MutableField{2}){0}/FieldVal{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $2 $1))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2"
-"put","((S{0}/PP_MutableField{2}){0}/String{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"
+write,"((S{0}/PP_MutableField{2}){0}/StringV{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"// write hello world in the subject
+write,"((S{0}/PP_MutableField{2}){0}/FieldVal{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $2 $1))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2"
+change,"((S{0}/PP_FieldVal{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $1 $2))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2" //change recipient to mom's email
+change,"((S{0}/PP_StringV{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2" //change subject to hello world
+of,((Field{0}\FieldName{2}){0}/Instance{1}){0},(lambda $1 $2 (getFieldFromInstance $1 $2))
 "of","((Field{0}\FieldName{2}){0}/InstanceName{1}){0}","(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $1 $2))","0 getProbFieldByInstanceNameAndFieldName","getProbFieldByInstanceNameAndFieldName 1 1","getProbFieldByInstanceNameAndFieldName 2 2"
 of,((MutableField{0}\FieldName{2}){0}/InstanceName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $1 $2))
 "from","((Field{0}\FieldName{2}){0}/InstanceName{1}){0}","(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $1 $2))","0 getProbFieldByInstanceNameAndFieldName","getProbFieldByInstanceNameAndFieldName 1 1","getProbFieldByInstanceNameAndFieldName 2 2"
-"the value",String/String,(lambda $1 $1)
+'s,((Field{0}\Instance{2}){0}/FieldName{1}){0},(lambda $1 $2 (getFieldFromInstance $2 $1))
 's,((Field{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $2 $1))
 's,((MutableField{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $2 $1))
-',((Field{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $2 $1))
-',((MutableField{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $2 $1))
-is,"((S{0}/String{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromString $1 $2))
-is,"((S{0}/FieldVal{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromFieldVal $1 $2))
+is,"((S{0}/StringV{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromString $1 $2)) //the subject is hello world
+is,"((S{0}/FieldVal{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromFieldVal $1 $2)) //the recipient is mom's email
+is,"((S{0}/ConceptName{2}){0}\StringN{1})", (lambda $1 $2 (createInstanceByFullNames $2 $1)) //mom is a contact
 it,FieldVal{0},(getProbFieldVal),0 getProbFieldVal
-to,PP_String/String,(lambda $1 $1)
-to,PP_Field/Field,(lambda $1 $1)
-to,PP_MutableField/MutableField,(lambda $1 $1)
-to,PP_FieldVal/FieldVal,(lambda $1 $1)
-as,PP_String/String,(lambda $1 $1)
-as,PP_MutableField/MutableField,(lambda $1 $1)
-as,PP_ConceptName/ConceptName,(lambda $1 $1)
-in,PP_MutableField/MutableField,(lambda $1 $1)
-inside,PP_MutableField/MutableField,(lambda $1 $1)
+to,PP_StringV/StringV,(lambda $1 $1) //set subject to hello world
+to,PP_FieldVal/FieldVal,(lambda $1 $1) //set recipient to mom's email
+to,PP_Field/Field,(lambda $1 $1) //?
+to,PP_MutableField/MutableField,(lambda $1 $1) //?
+to,PP_ConceptName/ConceptName,(lambda $1 $1)//add email to contact
+as,PP_StringV/StringV,(lambda $1 $1) //set subject as hello world //set subject to hello world
+as,PP_FieldVal/FieldVal,(lambda $1 $1) //set recipient as mom's email //set recipient to mom's email
+as,PP_ConceptName/ConceptName,(lambda $1 $1) //set mom as a contact
+inside,PP_MutableField/MutableField,(lambda $1 $1) //put hello world inside the subject
 and,"(S/S)\S",(lambda $1 $2 (doSeq $1 $2))
 and,"(S/S)\FieldVal",(lambda $1 $2 (doSeq $1 $2))
+#
+# The following are used to hint on the type but are actually ignored
+#
+"the value",StringV/StringV,(lambda $1 $1) //set subject to the value hello world
 concept,ConceptName/ConceptName,(lambda $1 $1)
-concept,String/String,(lambda $1 $1)
+concept,StringN/StringN,(lambda $1 $1)
 field,FieldName/FieldName,(lambda $1 $1)
-field,String/String,(lambda $1 $1)
+field,StringN/StringN,(lambda $1 $1) //add field email to concept contact
+field,StringN\StringN,(lambda $1 $1) //add the email field to the concept contact
 instance,InstanceName/InstanceName,(lambda $1 $1)
-instance,String/String,(lambda $1 $1)
+instance,StringN/StringN,(lambda $1 $1) //create instance mom of concept contact
+for, StringN/StringN, (lambda $1 $1) //create a contact for mom
+please,S{0}/S{0},(lambda $1 $1)
+hi,S{0},(replyTo)
+#
+# The following are specific from emails
+#
 body,FieldName{0},body,0 body
 "incoming email",InstanceName{0},inbox
-message,InstanceName{0},inbox
+my email,InstanceName{0},inbox
+current email,InstanceName{0},inbox
 inbox,InstanceName{0},inbox
-email,InstanceName{0},inbox
-email,InstanceName{0},outgoing_email,0 outgoing_email
+email,InstanceName{0},email
+email message,InstanceName{0},email
+message,InstanceName{0},email
 "outgoing email",InstanceName{0},outgoing_email,0 outgoing_email
 email,ConceptName{0},outgoing_email,0 outgoing_email
 recipient,FieldName{0},recipient_list,0 recipient_list
 subject,FieldName{0},subject,0 subject
 sender,FieldName{0},sender,0 sender
+#
+# The following were added just to support the examples
+#
 bob,InstanceName{0},bob,0 bob
-contact,ConceptName{0},contact
-email,FieldName{0},email
+name,ConceptName{0},name
+classification,FieldName{0},classification
 jane,InstanceName{0},jane
 "my spouse",InstanceName{0},my_spouse

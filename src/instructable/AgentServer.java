@@ -57,6 +57,7 @@ public class AgentServer implements HttpHandler
             httpExchange.sendResponseHeaders(200, systemReply.length());
             OutputStream os = httpExchange.getResponseBody();
             os.write(systemReply.getBytes());
+            os.flush();
             os.close();
         } catch (Exception ex)
         {
