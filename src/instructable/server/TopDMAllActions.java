@@ -299,8 +299,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             if (mutableOnly)
                 instanceName = OutgoingEmail.strOutgoingEmailTypeAndName;
             else
-                instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(InboxCommandController.emailMessageNameStart);
+                instanceName = InboxCommandController.emailMessageNameStart;
         }
+
+        if (inboxCommandController.isInboxInstanceName(instanceName))
+            instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName);
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty(), false);
