@@ -15,11 +15,34 @@ finished,{end}
 nothing,{end}
 quit,{cancel}
 stop,{cancel}
+nevermind,{cancel}
+"never mind",{cancel}
+the,{for} //skip in StringN
 "next inbox",{"next email"}
 "next incoming email",{"next email"}
 "next message", {"next email"}
 "set next email", {"next email"}
+"set to next email", {"next email"}
+"set to the next email", {"next email"}
+"set to my next email", {"next email"}
+"set to the next email in the inbox", {"next email"}
 "set next message", {"next email"}
+"move to next email", {"next email"}
+"move to the next email", {"next email"}
+"move to my next email", {"next email"}
+"move to the next email in the inbox", {"next email"}
 "set previous email",{"previous email"}
 "previous message",{"previous email"}
-the,{for} //skip in StringN
+"previous inbox",{"previous email"}
+"previous incoming email",{"previous email"}
+"previous message", {"previous email"}
+"set previous email", {"previous email"}
+"set to previous email", {"previous email"}
+"set to the previous email", {"previous email"}
+"set to my previous email", {"previous email"}
+"set to the previous email in the inbox", {"previous email"}
+"set previous message", {"previous email"}
+"move to previous email", {"previous email"}
+"move to the previous email", {"previous email"}
+"move to my previous email", {"previous email"}
+"move to the previous email in the inbox", {"previous email"}

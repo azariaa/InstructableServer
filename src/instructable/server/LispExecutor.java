@@ -73,7 +73,7 @@ public class LispExecutor
         {
             try
             {
-                ActionResponse lastResponse = null;
+                boolean hasAResponse = false;
                 //make sure all ActionResponse we got are success, otherwise just propagate them up
                 for (Object obj : argumentValues)
                 {
@@ -82,15 +82,20 @@ public class LispExecutor
                         if (!((ActionResponse) obj).isSuccess())
                             return obj;
                         else
-                            lastResponse = (ActionResponse) obj;
+                            hasAResponse = true;
                     }
                 }
 
                 if (currentFunction.equals(doSeq))
                 {
-                    if (lastResponse == null)
+                    if (!hasAResponse)
                         return new ActionResponse("Error! called do sequential, but no response found.", false);
-                    return lastResponse;
+
+                    //need to append all responses in the order of evaluation.
+
+                    List<ActionResponse> actionResponseList = argumentValues.stream().filter(obj -> obj instanceof ActionResponse).map(obj -> (ActionResponse) obj).collect(Collectors.toCollection(() -> new LinkedList<>()));
+
+                    return ActionResponse.createFromList(actionResponseList);
                 }
 
                 //first get function by name (no overloading so it is easy)

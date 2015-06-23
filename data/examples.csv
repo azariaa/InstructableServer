@@ -84,7 +84,7 @@ set the body to I didn't hear from you in a while is everything ok,"(setFieldFro
 set the subject to working hours this week,"(setFieldFromString (getProbMutableFieldByFieldName subject) ""working hours this week"")"
 john is a name,"(createInstanceByFullNames name ""john"")"
 create a name for bill and set bill's classification to fdsdf@gmail.com,"(doSeq (createInstanceByFullNames name ""bill"") (setFieldFromString (getProbMutableFieldByFieldName classification) ""fdsdf@gmail.com""))"
-set recipient as name jane's classification,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getFieldFromInstance (getInstance name jane) classification)))
+set name jane's classification as the recipient,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getFieldFromInstance (getInstance name jane) classification)))
 write hello all in the body,"(setFieldFromString (getProbMutableFieldByFieldName body) ""hello all"")"
 use bob's classification as the subject,(setFieldFromFieldVal (getProbMutableFieldByFieldName subject) (evalField (getProbFieldByInstanceNameAndFieldName bob classification)))
 drive bob's classification to the subject,(unknownCommand)

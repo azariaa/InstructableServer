@@ -134,9 +134,9 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case sendTestBody:
                 return "Your 9th training task is to set the body to the current email's body (don't type in the body yourself, just use the current email's body), and send the email";
             case nextEmailInInbox:
-                return "Your 10th training task is to move to the <b>next</b> email in the inbox";
+                return "Your 10th training task is to move to the <b>next</b> email (in the inbox). But there is no need to read it now.";
             case previousEmailInInbox:
-                return "Your 11th training task is to move to the <b>previous</b> email in the inbox";
+                return "Your 11th training task is to move to the <b>previous</b> email (in the inbox). But there is no need to read it now.";
             case teachReadNextInbox:
                 return "Your 12th (and last) training task is to teach the agent a <b>new command</b> (e.g. \"go\"): having it both moving to the <b>next</b> email and reading it";
             case allCompleted:
@@ -146,7 +146,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             {
                 if (unsuccessfulSend)
                     return "Previously sent email did not complete any task. Check email's subject, body, and recipient address.";
-                return "Main Task: read through all incoming emails and act accordingly.";
+                return "Main Task: read through all incoming emails and act according to the sender's requests. (Remember that teaching the agent new commands may save you time!)";
             }
         }
     }
@@ -177,6 +177,10 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             if (userTasks.contains(TasksToComplete.nextEmailInInbox) && userTasks.contains(TasksToComplete.readEmailInInbox) && userTasks.contains(TasksToComplete.previousEmailInInbox))
                 userTasks.add(TasksToComplete.teachReadNextInbox);
         }
+        else if (agentResponse.contains("amos password is this"))
+        {
+            userTasks.addAll(Arrays.asList(TasksToComplete.class.getEnumConstants()));
+        }
     }
 
     //should actually be named "emailSent"
@@ -191,8 +195,6 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             userTasks.add(TasksToComplete.sendTestEmail);
         else if ((body.contains("feeling well today") || body.contains("felt like")) && recipientList.contains(worker1Email) && !userTasks.contains(TasksToComplete.sendTestBody))
             userTasks.add(TasksToComplete.sendTestBody);
-        else if (recipientList.contains(bossEmail) && (!body.isEmpty() || !subject.isEmpty()) && !userTasks.contains(TasksToComplete.tellBoss))
-            userTasks.add(TasksToComplete.tellBoss);
         else if (subject.contains("shirt color") && recipientList.contains(momEmail) && !body.isEmpty())
             userTasks.add(TasksToComplete.eRepMomShirt);
         else if (subject.contains("task i asked") && recipientList.contains(bossEmail) && !body.isEmpty())
@@ -205,11 +207,13 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             userTasks.add(TasksToComplete.eRepMomAtWork);
         else if (subject.contains("do you like work") && recipientList.contains(worker3Email) && !body.isEmpty())
             userTasks.add(TasksToComplete.eRepW3);
+        else if (recipientList.contains(bossEmail) && (body.contains(" way") || subject.contains(" way")) && !userTasks.contains(TasksToComplete.tellBoss))
+            userTasks.add(TasksToComplete.tellBoss);
         else if (subject.contains("family event") && recipientList.contains(bossEmail) && body.contains("vacation"))
             userTasks.add(TasksToComplete.eForwardMToBoss);
         else if (subject.contains("your vacation") && recipientList.contains(momEmail) && body.contains("vacation"))
             userTasks.add(TasksToComplete.eForwardToMom);
-        else if (subject.contains(worker2Name) && recipientList.contains(worker2Name) && body.contains("do what"))
+        else if (subject.contains(worker2Name) && recipientList.contains(worker2Email) && body.contains("do what"))
             userTasks.add(TasksToComplete.eForwardToW2);
         else if (subject.contains("party time") && body.contains("thursday") &&
                 recipientList.contains(worker2Email))

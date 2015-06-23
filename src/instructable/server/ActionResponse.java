@@ -5,6 +5,8 @@ import instructable.server.hirarchy.FieldHolder;
 import instructable.server.hirarchy.GenericInstance;
 import org.json.simple.JSONObject;
 
+import java.util.List;
+
 /**
  * Created by Amos Azaria on 20-Apr-15.
  * <p>
@@ -13,6 +15,19 @@ import org.json.simple.JSONObject;
  */
 public class ActionResponse extends RuntimeException
 {
+    public static ActionResponse createFromList(List<ActionResponse> actionResponseList)
+    {
+        if (actionResponseList.isEmpty())
+            return new ActionResponse("Error nnothing to append",false);
+        StringBuilder fullResponse = new StringBuilder();
+        for (ActionResponse actionResponse : actionResponseList)
+        {
+            fullResponse.append(actionResponse.getSayToUser().trim());
+            fullResponse.append("\n");
+        }
+        return new ActionResponse(fullResponse.toString(),true);
+    }
+
     public enum ActionResponseType
     {
         simple, value, instance, field
