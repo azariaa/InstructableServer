@@ -410,7 +410,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (previousFieldEval.isPresent())
             return new ActionResponse("It is: " + FieldHolder.fieldFromJSonForUser(previousFieldEval.get()), true, previousFieldEval.get());
 
-        return failWithMessage(infoForCommand, "There is no previously evaluated field.");
+        return failWithMessage(infoForCommand, "there is no previously evaluated field");
     }
 
     private ActionResponse failWithMessage(InfoForCommand infoForCommand, String sentence)
@@ -489,6 +489,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse setFieldFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal)
     {
         return setAndAdd(infoForCommand, field, Optional.empty(), Optional.of(jsonVal), false, true);
+    }
+
+    @Override
+    public ActionResponse setFieldWithMissingArg(InfoForCommand infoForCommand, FieldHolder field)
+    {
+        return failWithMessage(infoForCommand, "I don't know what to set the \"" + field.getFieldName() + "\" field in \"" + field.getParentInstanceName() +
+                "\" to. Please repeat and tell me what to set it to (e.g. set "+field.getParentInstanceName()+"'s "+field.getFieldName()+" to something)");
     }
 
 
@@ -677,7 +684,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             return createNewEmail(infoForCommand, conceptName);
         }
-        return failWithMessage(infoForCommand, "creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name).");
+        return failWithMessage(infoForCommand, "creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name)");
     }
 
     private ActionResponse createNewEmail(InfoForCommand infoForCommand, String conceptName)

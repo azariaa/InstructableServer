@@ -22,6 +22,7 @@ write,"((S{0}/PP_MutableField{2}){0}/StringV{1}){0}","(lambda $1 $2 (setFieldFro
 write,"((S{0}/PP_MutableField{2}){0}/FieldVal{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $2 $1))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2"
 change,"((S{0}/PP_FieldVal{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $1 $2))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2" //change recipient to mom's email
 change,"((S{0}/PP_StringV{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2" //change subject to hello world
+change,(S{0}/MutableField{1}){0},(lambda $1 (setFieldWithMissingArg $1)) //change mom's email (without to "hello world)
 of,((Field{0}\FieldName{2}){0}/Instance{1}){0},(lambda $1 $2 (getFieldFromInstance $1 $2))
 "of","((Field{0}\FieldName{2}){0}/InstanceName{1}){0}","(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $1 $2))","0 getProbFieldByInstanceNameAndFieldName","getProbFieldByInstanceNameAndFieldName 1 1","getProbFieldByInstanceNameAndFieldName 2 2"
 of,((MutableField{0}\FieldName{2}){0}/InstanceName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $1 $2))
@@ -74,6 +75,8 @@ email,ConceptName{0},outgoing_email,0 outgoing_email
 recipient,FieldName{0},recipient_list,0 recipient_list
 subject,FieldName{0},subject,0 subject
 sender,FieldName{0},sender,0 sender
+# added this, since I had to retrain if added later
+email,FieldName{0},email
 #
 # The following were added just to support the examples
 #

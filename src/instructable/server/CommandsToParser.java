@@ -35,6 +35,7 @@ public class CommandsToParser implements ICommandsToParser
         String what = conceptFieldInstance.toString();
         parserSettings.updateParserGrammar(actualName + "," + what + "Name{0}," + actualName.replace(" ", "_"));
         parserSettings.env.bindName(actualName.replace(" ", "_"), actualName.replace("_", " "), parserSettings.symbolTable);
+        //parserSettings.retrain(2);
     }
 
     @Override

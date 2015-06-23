@@ -12,7 +12,6 @@ create name david,"(createInstanceByFullNames name ""david"")"
 create name for david,"(createInstanceByFullNames name ""david"")"
 yes,(yes)
 ok,(yes)
-sender,(evalField (getProbFieldByFieldName sender))
 put this is a test in body,"(setFieldFromString (getProbMutableFieldByFieldName body) ""this is a test"")"
 send the email,(sendEmail)
 set myself@myjob.com as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""myself@myjob.com"")"
@@ -32,6 +31,7 @@ create a name call it wing,"(createInstanceByFullNames name ""wing"")"
 set bob's classification to baba won't you,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""baba won't you"")"
 set bob's classification to bob@gmail.com,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""bob@gmail.com"")"
 what's bob's classification?,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
+what is bob's email?,(evalField (getProbFieldByInstanceNameAndFieldName bob email))
 create a name call it jane,"(createInstanceByFullNames name ""jane"")"
 take bob's classification,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
 and set it as jane's classification,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName jane classification) (getProbFieldVal))
@@ -102,3 +102,8 @@ bike to the sender,(unknownCommand)
 repair the subject,(unknownCommand)
 often remain with the recipient,(unknownCommand)
 talk this email to bob,(unknownCommand)
+read subject,(unknownCommand)
+read name,(unknownCommand)
+subject,(unknownCommand)
+bob's classification,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
+set bob's classification,(setFieldWithMissingArg (getProbMutableFieldByInstanceNameAndFieldName bob classification))

@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
  */
 public class ParserSettings implements Cloneable
 {
+    static final int initialTraining = 10;
+    static final int retrainAfterNewCommand = 1;
     private ParserSettings()
     {
 
@@ -117,7 +119,7 @@ public class ParserSettings implements Cloneable
         this.lexicon = Lists.newArrayList(lexicon);
         this.unaryRules = Lists.newArrayList(unaryRulesList);
         this.featureVectorGenerator = featureVectorGenerator;
-        this.parserParameters = CcgUtils.train(family, ccgExamples, 10);
+        this.parserParameters = CcgUtils.train(family, ccgExamples, initialTraining);
         this.parser = family.getModelFromParameters(this.parserParameters);
         this.parserFamily = family;
     }
@@ -257,7 +259,12 @@ public class ParserSettings implements Cloneable
 
         updateParserGrammar(newEntries, Lists.newArrayList());
         ccgExamples.add(example);
-        SufficientStatistics newParameters = CcgUtils.train(parserFamily, ccgExamples, 2);
+        retrain(retrainAfterNewCommand);
+    }
+
+    public void retrain(int iterations)
+    {
+        SufficientStatistics newParameters = CcgUtils.train(parserFamily, ccgExamples, iterations);
 
         parser = parserFamily.getModelFromParameters(newParameters);
     }

@@ -36,12 +36,14 @@ public class EnvironmentCreatorUtils
 
         String[] unaryRules = new String[]{
                 "Field{0} FieldVal{0},(lambda x (evalField x))",
-                //"FieldVal{0} S{0},(lambda x x)", //TODO: bring this back once it works
-                "MutableField{0} FieldVal{0},(lambda x (evalField x))",
+                "FieldVal{0} S{0},(lambda x x)", //TODO: bring this back once it works
                 "FieldName{0} Field{0},(lambda x (getProbFieldByFieldName x))",
-                "FieldName{0} FieldVal{0},(lambda x (evalField (getProbFieldByFieldName x)))", //TODO: this one just combines the two above (there seems to be a bug).
-                "InstanceName{0} Instance{0},(lambda x (getProbInstanceByName x))",
+                "FieldName{0} FieldVal{0},(lambda x (evalField (getProbFieldByFieldName x)))", //this one just combines the two above (and below).
+                "MutableField{0} FieldVal{0},(lambda x (evalField x))",
                 "FieldName{0} MutableField{0},(lambda x (getProbMutableFieldByFieldName x))",
+                "Field{0} S{0},(lambda x (evalField x))",
+                "MutableField{0} S{0},(lambda x (evalField x))",
+                "InstanceName{0} Instance{0},(lambda x (getProbInstanceByName x))",
                 "ConceptName{0} Instance{0}/InstanceName{0}, (lambda x (lambda y (getInstance x y)))"//,
                 //"String{0} S{0},(lambda x (unknownCommand))" //TODO: remove this, once it's added in: buildParametricCcgParser (so only full sentence will be transferred to S)
         };

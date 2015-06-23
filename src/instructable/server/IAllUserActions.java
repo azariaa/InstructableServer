@@ -51,6 +51,8 @@ public interface IAllUserActions
 
     ActionResponse setFieldFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal);
 
+    ActionResponse setFieldWithMissingArg(InfoForCommand infoForCommand, FieldHolder field);
+
     //ActionResponse setFieldFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 
     ActionResponse addToFieldFromString(InfoForCommand infoForCommand, FieldHolder field, String val);
