@@ -134,9 +134,9 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case sendTestBody:
                 return "Your 9th training task is to set the body to the current email's body (don't type in the body yourself, just use the current email's body), and send the email";
             case nextEmailInInbox:
-                return "Your 10th training task is to move to the <b>next</b> email (in the inbox). But there is no need to read it now.";
+                return "Your 10th training task is to move to the <b>next</b> email (in the inbox). (No need to read it now.)";
             case previousEmailInInbox:
-                return "Your 11th training task is to move to the <b>previous</b> email (in the inbox). But there is no need to read it now.";
+                return "Your 11th training task is to move to the <b>previous</b> email (in the inbox). (No need to read it now.)";
             case teachReadNextInbox:
                 return "Your 12th (and last) training task is to teach the agent a <b>new command</b> (e.g. \"go\"): having it both moving to the <b>next</b> email and reading it";
             case allCompleted:

@@ -38,13 +38,14 @@ public class ParserSettings implements Cloneable
 {
     static final int initialTraining = 10;
     static final int retrainAfterNewCommand = 1;
+
     private ParserSettings()
     {
 
     }
 
-    public ParserSettings (List<String> lexiconEntries, List<String> synonyms, String[] unaryRules,
-                           FeatureGenerator<StringContext, String> featureGenerator, List<String[]> examplesList)
+    public ParserSettings(List<String> lexiconEntries, List<String> synonyms, String[] unaryRules,
+                          FeatureGenerator<StringContext, String> featureGenerator, List<String[]> examplesList)
     {
         final String midRowComment = "//";
         final String fullRowComment = "#";
@@ -52,23 +53,23 @@ public class ParserSettings implements Cloneable
         symbolTable = IndexedList.create();
 
         // remove all that appears after a "//" or starts with # (parseLexiconEntries only removes lines that start with "#")
-        List<String> lexiconWithoutComments = lexiconEntries.stream().filter(e->!e.contains(fullRowComment)).map(e -> (e.contains(midRowComment) ? e.substring(0, e.indexOf(midRowComment)) : e)).collect(Collectors.toList());
+        List<String> lexiconWithoutComments = lexiconEntries.stream().filter(e -> !e.contains(fullRowComment)).map(e -> (e.contains(midRowComment) ? e.substring(0, e.indexOf(midRowComment)) : e)).collect(Collectors.toList());
 
         // add synonyms. format: newWord, {meaning1,meaning2,...} (i.e, newWord = meaning1 U meaning2)
         List<String> lexEntriesFromSyn = new LinkedList<>();
         for (String synonym : synonyms)
         {
-            if (synonym.trim().length() <=1 || synonym.contains(fullRowComment) || synonym.trim().startsWith(midRowComment)) //comment row
+            if (synonym.trim().length() <= 1 || synonym.contains(fullRowComment) || synonym.trim().startsWith(midRowComment)) //comment row
                 continue;
-            String newWord = synonym.substring(0,synonym.indexOf(","));
+            String newWord = synonym.substring(0, synonym.indexOf(","));
             //newWord.replace("\"","");
-            String[] meanings = synonym.substring(synonym.indexOf("{")+1,synonym.indexOf("}")).split(",");
+            String[] meanings = synonym.substring(synonym.indexOf("{") + 1, synonym.indexOf("}")).split(",");
             for (String meaning : meanings)
             {
-                String meaningWOQuotes = meaning.trim().replace("\"","");
+                String meaningWOQuotes = meaning.trim().replace("\"", "");
                 for (String lexiconEntry : lexiconWithoutComments) //could save time if transferred all entries to a map, but this is anyway done only once
                 {
-                    String entryWord = lexiconEntry.substring(0,lexiconEntry.indexOf(",")).replace("\"", "");
+                    String entryWord = lexiconEntry.substring(0, lexiconEntry.indexOf(",")).replace("\"", "");
                     if (entryWord.equals(meaningWOQuotes))
                     {
                         String newLexiconEntry = newWord + lexiconEntry.substring(lexiconEntry.indexOf(","));
@@ -154,13 +155,12 @@ public class ParserSettings implements Cloneable
         {
             LispEval.EvalResult result = lispEval.eval(sExpression, env);
             response = (ActionResponse) result.getValue();
-        }
-        catch (ActionResponse actionResponse)
+        } catch (ActionResponse actionResponse)
         {
             response = actionResponse;
         }
 
-        return  response;
+        return response;
     }
 
     public CcgUtils.SayAndExpression ParseAndEval(IAllUserActions allUserActions, String userSays)
@@ -175,31 +175,32 @@ public class ParserSettings implements Cloneable
     }
 
     /**
-   * Adds new lexicon entries and unary rules to the grammar of the
-   * CCG parser in {@code settings}.
-   *
-   * @param lexiconEntries
-   * @param unaryRules
+     * Adds new lexicon entries and unary rules to the grammar of the
+     * CCG parser in {@code settings}.
+     *
+     * @param lexiconEntries
+     * @param unaryRules
      */
-  public void updateParserGrammar(List<LexiconEntry> lexiconEntries, List<CcgUnaryRule> unaryRules) {
-    lexicon.addAll(lexiconEntries);
-    this.unaryRules.addAll(unaryRules);
+    public void updateParserGrammar(List<LexiconEntry> lexiconEntries, List<CcgUnaryRule> unaryRules)
+    {
+        lexicon.addAll(lexiconEntries);
+        this.unaryRules.addAll(unaryRules);
 
-    ParametricCcgParser newFamily = CcgUtils.buildParametricCcgParser(lexicon, this.unaryRules,
-            posUsed, featureVectorGenerator);
-    SufficientStatistics newParameters = newFamily.getNewSufficientStatistics();
-    newParameters.transferParameters(parserParameters);
-    parserParameters = newParameters;
-    parserFamily = newFamily;
-    parser = newFamily.getModelFromParameters(newParameters);
-  }
+        ParametricCcgParser newFamily = CcgUtils.buildParametricCcgParser(lexicon, this.unaryRules,
+                posUsed, featureVectorGenerator);
+        SufficientStatistics newParameters = newFamily.getNewSufficientStatistics();
+        newParameters.transferParameters(parserParameters);
+        parserParameters = newParameters;
+        parserFamily = newFamily;
+        parser = newFamily.getModelFromParameters(newParameters);
+    }
 
     public void updateParserGrammar(String newLexicon)
     {
-      List<String> lexiconAsList = new LinkedList<>();
-      lexiconAsList.add(newLexicon);
-      List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
-      this.updateParserGrammar(lexiconEntries, new LinkedList<>());
+        List<String> lexiconAsList = new LinkedList<>();
+        lexiconAsList.add(newLexicon);
+        List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
+        this.updateParserGrammar(lexiconEntries, new LinkedList<>());
     }
 
     /**
@@ -267,6 +268,7 @@ public class ParserSettings implements Cloneable
         SufficientStatistics newParameters = CcgUtils.train(parserFamily, ccgExamples, iterations);
 
         parser = parserFamily.getModelFromParameters(newParameters);
+        this.parserParameters = newParameters;
     }
 
     @Override
