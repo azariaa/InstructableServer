@@ -108,3 +108,4 @@ subject,(unknownCommand)
 bob's classification,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
 set bob's classification,(setFieldWithMissingArg (getProbMutableFieldByInstanceNameAndFieldName bob classification))
 read next email,(unknownCommand)
+add dsflkj@fds.com to field email,"(addToFieldFromString (getProbMutableFieldByFieldName email) ""dsflkj@fds.com"")"

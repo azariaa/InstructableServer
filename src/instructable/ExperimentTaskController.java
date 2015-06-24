@@ -130,7 +130,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case readEmailInInbox:
                 return "Your 7th training task is to read the current email (in the inbox)";
             case setRecpToSender:
-                return "Your 8th training task is to create a new email and set the recipient to the current email's sender (don't type the email yourself, use: \"email's sender\" instead)";
+                return "Your 8th training task is to create a new email and set the recipient to the current email's sender (don't type the email yourself, use: \"current email's sender\" instead)";
             case sendTestBody:
                 return "Your 9th training task is to set the body to the current email's body (don't type in the body yourself, just use the current email's body), and send the email";
             case nextEmailInInbox:
@@ -153,7 +153,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
 
     public void responseSentToUser(String agentResponse)
     {
-        if (agentResponse.contains("Composing new email"))
+        if (agentResponse.contains("Composing new email") && !userTasks.contains(TasksToComplete.createEmail))
             userTasks.add(TasksToComplete.createEmail);
         else if (agentResponse.contains("Concept \"contact\" was defined successfully"))
             userTasks.add(TasksToComplete.defineContact);

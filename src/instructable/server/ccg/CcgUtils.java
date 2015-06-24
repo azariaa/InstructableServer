@@ -65,7 +65,7 @@ public class CcgUtils
     	// input text.
     	int ngramLength = 1;
     	ParametricCfgAlignmentModel pam = ParametricCfgAlignmentModel.buildAlignmentModelWithNGrams(
-    			examples, featureVectorGen, ngramLength);
+                examples, featureVectorGen, ngramLength);
 
     	SufficientStatistics smoothing = pam.getNewSufficientStatistics();
     	smoothing.increment(0.1);
@@ -388,7 +388,7 @@ public class CcgUtils
     public static void tokenizeAndPOS(String sentence, List<String> outTokens, List<String> outPOSs, boolean addNewPOS, Set<String> allowedOrUsedPOS)
     {
         final String slash = "/"; //is replaced with the first word.
-        final List<String> excludeTokens = Arrays.asList(",", ".", "!", "(", ")", "!", "?","\"",":",";",slash,"\\"); //need to exclude this since they won't be available when using speech.
+        final List<String> excludeTokens = Arrays.asList(",", ".", "!", "(", ")", "!", "?","\"",":",";",slash,"\\","``","''"); //need to exclude this since they won't be available when using speech.
 
         //List<String> tokens = new LinkedList<>();
         //PTBTokenizer ptbTokenizer = PTBTokenizer.newPTBTokenizer(new StringReader(sentence));
