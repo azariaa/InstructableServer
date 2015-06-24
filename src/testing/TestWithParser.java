@@ -21,7 +21,7 @@ import java.util.LinkedList;
 public class TestWithParser
 {
     static boolean testingMode = true;
-    static String fileName = "June18test.txt";
+    static String fileName = "June24test.txt";
 
     public static void main(String[] args) throws Exception
     {
@@ -583,9 +583,8 @@ public class TestWithParser
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "read incoming email";
+        userSays = "read email";
         testHelpers.userSays(userSays);
-        userSays = "read email"; //TODO: want to check this!
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 

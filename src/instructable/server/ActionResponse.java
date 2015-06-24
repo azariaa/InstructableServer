@@ -6,6 +6,7 @@ import instructable.server.hirarchy.GenericInstance;
 import org.json.simple.JSONObject;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
@@ -15,17 +16,30 @@ import java.util.List;
  */
 public class ActionResponse extends RuntimeException
 {
+
     public static ActionResponse createFromList(List<ActionResponse> actionResponseList)
     {
         if (actionResponseList.isEmpty())
-            return new ActionResponse("Error nnothing to append",false);
+            return new ActionResponse("Error: nothing to append", false, Optional.empty());
+        Optional<String> learningSentence = Optional.empty();
         StringBuilder fullResponse = new StringBuilder();
         for (ActionResponse actionResponse : actionResponseList)
         {
-            fullResponse.append(actionResponse.getSayToUser().trim());
-            fullResponse.append("\n");
+            if (actionResponse.isSuccess())
+            {
+                fullResponse.append(actionResponse.sayToUser);
+                fullResponse.append("\n");
+                if (actionResponse.learningSentence.isPresent() && !learningSentence.isPresent())
+                    learningSentence = actionResponse.learningSentence;
+            }
         }
-        return new ActionResponse(fullResponse.toString(),true);
+
+        return new ActionResponse(fullResponse.toString().trim(),true,learningSentence);
+    }
+
+    public String onlySentenceToUser()
+    {
+        return sayToUser;
     }
 
     public enum ActionResponseType
@@ -33,30 +47,34 @@ public class ActionResponse extends RuntimeException
         simple, value, instance, field
     }
 
-    ActionResponse(String sayToUser, boolean success)
+    /**
+     *
+     * @param sayToUser Don't add "\n" at the end. Will add if needed.
+     * @param success
+     * @param learningSentence
+     */
+    ActionResponse(String sayToUser, boolean success, Optional<String> learningSentence)
     {
+        this.learningSentence = learningSentence;
         this.sayToUser = sayToUser;
         this.success = success;
         type = ActionResponseType.simple;
     }
 
-    ActionResponse(String sayToUser, boolean success, JSONObject value)
+    public void addValue(JSONObject value)
     {
-        this(sayToUser, success);
         this.value = value;
         type = ActionResponseType.value;
     }
 
-    ActionResponse(String sayToUser, boolean success, GenericInstance instance)
+    public void addInstance(GenericInstance instance)
     {
-        this(sayToUser, success);
         this.instance = instance;
         type = ActionResponseType.instance;
     }
 
-    ActionResponse(String sayToUser, boolean success, FieldHolder field)
+    public void addField(FieldHolder field)
     {
-        this(sayToUser, success);
         this.field = field;
         type = ActionResponseType.field;
     }
@@ -68,7 +86,12 @@ public class ActionResponse extends RuntimeException
 
     public String getSayToUser()
     {
-        return sayToUser;
+        String retVal;
+        if (learningSentence.isPresent())
+            retVal = sayToUser + "\n" + learningSentence.get();
+        else
+            retVal = sayToUser;
+        return retVal + "\n";
     }
 
     private String sayToUser;
@@ -77,6 +100,8 @@ public class ActionResponse extends RuntimeException
     {
         return success;
     }
+
+    private Optional<String> learningSentence;
 
     public JSONObject getValue()
     {

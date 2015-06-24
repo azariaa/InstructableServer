@@ -32,20 +32,20 @@ public class TextFormattingUtils
         return appendedFields;
     }
 
-
     /*
         internalState can be null if askToTeachIfFails is false
         returns success.
      */
-    public static boolean testOkAndFormat(InfoForCommand infoForCommand,
+    public static ActionResponse testOkAndFormat(InfoForCommand infoForCommand,
                                           ExecutionStatus executionStatus,
                                           boolean failWithWarningToo,
                                           boolean ignoreComments,
-                                          StringBuilder response,
                                           Optional<String> optionalSuccessSentence,
                                           boolean askToTeachIfFails,
                                           TopDMAllActions.InternalState internalState)
     {
+        StringBuilder response = new StringBuilder();
+        Optional<String> learningSentence = Optional.empty();
         boolean isInLearningPhase = internalState.isInLearningMode();
         ExecutionStatus.RetStatus retStatus = executionStatus.getStatus();
         boolean success = retStatus == ExecutionStatus.RetStatus.ok || retStatus == ExecutionStatus.RetStatus.comment ||
@@ -68,7 +68,7 @@ public class TextFormattingUtils
                     response.append("Sorry, but " + statusAndMessage.message.get() + ".");
                     if (isInLearningPhase)
                     {
-                        response.append("\nWhat should I do instead (when executing: \"" + internalState.lastCommandOrLearningCommand + "\")?");
+                        learningSentence = Optional.of("What should I do instead (when executing: \"" + internalState.lastCommandOrLearningCommand + "\")?");
                     }
                 }
             }
@@ -88,19 +88,30 @@ public class TextFormattingUtils
         {
             response.append(optionalSuccessSentence.get());
             if (isInLearningPhase)
-                response.append("\nWhat shall I do next (when executing: \"" + internalState.lastCommandOrLearningCommand + "\")?");
+                learningSentence = Optional.of("What shall I do next (when executing: \"" + internalState.lastCommandOrLearningCommand + "\")?");
         }
 
 
-        return success;
+        return new ActionResponse(response.toString(),success,learningSentence);
     }
 
 
-    static public void noEmailFound(StringBuilder response, TopDMAllActions.InternalState internalState)
+    static public ActionResponse noEmailFound(TopDMAllActions.InternalState internalState)
+    {
+        return noEmail(internalState, new StringBuilder());
+    }
+
+    static public ActionResponse noEmailFound(TopDMAllActions.InternalState internalState, ActionResponse actionResponse)
+    {
+        return noEmail(internalState, new StringBuilder(actionResponse.onlySentenceToUser()));
+    }
+
+    static private ActionResponse noEmail(TopDMAllActions.InternalState internalState, StringBuilder response)
     {
         response.append("I see that there is no email being composed.\n");
         response.append("Do you want to compose a new email?\n");
         internalState.pendOnEmailCreation();
+        return new ActionResponse(response.toString(),false, Optional.empty());
     }
 
 }

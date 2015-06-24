@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -89,11 +90,11 @@ public class LispExecutor
                 if (currentFunction.equals(doSeq))
                 {
                     if (!hasAResponse)
-                        return new ActionResponse("Error! called do sequential, but no response found.", false);
+                        return new ActionResponse("Error! called do sequential, but no response found.", false, Optional.empty());
 
                     //need to append all responses in the order of evaluation.
 
-                    List<ActionResponse> actionResponseList = argumentValues.stream().filter(obj -> obj instanceof ActionResponse).map(obj -> (ActionResponse) obj).collect(Collectors.toCollection(() -> new LinkedList<>()));
+                    List<ActionResponse> actionResponseList = argumentValues.stream().filter(obj -> obj instanceof ActionResponse).map(obj -> (ActionResponse) obj).collect(Collectors.toCollection(LinkedList::new));
 
                     return ActionResponse.createFromList(actionResponseList);
                 }

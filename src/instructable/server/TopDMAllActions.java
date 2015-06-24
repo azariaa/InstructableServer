@@ -150,7 +150,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse sendEmail(InfoForCommand infoForCommand)
     {
-        StringBuilder retSentences = new StringBuilder();
         ExecutionStatus executionStatus = new ExecutionStatus();
         outEmailCommandController.sendEmail(executionStatus);
         ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
@@ -158,23 +157,19 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             if (!outEmailCommandController.isAnEmailBeingComposed())
             {
-                TextFormattingUtils.noEmailFound(retSentences, internalState);
-                return new ActionResponse(retSentences.toString(), false);
+                return TextFormattingUtils.noEmailFound(internalState);
             }
         }
 
 
         StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        return TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
-                response,
                 Optional.of("Email sent successfully."),
                 false,//true,
                 internalState);
-
-        return new ActionResponse(response.toString(), success);
     }
 
     public ActionResponse yes(InfoForCommand infoForCommand)
@@ -193,18 +188,18 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         else if (internalState.isPendingOnLearning())
         {
             String lastCommand = internalState.startLearning();
-            return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first?", true);
+            return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first?", true, Optional.empty());
         }
         else
         {
-            return new ActionResponse("I did not understand what you said yes to, please give the full request.", false);
+            return new ActionResponse("I did not understand what you said yes to, please give the full request.", false, Optional.empty());
         }
     }
 
     @Override
     public ActionResponse no(InfoForCommand infoForCommand)
     {
-        return new ActionResponse("Ok, I won't do anything.", true);
+        return new ActionResponse("Ok, I won't do anything.", true, Optional.empty());
     }
 
     /*
@@ -216,9 +211,9 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (internalState.isInLearningMode())
         {
             internalState.reset();
-            return new ActionResponse("Ok, I won't learn it.", true);
+            return new ActionResponse("Ok, I won't learn it.", true, Optional.empty());
         }
-        return new ActionResponse("There is nothing that I can cancel.", true);
+        return new ActionResponse("There is nothing that I can cancel.", true, Optional.empty());
     }
 
     @Override
@@ -250,24 +245,22 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 if (!instance.isPresent())
                 {
                     StringBuilder retSentences = new StringBuilder();
-                    TextFormattingUtils.noEmailFound(retSentences, internalState);
-                    return new ActionResponse(retSentences.toString(), false);
+                    return TextFormattingUtils.noEmailFound(internalState);
                 }
             }
         }
-        StringBuilder response = new StringBuilder();
-        if (TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
-                response,
                 Optional.of("Got instance \"" + instanceName + "\" of concept \"" + conceptName + "\"."),
                 false,
-                internalState))
+                internalState);
+        if (actionResponse.isSuccess())
         {
-            return new ActionResponse(response.toString(), true, instance.get());
+            actionResponse.addInstance(instance.get());
         }
-        return new ActionResponse(response.toString(), false);
+        return actionResponse;
     }
 
     @Override
@@ -275,19 +268,19 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<FieldHolder> field = instance.getField(executionStatus, fieldName);
-        StringBuilder response = new StringBuilder();
-        if (TextFormattingUtils.testOkAndFormat(infoForCommand,
+
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
-                response,
                 Optional.of("Got field \"" + fieldName + "\" from instance \"" + instance.getName() + "\"."),
                 false,
-                internalState))
+                internalState);
+        if (actionResponse.isSuccess())
         {
-            return new ActionResponse(response.toString(), true, field.get());
+            actionResponse.addField(field.get());
         }
-        return new ActionResponse(response.toString(), false);
+        return actionResponse;
     }
 
     @Override
@@ -307,19 +300,19 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty(), false);
-        StringBuilder response = new StringBuilder();
-        if (TextFormattingUtils.testOkAndFormat(infoForCommand,
+
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
-                response,
                 Optional.of("Got instance \"" + instanceName + "\"."),
                 false,
-                internalState))
+                internalState);
+        if (actionResponse.isSuccess())
         {
-            return new ActionResponse(response.toString(), true, instance.get());
+            actionResponse.addInstance(instance.get());
         }
-        return new ActionResponse(response.toString(), false);
+        return actionResponse;
     }
 
     @Override
@@ -370,26 +363,29 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             if (field.isPresent())
                 successStr = "Got field \"" + fieldName + "\" from instance \"" + field.get().getParentInstanceName() + "\".";
         }
-        StringBuilder response = new StringBuilder();
-        if (TextFormattingUtils.testOkAndFormat(infoForCommand,
+
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
-                response,
                 Optional.of(successStr),
                 false,
-                internalState))
+                internalState);
+        if (actionResponse.isSuccess())
         {
-            return new ActionResponse(response.toString(), true, field.get());
+            actionResponse.addField(field.get());
         }
-        //if failed, but is trying to set to outgoing_email (mutableOnly==true), and there is no email being composed, ask if would like to create a new email
-        if (mutableOnly && !outEmailCommandController.isAnEmailBeingComposed() &&
-                ((instanceName.isPresent() && instanceName.get().equals(OutgoingEmail.strOutgoingEmailTypeAndName))
-                || conceptContainer.findConceptsForField(new ExecutionStatus(),fieldName,mutableOnly).contains(OutgoingEmail.strOutgoingEmailTypeAndName)))
+        else
         {
-            noEmailFound(response.append("\n"), internalState);
+            //if failed, but is trying to set to outgoing_email (mutableOnly==true), and there is no email being composed, ask if would like to create a new email
+            if (mutableOnly && !outEmailCommandController.isAnEmailBeingComposed() &&
+                    ((instanceName.isPresent() && instanceName.get().equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+                            || conceptContainer.findConceptsForField(new ExecutionStatus(), fieldName, mutableOnly).contains(OutgoingEmail.strOutgoingEmailTypeAndName)))
+            {
+                actionResponse = noEmailFound(internalState, actionResponse);
+            }
         }
-        return new ActionResponse(response.toString(), false);
+        return actionResponse;
     }
 
     @Override
@@ -408,7 +404,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse getProbFieldVal(InfoForCommand infoForCommand)
     {
         if (previousFieldEval.isPresent())
-            return new ActionResponse("It is: " + FieldHolder.fieldFromJSonForUser(previousFieldEval.get()), true, previousFieldEval.get());
+        {
+            ActionResponse actionResponse = new ActionResponse("It is: " + FieldHolder.fieldFromJSonForUser(previousFieldEval.get()), true, Optional.empty()); //TODO: what if learning?
+            actionResponse.addValue(previousFieldEval.get());
+            return actionResponse;
+        }
 
         return failWithMessage(infoForCommand, "there is no previously evaluated field");
     }
@@ -417,16 +417,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
         executionStatus.add(ExecutionStatus.RetStatus.error, sentence);
-        StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+
+        return TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
-                response,
                 Optional.empty(), //will fail for sure
                 false,
                 internalState);
-        return new ActionResponse(response.toString(), success);
     }
 
     @Override
@@ -436,19 +434,18 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         requestedField = field.getFieldVal();
 
-        StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
                 new ExecutionStatus(),
                 true,
                 true,
-                response,
                 Optional.of("It is: " + FieldHolder.fieldFromJSonForUser(requestedField)),
                 false,//changed to false, but this might be ok being true, (all other except unknownCommand are false.)
                 internalState
         );
-        if (success)
+        if (actionResponse.isSuccess())
             previousFieldEval = Optional.of(requestedField);
-        return new ActionResponse(response.toString(), success, requestedField);
+        actionResponse.addValue(requestedField);
+        return actionResponse;
     }
 
     @Override
@@ -466,17 +463,15 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 instanceContent.append(fieldName + ": " + field.get().fieldValForUser() + "\n");
             }
         }
-        StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+
+        return TextFormattingUtils.testOkAndFormat(infoForCommand,
                 new ExecutionStatus(),
                 true,
                 true,
-                response,
                 Optional.of(instanceContent.toString()),
                 false, //shouldn't fail
                 internalState
         );
-        return new ActionResponse(response.toString(), success);
     }
 
     @Override
@@ -548,7 +543,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (!val.isPresent() && !jsonVal.isPresent())
         {
-            return new ActionResponse("I don't know what I should set it to, please rephrase.", false);
+            return new ActionResponse("I don't know what I should set it to, please rephrase.", false, Optional.empty()); //TODO: again, what if learning
         }
 
         ExecutionStatus executionStatus = new ExecutionStatus();
@@ -581,17 +576,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             successStr = "\"" + valForOutput + "\" was added to the \"" + theField.getFieldName() + "\" field in \"" + theField.getParentInstanceName() + "\".";
         }
 
-        StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        return TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
-                response,
                 Optional.of(successStr),
                 false,//Don't want to teach, since it might keep failing, by parsing again to the same original command
                 internalState);
 
-        return new ActionResponse(response.toString(), success);
     }
 
     @Override
@@ -601,21 +593,18 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         conceptContainer.defineConcept(executionStatus, newConceptName);
 
-        StringBuilder response = new StringBuilder();
-        boolean success =
-                TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
                         executionStatus,
                         true,
                         true,
-                        response,
                         Optional.of("Concept \"" + newConceptName + "\" was defined successfully. Please add fields to it."),
                         false,
                         internalState);
-        if (success)
+        if (actionResponse.isSuccess())
         {
             commandsToParser.newConceptDefined(newConceptName);
         }
-        return new ActionResponse(response.toString(), success);
+        return actionResponse;
     }
 
     @Override
@@ -661,20 +650,18 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (executionStatus.noError())
             instanceContainer.fieldAddedToConcept(executionStatus, conceptName, fieldDescription);
 
-        StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
-                response,
                 Optional.of("Field \"" + fieldName + "\" was added to concept \"" + conceptName + "\"."),
                 false,
                 internalState);
-        if (success)
+        if (actionResponse.isSuccess())
         {
             commandsToParser.newFieldDefined(fieldName);
         }
-        return new ActionResponse(response.toString(), success);
+        return actionResponse;
     }
 
     @Override
@@ -691,18 +678,15 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
         outEmailCommandController.createNewEmail(executionStatus);
-        StringBuilder response = new StringBuilder();
         List<String> emailFieldNames = outEmailCommandController.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+
+        return TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
-                response,
                 Optional.of("Composing new email. " + "\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + "."),
                 false,//true,
                 internalState);
-
-        return new ActionResponse(response.toString(), success);
     }
 
     @Override
@@ -715,26 +699,31 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         }
         instanceContainer.addInstance(executionStatus, conceptName, newInstanceName, true);
 
-        StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
-                response,
-                Optional.of("Instance \"" + newInstanceName + "\" (of concept \"" + conceptName + "\") was created. "),
+                Optional.of("Instance \"" + newInstanceName + "\" (of concept \"" + conceptName + "\") was created. " + listFieldsOfConcept(conceptName)), //listFieldsOfConcept is safe.
                 false,
                 internalState);
-        if (success)
+        if (actionResponse.isSuccess())
         {
             commandsToParser.newInstanceDefined(newInstanceName);
-            response.append(listFieldsOfConcept(conceptName));
         }
-        return new ActionResponse(response.toString(), success);
+        return actionResponse;
     }
 
+
+    /**
+     * safe call.
+     * @param conceptName
+     * @return  returns empty string if concept does not exist
+     */
     private String listFieldsOfConcept(String conceptName)
     {
-        return "\"" + conceptName + "\" fields are: " + userFriendlyList(conceptContainer.getFields(conceptName)) + ".";
+        if (conceptContainer.doesConceptExist(conceptName))
+            return "\"" + conceptName + "\" fields are: " + userFriendlyList(conceptContainer.getFields(conceptName)) + ".";
+        return "";
     }
 
     @Override
@@ -761,16 +750,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         executionStatus.add(ExecutionStatus.RetStatus.error, "I don't understand");
 
-        StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        return TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
-                response,
                 Optional.empty(), //will fail anyway, because added error above.
                 true,
                 internalState);
-        return new ActionResponse(response.toString(), success);
     }
 
     /*
@@ -781,7 +767,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (!internalState.isInLearningMode())
         {
-            return new ActionResponse("Not sure what you are talking about.", false);
+            return new ActionResponse("Not sure what you are talking about.", false, Optional.empty());
         }
         String commandBeingLearnt = internalState.lastCommandOrLearningCommand;
         List<Expression2> commandsLearnt = internalState.endLearningGetSentences();
@@ -791,9 +777,9 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
 
             commandsToParser.addTrainingEg(commandBeingLearnt, commandsLearnt);
-            return new ActionResponse("I now know what to do when you say (for example): \"" + commandBeingLearnt + "\"!", true);
+            return new ActionResponse("I now know what to do when you say (for example): \"" + commandBeingLearnt + "\"!", true, Optional.empty());
         }
-        return new ActionResponse("I'm afraid that I didn't learn anything.", false);
+        return new ActionResponse("I'm afraid that I didn't learn anything.", false, Optional.empty());
 
     }
 
@@ -823,16 +809,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         inboxCommandController.setToNextEmail(executionStatus);
 
-        StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        return TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
-                response,
                 Optional.of("Set to next incoming email successfully."),
                 false,
                 internalState);
-        return new ActionResponse(response.toString(), success);
     }
 
     @Override
@@ -841,16 +824,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         inboxCommandController.setToPrevEmail(executionStatus);
 
-        StringBuilder response = new StringBuilder();
-        boolean success = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        return TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
-                response,
                 Optional.of("Set to previous incoming email successfully."),
                 false,
                 internalState);
-        return new ActionResponse(response.toString(), success);
     }
 
     @Override
@@ -858,7 +838,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         String userSaid =infoForCommand.userSentence.toLowerCase();
         if (userSaid.equals("hi") || userSaid.startsWith("hello"))
-            return new ActionResponse("Sorry, but I don't do small-talk. Please give me a command.", true);
-        return new ActionResponse("Don't know what to day", false);
+            return new ActionResponse("Sorry, but I don't do small-talk. Please give me a command.", true, Optional.empty());
+        return new ActionResponse("Don't know what to say", false, Optional.empty());
     }
 }
