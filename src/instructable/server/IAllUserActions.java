@@ -78,6 +78,8 @@ public interface IAllUserActions
 
     ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList, boolean mutable);
 
+    ActionResponse removeFieldFromConcept(InfoForCommand infoForCommand, String conceptName, String fieldName);
+
     ActionResponse createInstanceByConceptName(InfoForCommand infoForCommand, String conceptName);
 
     ActionResponse createInstanceByFullNames(InfoForCommand infoForCommand, String conceptName, String newInstanceName);
@@ -94,11 +96,9 @@ public interface IAllUserActions
     ActionResponse end(InfoForCommand infoForCommand); // mostly for end learning e.g. "that's it"
 
 
-    ActionResponse deleteConcept(InfoForCommand infoForCommand, String conceptName);
+    ActionResponse undefineConcept(InfoForCommand infoForCommand, String conceptName);
 
-    ActionResponse deleteInstance(InfoForCommand infoForCommand, String instanceName);
-
-    ActionResponse deleteInstance(InfoForCommand infoForCommand, String conceptName, String instanceName);
+    ActionResponse deleteInstance(InfoForCommand infoForCommand, GenericInstance instance);
 
     ActionResponse nextEmailMessage(InfoForCommand infoForCommand);
 

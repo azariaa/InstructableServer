@@ -123,7 +123,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case createContact:
                 return "Your 3rd training task is to <b>create</b> a contact for "+ momName +" (simply tell the agent to create a contact for mom)";
             case setMomsEmail:
-                return "Your 4th training task is to <b>set</b> mom's email to correctly. (set "+momName+"'s email to the email that appears in the \"notes\" image)";
+                return "Your 4th training task is to <b>set</b> mom's email to correctly. (set "+momName+"'s email to the email that appears in the \"notes\" image. Make sure to type it in correctly!)";
             case seeMomsEmail:
                 return "Your 5th training task is to ask the agent for "+momName+"'s email";
             case createEmail:

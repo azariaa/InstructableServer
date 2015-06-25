@@ -55,6 +55,24 @@ public class TestDirectly
             {
 
             }
+
+            @Override
+            public void removeField(String fieldName)
+            {
+
+            }
+
+            @Override
+            public void removeInstance(String instanceName)
+            {
+
+            }
+
+            @Override
+            public void undefineConcept(String conceptName)
+            {
+
+            }
         },
                 new IEmailSender()
                 {

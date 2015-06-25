@@ -80,6 +80,17 @@ public class GenericInstance
             fields.put(fieldToAdd.fieldName, new FieldHolder(fieldToAdd, this));
             return ;
         }
+    }
+
+
+    public void removeFieldFromObject(ExecutionStatus executionStatus, String fieldName)
+    {
+        lastAccess = System.nanoTime();
+        if (fields.containsKey(fieldName))
+        {
+            fields.remove(fieldName);
+            return ;
+        }
         executionStatus.add(ExecutionStatus.RetStatus.error, "the field cannot be found");
     }
 
@@ -128,7 +139,6 @@ public class GenericInstance
         executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + " cannot be found");
         return Optional.empty();
     }
-
 
 //    void removeEmptyStrings(List<String> org)
 //    {

@@ -114,3 +114,6 @@ first set the recipient to fds@dfs.com second set the body to hello world then s
 set bob's classification to whatever you would like,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""whatever you would like"")"
 set bob classification to whatever you would like,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""whatever you would like"")"
 set recipient to current email sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName inbox sender)))
+delete outgoing email,(deleteInstance (getProbInstanceByName outgoing_email))
+delete email,(deleteInstance (getProbInstanceByName email))
+remove inbox,(deleteInstance (getProbInstanceByName inbox))

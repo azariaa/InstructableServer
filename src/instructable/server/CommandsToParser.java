@@ -38,6 +38,14 @@ public class CommandsToParser implements ICommandsToParser
         //parserSettings.retrain(2);
     }
 
+    private void toRemove(ConceptFieldInstance conceptFieldInstance, String actualName)
+    {
+        String what = conceptFieldInstance.toString();
+        parserSettings.removeFromParserGrammar(actualName + "," + what + "Name{0}," + actualName.replace(" ", "_"));
+        //parserSettings.env.unbindName() //doesn't have this function, but it doesn't really matter
+        //parserSettings.retrain(2);
+    }
+
     @Override
     public void newFieldDefined(String fieldName)
     {
@@ -48,5 +56,23 @@ public class CommandsToParser implements ICommandsToParser
     public void newInstanceDefined(String instanceName)
     {
         newDefined(ConceptFieldInstance.Instance, instanceName);
+    }
+
+    @Override
+    public void removeField(String fieldName)
+    {
+        toRemove(ConceptFieldInstance.Field, fieldName);
+    }
+
+    @Override
+    public void removeInstance(String instanceName)
+    {
+        toRemove(ConceptFieldInstance.Instance, instanceName);
+    }
+
+    @Override
+    public void undefineConcept(String conceptName)
+    {
+        toRemove(ConceptFieldInstance.Concept, conceptName);
     }
 }

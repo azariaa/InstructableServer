@@ -19,4 +19,10 @@ public interface ICommandsToParser
 
     //needs to add instanceName to the lexicon and the conceptName to the environment table
     void newInstanceDefined(String instanceName);
+
+    void removeField(String fieldName);
+
+    void removeInstance(String instanceName);
+
+    void undefineConcept(String conceptName);
 }

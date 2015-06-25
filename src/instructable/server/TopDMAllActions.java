@@ -671,6 +671,35 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
+    public ActionResponse removeFieldFromConcept(InfoForCommand infoForCommand, String conceptName, String fieldName)
+    {
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        if (conceptName.equals(IncomingEmail.incomingEmailType) || conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "fields cannot be removed from email messages");
+        }
+        if (executionStatus.noError())
+            conceptContainer.removeFieldFromConcept(executionStatus, conceptName, fieldName);
+        if (executionStatus.noError())
+            instanceContainer.fieldRemovedFromConcept(executionStatus, conceptName, fieldName);
+
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+                executionStatus,
+                true,
+                true,
+                Optional.of("Field \"" + fieldName + "\" was removed from concept \"" + conceptName + "\"."),
+                false,
+                internalState);
+        if (actionResponse.isSuccess())
+        {
+            //if this field doesn't appear at any other concept
+            if (conceptContainer.findConceptsForField(new ExecutionStatus(), fieldName, false).size() == 0)
+                commandsToParser.removeField(fieldName);
+        }
+        return actionResponse;
+    }
+
+    @Override
     public ActionResponse createInstanceByConceptName(InfoForCommand infoForCommand, String conceptName)
     {
         if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
@@ -791,21 +820,61 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
 
     @Override
-    public ActionResponse deleteConcept(InfoForCommand infoForCommand, String conceptName)
+    public ActionResponse undefineConcept(InfoForCommand infoForCommand, String conceptName)
     {
-        return null;
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        if (conceptName.equals(IncomingEmail.incomingEmailType)|| conceptName.equals(ambiguousEmailInstanceName) || conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "emails concepts are built-in and cannot be undefined");
+        }
+        if (executionStatus.noError())
+        {
+            conceptContainer.undefineConcept(executionStatus, conceptName);
+            //delete all instances
+            instanceContainer.conceptUndefined(conceptName);
+        }
+
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+                executionStatus,
+                true,
+                true,
+                Optional.of("concept \"" + conceptName + "\" was undefined and all its instances were deleted."), //TODO: very harsh, should ask if sure before doing this.
+                false,
+                internalState);
+        if (actionResponse.isSuccess())
+        {
+            commandsToParser.undefineConcept(conceptName);
+        }
+        return actionResponse;
     }
 
     @Override
-    public ActionResponse deleteInstance(InfoForCommand infoForCommand, String instanceName)
+    public ActionResponse deleteInstance(InfoForCommand infoForCommand, GenericInstance instance)
     {
-        return null;
-    }
+        String instanceName = instance.getName();
+        String conceptName = instance.getConceptName();
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        if (instance.getConceptName().equals(IncomingEmail.incomingEmailType)|| conceptName.equals(ambiguousEmailInstanceName))
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "emails in the inbox can't be deleted. Instead move to the next email (say \"next email\")");
+        }
+        if (executionStatus.noError())
+            instanceContainer.deleteInstance(executionStatus, instance);
 
-    @Override
-    public ActionResponse deleteInstance(InfoForCommand infoForCommand, String conceptName, String instanceName)
-    {
-        return null;
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+                executionStatus,
+                true,
+                true,
+                Optional.of("Instance \"" + instanceName + "\" of concept \"" + conceptName + "\" was deleted."),
+                false,
+                internalState);
+        if (actionResponse.isSuccess())
+        {
+            //if this field doesn't appear at any other concept
+            if (!instanceContainer.getMostPlausibleInstance(new ExecutionStatus(),conceptContainer.getAllConceptNames(),Optional.of(instanceName),false).isPresent())
+                commandsToParser.removeInstance(instanceName);
+        }
+        return actionResponse;
     }
 
 

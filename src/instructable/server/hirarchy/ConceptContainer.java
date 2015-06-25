@@ -17,7 +17,7 @@ import static instructable.server.TextFormattingUtils.userFriendlyList;
  */
 public class ConceptContainer
 {
-    Map<String, List<FieldDescription>> conceptFieldMap;
+    Map<String, List<FieldDescription>> conceptFieldMap; // a map holding all concepts and the list of their fields
 
     public ConceptContainer()
     {
@@ -123,9 +123,18 @@ public class ConceptContainer
 
     public void removeFieldFromConcept(ExecutionStatus executionStatus, String conceptName, String fieldName)
     {
-        //TODO: check all these...
-        List<FieldDescription> currentFields = conceptFieldMap.get(conceptName);
-        currentFields.removeIf(x -> x.fieldName.equals(fieldName));
+        if (conceptFieldMap.containsKey(conceptName))
+        {
+            List<FieldDescription> currentFields = conceptFieldMap.get(conceptName);
+            if (currentFields.stream().anyMatch(x->x.fieldName.equals(fieldName)))
+            {
+                currentFields.removeIf(x -> x.fieldName.equals(fieldName));
+                //success
+                return;
+            }
+        }
+
+        executionStatus.add(ExecutionStatus.RetStatus.error, "the concept \"" + conceptName + "\" does not have a field named \"" + fieldName + "\"");
     }
 
 
@@ -140,5 +149,13 @@ public class ConceptContainer
         List<String> conceptNames = new LinkedList<>();
         conceptNames.addAll(conceptFieldMap.keySet());
         return conceptNames;
+    }
+
+    public void undefineConcept(ExecutionStatus executionStatus, String conceptName)
+    {
+        if (conceptFieldMap.containsKey(conceptName))
+            conceptFieldMap.remove(conceptName);
+        else
+            executionStatus.add(ExecutionStatus.RetStatus.error, "the concept \"" + conceptName + "\" was not found");
     }
 }

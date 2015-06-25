@@ -7,6 +7,10 @@ type,{write} //type hello in the subject
 in, {inside} //put hello world in the subject
 as, {inside} // set hello world as the subject
 for, {of,the} //set email for mom to // skip in string
+from,{to} //remove email from contact
+delete,{remove}
+undefine,{remove} //undefine concept
+destroy,{remove}
 first, {please} //ignore at beginning of sentence
 then,{please,and} //ignore at beginning of sentence, or may be used to concatenate sentences
 second,{please,and}

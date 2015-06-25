@@ -11,7 +11,7 @@ import java.util.*;
 public class InstanceContainer
 {
 
-    Map<String, Map<String, GenericInstance>> conceptToInstance = new HashMap<>(); //TODO: should be stored in DB
+    Map<String, Map<String, GenericInstance>> conceptToInstance = new HashMap<>(); //map from conceptNames to a map holding all instances of that concept//TODO: should be stored in DB
 
     ConceptContainer conceptContainer;
 
@@ -107,7 +107,7 @@ public class InstanceContainer
         String conceptName = conceptInstance.conceptName;
         if (!conceptContainer.doesConceptExist(conceptName))
         {
-            executionStatus.add(ExecutionStatus.RetStatus.error, "there is no concept with the name \"" + conceptName + "\" is defined, please define it first");
+            executionStatus.add(ExecutionStatus.RetStatus.error, "no concept with the name \"" + conceptName + "\" is defined, please define it first");
         }
         else
         {
@@ -164,5 +164,45 @@ public class InstanceContainer
             }
         }
         executionStatus.add(ExecutionStatus.RetStatus.warning, "the instance was not found");
+    }
+
+    public void fieldRemovedFromConcept(ExecutionStatus executionStatus, String conceptName, String fieldName)
+    {
+        if (conceptToInstance.containsKey(conceptName))
+        {
+            //it's ok if no instances are found
+            Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
+            for (GenericInstance instance : instances.values())
+            {
+                instance.removeFieldFromObject(executionStatus, fieldName);
+            }
+        }
+    }
+
+    public void deleteInstance(ExecutionStatus executionStatus, GenericInstance instance)
+    {
+        String conceptName = instance.conceptName;
+        if (!conceptContainer.doesConceptExist(conceptName))
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "no concept with the name \"" + conceptName + "\" is defined, please define it first");
+        }
+        else
+        {
+            if (conceptToInstance.containsKey(conceptName) && conceptToInstance.get(conceptName).containsKey(instance.name))
+            {
+                conceptToInstance.get(conceptName).remove(instance.name);
+            }
+            else
+            {
+                executionStatus.add(ExecutionStatus.RetStatus.error, "the instance could not be found");
+            }
+        }
+
+    }
+
+    public void conceptUndefined(String conceptName)
+    {
+        if (conceptToInstance.containsKey(conceptName))
+            conceptToInstance.remove(conceptName);
     }
 }

@@ -186,6 +186,11 @@ public class ParserSettings implements Cloneable
         lexicon.addAll(lexiconEntries);
         this.unaryRules.addAll(unaryRules);
 
+        updateGrammarFromExisting();
+    }
+
+    private void updateGrammarFromExisting()
+    {
         ParametricCcgParser newFamily = CcgUtils.buildParametricCcgParser(lexicon, this.unaryRules,
                 posUsed, featureVectorGenerator);
         SufficientStatistics newParameters = newFamily.getNewSufficientStatistics();
@@ -202,6 +207,17 @@ public class ParserSettings implements Cloneable
         List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
         this.updateParserGrammar(lexiconEntries, new LinkedList<>());
     }
+
+    public void removeFromParserGrammar(String lexiconToRemove)
+    {
+        List<String> lexiconAsList = new LinkedList<>();
+        lexiconAsList.add(lexiconToRemove);
+        List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
+        lexicon.removeAll(lexiconEntries);
+        updateGrammarFromExisting();
+    }
+
+
 
     /**
      * Parses a sentence text using {@code parser} to produce a

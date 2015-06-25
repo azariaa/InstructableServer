@@ -13,6 +13,9 @@ create,((S{0}/PP_ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (createInstanceBy
 create,(S{0}/StringN{1}){0},"(lambda $1 (defineConcept $1))"
 define,(S{0}/StringN{1}){0},"(lambda $1 (defineConcept $1))"
 add,((S{0}/PP_ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
+remove,((S{0}/PP_ConceptName{2}){0}/FieldName{1}), (lambda $1 $2 (removeFieldFromConcept $2 $1))
+remove,(S{0}/Instance{1}){0}, (lambda $1 (deleteInstance $1))
+remove,(S{0}/ConceptName{1}){0}, (lambda $1 (undefineConcept $1))
 has,((S{0}\ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
 add,((S{0}/PP_MutableField{2}){0}/StringV{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
 what,(S{0}/Field{1}){0},(lambda $1 (evalField $1))
