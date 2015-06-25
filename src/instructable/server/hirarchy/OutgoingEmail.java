@@ -50,7 +50,7 @@ public class OutgoingEmail extends EmailMessage
                 }
             }
         }
-        executionStatus.add(ExecutionStatus.RetStatus.error, "the message has no recipient");
+        executionStatus.add(ExecutionStatus.RetStatus.error, "the message has no recipient. Set the recipient to an email address (e.g. set recipient to email@example.com)");
     }
 
 }

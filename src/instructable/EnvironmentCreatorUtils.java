@@ -36,16 +36,17 @@ public class EnvironmentCreatorUtils
 
         String[] unaryRules = new String[]{
                 "Field{0} FieldVal{0},(lambda x (evalField x))",
-                "FieldVal{0} S{0},(lambda x x)", //TODO: bring this back once it works
+                "FieldVal{0} S{0},(lambda x x)",
                 "FieldName{0} Field{0},(lambda x (getProbFieldByFieldName x))",
                 "FieldName{0} FieldVal{0},(lambda x (evalField (getProbFieldByFieldName x)))", //this one just combines the two above (and below).
-                "MutableField{0} FieldVal{0},(lambda x (evalField x))",
+                //"MutableField{0} FieldVal{0},(lambda x (evalField x))", //no need to evaluate a mutable field, if needs mutable, why will it try to evaluate?
                 "FieldName{0} MutableField{0},(lambda x (getProbMutableFieldByFieldName x))",
                 "Field{0} S{0},(lambda x (evalField x))",
                 "MutableField{0} S{0},(lambda x (evalField x))",
                 "InstanceName{0} Instance{0},(lambda x (getProbInstanceByName x))",
-                "ConceptName{0} Instance{0}/InstanceName{0}, (lambda x (lambda y (getInstance x y)))"//,
-                //"String{0} S{0},(lambda x (unknownCommand))" //TODO: remove this, once it's added in: buildParametricCcgParser (so only full sentence will be transferred to S)
+                "ConceptName{0} Instance{0}/InstanceName{0}, (lambda x (lambda y (getInstance x y)))",
+                "InstanceName{0} MutableField{0}/FieldName{0}, (lambda x y (getProbMutableFieldByInstanceNameAndFieldName x y))",
+                "InstanceName{0} Field{0}/FieldName{0}, (lambda x (lambda y (getProbFieldByInstanceNameAndFieldName x y)))"
         };
 
 

@@ -21,6 +21,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         defineContact,
         addEmailToContact,
         createContact,
+        setMomsEmail,
         seeMomsEmail,
         createEmail,
         sendTestEmail,
@@ -120,25 +121,27 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case addEmailToContact:
                 return "Your 2nd training task is to have the agent add the \"email\" field to the concept \"contact\" (simply tell the agent to add the email field to the concept contact)";
             case createContact:
-                return "Your 3rd training task is to <b>create</b> a contact for "+ momName +" and <b>set</b> "+ momName +"'s email correctly. "+momName+"'s email appears in the \"notes\" image";
+                return "Your 3rd training task is to <b>create</b> a contact for "+ momName +" (simply tell the agent to create a contact for mom)";
+            case setMomsEmail:
+                return "Your 4th training task is to <b>set</b> mom's email to correctly. (set "+momName+"'s email to the email that appears in the \"notes\" image)";
             case seeMomsEmail:
-                return "Your 4th training task is to ask the agent for "+momName+"'s email";
+                return "Your 5th training task is to ask the agent for "+momName+"'s email";
             case createEmail:
-                return "Your 5th training task is to create a new outgoing email";
+                return "Your 6th training task is to create a new outgoing email";
             case sendTestEmail:
-                return "Your 6th training task is to send an outgoing email to "+ momName +" with hello as the subject and no body (don't retype mom's email, simply set the recipient to mom's email)";
+                return "Your 7th training task is to set the outgoing email's recipient to "+ momName +"'s email and set the subject to hello and send the email (don't retype mom's email, simply set the recipient to " + momName +"'s email)";
             case readEmailInInbox:
-                return "Your 7th training task is to read the current email (in the inbox)";
+                return "Your 8th training task is to read the current email (in the inbox)";
             case setRecpToSender:
-                return "Your 8th training task is to create a new email and set the recipient to the current email's sender (don't type the email yourself, use: \"current email's sender\" instead)";
+                return "Your 9th training task is to create a new email and set the recipient to the current email's sender (don't type the email yourself, use: \"current email's sender\" instead)";
             case sendTestBody:
-                return "Your 9th training task is to set the body to the current email's body (don't type in the body yourself, just use the current email's body), and send the email";
+                return "Your 10th training task is to set the body to the current email's body (don't type in the body yourself, just use the current email's body), and send the email";
             case nextEmailInInbox:
-                return "Your 10th training task is to move to the <b>next</b> email (in the inbox). (No need to read it now.)";
+                return "Your 11th training task is to move to the <b>next</b> email (in the inbox). (No need to read it now.)";
             case previousEmailInInbox:
-                return "Your 11th training task is to move to the <b>previous</b> email (in the inbox). (No need to read it now.)";
+                return "Your 12th training task is to move to the <b>previous</b> email (in the inbox). (No need to read it now.)";
             case teachReadNextInbox:
-                return "Your 12th (and last) training task is to teach the agent a <b>new command</b> (e.g. \"go\"): having it both moving to the <b>next</b> email and reading it";
+                return "Your 13th (and last) training task is to teach the agent a <b>new command</b> (e.g. \"go\"): having it both moving to the <b>next</b> email and reading it";
             case allCompleted:
                 //this shouldn't actually ever happen
                 return "Congratulations: You have completed all possible tasks!";
@@ -146,7 +149,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             {
                 if (unsuccessfulSend)
                     return "Previously sent email did not complete any task. Check email's subject, body, and recipient address.";
-                return "Main Task: read through all incoming emails and act according to the sender's requests. (Remember that teaching the agent new commands may save you time!)";
+                return "Main Task: read through all incoming emails (one at a time). For each email act according to its request. (Remember that teaching the agent new commands may save you time!)";
             }
         }
     }
@@ -159,8 +162,10 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             userTasks.add(TasksToComplete.defineContact);
         else if (agentResponse.contains("Field \"email\" was added to concept \"contact\""))
             userTasks.add(TasksToComplete.addEmailToContact);
-        else if (agentResponse.contains("\"email\"") && agentResponse.contains(momEmail))//\"abbie\" was set to:"))//("Instance \"abbie\" (of concept \"contact\") was created."))
+        else if (agentResponse.contains("Instance \"mom\" (of concept \"contact\") was created") && !userTasks.contains(TasksToComplete.createContact))
             userTasks.add(TasksToComplete.createContact);
+        else if (agentResponse.contains("\"email\"") && agentResponse.contains(momEmail))//\"abbie\" was set to:"))//("Instance \"abbie\" (of concept \"contact\") was created."))
+            userTasks.add(TasksToComplete.setMomsEmail);
         else if (agentResponse.contains("It is: "+momEmail))
             userTasks.add(TasksToComplete.seeMomsEmail);
         else if (agentResponse.contains("subject:") && agentResponse.contains("sender:"))

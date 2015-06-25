@@ -53,6 +53,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
      */
     public static class InternalState
     {
+        private static final int aLotOfExpressions = 8;
 
         private static enum InternalLearningStateMode
 
@@ -140,6 +141,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             List<Expression2> userSentences = expressionsLearnt;
             expressionsLearnt = new LinkedList<>();
             return userSentences;
+        }
+
+        public boolean isLearningForTooLong()
+        {
+            return expressionsLearnt.size() > aLotOfExpressions;
         }
 
     }

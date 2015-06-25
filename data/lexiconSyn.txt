@@ -3,9 +3,30 @@
 set,{write,change}  // set hello world as the subject, set the subject to hello world
 put, {write} //put hello world in the subject 
 use, {write} //use hello world as the subject //use email's subject as the subject
+type,{write} //type hello in the subject
 in, {inside} //put hello world in the subject
 as, {inside} // set hello world as the subject
+for, {of,the} //set email for mom to // skip in string
+first, {please} //ignore at beginning of sentence
+then,{please,and} //ignore at beginning of sentence, or may be used to concatenate sentences
+second,{please,and}
+third,{please,and}
+".",{and}
+":",{is}
 ',{'s}
+show,{read}
+get,{what}
+retrieve,{what}
+"give me",{what}
+"outgoing mail",{"outgoing email"}
+mail,{email}
+email message,{email}
+message,{email}
+"incoming email",{inbox}
+"my email",{inbox}
+"current email",{inbox}
+address,{recipient}
+title,{subject}
 ok,{yes}
 sure,{yes}
 finish,{end}
@@ -17,7 +38,8 @@ quit,{cancel}
 stop,{cancel}
 nevermind,{cancel}
 "never mind",{cancel}
-the,{for} //skip in StringN
+forget, {cancel}
+"start over", {cancel}
 "next inbox",{"next email"}
 "next incoming email",{"next email"}
 "next message", {"next email"}

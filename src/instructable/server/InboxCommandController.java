@@ -55,7 +55,7 @@ public class InboxCommandController
         if (currentIncomingEmailIdx < inboxSize - 1)
             currentIncomingEmailIdx++;
         else
-            executionStatus.add(ExecutionStatus.RetStatus.error, "there are no more messages");
+            executionStatus.add(ExecutionStatus.RetStatus.error, "there are no more emails. You have probably missed some earlier emails. You may want to request a previous email (say \"previous email\")"); //TODO: shouldn't be in the production version
     }
 
     public void setToPrevEmail(ExecutionStatus executionStatus)
@@ -63,7 +63,7 @@ public class InboxCommandController
         if (currentIncomingEmailIdx > 0)
             currentIncomingEmailIdx--;
         else
-            executionStatus.add(ExecutionStatus.RetStatus.error, "there is no previous messages");
+            executionStatus.add(ExecutionStatus.RetStatus.error, "there is no previous email");
     }
 
     private String instanceName(int emailIdx)

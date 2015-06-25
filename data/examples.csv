@@ -109,3 +109,8 @@ bob's classification,(evalField (getProbFieldByInstanceNameAndFieldName bob clas
 set bob's classification,(setFieldWithMissingArg (getProbMutableFieldByInstanceNameAndFieldName bob classification))
 read next email,(unknownCommand)
 add dsflkj@fds.com to field email,"(addToFieldFromString (getProbMutableFieldByFieldName email) ""dsflkj@fds.com"")"
+set the recipient to fds@dfs.com. set the body to hello world. send.,"(doSeq (setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""fds@dfs.com"") (doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""hello world"") (sendEmail)))"
+first set the recipient to fds@dfs.com second set the body to hello world then send,"(doSeq (setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""fds@dfs.com"") (doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""hello world"") (sendEmail)))"
+set bob's classification to whatever you would like,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""whatever you would like"")"
+set bob classification to whatever you would like,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""whatever you would like"")"
+set recipient to current email sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName inbox sender)))

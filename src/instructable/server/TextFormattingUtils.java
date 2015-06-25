@@ -91,6 +91,10 @@ public class TextFormattingUtils
                 learningSentence = Optional.of("What shall I do next (when executing: \"" + internalState.lastCommandOrLearningCommand + "\")?");
         }
 
+        if (learningSentence.isPresent() && internalState.isLearningForTooLong())
+        {
+            learningSentence = Optional.of(learningSentence.get() + "\nI noticed that you are teaching me a command for a while now, it's ok with me, but if you want to cancel this new command, say \"cancel\" and if you want me to learn this command say \"end\"");
+        }
 
         return new ActionResponse(response.toString(),success,learningSentence);
     }

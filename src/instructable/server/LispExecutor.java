@@ -12,7 +12,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -74,29 +73,26 @@ public class LispExecutor
         {
             try
             {
-                boolean hasAResponse = false;
-                //make sure all ActionResponse we got are success, otherwise just propagate them up
+
+                if (currentFunction.equals(doSeq))
+                {
+                    List<ActionResponse> actionResponseList = argumentValues.stream().filter(obj -> obj instanceof ActionResponse).map(obj -> (ActionResponse) obj).collect(Collectors.toCollection(LinkedList::new));
+
+                    return ActionResponse.createFromList(actionResponseList);
+                }
+
+                //make sure all ActionResponse we got are success, otherwise just propagate them up //unless do_seq which is handled above.
+                //this is actually irrelevant, since if an action fails it throws an exception see below.
+                //TODO: all this is problematic, since if some of the action succeed (especially in do_seq) no indication is given to user.
                 for (Object obj : argumentValues)
                 {
                     if (obj instanceof ActionResponse)
                     {
                         if (!((ActionResponse) obj).isSuccess())
-                            return obj;
-                        else
-                            hasAResponse = true;
+                        {
+                            return (ActionResponse) obj;
+                        }
                     }
-                }
-
-                if (currentFunction.equals(doSeq))
-                {
-                    if (!hasAResponse)
-                        return new ActionResponse("Error! called do sequential, but no response found.", false, Optional.empty());
-
-                    //need to append all responses in the order of evaluation.
-
-                    List<ActionResponse> actionResponseList = argumentValues.stream().filter(obj -> obj instanceof ActionResponse).map(obj -> (ActionResponse) obj).collect(Collectors.toCollection(LinkedList::new));
-
-                    return ActionResponse.createFromList(actionResponseList);
                 }
 
                 //first get function by name (no overloading so it is easy)
@@ -133,6 +129,7 @@ public class LispExecutor
                     //Preconditions.checkArgument(arg);
                 }
                 ActionResponse retVal =  (ActionResponse)method.invoke(allUserActions, invokeArgs.toArray());
+
                 if (!retVal.isSuccess())
                 {
                     //Important!!! This runtime exception is actually a returnValue and is later caught in ParserSettings.evaluate.

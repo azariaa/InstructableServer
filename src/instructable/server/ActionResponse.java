@@ -23,18 +23,22 @@ public class ActionResponse extends RuntimeException
             return new ActionResponse("Error: nothing to append", false, Optional.empty());
         Optional<String> learningSentence = Optional.empty();
         StringBuilder fullResponse = new StringBuilder();
+        boolean success = true;
         for (ActionResponse actionResponse : actionResponseList)
         {
-            if (actionResponse.isSuccess())
+            fullResponse.append(actionResponse.sayToUser);
+            fullResponse.append("\n");
+            if (actionResponse.learningSentence.isPresent()) //always use last one (which may be failure.
+                learningSentence = actionResponse.learningSentence;
+            if (!actionResponse.isSuccess())
             {
-                fullResponse.append(actionResponse.sayToUser);
-                fullResponse.append("\n");
-                if (actionResponse.learningSentence.isPresent() && !learningSentence.isPresent())
-                    learningSentence = actionResponse.learningSentence;
+                //this actually never happens, since in case of failure an exception is raised. (this is problematic).
+                success = false;
+                break;
             }
         }
 
-        return new ActionResponse(fullResponse.toString().trim(),true,learningSentence);
+        return new ActionResponse(fullResponse.toString().trim(),success,learningSentence);
     }
 
     public String onlySentenceToUser()
