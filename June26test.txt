@@ -14,7 +14,7 @@ U: put test in body
 S: The "body" field in "outgoing email" was set to: "test".
 
 U: send the email
-S: Sorry, but the message has no recipient.
+S: Sorry, but the message has no recipient. Set the recipient to an email address (e.g. set recipient to email@example.com).
 
 U: set myself as the recipient
 S: Sorry, but "myself" is not an email address.
@@ -46,7 +46,7 @@ S: Sorry, but the concept "contact" is already defined. Its fields are: none.
 U: add email as a field in contact
 S: Field "email" was added to concept "contact".
 
-U: create a contact, call it bob
+U: create a contact bob
 S: Instance "bob" (of concept "contact") was created. "contact" fields are: email.
 
 U: set bob's email to baba
@@ -87,23 +87,23 @@ S: Composing new email. "outgoing email" fields are: subject, body and recipient
 U: set jane's email to be jane@gmail.com
 S: The "email" field in "jane" was set to: "jane@gmail.com".
 
-U: make bob the recipient
+U: make bob be the recipient
 S: Sorry, but I don't understand.
 S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
 U: yes
-S: Great! When you say, for example: "make bob the recipient", what shall I do first?
+S: Great! When you say, for example: "make bob be the recipient", what shall I do first?
 
 U: take bob's email
 S: It is: bob@gmail.com
-S: What shall I do next (when executing: "make bob the recipient")?
+S: What shall I do next (when executing: "make bob be the recipient")?
 
 U: and set it as the recipient
 S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
-S: What shall I do next (when executing: "make bob the recipient")?
+S: What shall I do next (when executing: "make bob be the recipient")?
 
 U: that's it
-S: I now know what to do when you say (for example): "make bob the recipient"!
+S: I now know what to do when you say (for example): "make bob be the recipient"!
 
 U: make jane the recipient
 S: It is: jane@gmail.com
@@ -151,10 +151,10 @@ S: The "body" field in "outgoing email" was set to: "We will have our department
 S: What shall I do next (when executing: "forward this email to my spouse")?
 
 U: send the email
-S: Sorry, but the message has no recipient.
+S: Sorry, but the message has no recipient. Set the recipient to an email address (e.g. set recipient to email@example.com).
 S: What should I do instead (when executing: "forward this email to my spouse")?
 
-U: oh, yeah, set the recipient as my spouse
+U: make my spouse the recipient
 S: It is: my.spouse@gmail.com
 S: The "recipient list" field in "outgoing email" was set to: "my.spouse@gmail.com".
 S: What shall I do next (when executing: "forward this email to my spouse")?
@@ -163,7 +163,7 @@ U: now send the email
 S: Email sent successfully.
 S: What shall I do next (when executing: "forward this email to my spouse")?
 
-U: that's it, you're done!
+U: finish
 S: I now know what to do when you say (for example): "forward this email to my spouse"!
 
 ---------------- now in smallUpdates --------------------

@@ -62,6 +62,7 @@ public class ParserSettings implements Cloneable
             if (synonym.trim().length() <= 1 || synonym.contains(fullRowComment) || synonym.trim().startsWith(midRowComment)) //comment row
                 continue;
             String newWord = synonym.substring(0, synonym.indexOf(","));
+            newWord = newWord.replace("^",",");
             //newWord.replace("\"","");
             String[] meanings = synonym.substring(synonym.indexOf("{") + 1, synonym.indexOf("}")).split(",");
             for (String meaning : meanings)
@@ -151,14 +152,14 @@ public class ParserSettings implements Cloneable
         System.out.println(sExpression.toString());
 
         ActionResponse response;
-        try
-        {
+//        try
+//        {
             LispEval.EvalResult result = lispEval.eval(sExpression, env);
             response = (ActionResponse) result.getValue();
-        } catch (ActionResponse actionResponse)
-        {
-            response = actionResponse;
-        }
+//        } catch (ActionResponse actionResponse)
+//        {
+//            response = actionResponse;
+//        }
 
         return response;
     }

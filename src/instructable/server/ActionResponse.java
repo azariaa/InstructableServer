@@ -14,7 +14,7 @@ import java.util.Optional;
  * Holds sayToUser and success. Can also hold a value (Json), an instance and a field. Caller must check type!
  * sayToUser is only used in upper most call (or the first failure). [Though sometime, the user may expect two responses]
  */
-public class ActionResponse extends RuntimeException
+public class ActionResponse //extends RuntimeException
 {
 
     public static ActionResponse createFromList(List<ActionResponse> actionResponseList)

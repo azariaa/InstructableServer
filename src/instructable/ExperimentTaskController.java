@@ -131,7 +131,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case sendTestEmail:
                 return "Your 7th training task is to set the outgoing email's recipient to "+ momName +"'s email and set the subject to hello and send the email (don't retype mom's email, simply set the recipient to " + momName +"'s email)";
             case readEmailInInbox:
-                return "Your 8th training task is to read the current email (in the inbox)";
+                return "Your 8th training task is to read the current email (in the inbox). Ignore the email's content for now (don't read the <b>next</b> email yet, you'll do it later).";
             case setRecpToSender:
                 return "Your 9th training task is to create a new email and set the recipient to the current email's sender (don't type the email yourself, use: \"current email's sender\" instead)";
             case sendTestBody:
@@ -198,7 +198,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         //may want to actually send the email in real environment right here.
         if (subject.contains("hello") && recipientList.contains(momEmail) && !userTasks.contains(TasksToComplete.sendTestEmail))
             userTasks.add(TasksToComplete.sendTestEmail);
-        else if ((body.contains("feeling well today") || body.contains("felt like")) && recipientList.contains(worker1Email) && !userTasks.contains(TasksToComplete.sendTestBody))
+        else if ((body.contains("feeling well today") || body.contains("felt like")) && (recipientList.contains(worker1Email) || recipientList.contains(momEmail) || recipientList.contains(bossEmail)) && !userTasks.contains(TasksToComplete.sendTestBody))
             userTasks.add(TasksToComplete.sendTestBody);
         else if (subject.contains("shirt color") && recipientList.contains(momEmail) && !body.isEmpty())
             userTasks.add(TasksToComplete.eRepMomShirt);

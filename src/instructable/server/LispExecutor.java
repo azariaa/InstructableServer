@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -21,6 +22,7 @@ public class LispExecutor
 {
     IAllUserActions allUserActions;
     InfoForCommand infoForCommand;
+    Optional<ActionResponse> responseOfFailedCall = Optional.empty(); //if fails, sets the responseOfFailedCall to relevant ActionResponse, and stop execution
 
     public static final String doSeq = "doSeq";
 
@@ -32,6 +34,7 @@ public class LispExecutor
 
     public static List<String> allFunctionNames()
     {
+        //get all functions using reflection
         List<String> allFunctionNames = Arrays.asList(IAllUserActions.class.getMethods()).stream().map(Method::getName).collect(Collectors.toList());
         allFunctionNames.add(doSeq);
         return allFunctionNames;
@@ -39,10 +42,8 @@ public class LispExecutor
 
     public List<FunctionToExecute> getAllFunctions()
     {
-        //get all functions using reflection
         List<FunctionToExecute> functionToExecutes = new LinkedList<>();
-        Method[] methods = IAllUserActions.class.getMethods();
-        // Arrays.asList(methods).forEach(method -> env.bindName(method.getName(), lispExecutor.getFunction(method.getName()), symbolTable));
+
         for (String functionName : allFunctionNames())
         {
             functionToExecutes.add(new FunctionToExecute(functionName));
@@ -76,24 +77,30 @@ public class LispExecutor
 
                 if (currentFunction.equals(doSeq))
                 {
-                    List<ActionResponse> actionResponseList = argumentValues.stream().filter(obj -> obj instanceof ActionResponse).map(obj -> (ActionResponse) obj).collect(Collectors.toCollection(LinkedList::new));
+                    // first get all those that succeeded.
+                    List<ActionResponse> actionResponseList = argumentValues.stream().filter(obj -> obj instanceof ActionResponse && ((ActionResponse) obj).isSuccess()).map(obj -> (ActionResponse) obj).collect(Collectors.toCollection(LinkedList::new));
+                    if (responseOfFailedCall.isPresent())
+                        actionResponseList.add(responseOfFailedCall.get());
 
                     return ActionResponse.createFromList(actionResponseList);
                 }
 
-                //make sure all ActionResponse we got are success, otherwise just propagate them up //unless do_seq which is handled above.
-                //this is actually irrelevant, since if an action fails it throws an exception see below.
-                //TODO: all this is problematic, since if some of the action succeed (especially in do_seq) no indication is given to user.
-                for (Object obj : argumentValues)
-                {
-                    if (obj instanceof ActionResponse)
-                    {
-                        if (!((ActionResponse) obj).isSuccess())
-                        {
-                            return (ActionResponse) obj;
-                        }
-                    }
-                }
+                if (responseOfFailedCall.isPresent())
+                    return responseOfFailedCall.get();
+
+//                //make sure all ActionResponse we got are success, otherwise just propagate them up //unless do_seq which is handled above.
+//                //this is actually irrelevant, since if an action fails it throws an exception see below.
+//                //TODO: all this is problematic, since if some of the action succeed (especially in do_seq) no indication is given to user.
+//                for (Object obj : argumentValues)
+//                {
+//                    if (obj instanceof ActionResponse)
+//                    {
+//                        if (!((ActionResponse) obj).isSuccess())
+//                        {
+//                            return (ActionResponse) obj;
+//                        }
+//                    }
+//                }
 
                 //first get function by name (no overloading so it is easy)
                 //we can't use IAllUserActions.class.getMethod(currentFunction), because we don't know the parameters
@@ -132,9 +139,10 @@ public class LispExecutor
 
                 if (!retVal.isSuccess())
                 {
+                    responseOfFailedCall = Optional.of(retVal);
                     //Important!!! This runtime exception is actually a returnValue and is later caught in ParserSettings.evaluate.
                     //This is done this way, in order to stop the execution of the rest of the expression (without interfering with LispEval.eval()
-                    throw retVal;
+                    //throw retVal;
                 }
                 return retVal;
             } catch (NoSuchMethodException e)

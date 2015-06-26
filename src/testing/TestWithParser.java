@@ -21,7 +21,7 @@ import java.util.LinkedList;
 public class TestWithParser
 {
     static boolean testingMode = true;
-    static String fileName = "June24test.txt";
+    static String fileName = "June26test.txt";
 
     public static void main(String[] args) throws Exception
     {
@@ -176,16 +176,12 @@ public class TestWithParser
 
         userSays = "add email as a field in contact";
         testHelpers.userSays(userSays);
-        //TODO: doesn't parse well
-        userSays = "add email to contact";
         //actionResponse = allUserActions.addFieldToConcept(new InfoForCommand(userSays,null), "contact", "email");
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "create a contact, call it bob";
+        userSays = "create a contact bob";
         testHelpers.userSays(userSays);
-        //TODO: doesn't parse well
-        userSays = "create contact bob";
         //actionResponse = allUserActions.createInstanceByFullNames(new InfoForCommand(userSays, null), "contact", "bob");
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
@@ -350,7 +346,7 @@ public class TestWithParser
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "make bob the recipient";
+        userSays = "make bob be the recipient";
         testHelpers.userSays(userSays);
         //actionResponse = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "bob");
         //actionResponse = allUserActions.unknownCommand(new InfoForCommand(userSays, null));
@@ -516,7 +512,7 @@ public class TestWithParser
 
         userSays = "and set it as the body";
         testHelpers.userSays(userSays);
-        //actionResponse = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "body"); //TODO: should understand since incoming email should not be mutable, or maybe leave for parser
+        //actionResponse = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "body"); //should understand since incoming email should not be mutable, or maybe leave for parser
 //        actionResponse = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "outgoing email", "body");
 //        if (response.isSuccess())
 //            actionResponse = allUserActions.setFieldFromPreviousEval(new InfoForCommand(userSays, null), response.getField());
@@ -529,7 +525,7 @@ public class TestWithParser
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "oh, yeah, set the recipient as my spouse";
+        userSays = "make my spouse the recipient";
         testHelpers.userSays(userSays);
         // should translate to: (set (get recipient_list) (eval (get my_spouse email)))
 //        {
@@ -550,8 +546,6 @@ public class TestWithParser
 //            }
 //            testHelpers.systemSays(actionResponse.getSayToUser());
 //        }
-        //TODO: modified:
-        userSays = "make my spouse the recipient";
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
@@ -561,10 +555,9 @@ public class TestWithParser
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "that's it, you're done!";
+        //userSays = "you're done"; //TODO: you're done doesn't work
+        userSays = "finish";
         testHelpers.userSays(userSays);
-        //TODO: modified:
-        userSays = "that's it";
 //        actionResponse = allUserActions.end(new InfoForCommand(userSays, null));
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);

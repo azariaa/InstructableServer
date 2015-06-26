@@ -345,8 +345,16 @@ public class CcgUtils
         int beamSize = 5000;
         CcgInference inferenceAlgorithm = new CcgBeamSearchInference(null, comparator, beamSize,
                 -1, Integer.MAX_VALUE, Runtime.getRuntime().availableProcessors(), false);
-        GradientOracle<CcgParser, CcgExample> oracle = new CcgPerceptronOracle(parametricCcgParser,
-                inferenceAlgorithm, 0.0);
+        GradientOracle<CcgParser, CcgExample> oracle = new CcgPerceptronOracle(parametricCcgParser, inferenceAlgorithm, 0.0);
+//        GradientOracle<CcgParser, CcgExample> oracle = new CcgLoglikelihoodOracle(parametricCcgParser, new ExpressionComparator()
+//        {
+//            @Override
+//            public boolean equals(Expression2 a, Expression2 b)
+//            {
+//                return false;
+//            }
+//        }, 10);
+
 
         int numIterations = numPasses * trainingExamples.size();
         double l2Regularization = 0.01;
@@ -388,8 +396,8 @@ public class CcgUtils
     public static void tokenizeAndPOS(String sentence, List<String> outTokens, List<String> outPOSs, boolean addNewPOS, Set<String> allowedOrUsedPOS)
     {
         final String slash = "/"; //is replaced with the first word.
-        final List<String> excludeTokens = Arrays.asList(",", "!", "(", ")", "!", "?","\"",";",slash,"\\","``","''"); //need to exclude this since they won't be available when using speech.
-        //do not exclude ".", used as a conditional "and" to concatenate sentences
+        final List<String> excludeTokens = Arrays.asList("!", "(", ")", "!", "?","\"",";",slash,"\\","``","''"); //need to exclude this since they won't be available when using speech.
+        //do not exclude "." and ",", used as a conditional "and" to concatenate sentences
         //do not exclude ":", may be used as "is"
 
         //List<String> tokens = new LinkedList<>();
