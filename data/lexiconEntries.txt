@@ -56,6 +56,7 @@ hi,S{0},(replyTo)
 # The following are used to hint on the type but are actually ignored
 #
 "the value",StringV/StringV,(lambda $1 $1) //set subject to the value hello world
+"call it",StringN/StringN,(lambda $1 $1) // create a contact call it bob
 concept,ConceptName/ConceptName,(lambda $1 $1)
 concept,StringN/StringN,(lambda $1 $1)
 field,FieldName/FieldName,(lambda $1 $1)

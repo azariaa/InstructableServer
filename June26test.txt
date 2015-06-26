@@ -46,7 +46,7 @@ S: Sorry, but the concept "contact" is already defined. Its fields are: none.
 U: add email as a field in contact
 S: Field "email" was added to concept "contact".
 
-U: create a contact bob
+U: create a contact call it bob
 S: Instance "bob" (of concept "contact") was created. "contact" fields are: email.
 
 U: set bob's email to baba

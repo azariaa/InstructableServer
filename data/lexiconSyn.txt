@@ -1,6 +1,10 @@
 # newWord, {meaning1,meaning2,...} (i.e, newWord = meaning1 U meaning2)
 # both newWords and meanings can't include a comma inside (","), use ^ instead of ","
 new,{create} //new email, new contact mom
+"create new",{create}
+"create a new",{create}
+"compose new",{create}
+"compose a new",{create}
 set,{write,change}  // set hello world as the subject, set the subject to hello world
 put, {write} //put hello world in the subject 
 use, {write} //use hello world as the subject //use email's subject as the subject
@@ -48,6 +52,9 @@ nevermind,{cancel}
 "never mind",{cancel}
 forget, {cancel}
 "start over", {cancel}
+"send email", {send}
+"send the email", {send}
+"send the outgoing email", {send}
 "next inbox",{"next email"}
 "next incoming email",{"next email"}
 "next message", {"next email"}

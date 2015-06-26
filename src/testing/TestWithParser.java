@@ -180,7 +180,7 @@ public class TestWithParser
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "create a contact bob";
+        userSays = "create a contact call it bob";
         testHelpers.userSays(userSays);
         //actionResponse = allUserActions.createInstanceByFullNames(new InfoForCommand(userSays, null), "contact", "bob");
         response = parserSettings.ParseAndEval(allUserActions, userSays);
