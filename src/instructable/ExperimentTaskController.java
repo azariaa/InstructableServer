@@ -217,9 +217,9 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             userTasks.add(TasksToComplete.tellBoss);
         else if (subject.contains("family event") && recipientList.contains(bossEmail) && body.contains("vacation"))
             userTasks.add(TasksToComplete.eForwardMToBoss);
-        else if (subject.contains("your vacation") && recipientList.contains(momEmail) && body.contains("vacation"))
+        else if (subject.contains("vacation") && recipientList.contains(momEmail) && body.contains("vacation"))
             userTasks.add(TasksToComplete.eForwardToMom);
-        else if (subject.contains(worker2Name) && recipientList.contains(worker2Email) && body.contains("do what"))
+        else if (subject.contains(worker2Name.toLowerCase()) && recipientList.contains(worker2Email) && body.contains("do what"))
             userTasks.add(TasksToComplete.eForwardToW2);
         else if (subject.contains("party time") && body.contains("thursday") &&
                 recipientList.contains(worker2Email))
