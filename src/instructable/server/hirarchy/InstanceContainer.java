@@ -77,7 +77,11 @@ public class InstanceContainer
         {
             Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
             if (instances.containsKey(instanceName))
-                return Optional.of(instances.get(instanceName));
+            {
+                GenericInstance instance = instances.get(instanceName);
+                instance.touch();
+                return Optional.of(instance);
+            }
             else
             {
                 executionStatus.add(ExecutionStatus.RetStatus.error, "there is no instance of \"" + conceptName + "\" with name \"" + instanceName + "\", please create one first");

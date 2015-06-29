@@ -68,13 +68,17 @@ public class GenericInstance
         executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + " cannot be found");
     }
 
+    public void touch()
+    {
+        lastAccess = System.nanoTime();
+    }
 
     /*
     should be called only if a new field was added to the conceptName
      */
     public void addFieldToObject(ExecutionStatus executionStatus, FieldDescription fieldToAdd)
     {
-        lastAccess = System.nanoTime();
+        touch();
         if (!fields.containsKey(fieldToAdd.fieldName))
         {
             fields.put(fieldToAdd.fieldName, new FieldHolder(fieldToAdd, this));
@@ -85,7 +89,7 @@ public class GenericInstance
 
     public void removeFieldFromObject(ExecutionStatus executionStatus, String fieldName)
     {
-        lastAccess = System.nanoTime();
+        touch();
         if (fields.containsKey(fieldName))
         {
             fields.remove(fieldName);
@@ -96,13 +100,13 @@ public class GenericInstance
 
     public boolean fieldExists(String fieldName)
     {
-        lastAccess = System.nanoTime();
+        touch();
         return fields.containsKey(fieldName);
     }
 
     public boolean fieldIsEmpty(String fieldName)
     {
-        lastAccess = System.nanoTime();
+        touch();
         if (fields.containsKey(fieldName))
         {
             return fields.get(fieldName).isEmpty();
@@ -113,13 +117,13 @@ public class GenericInstance
 
     public Set<String> getAllFieldNames()
     {
-        lastAccess = System.nanoTime();
+        touch();
         return fields.keySet();
     }
 
     public Optional<FieldHolder> getField(ExecutionStatus executionStatus, String fieldName)
     {
-        lastAccess = System.nanoTime();
+        touch();
         if (fields.containsKey(fieldName))
         {
             return Optional.of(fields.get(fieldName));
@@ -130,7 +134,7 @@ public class GenericInstance
 
     public Optional<JSONObject> getFieldVal(ExecutionStatus executionStatus, String fieldName)
     {
-        lastAccess = System.nanoTime();
+        touch();
         Optional<FieldHolder> requestedField = getField(executionStatus, fieldName);
         if (requestedField.isPresent())
         {

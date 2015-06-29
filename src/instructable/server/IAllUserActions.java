@@ -31,6 +31,8 @@ public interface IAllUserActions
 
     ActionResponse getProbInstanceByName(InfoForCommand infoForCommand, String instanceName);
 
+    ActionResponse getProbInstance(InfoForCommand infoForCommand);
+
     ActionResponse getProbFieldByInstanceNameAndFieldName(InfoForCommand infoForCommand, String instanceName, String fieldName);
 
     ActionResponse getProbFieldByFieldName(InfoForCommand infoForCommand, String fieldName);
@@ -96,7 +98,6 @@ public interface IAllUserActions
     ActionResponse end(InfoForCommand infoForCommand); // mostly for end learning e.g. "that's it"
 
     ActionResponse endOrCancel(InfoForCommand infoForCommand); //user said: "stop", not sure if means "end" or "cancel"
-
 
     ActionResponse undefineConcept(InfoForCommand infoForCommand, String conceptName);
 

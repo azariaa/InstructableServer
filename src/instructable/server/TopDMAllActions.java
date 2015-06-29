@@ -254,7 +254,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (inboxCommandController.isInboxInstanceName(instanceName))
         {
             conceptName = IncomingEmail.incomingEmailType; //make sure is asking for the right concept
-            instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName);
+            instanceName = inboxCommandController.getCurrentEmailName();
         }
 
         ExecutionStatus executionStatus = new ExecutionStatus();
@@ -263,7 +263,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             if (conceptName.equals(IncomingEmail.incomingEmailType)) //this might happen if for some reason didn't use current inbox message
             {
-                instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(InboxCommandController.emailMessageNameStart);
+                instanceName = inboxCommandController.getCurrentEmailName();
                 instance = instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, OutgoingEmail.strOutgoingEmailTypeAndName);
             }
             if (instanceName.contains(InboxCommandController.emailMessageNameStart)) //this might happen if concept mismatches the instanceName
@@ -315,19 +315,35 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
+    public ActionResponse getProbInstance(InfoForCommand infoForCommand)
+    {
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.empty(), Optional.empty(), false);
+
+        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+                executionStatus,
+                false,
+                true,
+                Optional.of("Got instance \"" + (instance.isPresent() ? instance.get().getName() : "") + "\"."),
+                false,
+                internalState);
+        if (actionResponse.isSuccess())
+        {
+            actionResponse.addInstance(instance.get());
+        }
+        return actionResponse;
+    }
+
+    @Override
     public ActionResponse getProbInstanceByName(InfoForCommand infoForCommand, String instanceName)
     {
-        boolean mutableOnly = false; //it seems that Instance is always immutable.
         if (instanceName.equals(ambiguousEmailInstanceName)) //if got ambiguous "email" instance, select the better choice according to mutability.
         {
-            if (mutableOnly)
-                instanceName = OutgoingEmail.strOutgoingEmailTypeAndName;
-            else
-                instanceName = InboxCommandController.emailMessageNameStart;
+            instanceName = InboxCommandController.emailMessageNameStart; //it seems that Instance is mostly immutable.
         }
 
         if (inboxCommandController.isInboxInstanceName(instanceName))
-            instanceName = inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName);
+            instanceName = inboxCommandController.getCurrentEmailName();
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty(), false);
@@ -365,7 +381,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             if (mutableOnly)
                 instanceName = Optional.of(OutgoingEmail.strOutgoingEmailTypeAndName);
             else
-                instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(InboxCommandController.emailMessageNameStart));
+                instanceName = Optional.of(inboxCommandController.getCurrentEmailName());
         }
 
         if (instanceName.isPresent() && inboxCommandController.isInboxInstanceName(instanceName.get()))
@@ -375,7 +391,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             else
             {
                 //instanceName = Optional.of(AliasMapping.instanceNameMapping(instanceName.get()));
-                instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(instanceName.get()));
+                instanceName = Optional.of(inboxCommandController.getCurrentEmailName());
             }
         }
 
@@ -383,7 +399,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly);
         if (instance.isPresent() && instance.get().getConceptName().equals(OutgoingEmail.strOutgoingEmailTypeAndName)&& !instanceName.isPresent() && !mutableOnly) //since the user didn't need mutable, and didn't explicitly mention the outgoing email, he probably wants the inbox
         {
-            instanceName = Optional.of(inboxCommandController.addCounterToEmailMessageIdIfRequired(InboxCommandController.emailMessageNameStart));
+            instanceName = Optional.of(inboxCommandController.getCurrentEmailName());
             instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly);
         }
         Optional<FieldHolder> field = Optional.empty();
@@ -921,6 +937,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
         inboxCommandController.setToNextEmail(executionStatus);
+        instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName()); //just touching it to update last instance being touched (for "it", etc.).
 
         return TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
@@ -936,6 +953,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
         inboxCommandController.setToPrevEmail(executionStatus);
+        instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName()); //just touching it to update last instance being touched (for "it", etc.).
 
         return TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,

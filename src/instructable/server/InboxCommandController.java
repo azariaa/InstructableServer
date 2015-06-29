@@ -37,11 +37,10 @@ public class InboxCommandController
         return instanceName.equals(emailMessageNameStart);
     }
 
-    public String addCounterToEmailMessageIdIfRequired(String instanceName)
+
+    public String getCurrentEmailName()
     {
-        if (instanceName.equals(emailMessageNameStart))
-            return emailMessageNameStart + currentIncomingEmailIdx;
-        return instanceName;
+        return emailMessageNameStart + currentIncomingEmailIdx;
     }
 
     public Optional<GenericInstance> getCurrentIncomingEmail(ExecutionStatus executionStatus)

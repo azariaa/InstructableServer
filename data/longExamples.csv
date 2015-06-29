@@ -110,7 +110,7 @@ set bob's classification,(setFieldWithMissingArg (getProbMutableFieldByInstanceN
 read next email,(unknownCommand)
 add dsflkj@fds.com to field email,"(addToFieldFromString (getProbMutableFieldByFieldName email) ""dsflkj@fds.com"")"
 set the recipient to fds@dfs.com. set the body to hello world. send.,"(doSeq (setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""fds@dfs.com"") (doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""hello world"") (sendEmail)))"
-first set the recipient to fds@dfs.com then send,"(doSeq (setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""fds@dfs.com"") (sendEmail))"
+first set the recipient to fds@dfs.com second set the body to hello world then send,"(doSeq (setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""fds@dfs.com"") (doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""hello world"") (sendEmail)))"
 set bob's classification to whatever you would like,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""whatever you would like"")"
 set bob classification to whatever you would like,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) ""whatever you would like"")"
 set recipient to current email sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName inbox sender)))
@@ -120,3 +120,4 @@ remove inbox,(deleteInstance (getProbInstanceByName inbox))
 set outgoing email recipient to bob's email and send,(doSeq (setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName bob email))) (sendEmail))
 next email and read it,(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
 first you move to the next email then you read it,(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
+"Create new email, set recipient to email's sender, set subject to hi there, and send email.  ","(doSeq (createInstanceByConceptName outgoing_email) (doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName email sender))) (doSeq (setFieldFromString (getProbMutableFieldByFieldName subject) ""hi there"") (sendEmail))))"

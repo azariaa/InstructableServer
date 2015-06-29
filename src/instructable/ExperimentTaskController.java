@@ -60,7 +60,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     //static final String friendName = "Remy";
 
     static final String bossEmail = "alextimetowork@myworkplace.com";
-    static final String momEmail = "momthebest7@bestemailsforall.com";
+    static final String momEmail = "momthebest7@bestforyou.com";//"momthebest7@bestemailsforall.com";
     static final String worker1Email = "caseyousoon8@myworkplace.com";
     static final String worker2Email = "charlieisasleep4@myworkplace.com";
     static final String worker3Email = "aaronworkshard3@myworkplace.com";

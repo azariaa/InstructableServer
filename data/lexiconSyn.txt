@@ -21,7 +21,10 @@ now, {please}
 then,{please,and} //ignore at beginning of sentence, or may be used to concatenate sentences
 second,{please,and}
 third,{please,and}
-"you should",{please}
+you,{please}
+should,{please}
+agent,{please}
+"=",{is}
 "can",{please}
 "can you",{please}
 ".",{and}
