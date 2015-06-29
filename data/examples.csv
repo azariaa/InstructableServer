@@ -1,5 +1,5 @@
 send email,(sendEmail)
-set the body to the sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByFieldName sender)))
+set the body to the current sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByFieldName sender)))
 set the outgoing email's recipient to sender,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email recipient_list) (evalField (getProbFieldByFieldName sender)))
 set the subject to I like this sender,"(setFieldFromString (getProbMutableFieldByFieldName subject) ""I like this sender"")"
 set the body to bar time for all,"(setFieldFromString (getProbMutableFieldByFieldName body) ""bar time for all"")"

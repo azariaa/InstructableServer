@@ -63,6 +63,7 @@ hi,S{0},(replyTo)
 "call it",StringN/StringN,(lambda $1 $1) // create a contact call it bob
 concept,ConceptName/ConceptName,(lambda $1 $1)
 concept,StringN/StringN,(lambda $1 $1)
+current,FiledName/FieldName,(lambda $ $1) //set the subject to current subject
 field,FieldName/FieldName,(lambda $1 $1)
 field,StringN/StringN,(lambda $1 $1) //add field email to concept contact
 field,StringN\StringN,(lambda $1 $1) //add the email field to the concept contact
