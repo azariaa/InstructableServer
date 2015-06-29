@@ -2,6 +2,7 @@ start_symbol,START{0},**skip**,0 **skip**
 "send","S{0}","(sendEmail)","0 sendEmail"
 yes,S{0},(yes)
 end,S{0},(end)
+stop,S{0},(endOrCancel)
 cancel,S{0},(cancel)
 "next email",S{0},(nextEmailMessage)
 "previous email",S{0},(previousEmailMessage)
@@ -18,7 +19,7 @@ remove,(S{0}/Instance{1}){0}, (lambda $1 (deleteInstance $1))
 remove,(S{0}/ConceptName{1}){0}, (lambda $1 (undefineConcept $1))
 has,((S{0}\ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
 add,((S{0}/PP_MutableField{2}){0}/StringV{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
-what,(S{0}/Field{1}){0},(lambda $1 (evalField $1))
+read,(S{0}/Field{1}){0},(lambda $1 (evalField $1))
 take,(FieldVal{0}/Field{1}){0},(lambda $1 (evalField $1))
 read,(S{0}/Instance{1}){0},(lambda $1 (readInstance $1)) //Instance seems to always be immutable 
 write,"((S{0}/PP_MutableField{2}){0}/StringV{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"// write hello world in the subject

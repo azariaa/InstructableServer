@@ -149,7 +149,8 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             {
                 if (unsuccessfulSend)
                     return "Previously sent email did not complete any task. Check email's subject, body, and recipient address.";
-                return "Main Task: read through all incoming emails (one at a time). For each email act according to its request. (Remember that teaching the agent new commands may save you time!)";
+                return "Main Task: read each of the incoming emails (next email, etc.). For each email do as it says (follow the sender's request). (Remember that teaching new commands may save you time!)";
+
             }
         }
     }

@@ -22,14 +22,20 @@ then,{please,and} //ignore at beginning of sentence, or may be used to concatena
 second,{please,and}
 third,{please,and}
 "you should",{please}
+"can",{please}
+"can you",{please}
 ".",{and}
 "^",{and} //using ^ instead of comma: ","
 ":",{is}
 ',{'s}
+"what 's",{read}
+what,{read}
+see,{read}
 show,{read}
-get,{what}
-retrieve,{what}
-"give me",{what}
+get,{read}
+retrieve,{read}
+"give me",{read}
+display,{read}
 "outgoing mail",{"outgoing email"}
 mail,{email}
 email message,{email}
@@ -45,7 +51,11 @@ finish,{end}
 done,{end}
 finished,{end}
 "that 's it",{end}
+"that 's all",{end}
+"that is it",{end}
+"that is all",{end}
 nothing,{end}
+learn,{end}
 quit,{cancel}
 stop,{cancel}
 nevermind,{cancel}

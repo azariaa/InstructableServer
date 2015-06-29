@@ -66,6 +66,7 @@ public class TextFormattingUtils
                 else
                 {
                     response.append("Sorry, but " + statusAndMessage.message.get() + ".");
+
                     if (isInLearningPhase)
                     {
                         learningSentence = Optional.of("What should I do instead (when executing: \"" + internalState.lastCommandOrLearningCommand + "\")?");
@@ -91,9 +92,14 @@ public class TextFormattingUtils
                 learningSentence = Optional.of("What shall I do next (when executing: \"" + internalState.lastCommandOrLearningCommand + "\")?");
         }
 
-        if (learningSentence.isPresent() && internalState.isLearningForTooLong())
+        if (learningSentence.isPresent())
         {
-            learningSentence = Optional.of(learningSentence.get() + "\nI noticed that you are teaching me a command for a while now, it's ok with me, but if you want to cancel this new command, say \"cancel\" and if you want me to learn this command say \"end\"");
+            if (internalState.shouldFailLearning())
+                learningSentence = Optional.of("I didn't learn anything. If you want to teach me what to do when you say " + internalState.lastCommandOrLearningCommand + ", say it again, and answer \"yes\" when I ask if you want to teach me");
+            else if (internalState.isLearningForTooLong() || internalState.userHavingTrouble())
+            {
+                learningSentence = Optional.of(learningSentence.get() + "\nI noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want to cancel this new command, say \"cancel\" and if you want me to learn this command say \"end\"");
+            }
         }
 
         return new ActionResponse(response.toString(),success,learningSentence);

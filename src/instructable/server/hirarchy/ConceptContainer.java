@@ -66,7 +66,12 @@ public class ConceptContainer
         if (candidates.size() == 0)
         {
             if (mutableOnly && foundImmutableConcept.isPresent())
-                executionStatus.add(ExecutionStatus.RetStatus.error, "the field \"" + fieldName + "\" of the concept \""+ foundImmutableConcept.get() + "\" is immutable.");
+            {
+                String failSentence = "the field \"" + fieldName + "\" of the concept \"" + foundImmutableConcept.get() + "\" is immutable." +
+                        "\nIf you want to set a mutable field to the "+ fieldName + ", say: \"set field name to " + fieldName + "\"";
+
+                executionStatus.add(ExecutionStatus.RetStatus.error, failSentence);
+            }
             else
                 executionStatus.add(ExecutionStatus.RetStatus.error, "I am not familiar with any concept with a field \"" + fieldName + "\". Please define it first, or use a different field.");
         }

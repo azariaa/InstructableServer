@@ -40,7 +40,7 @@ public class Service
         //consoleHandler = new ConsoleHandler();
         try
         {
-            fileHandler  = new FileHandler(loggingFile);
+            fileHandler  = new FileHandler(loggingFile,true);
         } catch (IOException e)
         {
             e.printStackTrace();

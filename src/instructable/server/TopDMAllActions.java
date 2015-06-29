@@ -64,6 +64,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         private InternalLearningStateMode internalLearningStateMode;
         private boolean pendingOnEmailCreation;
         List<Expression2> expressionsLearnt = new LinkedList<>();
+        int failCount = 0;
         String lastCommandOrLearningCommand = "";
         int lastInfoForCommandHashCode;
 
@@ -97,6 +98,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             internalLearningStateMode = InternalLearningStateMode.none;
             pendingOnEmailCreation = false;
             expressionsLearnt = new LinkedList<>();
+            failCount = 0;
         }
 
         public String startLearning()
@@ -127,6 +129,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                         lastInfoForCommandHashCode = 0;
                         expressionsLearnt.remove(expressionsLearnt.size() - 1); //remove last
                     }
+                    failCount++;
                 }
             }
             else
@@ -143,9 +146,31 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             return userSentences;
         }
 
+        public boolean learnedSomething()
+        {
+            return expressionsLearnt.size() > 0;
+        }
+
+        public boolean shouldFailLearning()
+        {
+            if (failCount >= 3 && expressionsLearnt.size() == 0)
+            {
+                reset();
+                return true;
+            }
+            return false;
+        }
+
+        public boolean userHavingTrouble()
+        {
+            if (failCount >= 4 || (failCount >= 2 && expressionsLearnt.size() < failCount - 1))
+                return true;
+            return false;
+        }
+
         public boolean isLearningForTooLong()
         {
-            return expressionsLearnt.size() > aLotOfExpressions;
+            return expressionsLearnt.size() + failCount > aLotOfExpressions;
         }
 
     }
@@ -496,7 +521,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse setFieldWithMissingArg(InfoForCommand infoForCommand, FieldHolder field)
     {
         return failWithMessage(infoForCommand, "I don't know what to set the \"" + field.getFieldName() + "\" field in \"" + field.getParentInstanceName() +
-                "\" to. Please repeat and tell me what to set it to (e.g. set "+field.getParentInstanceName()+"'s "+field.getFieldName()+" to something)");
+                "\" to. Please repeat and tell me what to set it to (e.g. set " + field.getParentInstanceName() + "'s " + field.getFieldName() + " to something)");
     }
 
 
@@ -549,7 +574,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (!val.isPresent() && !jsonVal.isPresent())
         {
-            return new ActionResponse("I don't know what I should set it to, please rephrase.", false, Optional.empty()); //TODO: again, what if learning
+            return new ActionResponse("I don't know what I should set it to, please say set "+theField.getParentInstanceName()+"'s " + theField.getFieldName()  + " to something", false, Optional.empty()); //TODO: again, what if learning
         }
 
         ExecutionStatus executionStatus = new ExecutionStatus();
@@ -810,12 +835,25 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         //make sure learnt at least one successful sentence
         if (commandsLearnt.size() > 0)
         {
-
             commandsToParser.addTrainingEg(commandBeingLearnt, commandsLearnt);
             return new ActionResponse("I now know what to do when you say (for example): \"" + commandBeingLearnt + "\"!", true, Optional.empty());
         }
         return new ActionResponse("I'm afraid that I didn't learn anything.", false, Optional.empty());
 
+    }
+
+    @Override
+    public ActionResponse endOrCancel(InfoForCommand infoForCommand)
+    {
+        if (!internalState.isInLearningMode())
+        {
+            return new ActionResponse("Not sure what you are talking about.", false, Optional.empty());
+        }
+        if (internalState.learnedSomething())
+        {
+            return new ActionResponse("I'm not sure what to do, if you want to learn \"" + internalState.lastCommandOrLearningCommand + "\", say \"end\" and if you want me to cancel say \"cancel\".", false, Optional.empty());
+        }
+        return cancel(infoForCommand); //didn't learn anything anyway.
     }
 
 
