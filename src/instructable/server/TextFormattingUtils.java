@@ -95,10 +95,10 @@ public class TextFormattingUtils
         if (learningSentence.isPresent())
         {
             if (internalState.shouldFailLearning())
-                learningSentence = Optional.of("I didn't learn anything. If you want to teach me what to do when you say " + internalState.lastCommandOrLearningCommand + ", say it again, and answer \"yes\" when I ask if you want to teach me");
+                learningSentence = Optional.of("I didn't learn anything. If you want to teach me what to do when you say \"" + internalState.lastCommandOrLearningCommand + "\", say it again, and answer \"yes\" when I ask if you want to teach me.");
             else if (internalState.isLearningForTooLong() || internalState.userHavingTrouble())
             {
-                learningSentence = Optional.of(learningSentence.get() + "\nI noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want to cancel this new command, say \"cancel\" and if you want me to learn this command say \"end\"");
+                learningSentence = Optional.of(learningSentence.get() + "\nI noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want to cancel this new command, say \"cancel\" and if you want me to learn this command say \"end\".");
             }
         }
 
