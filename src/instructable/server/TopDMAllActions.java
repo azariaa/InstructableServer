@@ -868,7 +868,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         }
         if (internalState.learnedSomething())
         {
-            return new ActionResponse("I'm not sure what to do, if you want to learn \"" + internalState.lastCommandOrLearningCommand + "\", say \"end\" and if you want me to cancel say \"cancel\".", false, Optional.empty());
+            return new ActionResponse("I'm not sure what to do. If you want me to learn \"" + internalState.lastCommandOrLearningCommand + "\", say \"end\". If you want me to cancel say \"cancel\".", false, Optional.empty());
         }
         return cancel(infoForCommand); //didn't learn anything anyway.
     }

@@ -5,9 +5,7 @@ import instructable.server.IIncomingEmailControlling;
 import instructable.server.TopDMAllActions;
 import instructable.server.hirarchy.IncomingEmail;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -70,7 +68,8 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
 
     //or the notes appear bossEmail, momEmail and CharlieEmail only!
 
-    boolean unsuccessfulSend = false;
+    enum LastEmailSent {ok, noTask, oldTask}
+    LastEmailSent lastEmailSent = LastEmailSent.ok;
     int unsuccessfulCount = 0;
 
     LinkedHashSet<TasksToComplete> userTasks = new LinkedHashSet<>();
@@ -87,10 +86,15 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     //the order in the LinkedHashSet is the order which was entered
     public String getRecentTaskName()
     {
-        if (unsuccessfulSend)
-            return "unsuccessfulSend" + unsuccessfulCount;
-        if (userTasks.size() > 0)
-            return userTasks.toArray()[userTasks.size()-1].toString();
+        switch (lastEmailSent)
+        {
+            case ok:
+                return userTasks.toArray()[userTasks.size()-1].toString();
+            case noTask:
+                return "unsuccessfulSend" + unsuccessfulCount;
+            case oldTask:
+                return "oldTask" + unsuccessfulCount;
+        }
         return "none";
     }
 
@@ -147,12 +151,18 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 return "Congratulations: You have completed all possible tasks!";
             default:
             {
-                if (unsuccessfulSend)
-                    return "Previously sent email did not complete any task. Check email's subject, body, and recipient address.";
-                return "Main Task: read each of the incoming emails (next email, etc.). For each email do as it says (follow the sender's request). (Remember that teaching new commands may save you time!)";
-
+                switch (lastEmailSent)
+                {
+                    case ok:
+                        return "Main Task: read each of the incoming emails (next email, etc.). For each email do as it says (follow the sender's request). (Remember that teaching new commands may save you time!)";
+                    case noTask:
+                        return "Previously sent email did not complete any task. Check email's subject, body, and recipient address.";
+                    case oldTask:
+                        return "Sent email completed a task which you have already completed in the past. Move to the next email.";
+                }
             }
         }
+        return "Error.";
     }
 
     public void responseSentToUser(String agentResponse)
@@ -195,51 +205,64 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     {
         String subject = subject1.toLowerCase();
         String body = body1.toLowerCase();
-        unsuccessfulSend = false;
+
+        Set<TasksToComplete> completedInThisEmail = new HashSet<>();
         //may want to actually send the email in real environment right here.
         if (subject.contains("hello") && recipientList.contains(momEmail) && !userTasks.contains(TasksToComplete.sendTestEmail))
-            userTasks.add(TasksToComplete.sendTestEmail);
-        else if ((body.contains("feeling well today") || body.contains("felt like")) && (recipientList.contains(worker1Email) || recipientList.contains(momEmail) || recipientList.contains(bossEmail)) && !userTasks.contains(TasksToComplete.sendTestBody))
-            userTasks.add(TasksToComplete.sendTestBody);
-        else if (subject.contains("shirt color") && recipientList.contains(momEmail) && !body.isEmpty())
-            userTasks.add(TasksToComplete.eRepMomShirt);
-        else if (subject.contains("task i asked") && recipientList.contains(bossEmail) && !body.isEmpty())
-            userTasks.add(TasksToComplete.eRepBossTask);
-        else if (subject.contains("working tomorrow") && recipientList.contains(worker2Email) && !body.isEmpty())
-            userTasks.add(TasksToComplete.eRepW2);
-        else if (subject.contains("what to do") && recipientList.contains(worker1Email) && !body.isEmpty())
-            userTasks.add(TasksToComplete.eRepW1);
-        else if (subject.contains("are you still") && !body.isEmpty() && recipientList.contains(momEmail))
-            userTasks.add(TasksToComplete.eRepMomAtWork);
-        else if (subject.contains("do you like work") && recipientList.contains(worker3Email) && !body.isEmpty())
-            userTasks.add(TasksToComplete.eRepW3);
-        else if (recipientList.contains(bossEmail) && (body.contains(" way") || subject.contains(" way")) && !userTasks.contains(TasksToComplete.tellBoss))
-            userTasks.add(TasksToComplete.tellBoss);
-        else if (subject.contains("family event") && recipientList.contains(bossEmail) && body.contains("vacation"))
-            userTasks.add(TasksToComplete.eForwardMToBoss);
-        else if (subject.contains("vacation") && recipientList.contains(momEmail) && body.contains("vacation"))
-            userTasks.add(TasksToComplete.eForwardToMom);
-        else if (subject.contains(worker2Name.toLowerCase()) && recipientList.contains(worker2Email) && body.contains("do what"))
-            userTasks.add(TasksToComplete.eForwardToW2);
-        else if (subject.contains("party time") && body.contains("thursday") &&
-                recipientList.contains(worker2Email))
-            userTasks.add(TasksToComplete.eForwardToWParty);
-        else if (subject.contains("work before parting") && body.contains("monday") &&
-                recipientList.contains(worker2Email))
-            userTasks.add(TasksToComplete.eForwardToWWork);
-        else if (subject.contains("rest") && body.contains("well") &&
-                recipientList.contains(worker2Email))
-            userTasks.add(TasksToComplete.eForwardToWRest);
-        else if (subject.contains("cannot attend") && body.contains("sorry") && recipientList.contains(bossEmail))
-            userTasks.add(TasksToComplete.eForwardWToBoss);
-        else if (subject.contains("everyone ignores me") && !body.isEmpty() && recipientList.contains(worker3Email))
-            userTasks.add(TasksToComplete.eRepW3Ignore);
-        else if (subject.contains("i like attention") && !body.isEmpty() && recipientList.contains(worker1Email))
-            userTasks.add(TasksToComplete.eRepW1Attention);
+            completedInThisEmail.add(TasksToComplete.sendTestEmail);
+        if ((body.contains("feeling well today") || body.contains("felt like")) && (recipientList.contains(worker1Email) || recipientList.contains(momEmail) || recipientList.contains(bossEmail)) && !userTasks.contains(TasksToComplete.sendTestBody))
+            completedInThisEmail.add(TasksToComplete.sendTestBody);
+        if (subject.contains("shirt color") && recipientList.contains(momEmail) && !body.isEmpty())
+            completedInThisEmail.add(TasksToComplete.eRepMomShirt);
+        if (subject.contains("task")  && subject.contains("asked") && recipientList.contains(bossEmail) && !body.isEmpty())
+            completedInThisEmail.add(TasksToComplete.eRepBossTask);
+        if (subject.contains("working tomorrow") && recipientList.contains(worker2Email) && !body.isEmpty())
+            completedInThisEmail.add(TasksToComplete.eRepW2);
+        if (subject.contains("what to do") && recipientList.contains(worker1Email) && !body.isEmpty())
+            completedInThisEmail.add(TasksToComplete.eRepW1);
+        if (subject.contains("are you still") && !body.isEmpty() && recipientList.contains(momEmail))
+            completedInThisEmail.add(TasksToComplete.eRepMomAtWork);
+        if (subject.contains("work") && recipientList.contains(worker3Email) && !body.isEmpty())
+            completedInThisEmail.add(TasksToComplete.eRepW3);
+        if (recipientList.contains(bossEmail) && (body.contains(" way") || body.contains(" late")|| subject.contains(" way") || subject.contains(" late")) && !userTasks.contains(TasksToComplete.tellBoss))
+            completedInThisEmail.add(TasksToComplete.tellBoss);
+        if (subject.contains("family event") && recipientList.contains(bossEmail) && body.contains("vacation"))
+            completedInThisEmail.add(TasksToComplete.eForwardMToBoss);
+        if (subject.contains("vacation") && recipientList.contains(momEmail) && body.contains("vacation"))
+            completedInThisEmail.add(TasksToComplete.eForwardToMom);
+        if (subject.contains(worker2Name.toLowerCase()) && recipientList.contains(worker2Email) && body.contains("do what"))
+            completedInThisEmail.add(TasksToComplete.eForwardToW2);
+        if (subject.contains("party time") && body.contains("thursday") && recipientList.contains(worker2Email))
+            completedInThisEmail.add(TasksToComplete.eForwardToWParty);
+        if (subject.contains("work before parting") && body.contains("monday") && recipientList.contains(worker2Email))
+            completedInThisEmail.add(TasksToComplete.eForwardToWWork);
+        if (subject.contains("rest") && body.contains("well") && recipientList.contains(worker2Email))
+            completedInThisEmail.add(TasksToComplete.eForwardToWRest);
+        if (subject.contains("cannot attend") && body.contains("sorry") && recipientList.contains(bossEmail))
+            completedInThisEmail.add(TasksToComplete.eForwardWToBoss);
+        if (subject.contains("everyone ignores me") && !body.isEmpty() && recipientList.contains(worker3Email))
+            completedInThisEmail.add(TasksToComplete.eRepW3Ignore);
+        if (subject.contains("i like attention") && !body.isEmpty() && recipientList.contains(worker1Email))
+            completedInThisEmail.add(TasksToComplete.eRepW1Attention);
+
+
+        if (completedInThisEmail.isEmpty())
+        {
+            lastEmailSent = LastEmailSent.noTask;
+            unsuccessfulCount++;
+        }
         else
         {
-            unsuccessfulSend = true;
-            unsuccessfulCount++;
+            if (userTasks.containsAll(completedInThisEmail))
+            {
+                lastEmailSent = LastEmailSent.oldTask;
+                unsuccessfulCount++;
+            }
+            else
+            {
+                lastEmailSent = LastEmailSent.ok;
+                userTasks.addAll(completedInThisEmail);
+            }
         }
 
     }

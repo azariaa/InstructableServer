@@ -57,6 +57,7 @@ google,(unknownCommand)
 read incoming email,(readInstance (getProbInstanceByName inbox))
 next email message,(nextEmailMessage)
 read email,(readInstance (getProbInstanceByName email))
+read the email,(readInstance (getProbInstanceByName email))
 read current email,(readInstance (getProbInstanceByName inbox))
 read email message,(readInstance (getProbInstanceByName email))
 previous email message,(previousEmailMessage)
@@ -75,7 +76,6 @@ read the current email,(readInstance (getProbInstanceByName inbox))
 next incoming email,(nextEmailMessage)
 next inbox,(nextEmailMessage)
 set recipient to a@gmail.com b@gmail.com and c@gmail.com,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""a@gmail.com b@gmail.com and c@gmail.com"")"
-set the recipient to a@gmail.com b@gmail.com and c@gmail.com and d@gmail.com,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""a@gmail.com b@gmail.com and c@gmail.com and d@gmail.com"")"
 set recipient to a@gmail.com b@gmail.com d@gmail.com,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""a@gmail.com b@gmail.com d@gmail.com"")"
 set the recipient to b@gmail.com and c@gmail.com and d@gmail.com,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""b@gmail.com and c@gmail.com and d@gmail.com"")"
 set the body to your vacation has been approved,"(setFieldFromString (getProbMutableFieldByFieldName body) ""your vacation has been approved"")"
