@@ -89,7 +89,11 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         switch (lastEmailSent)
         {
             case ok:
-                return userTasks.toArray()[userTasks.size()-1].toString();
+            {
+                if (userTasks.size() > 0)
+                    return userTasks.toArray()[userTasks.size() - 1].toString();
+                return "none";
+            }
             case noTask:
                 return "unsuccessfulSend" + unsuccessfulCount;
             case oldTask:
@@ -179,7 +183,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             userTasks.add(TasksToComplete.setMomsEmail);
         else if (agentResponse.contains("It is: "+momEmail))
             userTasks.add(TasksToComplete.seeMomsEmail);
-        else if (agentResponse.contains("subject:") && agentResponse.contains("sender:"))
+        else if (agentResponse.contains("subject:") && agentResponse.contains("sender:") && !userTasks.contains(TasksToComplete.readEmailInInbox))
             userTasks.add(TasksToComplete.readEmailInInbox);
         else if (agentResponse.contains("recipient") && agentResponse.contains(worker1Email))
             userTasks.add(TasksToComplete.setRecpToSender);
