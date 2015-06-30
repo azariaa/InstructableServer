@@ -143,6 +143,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             internalLearningStateMode = InternalLearningStateMode.none;
             List<Expression2> userSentences = expressionsLearnt;
             expressionsLearnt = new LinkedList<>();
+            failCount = 0;
             return userSentences;
         }
 
