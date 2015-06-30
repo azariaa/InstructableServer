@@ -73,7 +73,7 @@ public class ConceptContainer
                 executionStatus.add(ExecutionStatus.RetStatus.error, failSentence);
             }
             else
-                executionStatus.add(ExecutionStatus.RetStatus.error, "I am not familiar with any concept with a field \"" + fieldName + "\". Please define it first, or use a different field.");
+                executionStatus.add(ExecutionStatus.RetStatus.error, "I am not familiar with any concept with a field \"" + fieldName + "\". Please define it first, or use a different field");
         }
         return candidates;
     }

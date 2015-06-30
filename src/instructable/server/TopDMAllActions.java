@@ -537,8 +537,27 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse setFieldWithMissingArg(InfoForCommand infoForCommand, FieldHolder field)
     {
-        return failWithMessage(infoForCommand, "I don't know what to set the \"" + field.getFieldName() + "\" field in \"" + field.getParentInstanceName() +
-                "\" to. Please repeat and tell me what to set it to (e.g. set " + field.getParentInstanceName() + "'s " + field.getFieldName() + " to something)");
+        return failWithMessage(infoForCommand, "I don't know what to set " + field.getParentInstanceName() + "'s "+ field.getFieldName() + " to. " +
+                "Please repeat and tell me what to set it to (e.g. set " + field.getParentInstanceName() + "'s " + field.getFieldName() + " to something)");
+    }
+
+    @Override
+    public ActionResponse setWhatFromString(InfoForCommand infoForCommand, String val)
+    {
+        return failWithMessage(infoForCommand, "I don't know what should be set to " + val + ". " +
+                "Please repeat and tell me what should be set to it (e.g. set example to " + val + ")");
+    }
+
+    @Override
+    public ActionResponse setWhatFromField(InfoForCommand infoForCommand, FieldHolder field)
+    {
+        String parentNiceName = field.getParentInstanceName();
+        if (parentNiceName.contains(inboxCommandController.emailMessageNameStart))
+        {
+            parentNiceName = inboxCommandController.emailMessageNameStart;
+        }
+        return failWithMessage(infoForCommand, "I don't know what should be set to " + parentNiceName + "'s "+ field.getFieldName() +  ". " +
+                "Please repeat and tell me what should be set to it (e.g. set example to "+ parentNiceName + "'s "+ field.getFieldName() + ")");
     }
 
 
@@ -565,6 +584,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse addToFieldAtStartFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal)
     {
         return setAndAdd(infoForCommand, field, Optional.empty(), Optional.of(jsonVal), true, false);
+    }
+
+    @Override
+    public ActionResponse addToWhat(InfoForCommand infoForCommand, String toAdd)
+    {
+        return failWithMessage(infoForCommand, "I don't know what I should add \"" + toAdd + "\" to. Say: add " + toAdd + " to something");
     }
 
 

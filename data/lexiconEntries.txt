@@ -14,16 +14,19 @@ create,((S{0}/PP_ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (createInstanceBy
 create,(S{0}/StringN{1}){0},"(lambda $1 (defineConcept $1))"
 define,(S{0}/StringN{1}){0},"(lambda $1 (defineConcept $1))"
 add,((S{0}/PP_ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
+add,(S{0}/StringN{1}){0}, (lambda $1 (addToWhat $1))
+add,((S{0}/PP_MutableField{2}){0}/StringV{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
 remove,((S{0}/PP_ConceptName{2}){0}/FieldName{1}), (lambda $1 $2 (removeFieldFromConcept $2 $1))
 remove,(S{0}/Instance{1}){0}, (lambda $1 (deleteInstance $1))
 remove,(S{0}/ConceptName{1}){0}, (lambda $1 (undefineConcept $1))
 has,((S{0}\ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
-add,((S{0}/PP_MutableField{2}){0}/StringV{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
-read,(S{0}/Field{1}){0},(lambda $1 (evalField $1))
+what,(S{0}/Field{1}){0},(lambda $1 (evalField $1)) //for some reason, when this was "read", it parsed "read email" to this
 read,(S{0}/Instance{1}){0},(lambda $1 (readInstance $1)) //Instance seems to always be immutable 
 take,(FieldVal{0}/Field{1}){0},(lambda $1 (evalField $1))
 write,"((S{0}/PP_MutableField{2}){0}/StringV{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"// write hello world in the subject
 write,"((S{0}/PP_MutableField{2}){0}/FieldVal{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $2 $1))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2"
+write, (S{0}/StringV{1}){0},(lambda $1 (setWhatFromString $1))
+write, (S{0}/Field{1}){0},(lambda $1 (setWhatFromField $1))
 change,"((S{0}/PP_FieldVal{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $1 $2))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2" //change recipient to mom's email
 change,"((S{0}/PP_StringV{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2" //change subject to hello world
 change,((S{0}/StringV{2}){0}/MutableField{1}){0},(lambda $1 $2 (setFieldFromString $1 $2)) //set contact mom fds@fds.com //not clean, but is used by users.
@@ -77,7 +80,7 @@ please,S{0}/S{0},(lambda $1 $1)
 #
 body,FieldName{0},body,0 body
 inbox,InstanceName{0},inbox
-email,InstanceName{0},email
+email_ambiguous,InstanceName{0},email
 "outgoing email",InstanceName{0},outgoing_email,0 outgoing_email
 email,ConceptName{0},outgoing_email,0 outgoing_email
 recipient,FieldName{0},recipient_list,0 recipient_list

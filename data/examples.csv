@@ -59,7 +59,6 @@ next email message,(nextEmailMessage)
 read email,(readInstance (getProbInstanceByName email))
 read the email,(readInstance (getProbInstanceByName email))
 read current email,(readInstance (getProbInstanceByName inbox))
-read email message,(readInstance (getProbInstanceByName email))
 previous email message,(previousEmailMessage)
 read name bob,(readInstance (getInstance name bob))
 name has a gender,"(addFieldToConcept name ""gender"")"
@@ -120,3 +119,5 @@ remove inbox,(deleteInstance (getProbInstanceByName inbox))
 set outgoing email recipient to bob's email and send,(doSeq (setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName bob email))) (sendEmail))
 next email and read it,(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
 first you move to the next email then you read it,(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
+add email field,"(addToWhat ""email"")"
+use bob's classification,(setWhatFromField (getProbFieldByInstanceNameAndFieldName bob classification))

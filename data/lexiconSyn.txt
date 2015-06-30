@@ -31,21 +31,27 @@ agent,{please}
 "^",{and} //using ^ instead of comma: ","
 ":",{is}
 ',{'s}
-"what 's",{read}
 what,{read}
-see,{read}
-show,{read}
-get,{read}
-retrieve,{read}
-"give me",{read}
-display,{read}
+"what 's",{what,read}
+see,{what,read}
+show,{what,read}
+get,{what,read}
+retrieve,{what,read}
+"give me",{what,read}
+display,{what,read}
 "outgoing mail",{"outgoing email"}
-mail,{email}
-email message,{email}
-message,{email}
+email,{email_ambiguous}
+mail,{email_ambiguous,email}
+"email message",{email_ambiguous,email}
+message,{email_ambiguous,email}
+"current email",{email_ambiguous,email}
 "incoming email",{inbox}
 "my email",{inbox}
 "current email",{inbox}
+"email in the inbox",{inbox}
+"email in inbox",{inbox}
+"current email in the inbox",{inbox}
+"current email in inbox",{inbox}
 address,{recipient}
 title,{subject}
 ok,{yes}

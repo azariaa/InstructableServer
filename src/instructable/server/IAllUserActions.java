@@ -55,6 +55,10 @@ public interface IAllUserActions
 
     ActionResponse setFieldWithMissingArg(InfoForCommand infoForCommand, FieldHolder field);
 
+    ActionResponse setWhatFromString(InfoForCommand infoForCommand, String val);
+
+    ActionResponse setWhatFromField(InfoForCommand infoForCommand, FieldHolder field);
+
     //ActionResponse setFieldFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 
     ActionResponse addToFieldFromString(InfoForCommand infoForCommand, FieldHolder field, String val);
@@ -66,6 +70,8 @@ public interface IAllUserActions
     ActionResponse addToFieldAtStartFromString(InfoForCommand infoForCommand, FieldHolder field, String val);
 
     ActionResponse addToFieldAtStartFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal);
+
+    ActionResponse addToWhat(InfoForCommand infoForCommand, String toAdd);
 
     //ActionResponse addToFieldAtStartFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 
