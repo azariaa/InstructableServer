@@ -53,7 +53,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
      */
     public static class InternalState
     {
-        private static final int aLotOfExpressions = 8;
+        private static final int aLotOfExpressions = 7;
 
         private static enum InternalLearningStateMode
 

@@ -258,6 +258,14 @@ public class CcgUtils
 		  }
 	  }
 
+      //adding just the whole sentence as a lexicon entry, in case any other parse fails
+      String plainLexicon = "\"" + String.join(" ", example.getSentence().getWords()) + "\"" + ", S{0}, " + example.getLogicalForm().toString();
+      List<String> lexiconAsList = new LinkedList<>();
+      lexiconAsList.add(plainLexicon);
+      List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
+
+      newEntries.addAll(lexiconEntries);
+
 	  return newEntries;
   }
 
