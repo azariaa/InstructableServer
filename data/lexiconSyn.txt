@@ -32,6 +32,7 @@ agent,{please}
 "can you",{please}
 ".",{and}
 "^",{and} //using ^ instead of comma: ","
+"^ and",{and} //, and is only one and
 ":",{is}
 ',{'s}
 what,{read}
