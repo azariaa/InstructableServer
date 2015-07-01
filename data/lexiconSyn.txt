@@ -36,6 +36,7 @@ agent,{please}
 ":",{is}
 ',{'s}
 what,{read}
+read,{what}
 "what 's",{what,read}
 see,{what,read}
 show,{what,read}

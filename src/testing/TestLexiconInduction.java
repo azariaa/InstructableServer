@@ -1,5 +1,14 @@
 package testing;
 
+import instructable.EnvironmentCreatorUtils;
+import instructable.server.CommandsToParser;
+import instructable.server.ccg.CcgUtils;
+import instructable.server.ccg.ParserSettings;
+
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgExample;
 import com.jayantkrish.jklol.ccg.CcgParse;
@@ -9,14 +18,6 @@ import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
-import instructable.EnvironmentCreatorUtils;
-import instructable.server.CommandsToParser;
-import instructable.server.ccg.CcgUtils;
-import instructable.server.ccg.ParserSettings;
-
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 
 public class TestLexiconInduction {
     public static void main(String[] args) throws Exception
@@ -41,7 +42,12 @@ public class TestLexiconInduction {
     	for (CcgExample example : examples) {
     		System.out.println(example.getSentence().getWords());
     		System.out.println(example.getLogicalForm());
-    		newEntries.addAll(CcgUtils.induceLexiconEntriesHeuristic(example, parser));
+    		List<LexiconEntry> entries = CcgUtils.induceLexiconEntriesHeuristic(example, parser);
+    		for (LexiconEntry entry : entries) {
+    		  System.out.println("  " + entry);
+    		}
+    		
+    		newEntries.addAll(entries);
     	}
     	
     	parserSettings.updateParserGrammar(newEntries, Lists.newArrayList());

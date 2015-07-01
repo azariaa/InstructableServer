@@ -119,6 +119,7 @@ remove inbox,(deleteInstance (getProbInstanceByName inbox))
 set outgoing email recipient to bob's email and send,(doSeq (setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName bob email))) (sendEmail))
 next email and read it,(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
 first you move to the next email then you read it,(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
+"next email, and read it",(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
 add email field,"(addToWhat ""email"")"
 use bob's classification,(setWhatFromField (getProbFieldByInstanceNameAndFieldName bob classification))
 "set body to current email's body, and send email",(doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByInstanceNameAndFieldName inbox body))) (sendEmail))
