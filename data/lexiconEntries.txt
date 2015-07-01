@@ -16,6 +16,7 @@ define,(S{0}/StringN{1}){0},"(lambda $1 (defineConcept $1))"
 add,((S{0}/PP_ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
 add,(S{0}/StringN{1}){0}, (lambda $1 (addToWhat $1))
 add,((S{0}/PP_MutableField{2}){0}/StringV{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
+add,((S{0}/PP_MutableField{2}){0}/FieldVal{1}), (lambda $1 $2 (addToFieldFromFieldVal $2 $1))
 remove,((S{0}/PP_ConceptName{2}){0}/FieldName{1}), (lambda $1 $2 (removeFieldFromConcept $2 $1))
 remove,(S{0}/Instance{1}){0}, (lambda $1 (deleteInstance $1))
 remove,(S{0}/ConceptName{1}){0}, (lambda $1 (undefineConcept $1))

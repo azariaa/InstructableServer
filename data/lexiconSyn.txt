@@ -92,6 +92,7 @@ forget, {cancel}
 "move to the next email", {"next email"}
 "move to my next email", {"next email"}
 "move to the next email in the inbox", {"next email"}
+"move to next email in inbox", {"next email"}
 "set previous email",{"previous email"}
 "previous message",{"previous email"}
 "previous inbox",{"previous email"}

@@ -171,7 +171,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         public boolean isLearningForTooLong()
         {
-            return expressionsLearnt.size() + failCount > aLotOfExpressions;
+            return expressionsLearnt.size() + failCount >= aLotOfExpressions;
         }
 
     }
@@ -224,7 +224,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         }
         else
         {
-            return new ActionResponse("I did not understand what you said yes to, please give the full request.", false, Optional.empty());
+            return failWithMessage(infoForCommand, "I did not understand what you said yes to, please give the full request.");
         }
     }
 
