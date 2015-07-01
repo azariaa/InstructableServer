@@ -34,7 +34,7 @@ public class JunitTest {
     CcgUtils.SayAndExpression response;
     String userSays;
 
-    userSays = "next email and read email";
+    userSays = "next email and read email and send an email to foo@bar.com";
     testHelpers.userSays(userSays);
     response = parserSettings.ParseAndEval(allUserActions, userSays);
     //actionResponse = allUserActions.sendEmail(new InfoForCommand(userSays,null));
