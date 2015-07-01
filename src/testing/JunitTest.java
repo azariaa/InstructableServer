@@ -28,13 +28,27 @@ public class JunitTest {
   }
   
   @Test
-  public void testLongSentence() {
+  public void testLongSentence1() {
     IAllUserActions allUserActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {});
     testHelpers.systemSays("Let's start by sending a dummy email to your-self, set the subject to hello and the body to test.");
     CcgUtils.SayAndExpression response;
     String userSays;
 
     userSays = "next email and read email and send an email to foo@bar.com";
+    testHelpers.userSays(userSays);
+    response = parserSettings.ParseAndEval(allUserActions, userSays);
+    //actionResponse = allUserActions.sendEmail(new InfoForCommand(userSays,null));
+    testHelpers.systemSays(response.sayToUser);
+  }
+  
+  @Test
+  public void testLongSentence2() {
+    IAllUserActions allUserActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {});
+    testHelpers.systemSays("Let's start by sending a dummy email to your-self, set the subject to hello, and the body to test.");
+    CcgUtils.SayAndExpression response;
+    String userSays;
+
+    userSays = "Create new email, set recipient to email's sender and set subject to hi there, send email.";
     testHelpers.userSays(userSays);
     response = parserSettings.ParseAndEval(allUserActions, userSays);
     //actionResponse = allUserActions.sendEmail(new InfoForCommand(userSays,null));
