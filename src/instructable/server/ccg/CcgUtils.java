@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -40,6 +41,7 @@ import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
 import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
 import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
 import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
 import com.jayantkrish.jklol.ccg.lexinduct.AlignmentExample;
@@ -419,7 +421,45 @@ public class CcgUtils
 
         return new CcgExample(supertaggedSentence, null, null, expression, null);
     }
+    
+    public static List<LexiconEntry> induceLexiconHeadsAndDependencies(List<LexiconEntry> lexicon) {
+      // Try and fill in the dependencies and semantic heads of these entries
+      List<LexiconEntry> newLexicon = Lists.newArrayList();
+      for (LexiconEntry entry : lexicon) {
+        CcgCategory ccgCategory = entry.getCategory();
+        Expression2 lf = ccgCategory.getLogicalForm();
 
+        Set<String> freeVars = StaticAnalysis.getFreeVariables(lf);
+        String head = Iterables.getFirst(freeVars, null);
+        if (head != null) {
+          HeadedSyntacticCategory syntax = ccgCategory.getSyntax();            
+          List<String> subjects = Lists.newArrayList();
+          List<Integer> argumentNumbers = Lists.newArrayList();
+          List<Integer> objects = Lists.newArrayList();
+
+          for (int varNum : syntax.getUniqueVariables()) {
+            subjects.add(head);
+            argumentNumbers.add(varNum);
+            objects.add(varNum);
+          }
+
+          List<Set<String>> assignments = Lists.newArrayList();
+          for (int i = 0; i < syntax.getUniqueVariables().length; i++) {
+            assignments.add(Sets.newHashSet());
+          }
+          assignments.get(0).add(head);
+
+          CcgCategory newCategory = new CcgCategory(ccgCategory.getSyntax(), lf,
+              subjects, argumentNumbers, objects, assignments);
+          newLexicon.add(new LexiconEntry(entry.getWords(), newCategory));
+        } else {
+          // Can't induce the heads or dependencies, so use the
+          // original entry.
+          newLexicon.add(entry);
+        }
+      }
+      return newLexicon;
+    }
 
     static MaxentTagger maxentTagger = new MaxentTagger("resources/english-left3words-distsim.tagger");
 
