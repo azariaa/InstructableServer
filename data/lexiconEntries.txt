@@ -57,7 +57,7 @@ as,PP_StringV/StringV,(lambda $1 $1) //set subject as hello world //set subject 
 #as,PP_FieldVal/FieldVal,(lambda $1 $1) //set recipient as mom's email //set recipient to mom's email //bad - removed
 as,PP_ConceptName/ConceptName,(lambda $1 $1) //set mom as a contact
 inside,PP_MutableField/MutableField,(lambda $1 $1) //put hello world inside the subject
-and,"(S/S)\S",(lambda $1 $2 (doSeq $1 $2))
+and,"(S{3}/S{2})\S{1}",(lambda $1 $2 (doSeq $1 $2))
 and,"(S/S)\FieldVal",(lambda $1 $2 (doSeq $1 $2))
 hi,S{0},(replyTo)
 #
@@ -75,6 +75,7 @@ instance,StringN/StringN,(lambda $1 $1) //create instance mom of concept contact
 the, StringN/StringN, (lambda $1 $1)
 please,S{0}/S{0},(lambda $1 $1)
 ".",S{0}\S{0},(lambda $1 $1)
+",",((S/S)\S)\((S/S)\S),(lambda $1 $1)
 #
 # The following are specific from emails
 #
