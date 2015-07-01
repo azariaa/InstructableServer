@@ -76,6 +76,7 @@ nevermind,{cancel}
 "never mind",{cancel}
 forget, {cancel}
 "start over", {cancel}
+wait,{stop}
 "send email", {send}
 "send the email", {send}
 "send the outgoing email", {send}

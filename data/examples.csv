@@ -123,4 +123,5 @@ first you move to the next email then you read it,(doSeq (nextEmailMessage) (rea
 add email field,"(addToWhat ""email"")"
 use bob's classification,(setWhatFromField (getProbFieldByInstanceNameAndFieldName bob classification))
 "set body to current email's body, and send email",(doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByInstanceNameAndFieldName inbox body))) (sendEmail))
-"set body to report, and send email",(doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""report"") (sendEmail))
+"set body to report, and send email","(doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""report"") (sendEmail))"
+add bob's email to the recipient list,(addToFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName bob email)))

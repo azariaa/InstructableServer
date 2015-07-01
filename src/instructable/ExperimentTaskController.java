@@ -139,7 +139,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case sendTestEmail:
                 return "Your 7th training task is to set the outgoing email's recipient to "+ momName +"'s email and set the subject to hello and send the email (don't retype mom's email, simply set the recipient to " + momName +"'s email)";
             case readEmailInInbox:
-                return "Your 8th training task is to read the current email (in the inbox). Ignore the email's content for now (don't read the <b>next</b> email yet, you'll do it later).";
+                return "Your 8th training task is to read the current email (in the inbox). Ignore the email's content for now (don't read the next email yet, you'll do it later).";
             case setRecpToSender:
                 return "Your 9th training task is to create a new email and set the recipient to the current email's sender (don't type the email yourself, use: \"current email's sender\" instead)";
             case sendTestBody:
@@ -149,7 +149,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case previousEmailInInbox:
                 return "Your 12th training task is to move to the <b>previous</b> email (in the inbox). (No need to read it now.)";
             case teachReadNextInbox:
-                return "Your 13th (and last) training task is to teach the agent a <b>new command</b> (e.g. \"go\"): having it both moving to the <b>next</b> email and reading it";
+                return "Your 13th (and last) training task is to teach the agent a <b>new command</b> (e.g. \"go\"): having it both moving to the next email and reading it (say: \"go\", then answer \"yes\", give the proper commands, then say \"end\")";
             case allCompleted:
                 //this shouldn't actually ever happen
                 return "Congratulations: You have completed all possible tasks!";
