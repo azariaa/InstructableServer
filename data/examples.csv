@@ -1,4 +1,4 @@
-send email,(sendEmail)
+send email,(send email)
 set the body to the current sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByFieldName sender)))
 set the outgoing email's recipient to sender,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email recipient_list) (evalField (getProbFieldByFieldName sender)))
 set the subject to I like this sender,"(setFieldFromString (getProbMutableFieldByFieldName subject) ""I like this sender"")"
@@ -13,7 +13,7 @@ create name for david,"(createInstanceByFullNames name ""david"")"
 yes,(yes)
 ok,(yes)
 put this is a test in body,"(setFieldFromString (getProbMutableFieldByFieldName body) ""this is a test"")"
-send the email,(sendEmail)
+send the email,(send email)
 set myself@myjob.com as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""myself@myjob.com"")"
 set someone@myandyou.com as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""someone@myandyou.com"")"
 send,(sendEmail)
@@ -33,7 +33,6 @@ what's bob's classification?,(evalField (getProbFieldByInstanceNameAndFieldName 
 what is bob's email?,(evalField (getProbFieldByInstanceNameAndFieldName bob email))
 take bob's classification,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
 set it as the outgoing email's subject,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email subject) (getProbFieldVal))
-and set it as jane's classification,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName jane classification) (getProbFieldVal))
 take bob's classification and set it as jane's classification,(doSeq (evalField (getProbFieldByInstanceNameAndFieldName bob classification)) (setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName jane classification) (getProbFieldVal)))
 set the recipient to be bob's classification,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName bob classification)))
 add nana@gmail.com to the recipient list,"(addToFieldFromString (getProbMutableFieldByFieldName recipient_list) ""nana@gmail.com"")"
@@ -49,17 +48,17 @@ take the subject from the email,(evalField (getProbFieldByInstanceNameAndFieldNa
 now set it as the outgoing email's subject,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email subject) (getProbFieldVal))
 take the body from the incoming email,(evalField (getProbFieldByInstanceNameAndFieldName inbox body))
 and set it as the body,(setFieldFromFieldVal (getProbMutableFieldByFieldName body) (getProbFieldVal))
-now send the email,(sendEmail)
+now send the email,(send email)
 you're done,(end)
 set the outgoing email's recipient to email's sender,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName email sender)))
 set the recipient to the email's sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName email sender)))
 google,(unknownCommand)
 read incoming email,(readInstance (getProbInstanceByName inbox))
-next email message,(nextEmailMessage)
+next email message,(next email)
 read email,(readInstance (getProbInstanceByName email))
 read the email,(readInstance (getProbInstanceByName email))
 read current email,(readInstance (getProbInstanceByName inbox))
-previous email message,(previousEmailMessage)
+previous email message,(previous email)
 read name bob,(readInstance (getInstance name bob))
 name has a gender,"(addFieldToConcept name ""gender"")"
 name has an age,"(addFieldToConcept name ""age"")"
@@ -70,10 +69,10 @@ set subject to I am on my way,"(setFieldFromString (getProbMutableFieldByFieldNa
 set body to I wanted to tell you something interesting,"(setFieldFromString (getProbMutableFieldByFieldName body) ""I wanted to tell you something interesting"")"
 set body to let me know if you have any questions,"(setFieldFromString (getProbMutableFieldByFieldName body) ""let me know if you have any questions"")"
 compose name sam,"(createInstanceByFullNames name ""sam"")"
-set next email,(nextEmailMessage)
+set next email,(next email)
 read the current email,(readInstance (getProbInstanceByName inbox))
-next incoming email,(nextEmailMessage)
-next inbox,(nextEmailMessage)
+next incoming email,(next inbox)
+next inbox,(next inbox)
 set recipient to a@gmail.com b@gmail.com and c@gmail.com,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""a@gmail.com b@gmail.com and c@gmail.com"")"
 set recipient to a@gmail.com b@gmail.com d@gmail.com,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""a@gmail.com b@gmail.com d@gmail.com"")"
 set the recipient to b@gmail.com and c@gmail.com and d@gmail.com,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""b@gmail.com and c@gmail.com and d@gmail.com"")"
@@ -106,7 +105,6 @@ subject,(unknownCommand)
 hike bob the classification,(unknownCommand)
 bob's classification,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
 set bob's classification,(setFieldWithMissingArg (getProbMutableFieldByInstanceNameAndFieldName bob classification))
-read next email,(unknownCommand)
 add dsflkj@fds.com to field email,"(addToFieldFromString (getProbMutableFieldByFieldName email) ""dsflkj@fds.com"")"
 set the recipient to fds@dfs.com. set the body to hello world. send.,"(doSeq (setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""fds@dfs.com"") (doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""hello world"") (sendEmail)))"
 first set the recipient to fds@dfs.com then send,"(doSeq (setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""fds@dfs.com"") (sendEmail))"
@@ -117,12 +115,14 @@ delete outgoing email,(deleteInstance (getProbInstanceByName outgoing_email))
 delete email,(deleteInstance (getProbInstanceByName email))
 remove inbox,(deleteInstance (getProbInstanceByName inbox))
 set outgoing email recipient to bob's email and send,(doSeq (setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName bob email))) (sendEmail))
-next email and read it,(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
-first you move to the next email then you read it,(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
-"next email, and read it",(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
+next email and read it,(doSeq (next email) (readInstance (getProbInstance)))
+first you move to the next email then you read it,(doSeq (next email) (readInstance (getProbInstance)))
+"next email, and read it",(doSeq (next email) (readInstance (getProbInstance)))
 add email field,"(addToWhat ""email"")"
 use bob's classification,(setWhatFromField (getProbFieldByInstanceNameAndFieldName bob classification))
-"set body to current email's body, and send email",(doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByInstanceNameAndFieldName inbox body))) (sendEmail))
-"set body to report, and send email","(doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""report"") (sendEmail))"
-"set the body to the current email's body, and send the email",(doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByInstanceNameAndFieldName inbox body))) (sendEmail))
+"set body to current email's body, and send email",(doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByInstanceNameAndFieldName inbox body))) (send email))
+"set body to report, and send email","(doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""report"") (send email))"
+"set the body to the current email's body, and send the email",(doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByInstanceNameAndFieldName inbox body))) (send email))
 add bob's email to the recipient list,(addToFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName bob email)))
+move to next email in inbox,(next inbox)
+set to next email,(next email)

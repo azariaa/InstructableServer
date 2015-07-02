@@ -204,6 +204,16 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 internalState);
     }
 
+    @Override
+    public ActionResponse send(InfoForCommand infoForCommand, String instanceName)
+    {
+        if (instanceName.equals(ambiguousEmailInstanceName) || instanceName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+        {
+            return sendEmail(infoForCommand);
+        }
+        return failWithMessage(infoForCommand, "I don't know how to send " + instanceName);
+    }
+
     public ActionResponse yes(InfoForCommand infoForCommand)
     {
         if (internalState.isPendingOnEmailCreation())
@@ -537,7 +547,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse setFieldWithMissingArg(InfoForCommand infoForCommand, FieldHolder field)
     {
-        return failWithMessage(infoForCommand, "I don't know what to set " + field.getParentInstanceName() + "'s "+ field.getFieldName() + " to. " +
+        return failWithMessage(infoForCommand, "I don't know what to set " + field.getParentInstanceName() + "'s " + field.getFieldName() + " to. " +
                 "Please repeat and tell me what to set it to (e.g. set " + field.getParentInstanceName() + "'s " + field.getFieldName() + " to something)");
     }
 
@@ -959,35 +969,39 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
 
     @Override
-    public ActionResponse nextEmailMessage(InfoForCommand infoForCommand)
+    public ActionResponse next(InfoForCommand infoForCommand, String instanceName)
     {
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        inboxCommandController.setToNextEmail(executionStatus);
-        instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName()); //just touching it to update last instance being touched (for "it", etc.).
-
-        return TextFormattingUtils.testOkAndFormat(infoForCommand,
-                executionStatus,
-                true,
-                true,
-                Optional.of("Set to next incoming email successfully."),
-                false,
-                internalState);
+        return  nextAndPrev(infoForCommand, instanceName, true);
     }
 
     @Override
-    public ActionResponse previousEmailMessage(InfoForCommand infoForCommand)
+    public ActionResponse previous(InfoForCommand infoForCommand, String instanceName)
     {
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        inboxCommandController.setToPrevEmail(executionStatus);
-        instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName()); //just touching it to update last instance being touched (for "it", etc.).
+        return  nextAndPrev(infoForCommand, instanceName, false);
+    }
 
-        return TextFormattingUtils.testOkAndFormat(infoForCommand,
-                executionStatus,
-                true,
-                true,
-                Optional.of("Set to previous incoming email successfully."),
-                false,
-                internalState);
+    private ActionResponse nextAndPrev(InfoForCommand infoForCommand, String instanceName, boolean wantsNext)
+    {
+        String nextOrPrev = wantsNext ? "next" : "previous";
+        if (instanceName.equals(ambiguousEmailInstanceName) || inboxCommandController.isInboxInstanceName(instanceName))
+        {
+            ExecutionStatus executionStatus = new ExecutionStatus();
+            if (wantsNext)
+                inboxCommandController.setToNextEmail(executionStatus);
+            else
+                inboxCommandController.setToPrevEmail(executionStatus);
+
+            instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName()); //just touching it to update last instance being touched (for "it", etc.).
+
+            return TextFormattingUtils.testOkAndFormat(infoForCommand,
+                    executionStatus,
+                    true,
+                    true,
+                    Optional.of("Set to "+nextOrPrev+" incoming email successfully."),
+                    false,
+                    internalState);
+        }
+        return failWithMessage(infoForCommand, "I don't know how to give you the "+nextOrPrev+" " + instanceName);
     }
 
     @Override

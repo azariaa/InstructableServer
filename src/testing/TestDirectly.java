@@ -572,7 +572,7 @@ public class TestDirectly
 
         userSays = "next message";
         testHelpers.userSays(userSays);
-        response = allUserActions.nextEmailMessage(new InfoForCommand(userSays, null));
+        response = allUserActions.next(new InfoForCommand(userSays, null), "email");
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "read incoming email";

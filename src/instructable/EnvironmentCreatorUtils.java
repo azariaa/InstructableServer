@@ -46,7 +46,11 @@ public class EnvironmentCreatorUtils
                 "InstanceName{0} Instance{0},(lambda x (getProbInstanceByName x))",
                 "ConceptName{0} Instance{0}/InstanceName{0}, (lambda x (lambda y (getInstance x y)))",
                 "InstanceName{0} MutableField{0}/FieldName{0}, (lambda x y (getProbMutableFieldByInstanceNameAndFieldName x y))",
-                "InstanceName{0} Field{0}/FieldName{0}, (lambda x (lambda y (getProbFieldByInstanceNameAndFieldName x y)))"
+                "InstanceName{0} Field{0}/FieldName{0}, (lambda x (lambda y (getProbFieldByInstanceNameAndFieldName x y)))",
+                "EmailAmbiguous{0} InstanceName{0}, (lambda x x)", //only if the parser doesn't manage to identify which kind of email the user means, will this be used.
+                "EmailAmbiguous{0} Instance{0},(lambda x (getProbInstanceByName x))"
+                //"PP_StringV{1} (S{0}\\(S{0}/PP_StringV{1}){0}){0}, (lambda x x)", //these two are for handling sentences like: "set body to hello and subject to see you"
+                //"MutableField{1} ((S{0}/PP_StringV{2}){0}\\(S{0}/PP_StringV{2}){0}/MutableField{1}){0}){0}, (lambda x y x y)"
         };
 
 

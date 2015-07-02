@@ -6,10 +6,12 @@ new,{create} //new email, new contact mom
 "compose new",{create}
 "compose a new",{create}
 set,{write,change}  // set hello world as the subject, set the subject to hello world
+set,{move} //set to the next email
 put, {write} //put hello world in the subject 
 use, {write} //use hello world as the subject //use email's subject as the subject
 type,{write} //type hello in the subject
-in, {inside} //put hello world in the subject
+in, {inside,instance} //put hello world in the subject //in inbox
+the, {instance} //in the inbox
 as, {inside} // set hello world as the subject
 for, {of,the} //set email for mom to // skip in string
 "call it",{the} // create a contact call it bob
@@ -47,16 +49,7 @@ display,{what,read}
 "outgoing mail",{"outgoing email"}
 email,{email_ambiguous}
 mail,{email_ambiguous,email}
-"email message",{email_ambiguous,email}
 message,{email_ambiguous,email}
-"current email",{email_ambiguous,email}
-"incoming email",{inbox}
-"my email",{inbox}
-"current email",{inbox}
-"email in the inbox",{inbox}
-"email in inbox",{inbox}
-"current email in the inbox",{inbox}
-"current email in inbox",{inbox}
 address,{recipient}
 title,{subject}
 ok,{yes}
@@ -77,35 +70,3 @@ nevermind,{cancel}
 forget, {cancel}
 "start over", {cancel}
 wait,{stop}
-"send email", {send}
-"send the email", {send}
-"send the outgoing email", {send}
-"next inbox",{"next email"}
-"next incoming email",{"next email"}
-"next message", {"next email"}
-"set next email", {"next email"}
-"set to next email", {"next email"}
-"set to the next email", {"next email"}
-"set to my next email", {"next email"}
-"set to the next email in the inbox", {"next email"}
-"set next message", {"next email"}
-"move to next email", {"next email"}
-"move to the next email", {"next email"}
-"move to my next email", {"next email"}
-"move to the next email in the inbox", {"next email"}
-"move to next email in inbox", {"next email"}
-"set previous email",{"previous email"}
-"previous message",{"previous email"}
-"previous inbox",{"previous email"}
-"previous incoming email",{"previous email"}
-"previous message", {"previous email"}
-"set previous email", {"previous email"}
-"set to previous email", {"previous email"}
-"set to the previous email", {"previous email"}
-"set to my previous email", {"previous email"}
-"set to the previous email in the inbox", {"previous email"}
-"set previous message", {"previous email"}
-"move to previous email", {"previous email"}
-"move to the previous email", {"previous email"}
-"move to my previous email", {"previous email"}
-"move to the previous email in the inbox", {"previous email"}

@@ -14,6 +14,8 @@ public interface IAllUserActions
 
     ActionResponse sendEmail(InfoForCommand infoForCommand);
 
+    ActionResponse send(InfoForCommand infoForCommand, String instanceName);
+
     //ActionResponse composeEmail(InfoForCommand infoForCommand);
 
     ActionResponse yes(InfoForCommand infoForCommand);
@@ -109,9 +111,9 @@ public interface IAllUserActions
 
     ActionResponse deleteInstance(InfoForCommand infoForCommand, GenericInstance instance);
 
-    ActionResponse nextEmailMessage(InfoForCommand infoForCommand);
+    ActionResponse next(InfoForCommand infoForCommand, String instanceName);
 
-    ActionResponse previousEmailMessage(InfoForCommand infoForCommand);
+    ActionResponse previous(InfoForCommand infoForCommand, String instanceName);
 
     ActionResponse replyTo(InfoForCommand infoForCommand);
 

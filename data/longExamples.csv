@@ -121,3 +121,4 @@ set outgoing email recipient to bob's email and send,(doSeq (setFieldFromFieldVa
 next email and read it,(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
 first you move to the next email then you read it,(doSeq (nextEmailMessage) (readInstance (getProbInstance)))
 "Create new email, set recipient to email's sender, set subject to hi there, and send email.  ","(doSeq (createInstanceByConceptName outgoing_email) (doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName email sender))) (doSeq (setFieldFromString (getProbMutableFieldByFieldName subject) ""hi there"") (sendEmail))))"
+set body to hello and subject to see you,"(doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""hello"") (setFieldFromString (getProbMutableFieldByFieldName subject) ""see you""))"
