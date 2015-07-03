@@ -5,8 +5,8 @@ yes,S{0},(yes)
 end,S{0},(end)
 stop,S{0},(endOrCancel)
 cancel,S{0},(cancel)
-next,S{0}/InstanceName,(lambda $1 (next $1))
-previous,S{0}/InstanceName,(lambda $1 (previous $1))
+next,S{0}/InstanceName{1},(lambda $1 (next $1))
+previous,S{0}/InstanceName{1},(lambda $1 (previous $1))
 "compose","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 "create","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 compose,((S{0}/StringN{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
