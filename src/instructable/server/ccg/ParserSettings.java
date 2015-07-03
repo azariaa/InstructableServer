@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  */
 public class ParserSettings implements Cloneable
 {
-    static final int initialTraining = 1;
+    static final int initialTraining = 10;
     static final int retrainAfterNewCommand = 1;
 
     private ParserSettings()

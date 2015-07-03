@@ -149,6 +149,8 @@ public class CcgUtils
 			  List<CcgParse> parses = chart.decodeBestParsesForSpan(i, j, 100, parser);
 			  for (CcgParse parse : parses) {
 			    Expression2 lexLf = simplifier.apply(parse.getLogicalForm());
+			    
+			    // System.out.println(i + " " + j + " " + subwords + " " + parse.getHeadedSyntacticCategory() + " " + lexLf);
 
 			    if (!parseSkipsWordsOnEnd(parse) && lf.hasSubexpression(lexLf) && !matchedExpressions.contains(lexLf)) {
 					  matchedExpressions.add(lexLf);
@@ -160,22 +162,38 @@ public class CcgUtils
 				  spanStarts.add(i);
 				  spanEnds.add(j);
 				  spanStrings.add(subwords);
+				  
 				  spanExpressions.add(matchedExpressions);
 				  spanSyntacticCategories.add(matchedSyntacticCategories);
 
-				  i = j + 1;
+				  /*
+				  boolean containsStringCategory = false;
+				  for (HeadedSyntacticCategory cat : matchedSyntacticCategories) {
+				    // This check may be brittle.
+				    if (cat.getFinalReturnType().toString().startsWith("String")) {
+				      containsStringCategory = true;
+				    }
+				  }
+				  
+				  // Adding null to the list enables the matched expression
+				  // to be skipped in later processing. 
+				  if (!containsStringCategory) {
+				    matchedExpressions.add(null);
+				    matchedSyntacticCategories.add(null);
+				  }
+				  */
+
+				  i = j;
 				  break;
 			  }
 		  }
 	  }
 
-	  /*
-	  System.out.println(spanStarts);
-	  System.out.println(spanEnds);
-	  System.out.println(spanStrings);
-	  System.out.println(spanExpressions);
-	  System.out.println(spanSyntacticCategories);
-	  */
+	  // System.out.println(spanStarts);
+	  // System.out.println(spanEnds);
+	  // System.out.println(spanStrings);
+	  // System.out.println(spanExpressions);
+	  // System.out.println(spanSyntacticCategories);
 
 	  int[] numEntriesPerSpan = new int[spanStarts.size()];
 	  for (int i = 0; i < spanStarts.size(); i++) {
@@ -185,11 +203,25 @@ public class CcgUtils
 	  List<LexiconEntry> newEntries = Lists.newArrayList();
 	  Iterator<int[]> subsetIter = new IntegerArrayIterator(numEntriesPerSpan, new int[0]);
 	  while (subsetIter.hasNext()) {
+	    boolean[] entryUsed = new boolean[spanStarts.size()];
+	    Arrays.fill(entryUsed, false);
+	    boolean atLeastOneUsed = false;
+
 	    int[] indexes = subsetIter.next();
 	    Expression2 substituted = lf;
 	    for (int i = 0; i < spanStarts.size(); i++) {
 	      Expression2 var = Expression2.constant("$" + i);
-	      substituted = substituted.substitute(spanExpressions.get(i).get(indexes[i]), var);
+	      Expression2 toSubstitute = spanExpressions.get(i).get(indexes[i]);
+	      
+	      if (toSubstitute != null && substituted.hasSubexpression(toSubstitute)) {
+	        substituted = substituted.substitute(toSubstitute, var);
+	        entryUsed[i] = true;
+	        atLeastOneUsed = true;
+	      }
+	    }
+	    
+	    if (!atLeastOneUsed) {
+	      continue;
 	    }
 
 
@@ -198,7 +230,7 @@ public class CcgUtils
 	    for (int i = 1; i < words.size(); i++) {
 	      boolean containedInSpan = false;
 	      for (int j = 0; j < spanStarts.size(); j++) {
-	        if (i >= spanStarts.get(j) && i <= spanEnds.get(j)) {
+	        if (i >= spanStarts.get(j) && i <= spanEnds.get(j) && entryUsed[j]) {
 	          containedInSpan = true;
 	          break;
 	        }
@@ -216,22 +248,30 @@ public class CcgUtils
 
 	    for (int i : idxOfCandidates) {
 	      // System.out.println(words.get(i) + "/" + pos.get(i));
+	      
+	      // Figure out the argument order for the syntactic category being created.
+	      // This finds the right and left hand side arguments by word index in
+	      // the sentence.
 	      List<Integer> leftArgEnds = Lists.newArrayList();
 		    List<Integer> rightArgStarts = Lists.newArrayList();
 		    for (int j = 0; j < spanStarts.size(); j++) {
-		      if (spanStarts.get(j) > i) {
-		        rightArgStarts.add(spanStarts.get(j));
-		      } else {
-		        leftArgEnds.add(spanEnds.get(j));
+		      if (entryUsed[j]) {
+		        if (spanStarts.get(j) > i) {
+		          rightArgStarts.add(spanStarts.get(j));
+		        } else {
+		          leftArgEnds.add(spanEnds.get(j));
+		        }
 		      }
 		    }
 
+		    // Order the arguments so that application on them works properly.
 		    Collections.sort(leftArgEnds);
 		    Collections.sort(rightArgStarts);
 		    Collections.reverse(rightArgStarts);
 		    List<Expression2> args = Lists.newArrayList();
 
 		    HeadedSyntacticCategory cat = HeadedSyntacticCategory.parseFrom("S{0}");
+		    // Add left arguments.
 		    for (int j = 0; j < leftArgEnds.size(); j++) {
 		      HeadedSyntacticCategory argCat = null;
 		      int argCatIndex = -1;
@@ -246,6 +286,7 @@ public class CcgUtils
 		      args.add(Expression2.constant("$" + argCatIndex));
 		    }
 
+		    // Add right arguments.
 		    for (int j = 0; j < rightArgStarts.size(); j++) {
 		      HeadedSyntacticCategory argCat = null;
 		      int argCatIndex = -1;
