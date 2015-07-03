@@ -36,33 +36,32 @@ public class TestWithParser
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
 
-        ParserSettings parserSettings = EnvironmentCreatorUtils.createParser().clone();
+        ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
 
         IAllUserActions allUserActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {});
 
         TestSimplifier testSimplifier = new TestSimplifier(allUserActions, testHelpers, parserSettings);
 
+
+        sendingBasicEmail(allUserActions, testHelpers, parserSettings);
+
+        definingContact(allUserActions, testHelpers, parserSettings);
+
+        setFromGet(allUserActions, testHelpers, parserSettings);
+
+        teachingToSetRecipientAsContact(allUserActions, testHelpers, parserSettings);
+
+        buildRequiredDB((TopDMAllActions) allUserActions, testHelpers, parserSettings);
+
+        learningToForwardAnEmail(allUserActions, testHelpers, parserSettings);
+
+        smallUpdates(allUserActions, testHelpers, parserSettings);
+
         testSimplifier.newSection("replyAndRead");
         testSimplifier.userSays(new String[]{"reply blue", "yes", "compose email", "set body to blue", "end", "reply I'm still at work where are you"});
-        testSimplifier.userSays(new String[] {"previous email", "read email"});
+        testSimplifier.userSays(new String[]{"previous email", "read email"});
         testSimplifier.userSays(new String[]{"next email plus read", "yes", "next email", "read email", "end", "next email plus read"});
         testSimplifier.userSays("read email");
-
-
-//        sendingBasicEmail(allUserActions, testHelpers, parserSettings);
-//
-//        definingContact(allUserActions, testHelpers, parserSettings);
-//
-//        setFromGet(allUserActions, testHelpers, parserSettings);
-//
-//        teachingToSetRecipientAsContact(allUserActions, testHelpers, parserSettings);
-//
-//        buildRequiredDB((TopDMAllActions) allUserActions, testHelpers, parserSettings);
-//
-//        learningToForwardAnEmail(allUserActions, testHelpers, parserSettings);
-//
-//        smallUpdates(allUserActions, testHelpers, parserSettings);
-
 
         testHelpers.endTest();
         //emailSomeoneSomeText()
