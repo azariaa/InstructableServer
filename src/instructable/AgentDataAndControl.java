@@ -38,6 +38,7 @@ public class AgentDataAndControl
     {
         this.logger = logger;
         parserSetAndActionsMap = new HashMap<>();
+        logger.info("Creating environment.");
         originalParserSettings = EnvironmentCreatorUtils.createParser();
         logger.info("Agent Ready!");
     }

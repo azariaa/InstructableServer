@@ -44,7 +44,16 @@ public class ConceptContainer
         return false;
     }
 
-    public List<String> findConceptsForField(ExecutionStatus executionStatus, String fieldName, boolean mutableOnly)
+
+    /**
+     *
+     * @param executionStatus
+     * @param fieldName
+     * @param mutableOnly
+     * @param userUsedTheWordAs The word "as" may be confusing, especially when setting. If someone says set recipient as sender, they probably mean set recipient to sender. The agent will express this if required.
+     * @return
+     */
+    public List<String> findConceptsForField(ExecutionStatus executionStatus, String fieldName, boolean mutableOnly, boolean userUsedTheWordAs)
     {
         Optional<String> foundImmutableConcept = Optional.empty();
         List<String> candidates = new LinkedList<>();
@@ -67,8 +76,11 @@ public class ConceptContainer
         {
             if (mutableOnly && foundImmutableConcept.isPresent())
             {
-                String failSentence = "the field \"" + fieldName + "\" of the concept \"" + foundImmutableConcept.get() + "\" is immutable." +
-                        "\nIf you want to set a mutable field to the "+ fieldName + ", say: \"set field name to " + fieldName + "\"";
+                String failSentence = "the field \"" + fieldName + "\" of the concept \"" + foundImmutableConcept.get() + "\" is immutable.";
+                if (userUsedTheWordAs)
+                    failSentence = failSentence + "\nThe word \"as\" in your command, may be confusing; try replacing it with \"to\"";
+                else
+                    failSentence =  failSentence + "\nIf you want to set a mutable field to the "+ fieldName + ", say: \"set field name to " + fieldName + "\"";
 
                 executionStatus.add(ExecutionStatus.RetStatus.error, failSentence);
             }
