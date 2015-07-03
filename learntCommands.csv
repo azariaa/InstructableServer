@@ -5,11 +5,16 @@ reply on my way,"(doSeq (doSeq (doSeq (setFieldFromFieldVal (getProbMutableField
 who sent the email,(evalField (getProbFieldByInstanceNameAndFieldName inbox sender))
 who is inbox's sender,(evalField (getProbFieldByInstanceNameAndFieldName inbox sender))
 send email to mat@gmail.com with subject urgent and body I'm waiting for too long for the report,"(doSeq (doSeq (doSeq (doSeq (createInstanceByConceptName outgoing_email) (setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""mat@gmail.com"")) (setFieldFromString (getProbMutableFieldByFieldName subject) ""urgent"")) (setFieldFromString (getProbMutableFieldByFieldName body) ""I'm waiting for too long for the report"")) (sendEmail))"
-read next incoming message,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
+read next incoming message,(doSeq (next email) (readInstance (getProbInstanceByName inbox)))
 add email to spouse,"(addFieldToConcept contact ""email"")"
-read me the next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
-read next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
-read the next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
-read the next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
-read next email,(doSeq (nextEmailMessage) (readInstance (getProbInstanceByName inbox)))
+read me the next email,(doSeq (next email) (readInstance (getProbInstanceByName inbox)))
+read next email,(doSeq (next email) (readInstance (getProbInstanceByName inbox)))
+read the next email,(doSeq (next email) (readInstance (getProbInstanceByName inbox)))
+read the next email,(doSeq (next email) (readInstance (getProbInstanceByName inbox)))
+read next email,(doSeq (next email) (readInstance (getProbInstanceByName inbox)))
 send email to mat@gmail.com,"(doSeq (createInstanceByConceptName outgoing_email) (setFieldFromString (getProbMutableFieldByFieldName recipient_list) ""mat@gmail.com""))"
+next email plus read it,"(doSeq (next email) (readInstance (getProbInstanceByName inbox)))"
+next email and read,"(doSeq (next email) (readInstance (getProbInstanceByName inbox)))"
+next email go read email,"(doSeq (next email) (readInstance (getProbInstanceByName inbox)))"
+next email,"(next email)"
+read email,"(readInstance (getProbInstanceByName inbox))"

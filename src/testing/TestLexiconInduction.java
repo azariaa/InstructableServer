@@ -30,6 +30,7 @@ public class TestLexiconInduction {
     {
     	ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
     	CcgParser parser = parserSettings.parser;
+    	ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
     	List<String[]> exampleStrings = CcgUtils.loadExamples(Paths.get("learntCommands.csv"));
     	List<CcgExample> examples = Lists.newArrayList();
     	for (String[] exampleString : exampleStrings) {
@@ -42,6 +43,8 @@ public class TestLexiconInduction {
     	for (CcgExample example : examples) {
     		System.out.println(example.getSentence().getWords());
     		System.out.println(example.getLogicalForm());
+    		CcgParse predicted = parser.beamSearch(example.getSentence(), 100).get(0);
+    		System.out.println(simplifier.apply(predicted.getLogicalForm()));
     		List<LexiconEntry> entries = CcgUtils.induceLexiconEntriesHeuristic(example, parser);
     		for (LexiconEntry entry : entries) {
     		  System.out.println("  " + entry);
@@ -58,7 +61,6 @@ public class TestLexiconInduction {
     	  System.out.println(entry.getWords() + " " + entry.getCategory().getLogicalForm());
     	}
     	
-    	ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
     	for (CcgExample example : examples) {
     	  List<CcgParse> parses = newParser.beamSearch(example.getSentence(), 10);
     	  

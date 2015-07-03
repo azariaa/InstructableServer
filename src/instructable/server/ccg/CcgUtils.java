@@ -137,18 +137,20 @@ public class CcgUtils
 	  List<List<Expression2>> spanExpressions = Lists.newArrayList();
 	  List<List<HeadedSyntacticCategory>> spanSyntacticCategories = Lists.newArrayList();
 
-	  CcgBeamSearchChart chart = new CcgBeamSearchChart(example.getSentence(), -1, 100);
-	  parser.parseCommon(chart, example.getSentence(), null, null, -1, 1);
+	  CcgBeamSearchChart chart = new CcgBeamSearchChart(example.getSentence(), Integer.MAX_VALUE, 100);
+	  parser.parseCommon(chart, example.getSentence(), null, null, -1, 2);
 	  for (int i = 1; i < words.size(); i++) {
 		  for (int j = words.size() - 1; j >= i; j--) {
 			  List<String> subwords = words.subList(i, j + 1);
 
+			  
 			  List<Expression2> matchedExpressions = Lists.newArrayList();
 			  List<HeadedSyntacticCategory> matchedSyntacticCategories = Lists.newArrayList();
 			  List<CcgParse> parses = chart.decodeBestParsesForSpan(i, j, 100, parser);
 			  for (CcgParse parse : parses) {
 			    Expression2 lexLf = simplifier.apply(parse.getLogicalForm());
-			    if (lf.hasSubexpression(lexLf)) {
+
+			    if (!parseSkipsWordsOnEnd(parse) && lf.hasSubexpression(lexLf) && !matchedExpressions.contains(lexLf)) {
 					  matchedExpressions.add(lexLf);
 					  matchedSyntacticCategories.add(parse.getHeadedSyntacticCategory());
 				  }
@@ -167,11 +169,13 @@ public class CcgUtils
 		  }
 	  }
 
-	  //System.out.println(spanStarts);
-	  //System.out.println(spanEnds);
-	  //System.out.println(spanStrings);
-	  //System.out.println(spanExpressions);
-	  //System.out.println(spanSyntacticCategories);
+	  /*
+	  System.out.println(spanStarts);
+	  System.out.println(spanEnds);
+	  System.out.println(spanStrings);
+	  System.out.println(spanExpressions);
+	  System.out.println(spanSyntacticCategories);
+	  */
 
 	  int[] numEntriesPerSpan = new int[spanStarts.size()];
 	  for (int i = 0; i < spanStarts.size(); i++) {
@@ -181,51 +185,38 @@ public class CcgUtils
 	  List<LexiconEntry> newEntries = Lists.newArrayList();
 	  Iterator<int[]> subsetIter = new IntegerArrayIterator(numEntriesPerSpan, new int[0]);
 	  while (subsetIter.hasNext()) {
-		  int[] indexes = subsetIter.next();
-		  Expression2 substituted = lf;
-		  for (int i = 0; i < spanStarts.size(); i++) {
-			  Expression2 var = Expression2.constant("$" + i);
-			  substituted = substituted.substitute(spanExpressions.get(i).get(indexes[i]), var);
-		  }
+	    int[] indexes = subsetIter.next();
+	    Expression2 substituted = lf;
+	    for (int i = 0; i < spanStarts.size(); i++) {
+	      Expression2 var = Expression2.constant("$" + i);
+	      substituted = substituted.substitute(spanExpressions.get(i).get(indexes[i]), var);
+	    }
 
 
-          List<Integer> idxOfCandidates = new LinkedList<>();
-          //find command candidates
-		  for (int i = 1; i < words.size(); i++)
-          {
-              boolean containedInSpan = false;
-              for (int j = 0; j < spanStarts.size(); j++)
-              {
-                  if (i >= spanStarts.get(j) && i <= spanEnds.get(j))
-                  {
-                      containedInSpan = true;
-                      break;
-                  }
-              }
+	    List<Integer> idxOfCandidates = new LinkedList<>();
+	    //find command candidates
+	    for (int i = 1; i < words.size(); i++) {
+	      boolean containedInSpan = false;
+	      for (int j = 0; j < spanStarts.size(); j++) {
+	        if (i >= spanStarts.get(j) && i <= spanEnds.get(j)) {
+	          containedInSpan = true;
+	          break;
+	        }
+	      }
 
-              if (containedInSpan)
-              {
-                  continue;
-              }
+	      if (containedInSpan) {
+	        continue;
+	      }
 
-              if (POS_TAGS_TO_SKIP_IN_LEXICON_INDUCTION.contains(pos.get(i)))
-              {
-                  continue;
-              }
-              idxOfCandidates.add(i);
-          }
+	      if (POS_TAGS_TO_SKIP_IN_LEXICON_INDUCTION.contains(pos.get(i))) {
+	        continue;
+	      }
+	      idxOfCandidates.add(i);
+	    }
 
-          if (idxOfCandidates.isEmpty()) //must have at least one candidate.
-          {
-              idxOfCandidates.add(1);
-          }
-
-          for (int i : idxOfCandidates)
-          {
-
-		    // System.out.println(words.get(i) + "/" + pos.get(i));
-
-		    List<Integer> leftArgEnds = Lists.newArrayList();
+	    for (int i : idxOfCandidates) {
+	      // System.out.println(words.get(i) + "/" + pos.get(i));
+	      List<Integer> leftArgEnds = Lists.newArrayList();
 		    List<Integer> rightArgStarts = Lists.newArrayList();
 		    for (int j = 0; j < spanStarts.size(); j++) {
 		      if (spanStarts.get(j) > i) {
@@ -297,10 +288,24 @@ public class CcgUtils
 
 	  //adding just the whole sentence as a lexicon entry, in case any other parse fails
 	  CsvParser csv = LexiconEntry.getCsvParser();
-	  List<String> parts = Lists.newArrayList(String.join(" ", example.getSentence().getWords()), "S{0}", example.getLogicalForm().toString());
+	  List<String> sentenceWords = example.getSentence().getWords().subList(1, example.getSentence().getWords().size());
+	  List<String> parts = Lists.newArrayList(String.join(" ", sentenceWords), "S{0}", example.getLogicalForm().toString());
 	  newEntries.add(LexiconEntry.parseLexiconEntry(csv.toCsv(parts)));
 
 	  return newEntries;
+  }
+  
+  private static boolean parseSkipsWordsOnEnd(CcgParse parse) {
+    if (parse.isTerminal()) {
+      return false;
+    } else {
+      CcgParse left = parse.getLeft();
+      CcgParse right = parse.getRight();
+      
+      return left.getHeadedSyntacticCategory().equals(ParametricCcgParser.SKIP_CAT) || 
+          right.getHeadedSyntacticCategory().equals(ParametricCcgParser.SKIP_CAT) ||
+          parseSkipsWordsOnEnd(right) || parseSkipsWordsOnEnd(left);
+    }
   }
 
   /**
@@ -315,7 +320,7 @@ public class CcgUtils
     Map<String, String> typeReplacements = Maps.newHashMap();
 
     return ExpressionTree.fromExpression(expression, simplifier, typeReplacements,
-        constantsToIgnore, 0, 2);
+        constantsToIgnore, 0, 2, 2);
   }
 
     public static CcgExample createCcgExample(List<String> tokens, Expression2 expression)
