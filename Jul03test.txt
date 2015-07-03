@@ -65,18 +65,17 @@ U: take bob's email
 S: It is: bob@gmail.com
 
 U: and set it as jane's email
-S: Sorry, but "it" is not an email address.
+S: The "email" field in "jane" was set to: "bob@gmail.com".
 
 U: take bob's email and set it as jane's email
 S: It is: bob@gmail.com
-S: Sorry, but "it" is not an email address.
+S: The "email" field in "jane" was set to: "bob@gmail.com".
 
 U: set the recipient to be bob's email
 S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
 
 U: add nana@gmail.com to the recipient list
-S: Sorry, but I don't understand.
-S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+S: "nana@gmail.com" was added to the "recipient list" field in "outgoing email".
 
 ---------------- now in teachingToSetRecipientAsContact --------------------
 
