@@ -1,7 +1,10 @@
 package testing;
 
 import instructable.EnvironmentCreatorUtils;
-import instructable.server.*;
+import instructable.server.CommandsToParser;
+import instructable.server.IAllUserActions;
+import instructable.server.IIncomingEmailControlling;
+import instructable.server.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 import instructable.server.hirarchy.IncomingEmail;
@@ -20,8 +23,8 @@ import java.util.LinkedList;
  */
 public class TestWithParser
 {
-    static boolean testingMode = true;
-    static String fileName = "June26test.txt";
+    static boolean testingMode = false;
+    static String fileName = "Jul03test.txt";
 
     public static void main(String[] args) throws Exception
     {
@@ -33,23 +36,33 @@ public class TestWithParser
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
 
-        ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
+        ParserSettings parserSettings = EnvironmentCreatorUtils.createParser().clone();
 
         IAllUserActions allUserActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {});
 
-        sendingBasicEmail(allUserActions, testHelpers, parserSettings);
+        TestSimplifier testSimplifier = new TestSimplifier(allUserActions, testHelpers, parserSettings);
 
-        definingContact(allUserActions, testHelpers, parserSettings);
+        testSimplifier.newSection("replyAndRead");
+        testSimplifier.userSays(new String[]{"reply blue", "yes", "compose email", "set body to blue", "end", "reply I'm still at work where are you"});
+        testSimplifier.userSays(new String[] {"previous email", "read email"});
+        testSimplifier.userSays(new String[]{"next email plus read", "yes", "next email", "read email", "end", "next email plus read"});
+        testSimplifier.userSays("read email");
 
-        setFromGet(allUserActions, testHelpers, parserSettings);
 
-        teachingToSetRecipientAsContact(allUserActions, testHelpers, parserSettings);
+//        sendingBasicEmail(allUserActions, testHelpers, parserSettings);
+//
+//        definingContact(allUserActions, testHelpers, parserSettings);
+//
+//        setFromGet(allUserActions, testHelpers, parserSettings);
+//
+//        teachingToSetRecipientAsContact(allUserActions, testHelpers, parserSettings);
+//
+//        buildRequiredDB((TopDMAllActions) allUserActions, testHelpers, parserSettings);
+//
+//        learningToForwardAnEmail(allUserActions, testHelpers, parserSettings);
+//
+//        smallUpdates(allUserActions, testHelpers, parserSettings);
 
-        buildRequiredDB((TopDMAllActions) allUserActions, testHelpers, parserSettings);
-
-        learningToForwardAnEmail(allUserActions, testHelpers, parserSettings);
-
-        smallUpdates(allUserActions, testHelpers, parserSettings);
 
         testHelpers.endTest();
         //emailSomeoneSomeText()
@@ -57,7 +70,6 @@ public class TestWithParser
 
     private static void sendingBasicEmail(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
     {
-        testHelpers.systemSays("Let's start by sending a dummy email to your-self, set the subject to hello and the body to test.");
         CcgUtils.SayAndExpression response;
         String userSays;
 
@@ -150,7 +162,7 @@ public class TestWithParser
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "set my spouse as the recipient";
+        userSays = "set danny as the recipient";
         testHelpers.userSays(userSays);
 //        actionResponse = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "recipient list");
 //        if (response.isSuccess())
@@ -495,6 +507,7 @@ public class TestWithParser
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "and set it as the outgoing email's subject";
+        //userSays = "and set it as the subject";
         testHelpers.userSays(userSays);
 //        actionResponse = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "outgoing email", "subject");
 //        if (actionResponse.isSuccess())
@@ -511,6 +524,7 @@ public class TestWithParser
         testHelpers.systemSays(response.sayToUser);
 
         userSays = "and set it as the body";
+        //userSays = "set it as the body";
         testHelpers.userSays(userSays);
         //actionResponse = allUserActions.getProbFieldByFieldName(new InfoForCommand(userSays, null), "body"); //should understand since incoming email should not be mutable, or maybe leave for parser
 //        actionResponse = allUserActions.getProbFieldByInstanceNameAndFieldName(new InfoForCommand(userSays, null), "outgoing email", "body");
@@ -562,6 +576,12 @@ public class TestWithParser
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
+        userSays = "forward this email to bob";
+        testHelpers.userSays(userSays);
+//        actionResponse = allUserActions.end(new InfoForCommand(userSays, null));
+        response = parserSettings.ParseAndEval(allUserActions, userSays);
+        testHelpers.systemSays(response.sayToUser);
+
     }
 
     private static void smallUpdates(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
@@ -601,6 +621,37 @@ public class TestWithParser
         testHelpers.userSays(userSays);
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
+
+    }
+
+    static class TestSimplifier
+    {
+        IAllUserActions allUserActions;
+        TestHelpers testHelpers;
+        ParserSettings parserSettings;
+        public TestSimplifier(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
+        {
+            this.allUserActions = allUserActions;
+            this.testHelpers = testHelpers;
+            this.parserSettings = parserSettings;
+        }
+
+        public void userSays(String[] sentences)
+        {
+            Arrays.asList(sentences).stream().forEach(this::userSays);
+        }
+
+        public void userSays(String userSays)
+        {
+            testHelpers.userSays(userSays);
+            CcgUtils.SayAndExpression response = parserSettings.ParseAndEval(allUserActions, userSays);
+            testHelpers.systemSays(response.sayToUser);
+        }
+
+        public void newSection(String sectionName)
+        {
+            testHelpers.newSection(sectionName);
+        }
 
     }
 

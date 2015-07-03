@@ -1,0 +1,57 @@
+---------------- now in replyAndRead --------------------
+
+U: reply blue
+S: Sorry, but I don't understand.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+U: yes
+S: Great! When you say, for example: "reply blue", what shall I do first?
+
+U: compose email
+S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
+S: What shall I do next (when executing: "reply blue")?
+
+U: set body to blue
+S: The "body" field in "outgoing email" was set to: "blue".
+S: What shall I do next (when executing: "reply blue")?
+
+U: end
+S: I now know what to do when you say (for example): "reply blue"!
+
+U: reply I'm still at work where are you
+S: Sorry, but I don't understand.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+U: previous email
+S: Sorry, but there is no previous email.
+
+U: read email
+S: Sorry, but no relevant instances were found.
+
+U: next email plus read
+S: Sorry, but I don't understand.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+U: yes
+S: Great! When you say, for example: "next email plus read", what shall I do first?
+
+U: next email
+S: Sorry, but there are no more emails. You have probably missed some earlier emails. You may want to request a previous email (say "previous email").
+S: What should I do instead (when executing: "next email plus read")?
+
+U: read email
+S: Sorry, but no relevant instances were found.
+S: What should I do instead (when executing: "next email plus read")?
+S: I noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want to end and learn this new command, say "end". If you want me to cancel this command say "cancel".
+
+U: end
+S: I'm afraid that I didn't learn anything.
+
+U: next email plus read
+S: Sorry, but I don't understand.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+U: read email
+S: Sorry, but no relevant instances were found.
+
+
