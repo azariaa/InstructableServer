@@ -155,7 +155,7 @@ public class CcgUtils
 			    if (!parseSkipsWordsOnEnd(parse) && lf.hasSubexpression(lexLf)) {
 			      boolean isDuplicate = false;
 			      for (int k = 0; k < matchedExpressions.size(); k++) {
-			        isDuplicate = isDuplicate || (matchedExpressions.get(i).equals(lexLf)
+			        isDuplicate = isDuplicate || (matchedExpressions.get(k).equals(lexLf)
 			            && parse.getHeadedSyntacticCategory().equals(matchedSyntacticCategories.get(k)));
 			      }
 			      
@@ -197,11 +197,13 @@ public class CcgUtils
 		  }
 	  }
 
-	  // System.out.println(spanStarts);
-	  // System.out.println(spanEnds);
-	  // System.out.println(spanStrings);
-	  // System.out.println(spanExpressions);
-	  // System.out.println(spanSyntacticCategories);
+	  /*
+	  System.out.println(spanStarts);
+	  System.out.println(spanEnds);
+	  System.out.println(spanStrings);
+	  System.out.println(spanExpressions);
+	  System.out.println(spanSyntacticCategories);
+	  */
 
 	  int[] numEntriesPerSpan = new int[spanStarts.size()];
 	  for (int i = 0; i < spanStarts.size(); i++) {
@@ -228,7 +230,7 @@ public class CcgUtils
 	      }
 	    }
 	    
-	    if (!atLeastOneUsed) {
+	    if (!atLeastOneUsed && spanStarts.size() > 0) {
 	      continue;
 	    }
 

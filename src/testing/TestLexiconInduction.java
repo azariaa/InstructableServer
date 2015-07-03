@@ -52,9 +52,9 @@ public class TestLexiconInduction {
     		
     		newEntries.addAll(entries);
     	}
-    	
+
     	parserSettings.updateParserGrammar(newEntries, Lists.newArrayList());
-    	SufficientStatistics newParameters = CcgUtils.train(parserSettings.parserFamily, examples, 10);
+    	SufficientStatistics newParameters = CcgUtils.train(parserSettings.parserFamily, examples, 1);
     	
     	CcgParser newParser = parserSettings.parserFamily.getModelFromParameters(newParameters);
     	for (LexiconEntry entry : newParser.getLexiconEntries("set", "VBN")) {
