@@ -329,7 +329,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse getProbInstance(InfoForCommand infoForCommand)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
-        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.empty(), Optional.empty(), false);
+        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.empty(), Optional.empty(), false, infoForCommand.userSentence);
 
         ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
@@ -357,7 +357,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             instanceName = inboxCommandController.getCurrentEmailName();
 
         ExecutionStatus executionStatus = new ExecutionStatus();
-        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty(), false);
+        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty(), false, infoForCommand.userSentence);
 
         ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
@@ -407,11 +407,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         }
 
         ExecutionStatus executionStatus = new ExecutionStatus();
-        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly);
+        Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly, infoForCommand.userSentence);
         if (instance.isPresent() && instance.get().getConceptName().equals(OutgoingEmail.strOutgoingEmailTypeAndName)&& !instanceName.isPresent() && !mutableOnly) //since the user didn't need mutable, and didn't explicitly mention the outgoing email, he probably wants the inbox
         {
             instanceName = Optional.of(inboxCommandController.getCurrentEmailName());
-            instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly);
+            instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly, infoForCommand.userSentence);
         }
         Optional<FieldHolder> field = Optional.empty();
         String successStr = "";
@@ -438,7 +438,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             //if failed, but is trying to set to outgoing_email (mutableOnly==true), and there is no email being composed, ask if would like to create a new email
             if (mutableOnly && !outEmailCommandController.isAnEmailBeingComposed() &&
                     ((instanceName.isPresent() && instanceName.get().equals(OutgoingEmail.strOutgoingEmailTypeAndName))
-                            || conceptContainer.findConceptsForField(new ExecutionStatus(), fieldName, mutableOnly).contains(OutgoingEmail.strOutgoingEmailTypeAndName)))
+                            || conceptContainer.findConceptsForField(new ExecutionStatus(), fieldName, mutableOnly, false).contains(OutgoingEmail.strOutgoingEmailTypeAndName)))
             {
                 actionResponse = noEmailFound(internalState, actionResponse);
             }
@@ -566,8 +566,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             parentNiceName = inboxCommandController.emailMessageNameStart;
         }
-        return failWithMessage(infoForCommand, "I don't know what should be set to " + parentNiceName + "'s "+ field.getFieldName() +  ". " +
-                "Please repeat and tell me what should be set to it (e.g. set example to "+ parentNiceName + "'s "+ field.getFieldName() + ")");
+        return failWithMessage(infoForCommand, "I don't know what should be set to " + parentNiceName + "'s " + field.getFieldName() + ". " +
+                "Please repeat and tell me what should be set to it (e.g. set example to " + parentNiceName + "'s " + field.getFieldName() + ")");
     }
 
 
@@ -603,13 +603,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
 
-    private Optional<GenericInstance> getMostPlausibleInstance(ExecutionStatus executionStatus, Optional<String> optionalInstanceName, Optional<String> fieldName, boolean mutableOnly)
+    private Optional<GenericInstance> getMostPlausibleInstance(ExecutionStatus executionStatus, Optional<String> optionalInstanceName, Optional<String> fieldName, boolean mutableOnly, String userSentence)
     {
+        boolean userUsedTheWordAs = userSentence.contains(" as "); //the word "as" maybe confusing. Would be better to check if the token "as" exists though.
         //find intersection of all instances that have requested instanceName and fieldName
         List<String> conceptOptions;
         if (fieldName.isPresent())
         {
-            conceptOptions = conceptContainer.findConceptsForField(executionStatus, fieldName.get(), mutableOnly);
+            conceptOptions = conceptContainer.findConceptsForField(executionStatus, fieldName.get(), mutableOnly, userUsedTheWordAs);
         }
         else
         {
@@ -672,6 +673,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse defineConcept(InfoForCommand infoForCommand, String newConceptName)
     {
+        if(InstUtils.isEmailAddress(newConceptName))
+        {
+            return failWithMessage(infoForCommand, "concept names cannot be email addresses");
+        }
+
         //TODO: remember what was the last concept defined, and add fields to is if no concept is given.
         ExecutionStatus executionStatus = new ExecutionStatus();
         conceptContainer.defineConcept(executionStatus, newConceptName);
@@ -721,6 +727,10 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList, boolean mutable)
     {
+        if(InstUtils.isEmailAddress(fieldName))
+        {
+            return failWithMessage(infoForCommand, "field names cannot be email addresses");
+        }
         ExecutionStatus executionStatus = new ExecutionStatus();
         if (conceptName.equals(IncomingEmail.incomingEmailType) || conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
         {
@@ -770,7 +780,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (actionResponse.isSuccess())
         {
             //if this field doesn't appear at any other concept
-            if (conceptContainer.findConceptsForField(new ExecutionStatus(), fieldName, false).size() == 0)
+            if (conceptContainer.findConceptsForField(new ExecutionStatus(), fieldName, false, false).size() == 0)
                 commandsToParser.removeField(fieldName);
         }
         return actionResponse;
@@ -804,6 +814,10 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse createInstanceByFullNames(InfoForCommand infoForCommand, String conceptName, String newInstanceName)
     {
+        if(InstUtils.isEmailAddress(newInstanceName))
+        {
+            return failWithMessage(infoForCommand, "instance names cannot be email addresses");
+        }
         ExecutionStatus executionStatus = new ExecutionStatus();
         if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
         {

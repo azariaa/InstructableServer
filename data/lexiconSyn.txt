@@ -5,11 +5,13 @@ new,{create} //new email, new contact mom
 "create a new",{create}
 "compose new",{create}
 "compose a new",{create}
+define,{create} //not 100% correct, but used by many users (e.g. "define contact mom")
 set,{write,change}  // set hello world as the subject, set the subject to hello world
 set,{move} //set to the next email
 put, {write} //put hello world in the subject 
 use, {write} //use hello world as the subject //use email's subject as the subject
 type,{write} //type hello in the subject
+enter,{write} //enter hello in the subject
 in, {inside,instance} //put hello world in the subject //in inbox
 the, {instance} //in the inbox
 as, {inside} // set hello world as the subject
@@ -17,6 +19,8 @@ for, {of,the} //set email for mom to // skip in string
 "call it",{the} // create a contact call it bob
 named,{the} //create a contact named mom
 called,{the} //create a contact called mom
+one,{concept} //create one contact called mom
+a,{concept} //create a contact called mom
 from,{to} //remove email from contact
 delete,{remove}
 undefine,{remove} //undefine concept
@@ -38,7 +42,7 @@ agent,{please}
 ":",{is}
 ',{'s}
 what,{read}
-read,{what}
+#read,{what} //for some reason, after teaching "go -> next email and read email", "read email" resolves email as a field. So I removed this.
 "what 's",{what,read}
 see,{what,read}
 show,{what,read}
