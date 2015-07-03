@@ -33,6 +33,8 @@ what's bob's classification?,(evalField (getProbFieldByInstanceNameAndFieldName 
 what is bob's email?,(evalField (getProbFieldByInstanceNameAndFieldName bob email))
 take bob's classification,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
 set it as the outgoing email's subject,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email subject) (getProbFieldVal))
+set it as the body,(setFieldFromFieldVal (getProbMutableFieldByFieldName body) (getProbFieldVal))
+set it as the subject,(setFieldFromFieldVal (getProbMutableFieldByFieldName subject) (getProbFieldVal))
 take bob's classification and set it as jane's classification,(doSeq (evalField (getProbFieldByInstanceNameAndFieldName bob classification)) (setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName jane classification) (getProbFieldVal)))
 set the recipient to be bob's classification,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName bob classification)))
 add nana@gmail.com to the recipient list,"(addToFieldFromString (getProbMutableFieldByFieldName recipient_list) ""nana@gmail.com"")"
