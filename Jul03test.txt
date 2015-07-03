@@ -221,8 +221,8 @@ U: end
 S: I now know what to do when you say (for example): "reply blue"!
 
 U: reply I'm still at work where are you
-S: Sorry, but I don't understand.
-S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
+The "body" field in "outgoing email" was set to: "I'm still at work where are you".
 
 U: previous email
 S: Set to previous incoming email successfully.

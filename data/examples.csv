@@ -123,7 +123,7 @@ first you move to the next email then you read it,(doSeq (next email) (readInsta
 add email field,"(addToWhat ""email"")"
 use bob's classification,(setWhatFromField (getProbFieldByInstanceNameAndFieldName bob classification))
 "set body to current email's body, and send email",(doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByInstanceNameAndFieldName inbox body))) (send email))
-"set body to report, and send email","(doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""report"") (send email))"
+"set body to report on time, and send email","(doSeq (setFieldFromString (getProbMutableFieldByFieldName body) ""report on time"") (send email))"
 "set the body to the current email's body, and send the email",(doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByInstanceNameAndFieldName inbox body))) (send email))
 add bob's email to the recipient list,(addToFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName bob email)))
 move to next email in inbox,(next inbox)

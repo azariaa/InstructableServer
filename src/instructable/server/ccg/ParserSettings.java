@@ -36,10 +36,6 @@ public class ParserSettings implements Cloneable
     static final int retrainAfterNewCommand = 1;
     static final boolean treatCorpusAsLearnedExamples = false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
 
-    private ParserSettings()
-    {
-
-    }
 
     public ParserSettings(List<String> lexiconEntries, List<String> synonyms, String[] unaryRules,
                           FeatureGenerator<StringContext, String> featureGenerator, List<String[]> examplesList)
