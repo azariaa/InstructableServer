@@ -23,7 +23,7 @@ import java.util.LinkedList;
  */
 public class TestWithParser
 {
-    static boolean testingMode = false;
+    static boolean testingMode = true;
     static String fileName = "Jul03test.txt";
 
     public static void main(String[] args) throws Exception

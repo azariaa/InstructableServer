@@ -1,27 +1,7 @@
 package instructable.server.ccg;
 
-import instructable.server.ActionResponse;
-import instructable.server.IAllUserActions;
-import instructable.server.InfoForCommand;
-import instructable.server.LispExecutor;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.Lists;
-import com.jayantkrish.jklol.ccg.CcgExactInference;
-import com.jayantkrish.jklol.ccg.CcgExample;
-import com.jayantkrish.jklol.ccg.CcgInference;
-import com.jayantkrish.jklol.ccg.CcgParse;
-import com.jayantkrish.jklol.ccg.CcgParser;
-import com.jayantkrish.jklol.ccg.CcgUnaryRule;
-import com.jayantkrish.jklol.ccg.LexiconEntry;
-import com.jayantkrish.jklol.ccg.ParametricCcgParser;
+import com.jayantkrish.jklol.ccg.*;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
@@ -39,6 +19,13 @@ import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
 import com.jayantkrish.jklol.training.NullLogFunction;
 import com.jayantkrish.jklol.util.IndexedList;
+import instructable.server.ActionResponse;
+import instructable.server.IAllUserActions;
+import instructable.server.InfoForCommand;
+import instructable.server.LispExecutor;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 05-May-15.
@@ -47,6 +34,7 @@ public class ParserSettings implements Cloneable
 {
     static final int initialTraining = 10;
     static final int retrainAfterNewCommand = 1;
+    static final boolean treatCorpusAsLearnedExamples = false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
 
     private ParserSettings()
     {
@@ -60,6 +48,7 @@ public class ParserSettings implements Cloneable
         final String fullRowComment = "#";
         env = Environment.empty();
         symbolTable = IndexedList.create();
+        learnedExamples = new HashMap<>();
 
         // remove all that appears after a "//" or starts with # (parseLexiconEntries only removes lines that start with "#")
         List<String> lexiconWithoutComments = lexiconEntries.stream().filter(e -> !e.contains(fullRowComment)).map(e -> (e.contains(midRowComment) ? e.substring(0, e.indexOf(midRowComment)) : e)).collect(Collectors.toList());
@@ -101,15 +90,22 @@ public class ParserSettings implements Cloneable
             unaryRulesList.add(CcgUnaryRule.parseFrom(unaryRule));
         }
 
-        Set<String> posUsed = new HashSet<>();
+        posUsed = new HashSet<>();
         posUsed.add(ParametricCcgParser.DEFAULT_POS_TAG);
         posUsed.add(CcgUtils.START_POS_TAG);
         ccgExamples = Lists.newArrayList();
         for (int i = 0; i < examplesList.size(); i++)
         {
-            Expression2 expression = ExpressionParser.expression2().parseSingleExpression(examplesList.get(i)[1]);
-            CcgExample example = CcgUtils.createCcgExample(examplesList.get(i)[0], expression, posUsed, true);
+            String exSentence = examplesList.get(i)[0];
+            String exLogicalForm = examplesList.get(i)[1];
+            Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exLogicalForm);
+            CcgExample example = CcgUtils.createCcgExample(exSentence, expression, posUsed, true);
             ccgExamples.add(example);
+            if (treatCorpusAsLearnedExamples)
+            {
+                 //actually already tokenizes and POS exSentence above and will be doing it again in addToLearnedExamples, but this isn't significant.
+                addToLearnedExamples(exSentence,expression);
+            }
             List<String> allFunctionNames = LispExecutor.allFunctionNames();
             Set<String> freeSet = StaticAnalysis.getFreeVariables(example.getLogicalForm());
             for (String free : freeSet)
@@ -125,7 +121,6 @@ public class ParserSettings implements Cloneable
         FeatureVectorGenerator<StringContext> featureVectorGenerator = DictionaryFeatureVectorGenerator
                 .createFromData(allContexts, featureGenerator, true);
 
-        this.posUsed = posUsed;
         ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon, unaryRulesList,
                 posUsed, featureVectorGenerator);
         this.lexicon = Lists.newArrayList(lexicon);
@@ -134,7 +129,6 @@ public class ParserSettings implements Cloneable
         this.parserParameters = CcgUtils.train(family, ccgExamples, initialTraining);
         this.parser = family.getModelFromParameters(this.parserParameters);
         this.parserFamily = family;
-        learnedExamples = new HashMap<>();
     }
 
     public ActionResponse evaluate(IAllUserActions allUserActions, String userSays, Expression2 expression)
@@ -275,12 +269,7 @@ public class ParserSettings implements Cloneable
     {
         Expression2 expressionLearnt = CcgUtils.combineCommands(commandsLearnt);
         //we first tokenize the sentence (after adding the start symbol) then we join back the tokens, to make sure that it matches future sentences with identical tokens.
-        List<String> tokens = new LinkedList<>();
-        tokens.add(CcgUtils.startSymbol);
-        List<String> dummy = new LinkedList<>(); //don't need POS
-        CcgUtils.tokenizeAndPOS(originalCommand, tokens, dummy, false, posUsed);
-        String jointTokenizedSentence = String.join(" ",tokens);
-        learnedExamples.put(jointTokenizedSentence,expressionLearnt);
+        addToLearnedExamples(originalCommand, expressionLearnt);
 //        FileWriter out = null;
 //        try
 //        {
@@ -300,6 +289,16 @@ public class ParserSettings implements Cloneable
         updateParserGrammar(newEntries, Lists.newArrayList());
         ccgExamples.add(example);
         retrain(retrainAfterNewCommand);
+    }
+
+    private void addToLearnedExamples(String originalCommand, Expression2 expressionLearnt)
+    {
+        List<String> tokens = new LinkedList<>();
+        tokens.add(CcgUtils.startSymbol);
+        List<String> dummy = new LinkedList<>(); //don't need POS
+        CcgUtils.tokenizeAndPOS(originalCommand, tokens, dummy, false, posUsed);
+        String jointTokenizedSentence = String.join(" ",tokens);
+        learnedExamples.put(jointTokenizedSentence,expressionLearnt);
     }
 
     public void retrain(int iterations)
@@ -336,7 +335,10 @@ public class ParserSettings implements Cloneable
     }
 
     public List<CcgExample> ccgExamples;
-    public Map<String,Expression2> learnedExamples; //these examples are matched BEFORE parsing //the String key in these examples are the tokens joined back using " " (this is done to improve performance using hash-map)
+
+    //learnedExamples examples are matched BEFORE parsing //the String key in these examples are the tokens joined back using " " (this is done to improve performance using hash-map)
+    // if the (treatCorpusAsLearnedExamples==true) so copies all corpus in ccgExamples to learnedExamples
+    public Map<String,Expression2> learnedExamples;
     public List<LexiconEntry> lexicon;
     public List<CcgUnaryRule> unaryRules;
     public FeatureVectorGenerator<StringContext> featureVectorGenerator;
