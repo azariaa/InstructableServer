@@ -13,7 +13,6 @@ import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
 import com.jayantkrish.jklol.lisp.Environment;
 import com.jayantkrish.jklol.lisp.LispEval;
 import com.jayantkrish.jklol.lisp.SExpression;
-import com.jayantkrish.jklol.models.DiscreteVariable;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
@@ -25,10 +24,7 @@ import instructable.server.IAllUserActions;
 import instructable.server.InfoForCommand;
 import instructable.server.LispExecutor;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +32,7 @@ import java.util.stream.Collectors;
  */
 public class ParserSettings implements Cloneable
 {
-    static final int initialTraining = 1;
+    static final int initialTraining = 1;//10;
     static final int retrainAfterNewCommand = 1;
 
     private ParserSettings()
@@ -125,6 +121,7 @@ public class ParserSettings implements Cloneable
         this.parserParameters = CcgUtils.train(family, ccgExamples, initialTraining);
         this.parser = family.getModelFromParameters(this.parserParameters);
         this.parserFamily = family;
+        learnedExamples = new HashMap<>();
     }
 
     public ActionResponse evaluate(IAllUserActions allUserActions, String userSays, Expression2 expression)
@@ -241,12 +238,16 @@ public class ParserSettings implements Cloneable
         tokens.add(CcgUtils.startSymbol);
         poss.add(CcgUtils.START_POS_TAG);
         CcgUtils.tokenizeAndPOS(sentence, tokens, poss, false, posUsed);
+
+        //if we know what to return for this exact example, simply return it:
+        String jointTokenizedSentence = String.join(" ",tokens);
+        if (learnedExamples.containsKey(jointTokenizedSentence))
+            return learnedExamples.get(jointTokenizedSentence);
+
         SupertaggedSentence supertaggedSentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, poss);
 
-        //      //if we want to return only sentences and fieldVal in upper level:
-        DiscreteVariable dv = parser.getSyntaxVarType();
+        //      //if we want to return only sentences and fieldVal in upper level:         //DiscreteVariable dv = parser.getSyntaxVarType();
 
-        //upto here
         CcgParse parse = inferenceAlg.getBestParse(parser, supertaggedSentence, new InstChartCost(), new NullLogFunction());
         //if parse is empty we want to parse to unknownCommand
         Expression2 expression;
@@ -260,6 +261,13 @@ public class ParserSettings implements Cloneable
     public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt)
     {
         Expression2 expressionLearnt = CcgUtils.combineCommands(commandsLearnt);
+        //we first tokenize the sentence (after adding the start symbol) then we join back the tokens, to make sure that it matches future sentences with identical tokens.
+        List<String> tokens = new LinkedList<>();
+        tokens.add(CcgUtils.startSymbol);
+        List<String> dummy = new LinkedList<>(); //don't need POS
+        CcgUtils.tokenizeAndPOS(originalCommand, tokens, dummy, false, posUsed);
+        String jointTokenizedSentence = String.join(" ",tokens);
+        learnedExamples.put(jointTokenizedSentence,expressionLearnt);
 //        FileWriter out = null;
 //        try
 //        {
@@ -292,7 +300,14 @@ public class ParserSettings implements Cloneable
     @Override
     public ParserSettings clone()
     {
-        ParserSettings parserSettings = new ParserSettings();
+        ParserSettings parserSettings = null;//new ParserSettings();
+        try
+        {
+            parserSettings = (ParserSettings)super.clone();
+        } catch (CloneNotSupportedException e)
+        {
+            e.printStackTrace(); //this is so stupid, and can never happen. (C# is so much better :)
+        }
         parserSettings.ccgExamples = new LinkedList<>(ccgExamples);
         parserSettings.lexicon = new LinkedList<>(lexicon); //(LinkedList<LexiconEntry>)lexicon.clone();
         parserSettings.unaryRules = new LinkedList<>(unaryRules);
@@ -303,10 +318,12 @@ public class ParserSettings implements Cloneable
         parserSettings.env = env;
         parserSettings.symbolTable = new IndexedList<String>(symbolTable);
         parserSettings.posUsed = posUsed;
+        parserSettings.learnedExamples = new HashMap<>(learnedExamples);
         return parserSettings;
     }
 
     public List<CcgExample> ccgExamples;
+    public Map<String,Expression2> learnedExamples; //these examples are matched BEFORE parsing //the String key in these examples are the tokens joined back using " " (this is done to improve performance using hash-map)
     public List<LexiconEntry> lexicon;
     public List<CcgUnaryRule> unaryRules;
     public FeatureVectorGenerator<StringContext> featureVectorGenerator;

@@ -250,11 +250,12 @@ public class CcgUtils
 		  }
 	  }
 
-	  //adding just the whole sentence as a lexicon entry, in case any other parse fails
-	  CsvParser csv = LexiconEntry.getCsvParser();
-	  List<String> sentenceWords = example.getSentence().getWords().subList(1, example.getSentence().getWords().size());
-	  List<String> parts = Lists.newArrayList(String.join(" ", sentenceWords), "S{0}", example.getLogicalForm().toString());
-	  newEntries.add(LexiconEntry.parseLexiconEntry(csv.toCsv(parts)));
+//	  //adding just the whole sentence as a lexicon entry, in case any other parse fails
+      //this part was removed, instead we now check before giving a setnece to the parser whether it is identical to a learnt command.
+//	  CsvParser csv = LexiconEntry.getCsvParser();
+//	  List<String> sentenceWords = example.getSentence().getWords().subList(1, example.getSentence().getWords().size());
+//	  List<String> parts = Lists.newArrayList(String.join(" ", sentenceWords), "S{0}", example.getLogicalForm().toString());
+//	  newEntries.add(LexiconEntry.parseLexiconEntry(csv.toCsv(parts)));
 
 	  return newEntries;
   }
