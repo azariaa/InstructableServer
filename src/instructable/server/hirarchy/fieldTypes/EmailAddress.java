@@ -24,15 +24,23 @@ public class EmailAddress extends FieldType
         }
 
         //tries to fix email address, especially useful for speech input.
-        String FixedVal = val.replace(" at ", " @ ");
-        FixedVal = FixedVal.replace(" dot ", " . ");
-        FixedVal = FixedVal.trim().replace(" ", "");
-        if (InstUtils.isEmailAddress(FixedVal))
+        String tryToCorrect = val.replace(" at ", " @ ");
+        tryToCorrect = tryToCorrect.replace(" dot ", " . ");
+        tryToCorrect = tryToCorrect.replaceAll("[;,]","").trim();
+        if (InstUtils.isEmailAddress(tryToCorrect))
         {
-            fieldVal = FixedVal;
-            executionStatus.add(ExecutionStatus.RetStatus.comment, "minor email fixes were performed");
+            fieldVal = tryToCorrect;
+            executionStatus.add(ExecutionStatus.RetStatus.comment, "minor email corrections were performed");
             return;
         }
+
+//        tryToCorrect = tryToCorrect.replaceAll("[;,\\s+]","");
+//        if (InstUtils.isEmailAddress(tryToCorrect))
+//        {
+//            fieldVal = tryToCorrect;
+//            executionStatus.add(ExecutionStatus.RetStatus.warning, "major email corrections were performed");
+//            return;
+//        }
 
         executionStatus.add(ExecutionStatus.RetStatus.error, "\"" + val + "\" is not an email address");
         return;

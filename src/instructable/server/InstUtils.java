@@ -57,11 +57,11 @@ public class InstUtils
             "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                     + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 
-    private static Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+    private static Pattern emailPattern = Pattern.compile(EMAIL_PATTERN);
 
     public static boolean isEmailAddress(String addr)
     {
-        Matcher matcher = pattern.matcher(addr);
+        Matcher matcher = emailPattern.matcher(addr);
         return matcher.matches();
     }
 
