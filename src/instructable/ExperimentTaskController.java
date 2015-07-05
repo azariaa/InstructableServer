@@ -228,7 +228,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             completedInThisEmail.add(TasksToComplete.eRepMomAtWork);
         if (subject.contains("work") && recipientList.contains(worker3Email) && !body.isEmpty())
             completedInThisEmail.add(TasksToComplete.eRepW3);
-        if (recipientList.contains(bossEmail) && (body.contains(" way") || body.contains(" late")|| subject.contains(" way") || subject.contains(" late")) && !userTasks.contains(TasksToComplete.tellBoss))
+        if (recipientList.contains(bossEmail) && (body.contains(" way") || body.contains(" late")|| subject.contains(" way") || subject.contains(" late") || subject.contains(worker2Name.toLowerCase()) || body.contains(worker2Name.toLowerCase()) || body.contains("coming")|| subject.contains("coming")) && !userTasks.contains(TasksToComplete.tellBoss))
             completedInThisEmail.add(TasksToComplete.tellBoss);
         if (subject.contains("family event") && recipientList.contains(bossEmail) && body.contains("vacation"))
             completedInThisEmail.add(TasksToComplete.eForwardMToBoss);

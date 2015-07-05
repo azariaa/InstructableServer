@@ -32,6 +32,7 @@ write, (S{0}/Field{1}){0},(lambda $1 (setWhatFromField $1))
 change,"((S{0}/PP_FieldVal{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $1 $2))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2" //change recipient to mom's email
 change,"((S{0}/PP_StringV{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2" //change subject to hello world
 change,((S{0}/StringV{2}){0}/MutableField{1}){0},(lambda $1 $2 (setFieldFromString $1 $2)) //set contact mom fds@fds.com //not clean, but is used by users.
+change,((S{0}/FieldVal{2}){0}/MutableField{1}){0},(lambda $1 $2 (setFieldFromFieldVal $1 $2)) //set recipient mom's email //not clean, but is used by users.
 change,(S{0}/MutableField{1}){0},(lambda $1 (setFieldWithMissingArg $1)) //change mom's email (without to "hello world)
 goes,"((S{0}/PP_MutableField{2}){0}\StringV{1})",(lambda $1 $2 (setFieldFromString $2 $1)) //hello world goes in the subject
 goes,"((S{0}/PP_MutableField{2}){0}\FieldVal{1}){0}",(lambda $1 $2 (setFieldFromFieldVal $2 $1)) //mom's email goes in the subject
@@ -90,6 +91,7 @@ outgoing,(InstanceName{0}/EmailAmbiguous{1}){0},(lambda $1 outgoing_email) //out
 inbox,(InstanceName{0}/EmailAmbiguous{1}){0},(lambda $1 inbox) //inbox email
 incoming,(InstanceName{0}/EmailAmbiguous{1}){0},(lambda $1 inbox) //incoming email
 current,(InstanceName{0}/EmailAmbiguous{1}){0},(lambda $1 inbox) //current email
+current,(FieldVal{0}/FieldName{1}){0},(lambda $1 (evalField (getProbFieldByInstanceNameAndFieldName inbox $1))) //current sender, current body
 inbox,(InstanceName{0}\EmailAmbiguous{1}){0},(lambda $1 inbox) //email in inbox
 email,ConceptName{0},outgoing_email,0 outgoing_email
 recipient,FieldName{0},recipient_list,0 recipient_list

@@ -25,6 +25,8 @@ public class LispExecutor
     Optional<ActionResponse> responseOfFailedCall = Optional.empty(); //if fails, sets the responseOfFailedCall to relevant ActionResponse, and stop execution
 
     public static final String doSeq = "doSeq";
+    public static final String stringNoun = "stringNoun";
+    public static final String stringValue = "stringValue";
 
     public LispExecutor(IAllUserActions allUserActions, InfoForCommand infoForCommand)
     {
@@ -37,6 +39,8 @@ public class LispExecutor
         //get all functions using reflection
         List<String> allFunctionNames = Arrays.asList(IAllUserActions.class.getMethods()).stream().map(Method::getName).collect(Collectors.toList());
         allFunctionNames.add(doSeq);
+        allFunctionNames.add(stringNoun);
+        allFunctionNames.add(stringValue);
         return allFunctionNames;
     }
 
@@ -74,6 +78,8 @@ public class LispExecutor
         {
             try
             {
+                if (currentFunction.equals(stringNoun) || currentFunction.equals(stringValue))
+                    return (String)argumentValues.get(0); //should return a regular string.
 
                 if (currentFunction.equals(doSeq))
                 {
