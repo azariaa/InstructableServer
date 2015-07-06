@@ -117,21 +117,29 @@ public class CcgUtils
 			    
 			    // System.out.println(i + " " + j + " " + subwords + " " + parse.getHeadedSyntacticCategory() + " " + lexLf);
 
-			    if (!parseSkipsWordsOnEnd(parse) && lf.hasSubexpression(lexLf)) {
-			      boolean isDuplicate = false;
-			      for (int k = 0; k < matchedExpressions.size(); k++) {
-			        isDuplicate = isDuplicate || (matchedExpressions.get(k).equals(lexLf)
-			            && parse.getHeadedSyntacticCategory().equals(matchedSyntacticCategories.get(k)));
-			      }
-			      
-			      if (!isDuplicate) {
-			        matchedExpressions.add(lexLf);
-			        matchedSyntacticCategories.add(parse.getHeadedSyntacticCategory());
-			      }
+			    if (!parseSkipsWordsOnEnd(parse) && lf.hasSubexpression(lexLf))
+                {
+                      boolean isDuplicate = false;
+                      for (int k = 0; k < matchedExpressions.size(); k++)
+                      {
+                          if (!isDuplicate)
+                          {
+                              isDuplicate = (matchedExpressions.get(k).equals(lexLf)
+                                      && parse.getHeadedSyntacticCategory().equals(matchedSyntacticCategories.get(k)));
+                          }
+                      }
+
+                      if (!isDuplicate &&
+                              !parse.getHeadedSyntacticCategory().getSyntax().toString().equals("S")) //Amos: not reasonable that someone will want a full sentence as an argument. //Amos: without this there was a problem when a new command (e.g. forward to charlie) extended an older command (e.g. forward).
+                      {
+                        matchedExpressions.add(lexLf);
+                        matchedSyntacticCategories.add(parse.getHeadedSyntacticCategory());
+                      }
 				  }
 			  }
 
-			  if (matchedExpressions.size() > 0) {
+			  if (matchedExpressions.size() > 0)
+              {
 				  spanStarts.add(i);
 				  spanEnds.add(j);
 				  spanStrings.add(subwords);
@@ -205,7 +213,8 @@ public class CcgUtils
 	    for (int i = 1; i < words.size(); i++) {
 	      boolean containedInSpan = false;
 	      for (int j = 0; j < spanStarts.size(); j++) {
-	        if (i >= spanStarts.get(j) && i <= spanEnds.get(j) && entryUsed[j]) {
+	        if (i >= spanStarts.get(j) && i <= spanEnds.get(j) && entryUsed[j])
+            {
 	          containedInSpan = true;
 	          break;
 	        }
