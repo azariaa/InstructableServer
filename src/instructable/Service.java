@@ -1,9 +1,14 @@
 package instructable;
 
 import com.sun.net.httpserver.Filter;
-import com.sun.net.httpserver.*;
+import com.sun.net.httpserver.HttpContext;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URLDecoder;
@@ -12,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.*;
 
 /**
@@ -61,17 +68,19 @@ public class Service
         logger.config("Configuration done.");
     }
 
+
     public static void running(int portToListenOn)
     {
         try
         {
+            ExecutorService executor = Executors.newFixedThreadPool(20);
             HttpServer server = HttpServer.create(new InetSocketAddress(portToListenOn), 0);
             AgentDataAndControl agentDataAndControl = new AgentDataAndControl(logger);
             HttpContext agentContext = server.createContext("/" + contextSayToAgent, new AgentServer(agentDataAndControl));
             agentContext.getFilters().add(new ParameterFilter());
             HttpContext emailAndExperimentContext = server.createContext("/" + contextEmailAndExperiment, new EmailAndExperimentServer(agentDataAndControl));
             emailAndExperimentContext.getFilters().add(new ParameterFilter());
-            server.setExecutor(null); // creates a default executor
+            server.setExecutor(executor);
             server.start();
         }
         catch (Exception ex)
