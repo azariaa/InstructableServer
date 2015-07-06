@@ -8,7 +8,6 @@ import instructable.server.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 import instructable.server.hirarchy.IncomingEmail;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -17,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.

@@ -1,7 +1,27 @@
 package instructable.server.ccg;
 
+import instructable.server.ActionResponse;
+import instructable.server.IAllUserActions;
+import instructable.server.InfoForCommand;
+import instructable.server.LispExecutor;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.google.common.collect.Lists;
-import com.jayantkrish.jklol.ccg.*;
+import com.jayantkrish.jklol.ccg.CcgExactInference;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgInference;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.CcgUnaryRule;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
@@ -19,20 +39,13 @@ import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
 import com.jayantkrish.jklol.training.NullLogFunction;
 import com.jayantkrish.jklol.util.IndexedList;
-import instructable.server.ActionResponse;
-import instructable.server.IAllUserActions;
-import instructable.server.InfoForCommand;
-import instructable.server.LispExecutor;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 05-May-15.
  */
 public class ParserSettings implements Cloneable
 {
-    static final int initialTraining = 10;
+    static final int initialTraining = 1;
     static final int retrainAfterNewCommand = 1;
     static final boolean treatCorpusAsLearnedExamples = false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
 
@@ -150,7 +163,6 @@ public class ParserSettings implements Cloneable
 
         LispEval lispEval = new LispEval(symbolTable);
         SExpression sExpression = ExpressionParser.sExpression(symbolTable).parseSingleExpression(expression.toString());
-        System.out.println(sExpression.toString());
 
         ActionResponse response;
 //        try
@@ -254,10 +266,12 @@ public class ParserSettings implements Cloneable
         CcgParse parse = inferenceAlg.getBestParse(parser, supertaggedSentence, new InstChartCost(), new NullLogFunction());
         //if parse is empty we want to parse to unknownCommand
         Expression2 expression;
-        if (parse == null)
-            expression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
-        else
-            expression = parse.getLogicalForm();
+        if (parse == null) {
+          expression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
+        }
+        else {
+          expression = parse.getLogicalForm();
+        }
         return simplifier.apply(expression);
     }
 

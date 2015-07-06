@@ -1,23 +1,43 @@
 package instructable.server.ccg;
 
+import instructable.server.InstUtils;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.Maps;
 import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
 import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
-import instructable.server.InstUtils;
-
-import java.util.*;
 
 public class StringFeatureGenerator implements FeatureGenerator<StringContext, String>
 {
     private static final long serialVersionUID = 1L;
+    
+    private static final int MAX_LENGTH = 3;
+    private static final int MAX_ORG_LENGTH = 3;
 
     @Override
     public Map<String, Double> generateFeatures(StringContext context)
     {
-
         Map<String, Double> featureValues = Maps.newHashMap();
-        featureValues.put("length", (double) getStringLength(context));
-        featureValues.put("orgLength", (double) context.getWords().size());
+        int length = getStringLength(context);
+        String lengthFeatureName = null;
+        if (length <= MAX_LENGTH) {
+          lengthFeatureName = "length=" + length;
+        } else {
+          lengthFeatureName = "length>" + MAX_LENGTH;
+        }
+        featureValues.put(lengthFeatureName.intern(), 1.0);
+
+        int orgLength = context.getWords().size();
+        if (orgLength <= MAX_ORG_LENGTH) {
+          lengthFeatureName = "orgLength=" + orgLength;
+        } else {
+          lengthFeatureName = "orgLength>" + MAX_ORG_LENGTH;
+        }
+        featureValues.put(lengthFeatureName.intern(), 1.0);
+
         int[] semiPosCount = semiPosCount(context);
         for (PosForFeatures posForFeatures : PosForFeatures.values())
         {

@@ -14,6 +14,7 @@ import com.jayantkrish.jklol.ccg.CcgExample;
 import com.jayantkrish.jklol.ccg.CcgParse;
 import com.jayantkrish.jklol.ccg.CcgParser;
 import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.UnfilledDependency;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
@@ -47,7 +48,8 @@ public class TestLexiconInduction {
     		System.out.println(simplifier.apply(predicted.getLogicalForm()));
     		List<LexiconEntry> entries = CcgUtils.induceLexiconEntriesHeuristic(example, parser);
     		for (LexiconEntry entry : entries) {
-    		  System.out.println("  " + entry);
+    		  List<UnfilledDependency> unfilledDependencies = entry.getCategory().createUnfilledDependencies(0, null);
+    		  System.out.println("  " + entry + " " + entry.getCategory().getSemanticHeads() +" " + unfilledDependencies);
     		}
     		
     		newEntries.addAll(entries);

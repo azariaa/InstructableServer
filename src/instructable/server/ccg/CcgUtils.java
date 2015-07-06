@@ -1,34 +1,71 @@
 package instructable.server.ccg;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.jayantkrish.jklol.ccg.*;
-import com.jayantkrish.jklol.ccg.SyntacticCategory.Direction;
-import com.jayantkrish.jklol.ccg.chart.CcgBeamSearchChart;
-import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
-import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.*;
-import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
-import com.jayantkrish.jklol.ccg.lexinduct.*;
-import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
-import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
-import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
-import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
-import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
-import com.jayantkrish.jklol.training.*;
-import com.jayantkrish.jklol.util.CsvParser;
-import com.jayantkrish.jklol.util.IntegerArrayIterator;
-import com.jayantkrish.jklol.util.PairCountAccumulator;
-import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import instructable.server.LispExecutor;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
+import com.jayantkrish.jklol.ccg.CcgBinaryRule;
+import com.jayantkrish.jklol.ccg.CcgCategory;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
+import com.jayantkrish.jklol.ccg.CcgInference;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.CcgPerceptronOracle;
+import com.jayantkrish.jklol.ccg.CcgUnaryRule;
+import com.jayantkrish.jklol.ccg.HeadedSyntacticCategory;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
+import com.jayantkrish.jklol.ccg.SyntacticCategory.Direction;
+import com.jayantkrish.jklol.ccg.chart.CcgBeamSearchChart;
+import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
+import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
+import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
+import com.jayantkrish.jklol.ccg.lexinduct.AlignmentExample;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentEmOracle;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTokenFeatureGenerator;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTree;
+import com.jayantkrish.jklol.ccg.lexinduct.ParametricCfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
+import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
+import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
+import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
+import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
+import com.jayantkrish.jklol.training.ExpectationMaximization;
+import com.jayantkrish.jklol.training.GradientOptimizer;
+import com.jayantkrish.jklol.training.GradientOracle;
+import com.jayantkrish.jklol.training.NullLogFunction;
+import com.jayantkrish.jklol.training.StochasticGradientTrainer;
+import com.jayantkrish.jklol.util.CsvParser;
+import com.jayantkrish.jklol.util.IntegerArrayIterator;
+import com.jayantkrish.jklol.util.PairCountAccumulator;
+
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 
 public class CcgUtils
@@ -245,6 +282,12 @@ public class CcgUtils
 		    List<Expression2> args = Lists.newArrayList();
 
 		    HeadedSyntacticCategory cat = HeadedSyntacticCategory.parseFrom("S{0}");
+		    List<String> subjects = Lists.newArrayList();
+		    List<Integer> argumentNumbers = Lists.newArrayList();
+		    List<Integer> objects = Lists.newArrayList();
+		    String head = Joiner.on("_").join(words.subList(i, i + 1));
+		    int numVars = 1;
+		    int numArgs = 0;
 		    // Add left arguments.
 		    for (int j = 0; j < leftArgEnds.size(); j++) {
 		      HeadedSyntacticCategory argCat = null;
@@ -252,7 +295,19 @@ public class CcgUtils
 		      for (int k = 0; k < spanStarts.size(); k++) {
 		        if (spanEnds.get(k) == leftArgEnds.get(j)) {
 		          argCat = spanSyntacticCategories.get(k).get(indexes[k]);
+		          int[] argCatVarNums = argCat.getUniqueVariables();
+		          int[] newVarNums = new int[argCatVarNums.length];
+		          for (int l = 0; l < argCatVarNums.length; l++) {
+		            newVarNums[l] = l + numVars;
+		          }
+		          numVars += argCatVarNums.length;
+		          argCat = argCat.relabelVariables(argCatVarNums, newVarNums);
 		          argCatIndex = k;
+
+		          subjects.add(head);
+		          argumentNumbers.add(numArgs + 1);
+		          objects.add(argCat.getHeadVariable());
+		          numArgs++;
 		        }
 		      }
 
@@ -267,7 +322,19 @@ public class CcgUtils
 		      for (int k = 0; k < spanStarts.size(); k++) {
 		        if (spanStarts.get(k) == rightArgStarts.get(j)) {
 		          argCat = spanSyntacticCategories.get(k).get(indexes[k]);
+		          int[] argCatVarNums = argCat.getUniqueVariables();
+		          int[] newVarNums = new int[argCatVarNums.length];
+		          for (int l = 0; l < argCatVarNums.length; l++) {
+		            newVarNums[l] = l + numVars;
+		          }
+		          numVars += argCatVarNums.length;
+		          argCat = argCat.relabelVariables(argCatVarNums, newVarNums);
 		          argCatIndex = k;
+		          
+		          subjects.add(head);
+		          argumentNumbers.add(numArgs + 1);
+		          objects.add(argCat.getHeadVariable());
+		          numArgs++;
 		        }
 		      }
 
@@ -288,12 +355,9 @@ public class CcgUtils
 		    // System.out.println(cat);
 		    // System.out.println(lambdaExpression);
 
-		    List<String> subjects = Lists.newArrayList();
-		    List<Integer> argumentNumbers = Lists.newArrayList();
-		    List<Integer> objects = Lists.newArrayList();
-		    int numVars = cat.getUniqueVariables().length;
 		    List<Set<String>> assignments = Lists.newArrayList();
-		    for (int j = 0; j < numVars; j++) {
+		    assignments.add(Sets.newHashSet(head));
+		    for (int j = 1; j < numVars; j++) {
 		      assignments.add(Collections.<String>emptySet());
 		    }
 		    CcgCategory ccgCategory = new CcgCategory(cat, lambdaExpression, subjects, argumentNumbers, objects, assignments);
@@ -370,7 +434,7 @@ public class CcgUtils
 		CcgCategory stringNCategory = CcgCategory.parseFrom("StringN{0},(lambda $1 (stringNoun $1)),0 stringNoun");
         //CcgCategory stringVCategory = CcgCategory.parseFrom("StringV{0},(lambda $1 (stringValue $1)),0 stringValue,stringValue 1 1");
         CcgCategory stringVCategory = CcgCategory.parseFrom("StringV{0},(lambda $1 (stringValue $1)),0 stringValue");
-        CcgCategory unknownCommandCategory = CcgCategory.parseFrom("S{0},(lambda $0 (unknownCommand)),0 unknownCommand");
+        CcgCategory unknownCommandCategory = CcgCategory.parseFrom("UnknownCommand{0},(lambda $0 (unknownCommand)),0 unknownCommand");
         List<LexiconEntry> unknownWordLexiconEntries = Lists.newArrayList();
 
         CcgFeatureFactory featureFactory = new InstCcgFeatureFactory(Arrays.asList(stringNCategory,stringVCategory),
@@ -427,8 +491,8 @@ public class CcgUtils
                 1, 1.0, true, true, l2Regularization, new NullLogFunction());
         SufficientStatistics parameters = trainer.train(oracle, oracle.initializeGradient(),
                 trainingExamples);
-        //to see the parameters that were actually used:
-        //parametricCcgParser.getParameterDescription(parameters)
+        //Print out the parameters that were learned:
+        // System.out.println(parametricCcgParser.getParameterDescription(parameters));
         return parameters;
     }
 

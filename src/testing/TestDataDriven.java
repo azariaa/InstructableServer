@@ -1,0 +1,59 @@
+package testing;
+
+import instructable.EnvironmentCreatorUtils;
+import instructable.server.ccg.CcgUtils;
+import instructable.server.ccg.ParserSettings;
+
+import java.nio.file.Paths;
+import java.util.List;
+
+import com.google.common.collect.Lists;
+import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgInference;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.util.SemanticParserUtils;
+
+public class TestDataDriven {
+
+  public static void main(String[] args) {
+    runTest();
+  }
+  
+  private static List<CcgExample> readExamplesFromFile(String filename, ParserSettings parserSettings) {
+    List<String[]> exampleStrings = CcgUtils.loadExamples(Paths.get(filename));
+    
+    List<CcgExample> examples = Lists.newArrayList();
+    for (String[] exampleString : exampleStrings) {
+      Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exampleString[1]);
+      CcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, parserSettings.posUsed, true);
+      examples.add(example);
+    }
+
+    return examples;
+  }
+  
+  private static void runTest() {
+    ParserSettings parserSettings = EnvironmentCreatorUtils.createParser(
+        "data/lexiconEntries.txt", "data/lexiconSyn.txt", "data/examples.csv");
+    CcgParser parser = parserSettings.parser;
+    ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
+    ExpressionComparator comparator = new SimplificationComparator(simplifier);
+    CcgInference inferenceAlgorithm = new CcgBeamSearchInference(null, comparator, 100,
+                -1, Integer.MAX_VALUE, Runtime.getRuntime().availableProcessors(), false);
+
+    List<CcgExample> trainingExamples = readExamplesFromFile("data/examples.csv", parserSettings);
+    
+    SemanticParserUtils.testSemanticParser(trainingExamples, parser,
+        inferenceAlgorithm, simplifier, comparator);
+  }
+
+
+  
+  
+}

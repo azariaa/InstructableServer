@@ -1,4 +1,5 @@
 start_symbol,START{0},**skip**,0 **skip**
+not_a_real_word,UnknownCommand{0},**skip**,0 **skip**
 "send","S{0}","(sendEmail)","0 sendEmail"
 "send","S{0}/InstanceName","(lambda $1 (send $1))"
 yes,S{0},(yes)

@@ -19,16 +19,20 @@ import java.util.List;
  */
 public class EnvironmentCreatorUtils
 {
+  
+  public static ParserSettings createParser() {
+    return createParser("data/lexiconEntries.txt", "data/lexiconSyn.txt", "data/examples.csv");
+  }
 
-    public static ParserSettings createParser()
+    public static ParserSettings createParser(String lexicon, String lexiconSyn, String trainingExamples)
     {
 
         List<String> lexiconEntries = null;
         List<String> synonyms = null;
         try
         {
-            lexiconEntries = Files.readAllLines(Paths.get("data/lexiconEntries.txt"));
-            synonyms = Files.readAllLines(Paths.get("data/lexiconSyn.txt"));
+            lexiconEntries = Files.readAllLines(Paths.get(lexicon));
+            synonyms = Files.readAllLines(Paths.get(lexiconSyn));
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -55,7 +59,7 @@ public class EnvironmentCreatorUtils
 
 
         return new ParserSettings(lexiconEntries, synonyms, unaryRules, new StringFeatureGenerator(),
-            CcgUtils.loadExamples(Paths.get("data/examples.csv")));
+            CcgUtils.loadExamples(Paths.get(trainingExamples)));
     }
 
 
