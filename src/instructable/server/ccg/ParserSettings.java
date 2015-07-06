@@ -45,7 +45,7 @@ import com.jayantkrish.jklol.util.IndexedList;
  */
 public class ParserSettings implements Cloneable
 {
-    static final int initialTraining = 1;
+    static final int initialTraining = 10;
     static final int retrainAfterNewCommand = 1;
     static final boolean treatCorpusAsLearnedExamples = false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
 
