@@ -8,6 +8,7 @@ import instructable.server.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 import instructable.server.hirarchy.IncomingEmail;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -17,15 +18,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Created by Amos Azaria on 20-Apr-15.
  */
 public class TestWithParser
 {
     static boolean testingMode = true;
-    static String fileName = "Jul03test.txt";
+    static String fileName = "Jul06test.txt";
 
     public static void main(String[] args) throws Exception
     {
@@ -61,7 +60,7 @@ public class TestWithParser
         testSimplifier.newSection("replyAndRead");
         testSimplifier.userSays(new String[]{"reply blue", "yes", "compose email", "set body to blue", "end", "reply I'm still at work where are you"});
         testSimplifier.userSays(new String[]{"previous email", "read email"});
-        testSimplifier.userSays(new String[]{"next email plus read", "yes", "next email", "read email", "end", "next email plus read"});
+        testSimplifier.userSays(new String[]{"next email plus reading it", "yes", "next email", "read email", "end", "move to the previous email in the inbox", "next email plus reading it"});
         testSimplifier.userSays("read email");
 
         testHelpers.endTest();
@@ -492,7 +491,8 @@ public class TestWithParser
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "then copy the subject from the incoming email to the outgoing email";
+        userSays = "then copy the subject from the incoming email to the outgoing email";//TODO: doesn't work
+        userSays = "copy the subject";
         testHelpers.userSays(userSays);
         //actionResponse = allUserActions.unknownCommand(new InfoForCommand(userSays, null));
         response = parserSettings.ParseAndEval(allUserActions, userSays);
