@@ -1,16 +1,10 @@
 package instructable;
 
-import instructable.server.CommandsToParser;
-import instructable.server.IAllUserActions;
-import instructable.server.IEmailSender;
-import instructable.server.TopDMAllActions;
+import instructable.server.*;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -18,15 +12,18 @@ import java.util.logging.Logger;
  */
 public class AgentDataAndControl
 {
+
     private class ParserSetAndActions
     {
-        ParserSetAndActions(ParserSettings parserSettings, IAllUserActions allUserActions)
+        ParserSetAndActions(ParserSettings parserSettings, IAllUserActions allUserActions, IGetAwaitingResponse getAwaitingCommand)
         {
             this.parserSettings = parserSettings;
             this.allUserActions = allUserActions;
+            this.getAwaitingCommand = getAwaitingCommand;
         }
         ParserSettings parserSettings;
         IAllUserActions allUserActions;
+        IGetAwaitingResponse getAwaitingCommand;
     }
 
     ParserSettings originalParserSettings;
@@ -51,9 +48,10 @@ public class AgentDataAndControl
                 return parserSetAndActionsMap.get(gameId);
         }
         ParserSettings parserSettingsCopy = originalParserSettings.clone();
-        TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettingsCopy), emailSender);
+        CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy);
+        TopDMAllActions topDMAllActions = new TopDMAllActions(commandsToParser, emailSender);
         addInboxEmails.addInboxEmails(topDMAllActions);
-        ParserSetAndActions parserSetAndActions =  new ParserSetAndActions(parserSettingsCopy, topDMAllActions);
+        ParserSetAndActions parserSetAndActions =  new ParserSetAndActions(parserSettingsCopy, topDMAllActions, commandsToParser);
         synchronized(parserSetAndActionsMap)
         {
             parserSetAndActionsMap.put(gameId,parserSetAndActions);
@@ -77,7 +75,6 @@ public class AgentDataAndControl
     public String executeSentenceForUser(String gameId, String userSays)
     {
         logger.info("GameID:" + gameId + ". User says: " + userSays);
-        boolean needToAddToMap = false;
         //setting to null in order to avoid "variable might not have been initialized"
         ParserSetAndActions parserSetAndActions = null;
         synchronized(parserSetAndActionsMap)
@@ -92,6 +89,20 @@ public class AgentDataAndControl
             responseToUserListener.responseSentToUser(gameId, response.sayToUser, response.success);
         }
         return response.sayToUser;
+    }
+
+    public String getPendingResponse(String gameId)
+    {
+        logger.info("GameID:" + gameId + ". Requested pending response.");
+        ParserSetAndActions parserSetAndActions = null;
+        synchronized(parserSetAndActionsMap)
+        {
+            parserSetAndActions = parserSetAndActionsMap.get(gameId);
+        }
+        Optional<ActionResponse> responseOptional = parserSetAndActions.getAwaitingCommand.getNSetPendingActionResponse();
+        if (responseOptional.isPresent())
+            return responseOptional.get().getSayToUser();
+        return "";
     }
 
 }

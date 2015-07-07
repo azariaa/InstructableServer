@@ -32,8 +32,9 @@ public class TestDirectly
     {
         IAllUserActions allUserActions = new TopDMAllActions(new ICommandsToParser()
         {
+
             @Override
-            public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt)
+            public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, ActionResponse replyWhenDone)
             {
 
             }

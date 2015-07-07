@@ -931,8 +931,19 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         //make sure learnt at least one successful sentence
         if (commandsLearnt.size() > 0)
         {
-            commandsToParser.addTrainingEg(commandBeingLearnt, commandsLearnt);
-            return new ActionResponse("I now know what to do when you say (for example): \"" + commandBeingLearnt + "\"!", true, Optional.empty());
+            new Thread()
+            {
+                @Override
+                public void run()
+                {
+                    commandsToParser.addTrainingEg(
+                            commandBeingLearnt,
+                            commandsLearnt,
+                            new  ActionResponse("I now know what to do when you say (for example): \"" + commandBeingLearnt + "\"!", true, Optional.empty()));
+
+                }
+            }.start();
+            return new ActionResponse("I'm currently learning the new command (\""+ commandBeingLearnt + "\"). I'm trying to generalize to other similar commands, "+resendNewRequest+".", true, Optional.empty());
         }
         return new ActionResponse("I'm afraid that I didn't learn anything.", false, Optional.empty());
 

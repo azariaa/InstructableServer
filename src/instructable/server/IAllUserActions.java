@@ -12,6 +12,7 @@ public interface IAllUserActions
 {
     String unknownCommandStr = "unknownCommand";
     String cancelStr = "cancel";
+    String resendNewRequest = "this takes several seconds"; //TODO: not elegant that this is hard coded
 
     ActionResponse sendEmail(InfoForCommand infoForCommand);
 

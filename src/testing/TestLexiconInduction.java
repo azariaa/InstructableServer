@@ -1,6 +1,13 @@
 package testing;
 
+import com.google.common.collect.Lists;
+import com.jayantkrish.jklol.ccg.*;
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 import instructable.EnvironmentCreatorUtils;
+import instructable.server.ActionResponse;
 import instructable.server.CommandsToParser;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
@@ -8,17 +15,7 @@ import instructable.server.ccg.ParserSettings;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-
-import com.google.common.collect.Lists;
-import com.jayantkrish.jklol.ccg.CcgExample;
-import com.jayantkrish.jklol.ccg.CcgParse;
-import com.jayantkrish.jklol.ccg.CcgParser;
-import com.jayantkrish.jklol.ccg.LexiconEntry;
-import com.jayantkrish.jklol.ccg.UnfilledDependency;
-import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
-import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
+import java.util.Optional;
 
 public class TestLexiconInduction {
     public static void main(String[] args) throws Exception
@@ -88,7 +85,7 @@ public class TestLexiconInduction {
     	expressions.add(p.parseSingleExpression("(nextEmailMessage)"));
     	expressions.add(p.parseSingleExpression("(readInstance (getProbInstanceByName inbox))"));
 
-    	commandsToParser.addTrainingEg(sentence, expressions);
+    	commandsToParser.addTrainingEg(sentence, expressions, new ActionResponse("something",true, Optional.empty()));
 
     	CcgParser newParser = parserSettings.parser;
     	

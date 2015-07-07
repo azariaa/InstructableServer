@@ -57,7 +57,7 @@ public class ActionResponse //extends RuntimeException
      * @param success
      * @param learningSentence
      */
-    ActionResponse(String sayToUser, boolean success, Optional<String> learningSentence)
+    public ActionResponse(String sayToUser, boolean success, Optional<String> learningSentence)
     {
         this.learningSentence = learningSentence;
         this.sayToUser = sayToUser;
