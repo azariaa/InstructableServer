@@ -25,4 +25,6 @@ public interface ICommandsToParser
     void removeInstance(String instanceName);
 
     void undefineConcept(String conceptName);
+
+    void failNextCommand();
 }

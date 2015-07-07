@@ -73,6 +73,12 @@ public class TestDirectly
             {
 
             }
+
+            @Override
+            public void failNextCommand()
+            {
+
+            }
         },
                 new IEmailSender()
                 {

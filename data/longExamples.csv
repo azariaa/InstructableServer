@@ -125,3 +125,4 @@ set body to hello and subject to see you,"(doSeq (setFieldFromString (getProbMut
 "set body to yes, I am, set recipient to momthebest7@bestforyou.com, and send.","(doSeq (doSeq (setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""yes, I am"")) (setFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""momthebest7@bestforyou.com""))) (sendEmail))"
 "set body to yes, I am, set recipient to momthebest7@bestforyou.com,  send.","(doSeq (doSeq (setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""yes, I am"")) (setFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""momthebest7@bestforyou.com""))) (sendEmail))"
 set subject to current subject. set body to current body. set recipient to charlieisasleep4@myworkplace.com. send email.,
+set body to current email's body and set subject to current email's subject,

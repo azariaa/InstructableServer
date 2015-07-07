@@ -10,7 +10,8 @@ import org.json.simple.JSONObject;
  */
 public interface IAllUserActions
 {
-    final String unknownCommandStr = "unknownCommand";
+    String unknownCommandStr = "unknownCommand";
+    String cancelStr = "cancel";
 
     ActionResponse sendEmail(InfoForCommand infoForCommand);
 
@@ -102,6 +103,8 @@ public interface IAllUserActions
     ActionResponse setFieldType(InfoForCommand infoForCommand, String fieldName, PossibleFieldType possibleFieldType, boolean isList);
 
     ActionResponse unknownCommand(InfoForCommand infoForCommand);
+
+    ActionResponse teachNewCommand(InfoForCommand infoForCommand);
 
     ActionResponse end(InfoForCommand infoForCommand); // mostly for end learning e.g. "that's it"
 

@@ -6,6 +6,7 @@ new,{create} //new email, new contact mom
 "compose new",{create}
 "compose a new",{create}
 define,{create} //not 100% correct, but used by many users (e.g. "define contact mom")
+learn,{teach}
 set,{write,change}  // set hello world as the subject, set the subject to hello world
 set,{move} //set to the next email
 put, {write} //put hello world in the subject 

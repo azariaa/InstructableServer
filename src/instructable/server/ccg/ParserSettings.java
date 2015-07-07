@@ -1,27 +1,7 @@
 package instructable.server.ccg;
 
-import instructable.server.ActionResponse;
-import instructable.server.IAllUserActions;
-import instructable.server.InfoForCommand;
-import instructable.server.LispExecutor;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.Lists;
-import com.jayantkrish.jklol.ccg.CcgExactInference;
-import com.jayantkrish.jklol.ccg.CcgExample;
-import com.jayantkrish.jklol.ccg.CcgInference;
-import com.jayantkrish.jklol.ccg.CcgParse;
-import com.jayantkrish.jklol.ccg.CcgParser;
-import com.jayantkrish.jklol.ccg.CcgUnaryRule;
-import com.jayantkrish.jklol.ccg.LexiconEntry;
-import com.jayantkrish.jklol.ccg.ParametricCcgParser;
+import com.jayantkrish.jklol.ccg.*;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
@@ -39,6 +19,13 @@ import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
 import com.jayantkrish.jklol.training.NullLogFunction;
 import com.jayantkrish.jklol.util.IndexedList;
+import instructable.server.ActionResponse;
+import instructable.server.IAllUserActions;
+import instructable.server.InfoForCommand;
+import instructable.server.LispExecutor;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 05-May-15.
@@ -47,7 +34,7 @@ public class ParserSettings implements Cloneable
 {
     static final int initialTraining = 10;
     static final int retrainAfterNewCommand = 1;
-    static final boolean treatCorpusAsLearnedExamples = false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
+    static final boolean treatCorpusAsLearnedExamples = true;//false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
 
 
     public ParserSettings(List<String> lexiconEntries, List<String> synonyms, String[] unaryRules,
@@ -69,7 +56,7 @@ public class ParserSettings implements Cloneable
             if (synonym.trim().length() <= 1 || synonym.contains(fullRowComment) || synonym.trim().startsWith(midRowComment)) //comment row
                 continue;
             String newWord = synonym.substring(0, synonym.indexOf(","));
-            newWord = newWord.replace("^",",");
+            newWord = newWord.replace("^", ",");
             //newWord.replace("\"","");
             String[] meanings = synonym.substring(synonym.indexOf("{") + 1, synonym.indexOf("}")).split(",");
             for (String meaning : meanings)
@@ -112,8 +99,8 @@ public class ParserSettings implements Cloneable
             ccgExamples.add(example);
             if (treatCorpusAsLearnedExamples)
             {
-                 //actually already tokenizes and POS exSentence above and will be doing it again in addToLearnedExamples, but this isn't significant.
-                addToLearnedExamples(exSentence,expression);
+                //actually already tokenizes and POS exSentence above and will be doing it again in addToLearnedExamples, but this isn't significant.
+                addToLearnedExamples(exSentence, expression);
             }
             List<String> allFunctionNames = LispExecutor.allFunctionNames();
             Set<String> freeSet = StaticAnalysis.getFreeVariables(example.getLogicalForm());
@@ -167,8 +154,8 @@ public class ParserSettings implements Cloneable
         ActionResponse response;
 //        try
 //        {
-            LispEval.EvalResult result = lispEval.eval(sExpression, env);
-            response = (ActionResponse) result.getValue();
+        LispEval.EvalResult result = lispEval.eval(sExpression, env);
+        response = (ActionResponse) result.getValue();
 //        } catch (ActionResponse actionResponse)
 //        {
 //            response = actionResponse;
@@ -182,7 +169,7 @@ public class ParserSettings implements Cloneable
         Expression2 expression;
         ActionResponse response;
         expression = parse(userSays);
-        //System.out.println("debug:" + expression.toString());
+        System.out.println("debug:" + expression.toString());
 
         response = this.evaluate(allUserActions, userSays, expression);
         return new CcgUtils.SayAndExpression(response.getSayToUser(), expression.toString(), response.isSuccess());
@@ -232,7 +219,6 @@ public class ParserSettings implements Cloneable
     }
 
 
-
     /**
      * Parses a sentence text using {@code parser} to produce a
      * logical form. The text is represented by a list of tokens
@@ -255,7 +241,7 @@ public class ParserSettings implements Cloneable
         CcgUtils.tokenizeAndPOS(sentence, tokens, poss, false, posUsed);
 
         //if we know what to return for this exact example, simply return it:
-        String jointTokenizedSentence = String.join(" ",tokens);
+        String jointTokenizedSentence = String.join(" ", tokens);
         if (learnedExamples.containsKey(jointTokenizedSentence))
             return learnedExamples.get(jointTokenizedSentence);
 
@@ -264,14 +250,19 @@ public class ParserSettings implements Cloneable
         //      //if we want to return only sentences and fieldVal in upper level:         //DiscreteVariable dv = parser.getSyntaxVarType();
 
         CcgParse parse = inferenceAlg.getBestParse(parser, supertaggedSentence, new InstChartCost(), new NullLogFunction());
-        //if parse is empty we want to parse to unknownCommand
+        //if parse fails , or if we want to fail on this command we parse to unknownCommand
         Expression2 expression;
-        if (parse == null) {
-          expression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
+        if (parse == null ||
+                (failNextCommand && !parse.getLogicalForm().hasSubexpression(ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.cancelStr + ")")))) //fail all but a "cancel" command
+        {
+            expression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
         }
-        else {
-          expression = parse.getLogicalForm();
+        else
+        {
+            expression = parse.getLogicalForm();
         }
+        failNextCommand = false;  //make sure we don't fail again even if we wanted to fail this time
+
         return simplifier.apply(expression);
     }
 
@@ -307,8 +298,8 @@ public class ParserSettings implements Cloneable
         tokens.add(CcgUtils.startSymbol);
         List<String> dummy = new LinkedList<>(); //don't need POS
         CcgUtils.tokenizeAndPOS(originalCommand, tokens, dummy, false, posUsed);
-        String jointTokenizedSentence = String.join(" ",tokens);
-        learnedExamples.put(jointTokenizedSentence,expressionLearnt);
+        String jointTokenizedSentence = String.join(" ", tokens);
+        learnedExamples.put(jointTokenizedSentence, expressionLearnt);
     }
 
     public void retrain(int iterations)
@@ -325,7 +316,7 @@ public class ParserSettings implements Cloneable
         ParserSettings parserSettings = null;//new ParserSettings();
         try
         {
-            parserSettings = (ParserSettings)super.clone();
+            parserSettings = (ParserSettings) super.clone();
         } catch (CloneNotSupportedException e)
         {
             e.printStackTrace(); //this is so stupid, and can never happen. (C# is so much better :)
@@ -348,7 +339,7 @@ public class ParserSettings implements Cloneable
 
     //learnedExamples examples are matched BEFORE parsing //the String key in these examples are the tokens joined back using " " (this is done to improve performance using hash-map)
     // if the (treatCorpusAsLearnedExamples==true) so copies all corpus in ccgExamples to learnedExamples
-    public Map<String,Expression2> learnedExamples;
+    public Map<String, Expression2> learnedExamples;
     public List<LexiconEntry> lexicon;
     public List<CcgUnaryRule> unaryRules;
     public FeatureVectorGenerator<StringContext> featureVectorGenerator;
@@ -359,4 +350,12 @@ public class ParserSettings implements Cloneable
     public Environment env;
     public IndexedList<String> symbolTable;
     public Set<String> posUsed;
+
+
+    private boolean failNextCommand = false;
+
+    public void failNextCommand()
+    {
+        this.failNextCommand = true;
+    }
 }

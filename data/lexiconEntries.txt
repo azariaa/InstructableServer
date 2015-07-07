@@ -6,6 +6,9 @@ yes,S{0},(yes)
 end,S{0},(end)
 stop,S{0},(endOrCancel)
 cancel,S{0},(cancel)
+teach,S{0},(teachNewCommand)
+teach,(S{0}/Command{1}){0}, (lambda $1 (teachNewCommand))
+teach,(S{0}/StringV{1}){0}, (lambda $1 (teachNewCommand)) //users many times add information to this command, but it is ignored
 next,S{0}/InstanceName{1},(lambda $1 (next $1))
 previous,S{0}/InstanceName{1},(lambda $1 (previous $1))
 "compose","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
@@ -14,6 +17,7 @@ compose,((S{0}/StringN{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFu
 create,((S{0}/StringN{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
 create,((S{0}/PP_ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (createInstanceByFullNames $2 $1))
 create,(S{0}/StringN{1}){0},"(lambda $1 (defineConcept $1))"
+create,(S{0}/Command{1}){0}, (lambda $1 (teachNewCommand)) //create a command
 define,(S{0}/StringN{1}){0},"(lambda $1 (defineConcept $1))"
 add,((S{0}/PP_ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
 add,(S{0}/StringN{1}){0}, (lambda $1 (addToWhat $1))
@@ -81,6 +85,11 @@ please,S{0}/S{0},(lambda $1 $1)
 move,S{0}/S{0},(lambda $1 $1) //move to the next email
 ".",S{0}\S{0},(lambda $1 $1)
 ",",((S/S)\S)\((S/S)\S),(lambda $1 $1)
+#
+# for learning new commands
+#
+command,Command{0},command
+command,(Command{0}/StringN{1}){0}, (lambda $1 command) //ignore possible command name ("define new command go")
 #
 # The following are specific from emails
 #

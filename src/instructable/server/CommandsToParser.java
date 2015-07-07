@@ -75,4 +75,10 @@ public class CommandsToParser implements ICommandsToParser
     {
         toRemove(ConceptFieldInstance.Concept, conceptName);
     }
+
+    @Override
+    public void failNextCommand()
+    {
+        this.parserSettings.failNextCommand();
+    }
 }

@@ -58,7 +58,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         private static enum InternalLearningStateMode
 
         {
-            none, pendOnLearning, learning
+            none, pendOnLearning, learnNext, learning
         }
 
         private InternalLearningStateMode internalLearningStateMode;
@@ -91,6 +91,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         public void pendOnLearning()
         {
             internalLearningStateMode = InternalLearningStateMode.pendOnLearning;
+        }
+        public void learnNextCommand()
+        {
+            internalLearningStateMode = internalLearningStateMode.learnNext;
+        }
+        public boolean shouldLearnedNext()
+        {
+            return internalLearningStateMode == internalLearningStateMode.learnNext;
         }
 
         public void reset()
@@ -250,7 +258,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse cancel(InfoForCommand infoForCommand)
     {
-        if (internalState.isInLearningMode())
+        if (internalState.isInLearningMode() || internalState.shouldLearnedNext())
         {
             internalState.reset();
             return new ActionResponse("Ok, I won't learn it.", true, Optional.empty());
@@ -873,6 +881,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse unknownCommand(InfoForCommand infoForCommand)
     {
+        if (internalState.shouldLearnedNext())
+        {
+            internalState.userGaveCommand(infoForCommand,false);
+            internalState.pendOnLearning();
+            return yes(infoForCommand);
+        }
+
         ExecutionStatus executionStatus = new ExecutionStatus();
         executionStatus.add(ExecutionStatus.RetStatus.error, "I don't understand");
 
@@ -883,6 +898,20 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 Optional.empty(), //will fail anyway, because added error above.
                 true,
                 internalState);
+    }
+
+    @Override
+    public ActionResponse teachNewCommand(InfoForCommand infoForCommand)
+    {
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        if (internalState.isInLearningMode())
+        {
+            return new ActionResponse("I'm already trying to learn a command, if you want me to end and learn this new command, say \"end\". If you want me to cancel this command say \"cancel\".", false, Optional.empty());
+        }
+
+        internalState.learnNextCommand();
+        commandsToParser.failNextCommand();
+        return new ActionResponse("I'm happy to hear that want to teach me a new command. Now say the command the way you would use it, then I will ask you what exactly to do in that case, I will try to generalize to similar sentences (if you don't want me to learn say \"cancel\")", true, Optional.empty());
     }
 
     /*
