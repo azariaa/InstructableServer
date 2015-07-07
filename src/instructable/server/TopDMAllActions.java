@@ -142,6 +142,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             }
             else
             {
+                internalLearningStateMode = InternalLearningStateMode.none;
                 lastCommandOrLearningCommand = infoForCommand.userSentence;
             }
         }
@@ -242,7 +243,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         }
         else
         {
-            return failWithMessage(infoForCommand, "I did not understand what you said yes to, please give the full request.");
+            return failWithMessage(infoForCommand, "I did not understand what you said yes to, please give the full request");
         }
     }
 

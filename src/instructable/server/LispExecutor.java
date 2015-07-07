@@ -79,7 +79,12 @@ public class LispExecutor
             try
             {
                 if (currentFunction.equals(stringNoun) || currentFunction.equals(stringValue))
-                    return (String)argumentValues.get(0); //should return a regular string.
+                {
+                    String retStr = (String) argumentValues.get(0); //should return a regular string.
+                    if (currentFunction.equals(stringNoun)) //remove punctuation from begining and end
+                        return retStr.trim().replaceAll("^[;.,]+","").replaceAll("[;.,]+$","");
+                    return retStr;
+                }
 
                 if (currentFunction.equals(doSeq))
                 {

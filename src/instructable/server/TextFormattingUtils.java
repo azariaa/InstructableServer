@@ -51,7 +51,7 @@ public class TextFormattingUtils
         boolean success = retStatus == ExecutionStatus.RetStatus.ok || retStatus == ExecutionStatus.RetStatus.comment ||
                 (retStatus == ExecutionStatus.RetStatus.warning && !failWithWarningToo);
 
-        internalState.userGaveCommand(infoForCommand, success);
+        internalState.userGaveCommand(infoForCommand, success); //this also clears pending on learning or  email creation
 
         if (retStatus == ExecutionStatus.RetStatus.error || retStatus == ExecutionStatus.RetStatus.warning ||
                 (retStatus == ExecutionStatus.RetStatus.comment && !ignoreComments))

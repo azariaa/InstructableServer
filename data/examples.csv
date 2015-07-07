@@ -19,7 +19,7 @@ compose a new email,(createInstanceByConceptName outgoing_email)
 create a new outgoing email,(createInstanceByConceptName outgoing_email)
 create an outgoing email and set the subject to I'm on my way,"(doSeq (createInstanceByConceptName outgoing_email) (setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""I'm on my way"")))"
 define person!,"(defineConcept (stringNoun ""person""))"
-define the concept person,"(defineConcept (stringNoun ""person""))"
+define the concept person.,"(defineConcept (stringNoun ""person""))"
 define concept person,"(defineConcept (stringNoun ""person""))"
 add wings as a field in name,"(addFieldToConcept name (stringNoun ""wings""))"
 add email as a field in name,"(addFieldToConcept name (stringNoun ""email""))"
@@ -110,6 +110,8 @@ first set the recipient to fds@dfs.com then send,"(doSeq (setFieldFromString (ge
 set bob's classification to whatever you would like,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) (stringValue ""whatever you would like""))"
 set bob classification to whatever you would like,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) (stringValue ""whatever you would like""))"
 set recipient to current email sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName inbox sender)))
+set recipient to current email's sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName inbox sender)))
+set the recipient to current email's sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName inbox sender)))
 delete outgoing email,(deleteInstance (getProbInstanceByName outgoing_email))
 delete email,(deleteInstance (getProbInstanceByName email))
 remove inbox,(deleteInstance (getProbInstanceByName inbox))
