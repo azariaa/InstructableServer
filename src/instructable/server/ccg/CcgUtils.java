@@ -15,6 +15,7 @@ import java.util.Set;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -41,6 +42,7 @@ import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
 import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
 import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
 import com.jayantkrish.jklol.ccg.lexicon.SpanFeatureAnnotation;
 import com.jayantkrish.jklol.ccg.lexicon.StringContext;
@@ -551,8 +553,9 @@ public class CcgUtils
         // TODO: the head of each category right now is the word itself,
         // not its semantics. This parameterization does not share dependency
         // parameters among different lexical ways to refer to the same function.
-        // Set<String> freeVars = StaticAnalysis.getFreeVariables(lf);
-        String head = Joiner.on("_").join(entry.getWords());
+        Set<String> freeVars = StaticAnalysis.getFreeVariables(lf);
+        String head = Iterables.getFirst(freeVars, null);
+        // String head = Joiner.on("_").join(entry.getWords());
         // System.out.println(entry);
         if (head != null) {
           HeadedSyntacticCategory syntax = ccgCategory.getSyntax();            

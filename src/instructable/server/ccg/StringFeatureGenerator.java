@@ -15,6 +15,7 @@ public class StringFeatureGenerator implements FeatureGenerator<StringContext, S
     private static final long serialVersionUID = 1L;
     
     private static final int MAX_LENGTH = 3;
+    private static final int MAX_POS_LENGTH = 1;
 
     @Override
     public Map<String, Double> generateFeatures(StringContext context)
@@ -27,7 +28,7 @@ public class StringFeatureGenerator implements FeatureGenerator<StringContext, S
         int[] semiPosCount = semiPosCount(context);
         for (PosForFeatures posForFeatures : PosForFeatures.values()) {
           String baseFeatureName = "tot" + posForFeatures.toString();
-          featureValues.put(histogramFeatureValue(baseFeatureName, semiPosCount[posForFeatures.ordinal()], MAX_LENGTH), 1.0);
+          featureValues.put(histogramFeatureValue(baseFeatureName, semiPosCount[posForFeatures.ordinal()], MAX_POS_LENGTH), 1.0);
         }
         featureValues.put("atStart"+getPosForFeatures(context.getPos().get(context.getSpanStart())).toString(), 1.0);
         featureValues.put("atEnd"+getPosForFeatures(context.getPos().get(context.getSpanEnd())).toString(), 1.0);
