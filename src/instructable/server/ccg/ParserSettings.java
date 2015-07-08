@@ -135,7 +135,7 @@ public class ParserSettings implements Cloneable
         this.lexicon = Lists.newArrayList(lexicon);
         this.unaryRules = Lists.newArrayList(unaryRulesList);
         this.featureVectorGenerator = featureVectorGenerator;
-        this.parserParameters = CcgUtils.train(family, ccgExamples, initialTraining);
+        this.parserParameters = CcgUtils.train(family, ccgExamples, initialTraining, null);
         this.parser = family.getModelFromParameters(this.parserParameters);
         this.parserFamily = family;
     }
@@ -211,7 +211,7 @@ public class ParserSettings implements Cloneable
         newParameters.transferParameters(parserParameters);
         parserParameters = newParameters;
         parserFamily = newFamily;
-        parser = newFamily.getModelFromParameters(newParameters);
+        parser = newFamily.getModelFromParameters(parserParameters);
     }
 
     public void updateParserGrammar(String newLexicon)
@@ -319,8 +319,9 @@ public class ParserSettings implements Cloneable
 
     public void retrain(int iterations)
     {
-        SufficientStatistics newParameters = CcgUtils.train(parserFamily, ccgExamples, iterations);
-
+        SufficientStatistics newParameters = CcgUtils.train(parserFamily,
+            ccgExamples, iterations, parserParameters);
+        
         parser = parserFamily.getModelFromParameters(newParameters);
         this.parserParameters = newParameters;
     }

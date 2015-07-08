@@ -42,6 +42,11 @@ public class TestDataDriven {
   private static void runTest() {
     ParserSettings parserSettings = EnvironmentCreatorUtils.createParser(
         "data/lexiconEntries.txt", "data/lexiconSyn.txt", "data/examples.csv");
+
+    List<Expression2> commands = Lists.newArrayList();
+    commands.add(ExpressionParser.expression2().parseSingleExpression("(newcommand)"));
+    parserSettings.addTrainingEg("newcommand", commands);
+
     CcgParser parser = parserSettings.parser;
     ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
     ExpressionComparator comparator = new SimplificationComparator(simplifier);

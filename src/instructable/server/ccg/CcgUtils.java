@@ -474,7 +474,7 @@ public class CcgUtils
      */
     public static SufficientStatistics train(ParametricCcgParser parametricCcgParser,
                                              List<CcgExample> trainingExamples,
-                                             int numPasses) {
+                                             int numPasses, SufficientStatistics initialParameters) {
         ExpressionSimplifier simplifier = getExpressionSimplifier();
         ExpressionComparator comparator = new SimplificationComparator(simplifier);
 
@@ -491,12 +491,15 @@ public class CcgUtils
 //            }
 //        }, 10);
 
+        if (initialParameters == null) {
+          initialParameters = oracle.initializeGradient();
+        }
 
         int numIterations = numPasses * trainingExamples.size();
         double l2Regularization = 0.01;
         GradientOptimizer trainer = StochasticGradientTrainer.createWithL2Regularization(numIterations,
-                1, 1.0, true, true, l2Regularization, new NullLogFunction());
-        SufficientStatistics parameters = trainer.train(oracle, oracle.initializeGradient(),
+                1, 1.0, true, false, l2Regularization, new NullLogFunction());
+        SufficientStatistics parameters = trainer.train(oracle, initialParameters,
                 trainingExamples);
         //Print out the parameters that were learned:
         // System.out.println(parametricCcgParser.getParameterDescription(parameters));
