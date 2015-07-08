@@ -15,7 +15,6 @@ import java.util.Set;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -42,7 +41,6 @@ import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
 import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
-import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
 import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
 import com.jayantkrish.jklol.ccg.lexicon.SpanFeatureAnnotation;
 import com.jayantkrish.jklol.ccg.lexicon.StringContext;
@@ -545,8 +543,12 @@ public class CcgUtils
         CcgCategory ccgCategory = entry.getCategory();
         Expression2 lf = ccgCategory.getLogicalForm();
 
-        Set<String> freeVars = StaticAnalysis.getFreeVariables(lf);
-        String head = Iterables.getFirst(freeVars, null);
+        // TODO: the head of each category right now is the word itself,
+        // not its semantics. This parameterization does not share dependency
+        // parameters among different lexical ways to refer to the same function.
+        // Set<String> freeVars = StaticAnalysis.getFreeVariables(lf);
+        String head = Joiner.on("_").join(entry.getWords());
+        // System.out.println(entry);
         if (head != null) {
           HeadedSyntacticCategory syntax = ccgCategory.getSyntax();            
           List<String> subjects = Lists.newArrayList();
@@ -554,6 +556,10 @@ public class CcgUtils
           List<Integer> objects = Lists.newArrayList();
 
           for (int varNum : syntax.getUniqueVariables()) {
+            if (varNum == 0) {
+              continue;
+            }
+
             subjects.add(head);
             argumentNumbers.add(varNum);
             objects.add(varNum);
@@ -567,6 +573,8 @@ public class CcgUtils
 
           CcgCategory newCategory = new CcgCategory(ccgCategory.getSyntax(), lf,
               subjects, argumentNumbers, objects, assignments);
+          // System.out.println("   " + newCategory);
+          
           newLexicon.add(new LexiconEntry(entry.getWords(), newCategory));
         } else {
           // Can't induce the heads or dependencies, so use the

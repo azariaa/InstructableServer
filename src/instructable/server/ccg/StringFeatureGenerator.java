@@ -15,33 +15,19 @@ public class StringFeatureGenerator implements FeatureGenerator<StringContext, S
     private static final long serialVersionUID = 1L;
     
     private static final int MAX_LENGTH = 3;
-    private static final int MAX_ORG_LENGTH = 3;
 
     @Override
     public Map<String, Double> generateFeatures(StringContext context)
     {
         Map<String, Double> featureValues = Maps.newHashMap();
-        int length = getStringLength(context);
-        String lengthFeatureName = null;
-        if (length <= MAX_LENGTH) {
-          lengthFeatureName = "length=" + length;
-        } else {
-          lengthFeatureName = "length>" + MAX_LENGTH;
-        }
-        featureValues.put(lengthFeatureName.intern(), 1.0);
+        featureValues.put(histogramFeatureValue("length", getStringLength(context), MAX_LENGTH), 1.0);
 
-        int orgLength = context.getWords().size();
-        if (orgLength <= MAX_ORG_LENGTH) {
-          lengthFeatureName = "orgLength=" + orgLength;
-        } else {
-          lengthFeatureName = "orgLength>" + MAX_ORG_LENGTH;
-        }
-        featureValues.put(lengthFeatureName.intern(), 1.0);
+        featureValues.put(histogramFeatureValue("orgLength", context.getWords().size(), MAX_LENGTH), 1.0);
 
         int[] semiPosCount = semiPosCount(context);
-        for (PosForFeatures posForFeatures : PosForFeatures.values())
-        {
-            featureValues.put("tot" + posForFeatures.toString(), (double) semiPosCount[posForFeatures.ordinal()]);
+        for (PosForFeatures posForFeatures : PosForFeatures.values()) {
+          String baseFeatureName = "tot" + posForFeatures.toString();
+          featureValues.put(histogramFeatureValue(baseFeatureName, semiPosCount[posForFeatures.ordinal()], MAX_LENGTH), 1.0);
         }
         featureValues.put("atStart"+getPosForFeatures(context.getPos().get(context.getSpanStart())).toString(), 1.0);
         featureValues.put("atEnd"+getPosForFeatures(context.getPos().get(context.getSpanEnd())).toString(), 1.0);
@@ -67,6 +53,16 @@ public class StringFeatureGenerator implements FeatureGenerator<StringContext, S
         }
 
         return featureValues;
+    }
+    
+    private String histogramFeatureValue(String baseFeatureName, int value, int maxValue) {
+      String featureName = null;
+      if (value <= maxValue) {
+        featureName = baseFeatureName + "=" + value;
+      } else {
+        featureName = baseFeatureName + ">" + maxValue;
+      }
+      return featureName.intern();
     }
 
     private List<String> getRelevantTokens(StringContext context)
