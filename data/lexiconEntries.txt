@@ -1,7 +1,8 @@
 start_symbol,START{0},**skip**,0 **skip**
 not_a_real_word,UnknownCommand{0},**skip**,0 **skip**
 "send","S{0}","(sendEmail)","0 sendEmail"
-"send","S{0}/InstanceName","(lambda $1 (send $1))"
+"send","S{0}/InstanceName","(lambda $1 (send $1))" //send the email
+"send","S{0}/ConceptName","(lambda $1 (send $1))" //send an email, actually means create an instance of concept email, and send it.
 yes,S{0},(yes)
 end,S{0},(end)
 stop,S{0},(endOrCancel)
@@ -24,8 +25,8 @@ add,(S{0}/StringN{1}){0}, (lambda $1 (addToWhat $1))
 add,((S{0}/PP_MutableField{2}){0}/StringV{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
 add,((S{0}/PP_MutableField{2}){0}/FieldVal{1}), (lambda $1 $2 (addToFieldFromFieldVal $2 $1))
 remove,((S{0}/PP_ConceptName{2}){0}/FieldName{1}), (lambda $1 $2 (removeFieldFromConcept $2 $1))
-remove,(S{0}/Instance{1}){0}, (lambda $1 (deleteInstance $1))
-remove,(S{0}/ConceptName{1}){0}, (lambda $1 (undefineConcept $1))
+remove,(S{0}/Instance{1}){0}, (lambda $1 (deleteInstance $1)) //we may want to allow deleting only ExactInstance
+undefine,(S{0}/ConceptName{1}){0}, (lambda $1 (undefineConcept $1)) ////this is very drastic, so only if uses word undefine (not remove)
 has,((S{0}\ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
 what,(S{0}/Field{1}){0},(lambda $1 (evalField $1)) //for some reason, when this was "read", it parsed "read email" to this
 read,(S{0}/Instance{1}){0},(lambda $1 (readInstance $1)) //Instance seems to always be immutable 
@@ -41,20 +42,22 @@ change,((S{0}/FieldVal{2}){0}/MutableField{1}){0},(lambda $1 $2 (setFieldFromFie
 change,(S{0}/MutableField{1}){0},(lambda $1 (setFieldWithMissingArg $1)) //change mom's email (without to "hello world)
 goes,"((S{0}/PP_MutableField{2}){0}\StringV{1})",(lambda $1 $2 (setFieldFromString $2 $1)) //hello world goes in the subject
 goes,"((S{0}/PP_MutableField{2}){0}\FieldVal{1}){0}",(lambda $1 $2 (setFieldFromFieldVal $2 $1)) //mom's email goes in the subject
-of,((Field{0}\FieldName{2}){0}/Instance{1}){0},(lambda $1 $2 (getFieldFromInstance $1 $2))
-of,((MutableField{0}\FieldName{2}){0}/Instance{1}){0},(lambda $1 $2 (getFieldFromInstance $1 $2))
+of,((Field{0}\FieldName{2}){0}/ExactInstance{1}){0},(lambda $1 $2 (getFieldFromInstance $1 $2))
+of,((MutableField{0}\FieldName{2}){0}/ExactInstance{1}){0},(lambda $1 $2 (getFieldFromInstance $1 $2))
 "of","((Field{0}\FieldName{2}){0}/InstanceName{1}){0}","(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $1 $2))","0 getProbFieldByInstanceNameAndFieldName","getProbFieldByInstanceNameAndFieldName 1 1","getProbFieldByInstanceNameAndFieldName 2 2"
 of,((MutableField{0}\FieldName{2}){0}/InstanceName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $1 $2))
 "from","((Field{0}\FieldName{2}){0}/InstanceName{1}){0}","(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $1 $2))","0 getProbFieldByInstanceNameAndFieldName","getProbFieldByInstanceNameAndFieldName 1 1","getProbFieldByInstanceNameAndFieldName 2 2"
-'s,((Field{0}\Instance{2}){0}/FieldName{1}){0},(lambda $1 $2 (getFieldFromInstance $2 $1))
-'s,((MutableField{0}\Instance{2}){0}/FieldName{1}){0},(lambda $1 $2 (getFieldFromInstance $2 $1))
+'s,((Field{0}\ExactInstance{2}){0}/FieldName{1}){0},(lambda $1 $2 (getFieldFromInstance $2 $1))
+'s,((MutableField{0}\ExactInstance{2}){0}/FieldName{1}){0},(lambda $1 $2 (getFieldFromInstance $2 $1))
 's,((Field{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbFieldByInstanceNameAndFieldName $2 $1))
 's,((MutableField{0}\InstanceName{2}){0}/FieldName{1}){0},(lambda $1 $2 (getProbMutableFieldByInstanceNameAndFieldName $2 $1))
 is,"((S{0}/StringV{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromString $1 $2)) //the subject is hello world
 is,"((S{0}/FieldVal{2}){0}\MutableField{1}){0}",(lambda $1 $2 (setFieldFromFieldVal $1 $2)) //the recipient is mom's email
 is,"((S{0}/ConceptName{2}){0}\StringN{1})", (lambda $1 $2 (createInstanceByFullNames $2 $1)) //mom is a contact
 it,FieldVal{0},(getProbFieldVal),0 getProbFieldVal
-it,Instance{0},(getProbInstance)
+it,Instance{0},(getProbInstance) //treating it as a non-exact instance. since we don't want to allow access its fields or delete it.
+its,(Field{0}/FieldName{1}){0},(lambda $1 (getProbFieldByFieldName $1))
+its,(MutableField{0}/FieldName{1}){0},(lambda $1 (getProbMutableFieldByFieldName $1))
 to,PP_StringV/StringV,(lambda $1 $1) //set subject to hello world
 to,PP_FieldVal/FieldVal,(lambda $1 $1) //set recipient to mom's email
 #to,PP_Field/Field,(lambda $1 $1) //?
@@ -80,13 +83,15 @@ field,FieldName\FieldName,(lambda $1 $1) //set the subject field to hello
 line,FieldName\FieldName,(lambda $1 $1) //set the subject line to hello
 field,StringN/StringN,(lambda $1 $1) //add field email to concept contact
 field,StringN\StringN,(lambda $1 $1) //add the email field to the concept contact
+a,(StringN\StringN)/(StringN\StringN),(lambda $1 $1) //add email being a field to concept contact
+as,(StringN\StringN)/(StringN\StringN),(lambda $1 $1) //add email as a field to concept contact 
 instance,InstanceName/InstanceName,(lambda $1 $1)
 instance,StringN/StringN,(lambda $1 $1) //create instance mom of concept contact
-the, StringN/StringN, (lambda $1 $1)
 please,S{0}/S{0},(lambda $1 $1)
 move,S{0}/S{0},(lambda $1 $1) //move to the next email
 ".",S{0}\S{0},(lambda $1 $1)
 ",",((S/S)\S)\((S/S)\S),(lambda $1 $1)
+named,StringN/StringN,(lambda $1 $1) //create a contact named mom
 #
 # for learning new commands
 #
@@ -119,3 +124,9 @@ name,ConceptName{0},name
 classification,FieldName{0},classification
 jane,InstanceName{0},jane
 "my spouse",InstanceName{0},my_spouse
+#
+# These are added just for TestDataDriven
+#
+room,ConceptName{0},room
+tables,FieldName{0},tables
+ghc8114,InstanceName{0},ghc8114

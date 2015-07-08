@@ -1,0 +1,274 @@
+U: send an email
+S: I see that there is no email being composed.
+S: Do you want to compose a new email?
+
+U: yes
+S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
+
+U: set the subject of this email to hello
+S: The "subject" field in "outgoing email" was set to: "hello".
+
+U: put test in body
+S: The "body" field in "outgoing email" was set to: "test".
+
+U: send the email
+S: Sorry, but the message has no recipient. Set the recipient to an email address (e.g. set recipient to email@example.com).
+
+U: set myself as the recipient
+S: Sorry, but "myself" is not an email address.
+
+U: set myself@myjob.com as the recipient
+S: The "recipient list" field in "outgoing email" was set to: "myself@myjob.com".
+
+U: send
+S: Email sent successfully.
+
+U: send
+S: I see that there is no email being composed.
+S: Do you want to compose a new email?
+
+---------------- now in definingContact --------------------
+
+U: compose a new email
+S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
+
+U: set danny as the recipient
+S: Sorry, but "danny" is not an email address.
+
+U: I want to teach you what a contact is
+S: Concept "contact" was defined successfully. Please add fields to it.
+
+U: Define contact!
+S: Sorry, but creating an instance of "contact" requires a name (please repeat command and provide a name).
+
+U: add email as a field in contact
+S: Field "email" was added to concept "contact".
+
+U: create a contact call it bob
+S: Instance "bob" (of concept "contact") was created. "contact" fields are: email.
+
+U: set bob's email to baba
+S: Sorry, but "baba" is not an email address.
+
+U: set bob's email to bob@gmail.com
+S: The "email" field in "bob" was set to: "bob@gmail.com".
+
+---------------- now in setFromGet --------------------
+
+U: what is bob's email?
+S: It is: bob@gmail.com
+
+U: create a contact jane
+S: Instance "jane" (of concept "contact") was created. "contact" fields are: email.
+
+U: take bob's email
+S: It is: bob@gmail.com
+
+U: and set it as jane's email
+S: The "email" field in "jane" was set to: "bob@gmail.com".
+
+U: take bob's email and set it as jane's email
+S: It is: bob@gmail.com
+S: The "email" field in "jane" was set to: "bob@gmail.com".
+
+U: set the recipient to be bob's email
+S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
+
+U: add nana@gmail.com to the recipient list
+S: "nana@gmail.com" was added to the "recipient list" field in "outgoing email".
+
+---------------- now in teachingToSetRecipientAsContact --------------------
+
+U: compose an email
+S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
+
+U: set jane's email to be jane@gmail.com
+S: The "email" field in "jane" was set to: "jane@gmail.com".
+
+U: make bob be the recipient
+S: Sorry, but I don't understand.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+U: yes
+S: Great! When you say, for example: "make bob be the recipient", what shall I do first?
+
+U: take bob's email
+S: It is: bob@gmail.com
+S: What shall I do next (when executing: "make bob be the recipient")?
+
+U: and set it as the recipient
+S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
+S: What shall I do next (when executing: "make bob be the recipient")?
+
+U: that's it
+S: I'm currently learning the new command ("make bob be the recipient"). I'm trying to generalize to other similar commands, this takes several seconds...
+
+U: make jane the recipient
+S: It is: jane@gmail.com
+S: The "recipient list" field in "outgoing email" was set to: "jane@gmail.com".
+
+---------------- now in buildRequiredDB --------------------
+
+U: create a contact my spouse
+S: Instance "my spouse" (of concept "contact") was created. "contact" fields are: email.
+
+U: set its email to my.spouse@gmail.com
+S: The "email" field in "my spouse" was set to: "my.spouse@gmail.com".
+
+---------------- now in learningToForwardAnEmail --------------------
+
+U: forward this email to my spouse
+S: Sorry, but I don't understand.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+U: sure
+S: Great! When you say, for example: "forward this email to my spouse", what shall I do first?
+
+U: first create a new email
+S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
+S: What shall I do next (when executing: "forward this email to my spouse")?
+
+U: copy the subject
+S: Sorry, but I don't understand.
+S: What should I do instead (when executing: "forward this email to my spouse")?
+
+U: take the subject from the incoming email
+S: It is: department party
+S: What shall I do next (when executing: "forward this email to my spouse")?
+
+U: and set it as the outgoing email's subject
+S: The "subject" field in "outgoing email" was set to: "department party".
+S: What shall I do next (when executing: "forward this email to my spouse")?
+
+U: take the body from the incoming email
+S: It is: We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.
+S: What shall I do next (when executing: "forward this email to my spouse")?
+
+U: and set it as the body
+S: The "body" field in "outgoing email" was set to: "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.".
+S: What shall I do next (when executing: "forward this email to my spouse")?
+
+U: send the email
+S: Sorry, but the message has no recipient. Set the recipient to an email address (e.g. set recipient to email@example.com).
+S: What should I do instead (when executing: "forward this email to my spouse")?
+S: I noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want me to end and learn this new command, say "end". If you want me to cancel this command say "cancel".
+
+U: make my spouse the recipient
+S: It is: my.spouse@gmail.com
+S: The "recipient list" field in "outgoing email" was set to: "my.spouse@gmail.com".
+S: What shall I do next (when executing: "forward this email to my spouse")?
+S: I noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want me to end and learn this new command, say "end". If you want me to cancel this command say "cancel".
+
+U: now send the email
+S: Email sent successfully.
+S: What shall I do next (when executing: "forward this email to my spouse")?
+S: I noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want me to end and learn this new command, say "end". If you want me to cancel this command say "cancel".
+
+U: finish
+S: I'm currently learning the new command ("forward this email to my spouse"). I'm trying to generalize to other similar commands, this takes several seconds...
+
+U: forward this email to bob
+S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
+S: It is: department party
+S: The "subject" field in "outgoing email" was set to: "department party".
+S: It is: We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.
+S: The "body" field in "outgoing email" was set to: "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.".
+S: It is: bob@gmail.com
+S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
+S: Email sent successfully.
+
+---------------- now in smallUpdates --------------------
+
+U: next message
+S: Set to next incoming email successfully.
+
+U: read email
+S: recipient list: you@myjob.com
+S: sender: dan@myjob.com
+S: subject: another email
+S: body: sending another email.
+
+U: add tasks to contact
+S: Field "tasks" was added to concept "contact".
+
+U: set bob's tasks to dealing with complaints
+S: The "tasks" field in "bob" was set to: "dealing with complaints".
+
+U: add helping new workers to bob's tasks
+S: "helping new workers" was added to the "tasks" field in "bob".
+
+U: what are bob's tasks
+S: It is: dealing with complaints;helping new workers
+
+---------------- now in replyAndRead --------------------
+
+U: reply blue
+S: Sorry, but I don't understand.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+U: yes
+S: Great! When you say, for example: "reply blue", what shall I do first?
+
+U: compose email
+S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
+S: What shall I do next (when executing: "reply blue")?
+
+U: set body to blue
+S: The "body" field in "outgoing email" was set to: "blue".
+S: What shall I do next (when executing: "reply blue")?
+
+U: end
+S: I'm currently learning the new command ("reply blue"). I'm trying to generalize to other similar commands, this takes several seconds...
+
+U: reply I'm still at work where are you
+S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
+S: The "body" field in "outgoing email" was set to: "I'm still at work where are you".
+
+U: previous email
+S: Set to previous incoming email successfully.
+
+U: read email
+S: recipient list: you@myjob.com
+S: sender: bob7@myjob.com
+S: subject: department party
+S: body: We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.
+
+U: next email plus reading it
+S: Sorry, but I don't understand.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+
+U: yes
+S: Great! When you say, for example: "next email plus reading it", what shall I do first?
+
+U: next email
+S: Set to next incoming email successfully.
+S: What shall I do next (when executing: "next email plus reading it")?
+
+U: read email
+S: recipient list: you@myjob.com
+S: sender: dan@myjob.com
+S: subject: another email
+S: body: sending another email.
+S: 
+S: What shall I do next (when executing: "next email plus reading it")?
+
+U: end
+S: I'm currently learning the new command ("next email plus reading it"). I'm trying to generalize to other similar commands, this takes several seconds...
+
+U: move to the previous email in the inbox
+S: Set to previous incoming email successfully.
+
+U: next email plus reading it
+S: Set to next incoming email successfully.
+S: recipient list: you@myjob.com
+S: sender: dan@myjob.com
+S: subject: another email
+S: body: sending another email.
+
+U: read email
+S: recipient list: you@myjob.com
+S: sender: dan@myjob.com
+S: subject: another email
+S: body: sending another email.
+
+

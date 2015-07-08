@@ -74,35 +74,52 @@ public class AgentDataAndControl
 
     public String executeSentenceForUser(String gameId, String userSays)
     {
-        logger.info("GameID:" + gameId + ". User says: " + userSays);
-        //setting to null in order to avoid "variable might not have been initialized"
-        ParserSetAndActions parserSetAndActions = null;
-        synchronized(parserSetAndActionsMap)
-        {
-                parserSetAndActions = parserSetAndActionsMap.get(gameId);
-        }
-
-        CcgUtils.SayAndExpression response = parserSetAndActions.parserSettings.ParseAndEval(parserSetAndActions.allUserActions, userSays);
-        logger.info("GameID:" + gameId + ". Lambda expression: " + response.lExpression);
-        for (ResponseToUserListener responseToUserListener : responseToUserListenerList)
-        {
-            responseToUserListener.responseSentToUser(gameId, response.sayToUser, response.success);
-        }
-        return response.sayToUser;
+        return executeSentenceOrGetPending(gameId, Optional.of(userSays));
     }
 
     public String getPendingResponse(String gameId)
     {
-        logger.info("GameID:" + gameId + ". Requested pending response.");
+        return executeSentenceOrGetPending(gameId, Optional.empty());
+    }
+
+    /**
+     *
+     * @param gameId
+     * @param userSays set to Optional.empty() for a pending response.
+     * @return
+     */
+    private String executeSentenceOrGetPending(String gameId, Optional<String> userSays)
+    {
+        boolean getPendingResponse = !userSays.isPresent();
+        logger.info("GameID:" + gameId + ". " + (getPendingResponse ? "Requested pending response." :  "User says: " + userSays.get()));
         ParserSetAndActions parserSetAndActions = null;
         synchronized(parserSetAndActionsMap)
         {
             parserSetAndActions = parserSetAndActionsMap.get(gameId);
         }
-        Optional<ActionResponse> responseOptional = parserSetAndActions.getAwaitingCommand.getNSetPendingActionResponse();
-        if (responseOptional.isPresent())
-            return responseOptional.get().getSayToUser();
-        return "";
+        String sayToUser = "";
+        boolean success = false;
+        if (getPendingResponse)
+        {
+            Optional<ActionResponse> responseOptional = parserSetAndActions.getAwaitingCommand.getNSetPendingActionResponse();
+            if (responseOptional.isPresent())
+            {
+                sayToUser = responseOptional.get().getSayToUser();
+                success = true;
+            }
+        }
+        else
+        {
+            CcgUtils.SayAndExpression response = parserSetAndActions.parserSettings.ParseAndEval(parserSetAndActions.allUserActions, userSays.get());
+            logger.info("GameID:" + gameId + ". Lambda expression: " + response.lExpression);
+            sayToUser = response.sayToUser;
+            success = response.success;
+        }
+        for (ResponseToUserListener responseToUserListener : responseToUserListenerList)
+        {
+            responseToUserListener.responseSentToUser(gameId, sayToUser, success);
+        }
+        return sayToUser;
     }
 
 }

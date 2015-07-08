@@ -216,6 +216,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse send(InfoForCommand infoForCommand, String instanceName)
     {
+        //instanceName can actually also be a conceptName (probably outgoing_email), for example when saying: "send an email", or "send one email"
         if (instanceName.equals(ambiguousEmailInstanceName) || instanceName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
         {
             return sendEmail(infoForCommand);
