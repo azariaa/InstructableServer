@@ -25,7 +25,7 @@ public class TestWithParser
 {
     static boolean testingMode = true;
     static String fileName = "Jul08test.txt";
-    static final int waitForLearning = 3000;
+    static final int waitForLearning = 4000;
 
     public static void main(String[] args) throws Exception
     {

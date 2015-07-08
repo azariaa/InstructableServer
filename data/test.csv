@@ -1,69 +1,69 @@
-send an email,"(send email)"
-yes,"(yes)"
-set the subject of this email to hello,"(setFieldFromString (getFieldFromInstance (getProbInstanceByName email) subject) (stringValue ""hello""))"
+send an email,(send outgoing_email)
+yes,(yes)
+set the subject of this email to hello,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName email subject) (stringValue ""hello""))"
 put test in body,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""test""))"
-send the email,"(send email)"
+send the email,(send email)
 set myself as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""myself""))"
 set myself@myjob.com as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""myself@myjob.com""))"
-send,"(sendEmail)"
-send,"(sendEmail)"
-compose a new email,"(createInstanceByConceptName outgoing_email)"
+send,(sendEmail)
+send,(sendEmail)
+compose a new email,(createInstanceByConceptName outgoing_email)
 set danny as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""danny""))"
-I want to teach you what a contact is,"(defineConcept (stringNoun ""contact""))"
-Define contact!,"(createInstanceByConceptName contact)"
-add email as a field in contact,"(unknownCommand)"
-create a contact call it bob,"(createInstanceByFullNames contact (stringNoun ""bob""))"
+define contact.,"(defineConcept (stringNoun ""contact""))"
+define contact!,"(defineConcept (stringNoun ""contact""))"
+add email as a field in room,"(addFieldToConcept room (stringNoun ""email""))"
+create a room call it bob,"(createInstanceByFullNames room (stringNoun ""bob""))"
 set bob's email to baba,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob email) (stringValue ""baba""))"
 set bob's email to bob@gmail.com,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob email) (stringValue ""bob@gmail.com""))"
-what is bob's email?,"(evalField (getProbFieldByInstanceNameAndFieldName bob email))"
-create a contact jane,"(createInstanceByFullNames contact (stringNoun ""jane""))"
-take bob's email,"(evalField (getProbFieldByInstanceNameAndFieldName bob email))"
-and set it as jane's email,"(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName jane email) (getProbFieldVal))"
-take bob's email and set it as jane's email,"(doSeq (evalField (getProbFieldByInstanceNameAndFieldName bob email)) (setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName jane email) (getProbFieldVal)))"
-set the recipient to be bob's email,"(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName bob email)))"
+what is bob's email?,(evalField (getProbFieldByInstanceNameAndFieldName bob email))
+create a room jane,"(createInstanceByFullNames room (stringNoun ""jane""))"
+take bob's email,(evalField (getProbFieldByInstanceNameAndFieldName bob email))
+and set it as jane's email,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName jane email) (getProbFieldVal))
+take bob's email and set it as jane's email,(doSeq (evalField (getProbFieldByInstanceNameAndFieldName bob email)) (setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName jane email) (getProbFieldVal)))
+set the recipient to be bob's email,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName bob email)))
 add nana@gmail.com to the recipient list,"(addToFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""nana@gmail.com""))"
-compose an email,"(createInstanceByConceptName outgoing_email)"
+compose an email,(createInstanceByConceptName outgoing_email)
 set jane's email to be jane@gmail.com,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName jane email) (stringValue ""jane@gmail.com""))"
-make bob be the recipient,"(unknownCommand)"
-yes,"(yes)"
-take bob's email,"(evalField (getProbFieldByInstanceNameAndFieldName bob email))"
-and set it as the recipient,"(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (getProbFieldVal))"
-that's it,"(end)"
-make jane the recipient,"(unknownCommand)"
-create a contact my spouse,"(createInstanceByFullNames contact (stringNoun ""my spouse""))"
+make bob be the recipient,(unknownCommand)
+yes,(yes)
+take bob's email,(evalField (getProbFieldByInstanceNameAndFieldName bob email))
+and set it as the recipient,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (getProbFieldVal))
+that's it,(end)
+make jane the recipient,(unknownCommand)
+create a room my spouse,"(createInstanceByFullNames room (stringNoun ""my spouse""))"
 set its email to my.spouse@gmail.com,"(setFieldFromString (getProbMutableFieldByFieldName email) (stringValue ""my.spouse@gmail.com""))"
-forward this email to my spouse,"(unknownCommand)"
-sure,"(yes)"
-first create a new email,"(createInstanceByConceptName outgoing_email)"
-copy the subject,"(unknownCommand)"
-take the subject from the incoming email,"(evalField (getProbFieldByInstanceNameAndFieldName inbox subject))"
-and set it as the outgoing email's subject,"(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email subject) (getProbFieldVal))"
-take the body from the incoming email,"(evalField (getProbFieldByInstanceNameAndFieldName inbox body))"
-and set it as the body,"(setFieldFromFieldVal (getProbMutableFieldByFieldName body) (getProbFieldVal))"
-send the email,"(send email)"
-make my spouse the recipient,"(unknownCommand)"
-now send the email,"(send email)"
-finish,"(end)"
-forward this email to bob,"(unknownCommand)"
-next message,"(next email)"
-read email,"(readInstance (getProbInstanceByName email))"
-add tasks to contact,"(addFieldToConcept contact (stringNoun ""tasks""))"
-set bob's tasks to dealing with complaints,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob tasks) (stringValue ""dealing with complaints""))"
-add helping new workers to bob's tasks,"(addToFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob tasks) (stringValue ""helping new workers""))"
-what are bob's tasks,"(evalField (getProbFieldByInstanceNameAndFieldName bob tasks))"
-reply blue,"(unknownCommand)"
-yes,"(yes)"
-compose email,"(createInstanceByConceptName outgoing_email)"
+forward this email to my spouse,(unknownCommand)
+sure,(yes)
+first create a new email,(createInstanceByConceptName outgoing_email)
+copy the subject,(unknownCommand)
+take the subject from the incoming email,(evalField (getProbFieldByInstanceNameAndFieldName inbox subject))
+and set it as the outgoing email's subject,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email subject) (getProbFieldVal))
+take the body from the incoming email,(evalField (getProbFieldByInstanceNameAndFieldName inbox body))
+and set it as the body,(setFieldFromFieldVal (getProbMutableFieldByFieldName body) (getProbFieldVal))
+send the email,(send email)
+make my spouse the recipient,(unknownCommand)
+now send the email,(send email)
+finish,(end)
+forward this email to bob,(unknownCommand)
+next message,(next email)
+read email,(readInstance (getProbInstanceByName email))
+add tasks to room,"(addFieldToConcept room (stringNoun ""tasks""))"
+set bob's tables to dealing with complaints,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob tables) (stringValue ""dealing with complaints""))"
+add helping new workers to bob's tables,"(addToFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob tables) (stringValue ""helping new workers""))"
+what are bob's tables,(evalField (getProbFieldByInstanceNameAndFieldName bob tables))
+reply blue,(unknownCommand)
+yes,(yes)
+compose email,(createInstanceByConceptName outgoing_email)
 set body to blue,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""blue""))"
-end,"(end)"
-reply I'm still at work where are you,"(unknownCommand)"
-previous email,"(previous email)"
-read email,"(readInstance (getProbInstanceByName email))"
-next email plus reading it,"(unknownCommand)"
-yes,"(yes)"
-next email,"(next email)"
-read email,"(readInstance (getProbInstanceByName email))"
-end,"(end)"
-move to the previous email in the inbox,"(previous inbox)"
-next email plus reading it,"(unknownCommand)"
-read email,"(readInstance (getProbInstanceByName email))"
+end,(end)
+reply I'm still at work where are you,(unknownCommand)
+previous email,(previous email)
+read email,(readInstance (getProbInstanceByName email))
+next email plus reading it,(unknownCommand)
+yes,(yes)
+next email,(next email)
+read email,(readInstance (getProbInstanceByName email))
+end,(end)
+move to the previous email in the inbox,(previous inbox)
+next email plus reading it,(unknownCommand)
+read email,(readInstance (getProbInstanceByName email))
