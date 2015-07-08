@@ -8,9 +8,12 @@ set I am thinking about the sender as the subject,"(setFieldFromString (getProbM
 create tom as a name,"(createInstanceByFullNames name (stringNoun ""tom""))"
 create name david.,"(createInstanceByFullNames name (stringNoun ""david""))"
 create name for david,"(createInstanceByFullNames name (stringNoun ""david""))"
+set body to glue,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""glue""))"
+set subject to party,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""party""))"
 yes,(yes)
 ok,(yes)
 put this is a test in body,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""this is a test""))"
+send one email,(send outgoing_email)
 send the email,(send email)
 set myself@myjob.com as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""myself@myjob.com""))"
 set someone@myandyou.com as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""someone@myandyou.com""))"

@@ -13,15 +13,17 @@ put, {write} //put hello world in the subject
 use, {write} //use hello world as the subject //use email's subject as the subject
 type,{write} //type hello in the subject
 enter,{write} //enter hello in the subject
-in, {inside,instance} //put hello world in the subject //in inbox
-the, {instance} //in the inbox
+in, {inside,instance} //put hello world in the subject //email in inbox
+the, {instance} //in the inbox //the email
+this, {instance} //of this email
 as, {inside} // set hello world as the subject
 for, {of,the} //set email for mom to // skip in string
 "call it",{the} // create a contact call it bob
 named,{the} //create a contact named mom
 called,{the} //create a contact called mom
 one,{concept} //create one contact called mom
-a,{concept} //create a contact called mom
+a,{concept} //create a contact called mom //add a field email to concept contact
+an,{a,concept}
 from,{to} //remove email from contact
 delete,{remove}
 undefine,{remove} //undefine concept

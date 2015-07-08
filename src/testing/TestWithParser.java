@@ -24,7 +24,8 @@ import java.util.LinkedList;
 public class TestWithParser
 {
     static boolean testingMode = true;
-    static String fileName = "Jul06test.txt";
+    static String fileName = "Jul08test.txt";
+    static final int waitForLearning = 3000;
 
     public static void main(String[] args) throws Exception
     {
@@ -58,9 +59,13 @@ public class TestWithParser
         smallUpdates(allUserActions, testHelpers, parserSettings);
 
         testSimplifier.newSection("replyAndRead");
-        testSimplifier.userSays(new String[]{"reply blue", "yes", "compose email", "set body to blue", "end", "reply I'm still at work where are you"});
+        testSimplifier.userSays(new String[]{"reply blue", "yes", "compose email", "set body to blue", "end"});
+        Thread.sleep(waitForLearning);
+        testSimplifier.userSays("reply I'm still at work where are you");
         testSimplifier.userSays(new String[]{"previous email", "read email"});
-        testSimplifier.userSays(new String[]{"next email plus reading it", "yes", "next email", "read email", "end", "move to the previous email in the inbox", "next email plus reading it"});
+        testSimplifier.userSays(new String[]{"next email plus reading it", "yes", "next email", "read email", "end", "move to the previous email in the inbox"});
+        Thread.sleep(waitForLearning);
+        testSimplifier.userSays("next email plus reading it");
         testSimplifier.userSays("read email");
 
         testHelpers.endTest();
@@ -330,7 +335,7 @@ public class TestWithParser
     }
 
 
-    private static void teachingToSetRecipientAsContact(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
+    private static void teachingToSetRecipientAsContact(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings) throws InterruptedException
     {
         testHelpers.newSection("teachingToSetRecipientAsContact");
 
@@ -397,6 +402,8 @@ public class TestWithParser
         //actionResponse = allUserActions.end(new InfoForCommand(userSays, null));
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
+
+        Thread.sleep(waitForLearning);
 
         userSays = "make jane the recipient";
         testHelpers.userSays(userSays);
@@ -465,7 +472,7 @@ public class TestWithParser
     }
 
 
-    private static void learningToForwardAnEmail(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings)
+    private static void learningToForwardAnEmail(IAllUserActions allUserActions, TestHelpers testHelpers, ParserSettings parserSettings) throws InterruptedException
     {
         testHelpers.newSection("learningToForwardAnEmail");
 
@@ -575,6 +582,8 @@ public class TestWithParser
 //        actionResponse = allUserActions.end(new InfoForCommand(userSays, null));
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
+
+        Thread.sleep(waitForLearning);
 
         userSays = "forward this email to bob";
         testHelpers.userSays(userSays);
