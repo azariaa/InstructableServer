@@ -25,7 +25,7 @@ public class TestDataDriven {
     runTest();
   }
   
-  private static List<CcgExample> readExamplesFromFile(String filename, ParserSettings parserSettings) {
+  public static List<CcgExample> readExamplesFromFile(String filename, ParserSettings parserSettings) {
     List<String[]> exampleStrings = CcgUtils.loadExamples(Paths.get(filename));
     
     List<CcgExample> examples = Lists.newArrayList();
