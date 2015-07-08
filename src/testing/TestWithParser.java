@@ -68,6 +68,9 @@ public class TestWithParser
         testSimplifier.userSays("next email plus reading it");
         testSimplifier.userSays("read email");
 
+        testSimplifier.userSays(new String[] {"learn a new command","cancel"});
+        testSimplifier.userSays(new String[] {"new command","make bob the recipient","cancel"});
+
         testHelpers.endTest();
         //emailSomeoneSomeText()
     }
@@ -176,10 +179,8 @@ public class TestWithParser
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "I want to teach you what a contact is";
+        userSays = "define contact.";
         testHelpers.userSays(userSays);
-        //this is a bad one (skipped), I removed "teach" from the lexicon.
-        userSays = "define contact";
         //actionResponse = allUserActions.defineConcept(new InfoForCommand(userSays, null), "contact");
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
@@ -362,7 +363,7 @@ public class TestWithParser
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "make bob be the recipient";
+        userSays = "recipientify bob";
         testHelpers.userSays(userSays);
         //actionResponse = allUserActions.set(new InfoForCommand(userSays,null), "recipient list", "bob");
         //actionResponse = allUserActions.unknownCommand(new InfoForCommand(userSays, null));
@@ -405,7 +406,7 @@ public class TestWithParser
 
         Thread.sleep(waitForLearning);
 
-        userSays = "make jane the recipient";
+        userSays = "recipientify jane";
         testHelpers.userSays(userSays);
         //should now translate to:
 //        {
@@ -546,7 +547,7 @@ public class TestWithParser
         response = parserSettings.ParseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);
 
-        userSays = "make my spouse the recipient";
+        userSays = "recipientify my spouse";
         testHelpers.userSays(userSays);
         // should translate to: (set (get recipient_list) (eval (get my_spouse email)))
 //        {

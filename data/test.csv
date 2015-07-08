@@ -24,12 +24,12 @@ set the recipient to be bob's email,(setFieldFromFieldVal (getProbMutableFieldBy
 add nana@gmail.com to the recipient list,"(addToFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""nana@gmail.com""))"
 compose an email,(createInstanceByConceptName outgoing_email)
 set jane's email to be jane@gmail.com,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName jane email) (stringValue ""jane@gmail.com""))"
-make bob be the recipient,(unknownCommand)
+bake bob be the recipient,(unknownCommand)
 yes,(yes)
 take bob's email,(evalField (getProbFieldByInstanceNameAndFieldName bob email))
 and set it as the recipient,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (getProbFieldVal))
 that's it,(end)
-make jane the recipient,(unknownCommand)
+bake jane the recipient,(unknownCommand)
 create a room my spouse,"(createInstanceByFullNames room (stringNoun ""my spouse""))"
 set its email to my.spouse@gmail.com,"(setFieldFromString (getProbMutableFieldByFieldName email) (stringValue ""my.spouse@gmail.com""))"
 forward this email to my spouse,(unknownCommand)
@@ -41,7 +41,7 @@ and set it as the outgoing email's subject,(setFieldFromFieldVal (getProbMutable
 take the body from the incoming email,(evalField (getProbFieldByInstanceNameAndFieldName inbox body))
 and set it as the body,(setFieldFromFieldVal (getProbMutableFieldByFieldName body) (getProbFieldVal))
 send the email,(send email)
-make my spouse the recipient,(unknownCommand)
+bake my spouse the recipient,(unknownCommand)
 now send the email,(send email)
 finish,(end)
 forward this email to bob,(unknownCommand)
@@ -79,3 +79,5 @@ set body hi,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringVa
 set subject to to mom,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""to mom""))"
 set the top subject line of this ougoing email to why not,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName email subject) (stringValue ""why not""))"
 drill the subject down the email,(unknownCommand)
+current email's sender,(evalField (getProbFieldByInstanceNameAndFieldName inbox sender))
+I would like to teach you a new command,(teachNewCommand)

@@ -35,7 +35,7 @@ S: Composing new email. "outgoing email" fields are: subject, body and recipient
 U: set danny as the recipient
 S: Sorry, but "danny" is not an email address.
 
-U: I want to teach you what a contact is
+U: define contact.
 S: Concept "contact" was defined successfully. Please add fields to it.
 
 U: Define contact!
@@ -85,25 +85,25 @@ S: Composing new email. "outgoing email" fields are: subject, body and recipient
 U: set jane's email to be jane@gmail.com
 S: The "email" field in "jane" was set to: "jane@gmail.com".
 
-U: make bob be the recipient
+U: recipientify bob
 S: Sorry, but I don't understand.
 S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
 U: yes
-S: Great! When you say, for example: "make bob be the recipient", what shall I do first?
+S: Great! When you say, for example: "recipientify bob", what shall I do first?
 
 U: take bob's email
 S: It is: bob@gmail.com
-S: What shall I do next (when executing: "make bob be the recipient")?
+S: What shall I do next (when executing: "recipientify bob")?
 
 U: and set it as the recipient
 S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
-S: What shall I do next (when executing: "make bob be the recipient")?
+S: What shall I do next (when executing: "recipientify bob")?
 
 U: that's it
-S: I'm currently learning the new command ("make bob be the recipient"). I'm trying to generalize to other similar commands, this takes several seconds...
+S: I'm currently learning the new command ("recipientify bob"). I'm trying to generalize to other similar commands, this takes several seconds...
 
-U: make jane the recipient
+U: recipientify jane
 S: It is: jane@gmail.com
 S: The "recipient list" field in "outgoing email" was set to: "jane@gmail.com".
 
@@ -153,7 +153,7 @@ S: Sorry, but the message has no recipient. Set the recipient to an email addres
 S: What should I do instead (when executing: "forward this email to my spouse")?
 S: I noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want me to end and learn this new command, say "end". If you want me to cancel this command say "cancel".
 
-U: make my spouse the recipient
+U: recipientify my spouse
 S: It is: my.spouse@gmail.com
 S: The "recipient list" field in "outgoing email" was set to: "my.spouse@gmail.com".
 S: What shall I do next (when executing: "forward this email to my spouse")?
@@ -270,5 +270,20 @@ S: recipient list: you@myjob.com
 S: sender: dan@myjob.com
 S: subject: another email
 S: body: sending another email.
+
+U: learn a new command
+S: I'm happy to hear that want to teach me a new command. Now say the command the way you would use it, then I will ask you what exactly to do in that case, I will try to generalize to similar sentences (if you don't want me to learn say "cancel")
+
+U: cancel
+S: Ok, I won't learn it.
+
+U: new command
+S: I'm happy to hear that want to teach me a new command. Now say the command the way you would use it, then I will ask you what exactly to do in that case, I will try to generalize to similar sentences (if you don't want me to learn say "cancel")
+
+U: make bob the recipient
+S: Great! When you say, for example: "make bob the recipient", what shall I do first?
+
+U: cancel
+S: Ok, I won't learn it.
 
 

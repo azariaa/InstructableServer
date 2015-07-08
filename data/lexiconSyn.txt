@@ -1,11 +1,12 @@
 # newWord, {meaning1,meaning2,...} (i.e, newWord = meaning1 U meaning2)
 # both newWords and meanings can't include a comma inside (","), use ^ instead of ","
-new,{create} //new email, new contact mom
+new,{create} //new email, new contact mom //new command
 "create new",{create}
 "create a new",{create}
 "compose new",{create}
 "compose a new",{create}
 define,{create} //not 100% correct, but used by many users (e.g. "define contact mom")
+make,{create}
 learn,{teach}
 set,{write,change}  // set hello world as the subject, set the subject to hello world
 set,{move} //set to the next email
