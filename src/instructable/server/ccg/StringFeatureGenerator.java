@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
-import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
+import com.jayantkrish.jklol.ccg.lexicon.StringContext;
 import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 
 public class StringFeatureGenerator implements FeatureGenerator<StringContext, String>

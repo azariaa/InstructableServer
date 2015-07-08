@@ -1,11 +1,5 @@
 package testing;
 
-import com.google.common.collect.Lists;
-import com.jayantkrish.jklol.ccg.*;
-import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
-import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 import instructable.EnvironmentCreatorUtils;
 import instructable.server.ActionResponse;
 import instructable.server.CommandsToParser;
@@ -16,6 +10,17 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import com.google.common.collect.Lists;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.UnfilledDependency;
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 
 public class TestLexiconInduction {
     public static void main(String[] args) throws Exception
@@ -33,7 +38,8 @@ public class TestLexiconInduction {
     	List<CcgExample> examples = Lists.newArrayList();
     	for (String[] exampleString : exampleStrings) {
     		Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exampleString[1]);
-            CcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, parserSettings.posUsed, true);
+            CcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, parserSettings.posUsed, true,
+                parserSettings.featureVectorGenerator);
             examples.add(example);
     	}
 

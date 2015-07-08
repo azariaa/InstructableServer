@@ -12,7 +12,6 @@ import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgCategory;
 import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
 import com.jayantkrish.jklol.ccg.LexiconEntry;
-import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
 import com.jayantkrish.jklol.ccg.lexicon.ParametricCcgLexicon;
 import com.jayantkrish.jklol.ccg.lexicon.ParametricFeaturizedLexiconScorer;
 import com.jayantkrish.jklol.ccg.lexicon.ParametricLexiconScorer;
@@ -32,7 +31,6 @@ import com.jayantkrish.jklol.models.loglinear.ParametricLinearClassifierFactor;
 import com.jayantkrish.jklol.models.parametric.CombiningParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ConstantParametricFactor;
 import com.jayantkrish.jklol.models.parametric.ParametricFactor;
-import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
 
 /**
  * Creates the features for a CCG parser.
@@ -44,11 +42,14 @@ public class InstCcgFeatureFactory implements CcgFeatureFactory
 
   private final List<CcgCategory> stringCategories;
   private final List<CcgCategory> unknownCommandCategories;
-    private final List<String> stringCategoryPredicates;
-    private final FeatureVectorGenerator<StringContext> featureGenerator;
+  private final List<String> stringCategoryPredicates;
+  
+  private final String stringFeatureAnnotationName;
+  private final DiscreteVariable stringFeatureDictionary;
 
     public InstCcgFeatureFactory(List<CcgCategory> stringCategories,
-        List<CcgCategory> unknownCommandCategories, FeatureVectorGenerator<StringContext> featureGenerator)
+        List<CcgCategory> unknownCommandCategories, String stringFeatureAnnotationName,
+        DiscreteVariable stringFeatureDictionary)
     {
         this.stringCategories = Preconditions.checkNotNull(stringCategories);
         this.unknownCommandCategories = Preconditions.checkNotNull(unknownCommandCategories);
@@ -65,7 +66,8 @@ public class InstCcgFeatureFactory implements CcgFeatureFactory
             }
         }
 
-        this.featureGenerator = Preconditions.checkNotNull(featureGenerator);
+        this.stringFeatureAnnotationName = Preconditions.checkNotNull(stringFeatureAnnotationName);
+        this.stringFeatureDictionary = Preconditions.checkNotNull(stringFeatureDictionary);
     }
 
     @Override
@@ -208,13 +210,13 @@ public class InstCcgFeatureFactory implements CcgFeatureFactory
           terminalSyntaxVar, terminalPosFamily, terminalSyntaxFamily));
 
       VariableNumMap featureVar = VariableNumMap.singleton(terminalSyntaxVar.getOnlyVariableNum() - 1,
-          "ccgLexiconFeatures", featureGenerator.getFeatureDictionary());
+          "ccgLexiconFeatures", stringFeatureDictionary);
       ParametricLinearClassifierFactor featureFamily = new ParametricLinearClassifierFactor(
           featureVar, terminalSyntaxVar, VariableNumMap.EMPTY,
-          featureGenerator.getFeatureDictionary(), null, false);
+          stringFeatureDictionary, null, false);
       
-      scorers.add(new ParametricFeaturizedLexiconScorer(featureGenerator, terminalSyntaxVar,
-          featureVar, featureFamily));
+      scorers.add(new ParametricFeaturizedLexiconScorer(stringFeatureAnnotationName,
+          terminalSyntaxVar, featureVar, featureFamily));
 
       return scorers;
     }

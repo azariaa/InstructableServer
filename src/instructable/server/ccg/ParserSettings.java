@@ -1,38 +1,50 @@
 package instructable.server.ccg;
 
-import com.google.common.collect.Lists;
-import com.jayantkrish.jklol.ccg.*;
-import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
-import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
-import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer;
-import com.jayantkrish.jklol.ccg.lexicon.FeaturizedLexiconScorer.StringContext;
-import com.jayantkrish.jklol.ccg.supertag.ListSupertaggedSentence;
-import com.jayantkrish.jklol.ccg.supertag.SupertaggedSentence;
-import com.jayantkrish.jklol.lisp.Environment;
-import com.jayantkrish.jklol.lisp.LispEval;
-import com.jayantkrish.jklol.lisp.SExpression;
-import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
-import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
-import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
-import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
-import com.jayantkrish.jklol.training.NullLogFunction;
-import com.jayantkrish.jklol.util.IndexedList;
 import instructable.server.ActionResponse;
 import instructable.server.IAllUserActions;
 import instructable.server.InfoForCommand;
 import instructable.server.LispExecutor;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.google.common.collect.Lists;
+import com.jayantkrish.jklol.ccg.CcgExactInference;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgInference;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.CcgUnaryRule;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
+import com.jayantkrish.jklol.ccg.lexicon.SpanFeatureAnnotation;
+import com.jayantkrish.jklol.ccg.lexicon.StringContext;
+import com.jayantkrish.jklol.lisp.Environment;
+import com.jayantkrish.jklol.lisp.LispEval;
+import com.jayantkrish.jklol.lisp.SExpression;
+import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
+import com.jayantkrish.jklol.nlpannotation.AnnotatedSentence;
+import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
+import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
+import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
+import com.jayantkrish.jklol.training.NullLogFunction;
+import com.jayantkrish.jklol.util.IndexedList;
 
 /**
  * Created by Amos Azaria on 05-May-15.
  */
 public class ParserSettings implements Cloneable
 {
-    static final int initialTraining = 2;
+    static final int initialTraining = 5;
     static final int retrainAfterNewCommand = 1;
     static final boolean treatCorpusAsLearnedExamples = true;//false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
 
@@ -95,7 +107,7 @@ public class ParserSettings implements Cloneable
             String exSentence = examplesList.get(i)[0];
             String exLogicalForm = examplesList.get(i)[1];
             Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exLogicalForm);
-            CcgExample example = CcgUtils.createCcgExample(exSentence, expression, posUsed, true);
+            CcgExample example = CcgUtils.createCcgExample(exSentence, expression, posUsed, true, null);
             ccgExamples.add(example);
             if (treatCorpusAsLearnedExamples)
             {
@@ -113,9 +125,10 @@ public class ParserSettings implements Cloneable
             //StaticAnalysis.inferType() //TODO: Jayant will add this functionality
         }
 
-        List<StringContext> allContexts = FeaturizedLexiconScorer.getContextsFromExamples(ccgExamples);
+        List<StringContext> allContexts = StringContext.getContextsFromExamples(ccgExamples);
         FeatureVectorGenerator<StringContext> featureVectorGenerator = DictionaryFeatureVectorGenerator
                 .createFromData(allContexts, featureGenerator, true);
+        this.ccgExamples = CcgUtils.featurizeExamples(ccgExamples, featureVectorGenerator);
 
         ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon, unaryRulesList,
                 posUsed, featureVectorGenerator);
@@ -245,7 +258,9 @@ public class ParserSettings implements Cloneable
         if (learnedExamples.containsKey(jointTokenizedSentence))
             return learnedExamples.get(jointTokenizedSentence);
 
-        SupertaggedSentence supertaggedSentence = ListSupertaggedSentence.createWithUnobservedSupertags(tokens, poss);
+        AnnotatedSentence supertaggedSentence = new AnnotatedSentence(tokens, poss);
+        SpanFeatureAnnotation annotation = SpanFeatureAnnotation.annotate(supertaggedSentence, featureVectorGenerator);
+        supertaggedSentence = supertaggedSentence.addAnnotation(CcgUtils.STRING_FEATURE_ANNOTATION_NAME, annotation);
 
         //      //if we want to return only sentences and fieldVal in upper level:         //DiscreteVariable dv = parser.getSyntaxVarType();
 
@@ -282,7 +297,7 @@ public class ParserSettings implements Cloneable
 //            e.printStackTrace();
 //        }
 
-        CcgExample example = CcgUtils.createCcgExample(originalCommand, expressionLearnt, posUsed, false);
+        CcgExample example = CcgUtils.createCcgExample(originalCommand, expressionLearnt, posUsed, false, featureVectorGenerator);
 
         List<LexiconEntry> newEntries = CcgUtils.induceLexiconEntriesHeuristic(example, parser);
         System.out.println(newEntries);

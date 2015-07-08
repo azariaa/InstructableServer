@@ -31,7 +31,8 @@ public class TestDataDriven {
     List<CcgExample> examples = Lists.newArrayList();
     for (String[] exampleString : exampleStrings) {
       Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exampleString[1]);
-      CcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, parserSettings.posUsed, true);
+      CcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, parserSettings.posUsed,
+          true, parserSettings.featureVectorGenerator);
       examples.add(example);
     }
 
