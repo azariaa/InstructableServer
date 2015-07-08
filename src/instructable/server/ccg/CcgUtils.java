@@ -491,14 +491,16 @@ public class CcgUtils
 //            }
 //        }, 10);
 
+        boolean averagedParameters = true;
         if (initialParameters == null) {
           initialParameters = oracle.initializeGradient();
+          averagedParameters = false;
         }
 
         int numIterations = numPasses * trainingExamples.size();
         double l2Regularization = 0.01;
         GradientOptimizer trainer = StochasticGradientTrainer.createWithL2Regularization(numIterations,
-                1, 1.0, true, false, l2Regularization, new NullLogFunction());
+                1, 1.0, true, averagedParameters, l2Regularization, new NullLogFunction());
         SufficientStatistics parameters = trainer.train(oracle, initialParameters,
                 trainingExamples);
         //Print out the parameters that were learned:
