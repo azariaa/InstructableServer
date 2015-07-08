@@ -943,7 +943,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
                 }
             }.start();
-            return new ActionResponse("I'm currently learning the new command (\""+ commandBeingLearnt + "\"). I'm trying to generalize to other similar commands, "+resendNewRequest+".", true, Optional.empty());
+            return new ActionResponse("I'm currently learning the new command (\""+ commandBeingLearnt + "\"). I'm trying to generalize to other similar commands, "+resendNewRequest+"...", true, Optional.empty());
         }
         return new ActionResponse("I'm afraid that I didn't learn anything.", false, Optional.empty());
 

@@ -84,19 +84,24 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
                 case newGameJoinedStr:
                     break;
                 case sayToAgentStr:
-                    if (parameters.containsKey(userSaysParam))
+                    try
                     {
-                        try
+                        if (parameters.containsKey(userSaysParam))
                         {
                             String userSays = parameters.get(userSaysParam).toString();
                             responseToSend = agentDataAndControl.executeSentenceForUser(gameId, userSays);
-                        } catch (Exception ex)
-                        {
-                            agentDataAndControl.logger.log(Level.SEVERE, "an exception was thrown", ex);
-                            responseToSend = "Sorry, but I got some error...";
+
                         }
-                        agentDataAndControl.logger.info("GameID:" + gameId + ". System reply: " + responseToSend);
+                        else if (parameters.containsKey(AgentServer.resendRequested))
+                        {
+                            responseToSend = agentDataAndControl.getPendingResponse(gameId);
+                        }
+                    } catch (Exception ex)
+                    {
+                        agentDataAndControl.logger.log(Level.SEVERE, "an exception was thrown", ex);
+                        responseToSend = "Sorry, but I got some error...";
                     }
+                    agentDataAndControl.logger.info("GameID:" + gameId + ". System reply: " + responseToSend);
                     break;
                 default:
                     logger.warning("unknown action, gameId:" + gameId + ". action:" + action);
@@ -108,8 +113,7 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
             os.write(responseToSend.getBytes());
             os.flush();
             os.close();
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             logger.log(Level.SEVERE, "an exception was thrown", ex);
         }
@@ -118,17 +122,17 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
     private Optional<ExperimentTaskController> getUserTasks(String gameId)
     {
         Optional<ExperimentTaskController> userScores = Optional.empty();
-        synchronized(mapLock)
+        synchronized (mapLock)
         {
             if (missionsCompletedByUser.containsKey(gameId))
-               userScores = Optional.of(missionsCompletedByUser.get(gameId));
+                userScores = Optional.of(missionsCompletedByUser.get(gameId));
         }
         return userScores;
     }
 
     private ExperimentTaskController newGameStarted(String gameId)
     {
-        synchronized(mapLock)
+        synchronized (mapLock)
         {
             if (missionsCompletedByUser.containsKey(gameId))
             {
@@ -143,7 +147,6 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
         }
 
     }
-
 
 
     @Override
