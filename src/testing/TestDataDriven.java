@@ -32,7 +32,7 @@ public class TestDataDriven {
     for (String[] exampleString : exampleStrings) {
       Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exampleString[1]);
       CcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, parserSettings.posUsed,
-          true, parserSettings.featureVectorGenerator);
+          false, parserSettings.featureVectorGenerator);
       examples.add(example);
     }
 
@@ -43,9 +43,12 @@ public class TestDataDriven {
     ParserSettings parserSettings = EnvironmentCreatorUtils.createParser(
         "data/lexiconEntries.txt", "data/lexiconSyn.txt", "data/examples.csv");
 
+    /*
+    System.out.println("Adding training example");
     List<Expression2> commands = Lists.newArrayList();
     commands.add(ExpressionParser.expression2().parseSingleExpression("(newcommand)"));
     parserSettings.addTrainingEg("newcommand", commands);
+    */
 
     CcgParser parser = parserSettings.parser;
     ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
@@ -54,8 +57,13 @@ public class TestDataDriven {
                 -1, Integer.MAX_VALUE, Runtime.getRuntime().availableProcessors(), false);
 
     List<CcgExample> trainingExamples = readExamplesFromFile("data/examples.csv", parserSettings);
+    List<CcgExample> testExamples = readExamplesFromFile("data/test.csv", parserSettings);
     
+    System.out.println("training error");
     SemanticParserUtils.testSemanticParser(trainingExamples, parser,
+        inferenceAlgorithm, simplifier, comparator);
+    System.out.println("test error");
+    SemanticParserUtils.testSemanticParser(testExamples, parser,
         inferenceAlgorithm, simplifier, comparator);
   }
 
