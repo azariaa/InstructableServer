@@ -1,17 +1,21 @@
 package testing;
 
-import com.jayantkrish.jklol.ccg.CcgExample;
-import com.jayantkrish.jklol.ccg.CcgParse;
-import com.jayantkrish.jklol.ccg.lambda2.*;
 import instructable.AgentDataAndControl;
-import instructable.EnvironmentCreatorUtils;
 import instructable.ExperimentTaskController;
+import instructable.server.ccg.CcgDetokenizer;
 import instructable.server.ccg.CcgUtils;
-import instructable.server.ccg.ParserSettings;
 
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplificationException;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
 
 public class TestDialogues
 {
@@ -23,15 +27,15 @@ public class TestDialogues
 
     private static void runTests()
     {
-        ParserSettings parserSettings = EnvironmentCreatorUtils.createParser(
-                "data/lexiconEntries.txt", "data/lexiconSyn.txt", "data/examples.csv");
-
         Logger logger = Logger.getLogger(TestDialogues.class.getName());
         logger.setLevel(Level.SEVERE);
         AgentDataAndControl agentDataAndControl = new AgentDataAndControl(logger,false);
 
-        String[] tests = new String[]{"data/dialogues/send_email.csv", "data/dialogues/define_contact.csv"};
+        String[] tests = new String[]{"data/dialogues/send_email.csv", "data/dialogues/define_contact.csv",
+            "data/dialogues/forward.csv", "data/dialogues/reply.csv"};
 
+        System.out.println("here");
+        
         Integer gameId = 0;
         for (String test : tests)
         {
@@ -50,25 +54,23 @@ public class TestDialogues
 
         List<CcgExample> testExamples = TestDataDriven.readExamplesFromFile(filename, agentDataAndControl.getParserSettingsForTestingOnly(gameId));
 
+        System.out.println(agentDataAndControl.getParserSettingsForTestingOnly(gameId).parser);
+        
         int numCorrect = 0;
         int numParsed = 0;
-        for (CcgExample example : testExamples)
-        {
+        for (CcgExample example : testExamples) {
             CcgParse parse = agentDataAndControl.getParserSettingsForTestingOnly(gameId).parser.parse(example.getSentence());
             System.out.println("====");
             System.out.println("SENT: " + example.getSentence());
-            if (parse != null)
-            {
+            if (parse != null) {
                 int correct = 0;
                 Expression2 lf = null;
                 Expression2 correctLf = simplifier.apply(example.getLogicalForm());
 
-                try
-                {
-                    lf = simplifier.apply(parse.getLogicalForm());
-                    correct = comparator.equals(lf, correctLf) ? 1 : 0;
-                } catch (ExpressionSimplificationException e)
-                {
+                try {
+                  lf = simplifier.apply(parse.getLogicalForm());
+                  correct = comparator.equals(lf, correctLf) ? 1 : 0;
+                } catch (ExpressionSimplificationException e) {
                     // Make lf print out as null.
                     lf = Expression2.constant("null");
                 }
@@ -78,19 +80,17 @@ public class TestDialogues
                 System.out.println("DEPS: " + parse.getAllDependencies());
                 System.out.println("CORRECT: " + correct);
 
-//                if (correct == 1)
-//                {
-//                    // TODO: amos, how do I appropriately change the parser grammar here?
-//                }
                 //Amos: This function needs the original sentence, since that is what will be used for learning
                 //Plus, we don't want to limit the test to use the same POS. (I'm saying is that the test files should have the original sentences, not annotated sentences).
-                agentDataAndControl.executeExpressionForTestingOnly(gameId, example.getSentence().toString(), correctLf);
+                List<String> words = example.getSentence().getWords();
+                String sentence = CcgDetokenizer.getDetokenizer().apply(words.subList(1, words.size())).getConstant();
+                sentence = sentence.substring(1, sentence.length() - 1);
+                agentDataAndControl.executeExpressionForTestingOnly(gameId, sentence, correctLf);
 
                 numCorrect += correct;
                 numParsed++;
             }
-            else
-            {
+            else {
                 System.out.println("NO PARSE");
             }
         }

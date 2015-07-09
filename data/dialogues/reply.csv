@@ -1,0 +1,8 @@
+reply I'm at work,"(unknownCommand)"
+yes,"(yes)"
+compose an email,"(createInstanceByConceptName outgoing_email)"
+set the subject of the email to the current email's subject,"(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName email subject) (evalField (getProbFieldByInstanceNameAndFieldName inbox subject)))"
+set the recipient of the email to the current email's sender,"(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName email recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName inbox sender)))"
+set the body to I'm at work,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""I'm at work""))"
+done,"(end)"
+reply I will get to it later,"(doSeq (doSeq (doSeq (createInstanceByConceptName outgoing_email) (setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName email subject) (evalField (getProbFieldByInstanceNameAndFieldName inbox subject)))) (setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName email recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName inbox sender)))) (setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""I will get to it later"")))"
