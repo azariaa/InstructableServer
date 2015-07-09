@@ -47,6 +47,8 @@ agent,{please}
 ":",{is}
 ',{'s}
 what,{read}
+open,{read} //open my email // open inbox
+view,{read} //view email
 #read,{what} //for some reason, after teaching "go -> next email and read email", "read email" resolves email as a field. So I removed this.
 "what 's",{what,read}
 see,{what,read}
@@ -59,6 +61,7 @@ display,{what,read}
 email,{email_ambiguous}
 mail,{email_ambiguous,email}
 message,{email_ambiguous,email}
+last,{previous} //last email
 address,{recipient}
 title,{subject}
 ok,{yes}

@@ -801,15 +801,17 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse createInstanceByConceptName(InfoForCommand infoForCommand, String conceptName)
     {
-        if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+        if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName) ||
+                conceptName.equals(ambiguousEmailInstanceName)) //this is actually an instance name, but user's intention is clear.
         {
-            return createNewEmail(infoForCommand, conceptName);
+            return createNewEmail(infoForCommand);
         }
         return failWithMessage(infoForCommand, "creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name)");
     }
 
-    private ActionResponse createNewEmail(InfoForCommand infoForCommand, String conceptName)
+    private ActionResponse createNewEmail(InfoForCommand infoForCommand)
     {
+        String conceptName = OutgoingEmail.strOutgoingEmailTypeAndName;
         ExecutionStatus executionStatus = new ExecutionStatus();
         outEmailCommandController.createNewEmail(executionStatus);
         List<String> emailFieldNames = outEmailCommandController.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
@@ -833,7 +835,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
         {
-            return createNewEmail(infoForCommand, conceptName);
+            return createNewEmail(infoForCommand);
         }
         instanceContainer.addInstance(executionStatus, conceptName, newInstanceName, true);
 

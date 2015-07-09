@@ -63,7 +63,7 @@ public class TestWithParser
         //Thread.sleep(waitForLearning);
         testSimplifier.userSays("reply I'm still at work where are you");
         testSimplifier.userSays(new String[]{"previous email", "read email"});
-        testSimplifier.userSays(new String[]{"next email plus reading it", "yes", "next email", "read email", "end", "move to the previous email in the inbox"});
+        testSimplifier.userSays(new String[]{"new command", "next email plus reading it", "next email", "read email", "end", "move to the previous email in the inbox"});
         //Thread.sleep(waitForLearning);
         testSimplifier.userSays("next email plus reading it");
         testSimplifier.userSays("read email");
@@ -617,7 +617,7 @@ public class TestWithParser
         testHelpers.systemSays(response.sayToUser);
 
         //tasks is plural, so will be assigned a list
-        userSays = "set bob's tasks to dealing with complaints";
+        userSays = "set bob's tasks to complaints dealing";
         testHelpers.userSays(userSays);
         response = parserSettings.parseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);

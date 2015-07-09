@@ -191,14 +191,14 @@ S: body: sending another email.
 U: add tasks to contact
 S: Field "tasks" was added to concept "contact".
 
-U: set bob's tasks to dealing with complaints
-S: The "tasks" field in "bob" was set to: "dealing with complaints".
+U: set bob's tasks to complaints dealing
+S: The "tasks" field in "bob" was set to: "complaints dealing".
 
 U: add helping new workers to bob's tasks
 S: "helping new workers" was added to the "tasks" field in "bob".
 
 U: what are bob's tasks
-S: It is: dealing with complaints;helping new workers
+S: It is: complaints dealing;helping new workers
 
 ---------------- now in replyAndRead --------------------
 
@@ -233,11 +233,10 @@ S: sender: bob7@myjob.com
 S: subject: department party
 S: body: We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse.
 
-U: next email plus reading it
-S: Sorry, but I don't understand.
-S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
+U: new command
+S: I'm happy to hear that want to teach me a new command. Now say the command the way you would use it, then I will ask you what exactly to do in that case, I will try to generalize to similar sentences (if you don't want me to learn say "cancel")
 
-U: yes
+U: next email plus reading it
 S: Great! When you say, for example: "next email plus reading it", what shall I do first?
 
 U: next email
