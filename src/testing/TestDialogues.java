@@ -54,8 +54,6 @@ public class TestDialogues
 
         List<CcgExample> testExamples = TestDataDriven.readExamplesFromFile(filename, agentDataAndControl.getParserSettingsForTestingOnly(gameId));
 
-        System.out.println(agentDataAndControl.getParserSettingsForTestingOnly(gameId).parser);
-        
         int numCorrect = 0;
         int numParsed = 0;
         for (CcgExample example : testExamples) {
