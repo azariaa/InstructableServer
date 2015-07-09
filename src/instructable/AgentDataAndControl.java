@@ -1,5 +1,6 @@
 package instructable;
 
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.*;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
@@ -30,10 +31,17 @@ public class AgentDataAndControl
     final private Map<String,ParserSetAndActions> parserSetAndActionsMap;
     protected Logger logger;
     List<ResponseToUserListener> responseToUserListenerList = new LinkedList<>();
+    boolean usePendingResponses = true;
 
-    public AgentDataAndControl(Logger logger)
+    /**
+     *
+     * @param logger
+     * @param usePendingResponses if false, all executions will return only when done (relevant only for learning new commands)
+     */
+    public AgentDataAndControl(Logger logger, boolean usePendingResponses)
     {
         this.logger = logger;
+        this.usePendingResponses = usePendingResponses;
         parserSetAndActionsMap = new HashMap<>();
         logger.info("Creating environment.");
         originalParserSettings = EnvironmentCreatorUtils.createParser();
@@ -47,16 +55,21 @@ public class AgentDataAndControl
             if (parserSetAndActionsMap.containsKey(gameId))
                 return parserSetAndActionsMap.get(gameId);
         }
-        ParserSettings parserSettingsCopy = originalParserSettings.clone();
-        CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy);
-        TopDMAllActions topDMAllActions = new TopDMAllActions(commandsToParser, emailSender);
-        addInboxEmails.addInboxEmails(topDMAllActions);
-        ParserSetAndActions parserSetAndActions =  new ParserSetAndActions(parserSettingsCopy, topDMAllActions, commandsToParser);
+        ParserSetAndActions parserSetAndActions = getParserSetAndActions(emailSender, addInboxEmails);
         synchronized(parserSetAndActionsMap)
         {
             parserSetAndActionsMap.put(gameId,parserSetAndActions);
         }
         return parserSetAndActions;
+    }
+
+    private ParserSetAndActions getParserSetAndActions(IEmailSender emailSender, IAddInboxEmails addInboxEmails)
+    {
+        ParserSettings parserSettingsCopy = originalParserSettings.clone();
+        CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy);
+        TopDMAllActions topDMAllActions = new TopDMAllActions(commandsToParser, emailSender, usePendingResponses);
+        addInboxEmails.addInboxEmails(topDMAllActions);
+        return new ParserSetAndActions(parserSettingsCopy, topDMAllActions, commandsToParser);
     }
 
     interface ResponseToUserListener
@@ -92,7 +105,7 @@ public class AgentDataAndControl
     {
         boolean getPendingResponse = !userSays.isPresent();
         logger.info("GameID:" + gameId + ". " + (getPendingResponse ? "Requested pending response." :  "User says: " + userSays.get()));
-        ParserSetAndActions parserSetAndActions = null;
+        ParserSetAndActions parserSetAndActions;
         synchronized(parserSetAndActionsMap)
         {
             parserSetAndActions = parserSetAndActionsMap.get(gameId);
@@ -110,7 +123,7 @@ public class AgentDataAndControl
         }
         else
         {
-            CcgUtils.SayAndExpression response = parserSetAndActions.parserSettings.ParseAndEval(parserSetAndActions.allUserActions, userSays.get());
+            CcgUtils.SayAndExpression response = parserSetAndActions.parserSettings.parseAndEval(parserSetAndActions.allUserActions, userSays.get());
             logger.info("GameID:" + gameId + ". Lambda expression: " + response.lExpression);
             sayToUser = response.sayToUser;
             success = response.success;
@@ -120,6 +133,32 @@ public class AgentDataAndControl
             responseToUserListener.responseSentToUser(gameId, sayToUser, success);
         }
         return sayToUser;
+    }
+
+    public ParserSettings getParserSettingsForTestingOnly(String gameId)
+    {
+        ParserSetAndActions parserSetAndActions;
+        synchronized(parserSetAndActionsMap)
+        {
+            parserSetAndActions = parserSetAndActionsMap.get(gameId);
+        }
+        return parserSetAndActions.parserSettings;
+    }
+
+    /**
+     *
+     * @param gameId
+     * @param userSays required, since learning needs the original sentence said by the user
+     * @param expression
+     */
+    public void executeExpressionForTestingOnly(String gameId, String userSays, Expression2 expression)
+    {
+        ParserSetAndActions parserSetAndActions;
+        synchronized(parserSetAndActionsMap)
+        {
+            parserSetAndActions = parserSetAndActionsMap.get(gameId);
+        }
+        parserSetAndActions.parserSettings.evaluate(parserSetAndActions.allUserActions, userSays, expression);
     }
 
 }

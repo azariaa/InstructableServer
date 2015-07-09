@@ -10,10 +10,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
@@ -32,9 +29,8 @@ public class TestDirectly
     {
         IAllUserActions allUserActions = new TopDMAllActions(new ICommandsToParser()
         {
-
             @Override
-            public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, ActionResponse replyWhenDone)
+            public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, Optional<ActionResponse> replyWhenDone)
             {
 
             }
@@ -88,7 +84,7 @@ public class TestDirectly
                     {
                         //do nothing
                     }
-                });
+                }, false);
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
 
@@ -404,7 +400,7 @@ public class TestDirectly
             //but then it will fail here...
             response = allUserActions.setFieldFromFieldVal(new InfoForCommand(userSays, null), response.getField(), allUserActions.getProbFieldVal(new InfoForCommand(userSays, null)).getValue());
         }
-        //response = CcgUtils.ParseAndEval(allUserActions, parserSettings, userSays);
+        //response = CcgUtils.parseAndEval(allUserActions, parserSettings, userSays);
         testHelpers.systemSays(response.getSayToUser());
 
         userSays = "that's it";

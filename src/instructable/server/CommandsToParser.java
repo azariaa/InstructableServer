@@ -22,12 +22,12 @@ public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
     }
 
     @Override
-    public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, ActionResponse actionResponseWhenDone)
+    public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, Optional<ActionResponse> actionResponseWhenDone)
     {
         synchronized (lockWhileLearning)
         {
             parserSettings.addTrainingEg(originalCommand, commandsLearnt);
-            pendingActionResponse = Optional.of(actionResponseWhenDone);
+            pendingActionResponse = actionResponseWhenDone;
         }
     }
 

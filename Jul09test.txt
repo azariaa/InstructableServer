@@ -101,7 +101,7 @@ S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
 S: What shall I do next (when executing: "recipientify bob")?
 
 U: that's it
-S: I'm currently learning the new command ("recipientify bob"). I'm trying to generalize to other similar commands, this takes several seconds...
+S: I now know what to do when you say (for example): "recipientify bob"!
 
 U: recipientify jane
 S: It is: jane@gmail.com
@@ -165,7 +165,7 @@ S: What shall I do next (when executing: "forward this email to my spouse")?
 S: I noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want me to end and learn this new command, say "end". If you want me to cancel this command say "cancel".
 
 U: finish
-S: I'm currently learning the new command ("forward this email to my spouse"). I'm trying to generalize to other similar commands, this takes several seconds...
+S: I now know what to do when you say (for example): "forward this email to my spouse"!
 
 U: forward this email to bob
 S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
@@ -218,7 +218,7 @@ S: The "body" field in "outgoing email" was set to: "blue".
 S: What shall I do next (when executing: "reply blue")?
 
 U: end
-S: I'm currently learning the new command ("reply blue"). I'm trying to generalize to other similar commands, this takes several seconds...
+S: I now know what to do when you say (for example): "reply blue"!
 
 U: reply I'm still at work where are you
 S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
@@ -253,7 +253,7 @@ S:
 S: What shall I do next (when executing: "next email plus reading it")?
 
 U: end
-S: I'm currently learning the new command ("next email plus reading it"). I'm trying to generalize to other similar commands, this takes several seconds...
+S: I now know what to do when you say (for example): "next email plus reading it"!
 
 U: move to the previous email in the inbox
 S: Set to previous incoming email successfully.

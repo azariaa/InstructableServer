@@ -18,7 +18,7 @@ public class CommandLine
     {
 
         ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
-        TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {});
+        TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, true);
         IAllUserActions allUserActions = topDMAllActions;
 
         EnvironmentCreatorUtils.addInboxEmails(topDMAllActions);
@@ -35,7 +35,7 @@ public class CommandLine
             CcgUtils.SayAndExpression response;
             try
             {
-                response = parserSettings.ParseAndEval(allUserActions, userSays);
+                response = parserSettings.parseAndEval(allUserActions, userSays);
                 System.out.println("S:" + response.sayToUser + "\n");
             } catch (Exception ex)
             {

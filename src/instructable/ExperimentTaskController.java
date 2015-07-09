@@ -76,7 +76,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     String gameId;
     Logger logger;
 
-    ExperimentTaskController(Logger logger, String gameId)
+    public ExperimentTaskController(Logger logger, String gameId)
     {
         this.gameId = gameId;
         this.logger = logger;
@@ -125,13 +125,13 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         switch (currentTask())
         {
             case defineContact:
-                return "Your 1st training task is to have the agent define/create the concept \"contact\" (simply tell the agent to define the concept contact)";
+                return "Your 1st training task is to have the agent define/create the concept \"contact\" (simply say: define the concept contact)";
             case addEmailToContact:
-                return "Your 2nd training task is to have the agent add the \"email\" field to the concept \"contact\" (simply tell the agent to add the email field to the concept contact)";
+                return "Your 2nd training task is to have the agent add the \"email\" field to the concept \"contact\" (simply say: add email field to concept contact)";
             case createContact:
                 return "Your 3rd training task is to <b>create</b> a contact for "+ momName +" (simply tell the agent to create a contact for mom)";
             case setMomsEmail:
-                return "Your 4th training task is to <b>set</b> mom's email to correctly. (set "+momName+"'s email to the email that appears in the \"notes\" image. Make sure to type it in correctly!)";
+                return "Your 4th training task is to <b>set</b> mom's email to correctly. (Set "+momName+"'s email to the email that appears in the \"notes\" image. Make sure to type it in correctly!)";
             case seeMomsEmail:
                 return "Your 5th training task is to ask the agent for "+momName+"'s email";
             case createEmail:

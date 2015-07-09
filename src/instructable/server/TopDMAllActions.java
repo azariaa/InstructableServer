@@ -30,9 +30,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     static private final String createEmailExpression = "(createInstanceByConceptName outgoing_email)";
 
     Optional<JSONObject> previousFieldEval = Optional.empty();
+    boolean usePendingResponses = true;
 
-    public TopDMAllActions(ICommandsToParser commandsToParser, IEmailSender emailSender)
+    public TopDMAllActions(ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses)
     {
+        this.usePendingResponses = usePendingResponses;
         conceptContainer = new ConceptContainer();
         instanceContainer = new InstanceContainer(conceptContainer);
         outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer, emailSender);
@@ -932,23 +934,37 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         //make sure learnt at least one successful sentence
         if (commandsLearnt.size() > 0)
         {
-            new Thread()
+            final String learningSuccessStr = "I now know what to do when you say (for example): \"" + commandBeingLearnt + "\"!";
+            if (usePendingResponses)
             {
-                @Override
-                public void run()
+                new Thread()
                 {
-                    commandsToParser.addTrainingEg(
-                            commandBeingLearnt,
-                            commandsLearnt,
-                            new  ActionResponse("I now know what to do when you say (for example): \"" + commandBeingLearnt + "\"!", true, Optional.empty()));
+                    @Override
+                    public void run()
+                    {
+                        commandsToParser.addTrainingEg(
+                                commandBeingLearnt,
+                                commandsLearnt,
+                                Optional.of(new ActionResponse(learningSuccessStr, true, Optional.empty())));
 
-                }
-            }.start();
-            return new ActionResponse("I'm currently learning the new command (\""+ commandBeingLearnt + "\"). I'm trying to generalize to other similar commands, "+resendNewRequest+"...", true, Optional.empty());
+                    }
+                }.start();
+                return new ActionResponse("I'm currently learning the new command (\"" + commandBeingLearnt + "\"). I'm trying to generalize to other similar commands, " + resendNewRequest + "...", true, Optional.empty());
+            }
+            else
+            {
+                commandsToParser.addTrainingEg(
+                        commandBeingLearnt,
+                        commandsLearnt,
+                        Optional.empty()
+                        );
+                return new ActionResponse(learningSuccessStr, true, Optional.empty());
+            }
         }
         return new ActionResponse("I'm afraid that I didn't learn anything.", false, Optional.empty());
 
     }
+
 
     @Override
     public ActionResponse endOrCancel(InfoForCommand infoForCommand)

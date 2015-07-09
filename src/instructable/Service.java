@@ -75,7 +75,7 @@ public class Service
         {
             ExecutorService executor = Executors.newFixedThreadPool(20);
             HttpServer server = HttpServer.create(new InetSocketAddress(portToListenOn), 0);
-            AgentDataAndControl agentDataAndControl = new AgentDataAndControl(logger);
+            AgentDataAndControl agentDataAndControl = new AgentDataAndControl(logger,true);
             HttpContext agentContext = server.createContext("/" + contextSayToAgent, new AgentServer(agentDataAndControl));
             agentContext.getFilters().add(new ParameterFilter());
             HttpContext emailAndExperimentContext = server.createContext("/" + contextEmailAndExperiment, new EmailAndExperimentServer(agentDataAndControl));

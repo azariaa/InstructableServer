@@ -3,13 +3,14 @@ package instructable.server;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
  */
 public interface ICommandsToParser
 {
-    void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, ActionResponse replyWhenDone);
+    void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, Optional<ActionResponse> replyWhenDone);
 
     //needs to add ConceptName to the lexicon and the conceptName to the environment table
     void newConceptDefined(String conceptName);
