@@ -67,10 +67,17 @@ as,PP_StringV/StringV,(lambda $1 $1) //set subject as hello world //set subject 
 #as,PP_FieldVal/FieldVal,(lambda $1 $1) //set recipient as mom's email //set recipient to mom's email //bad - removed
 as,PP_ConceptName/ConceptName,(lambda $1 $1) //set mom as a contact
 inside,PP_MutableField/MutableField,(lambda $1 $1) //put hello world inside the subject
-and,"(S{3}/S{2})\S{1}",(lambda $1 $2 (doSeq $1 $2))
-and,"(S/S)\FieldVal",(lambda $1 $2 (doSeq $1 $2))
-and,"((((S{3}\((S{3}/PP_StringV{2}){3}/MutableField{1}){3}){3})\((S{3}\((S{3}/PP_StringV{2}){3}/MutableField{1}){3}){3})){0}/((S{3}\((S{3}/PP_StringV{2}){3}/MutableField{1}){3}){3})){0}", (lambda $1 $2 $3 (doSeq ($1 $2) ($1 $3)))
+and,"(S{3}/S{2})\S{1}",(lambda $1 $2 (doSeq $1 $2)) //regular and (has a sentence ahead and sentence behind).
+#and,"(S/S)\FieldVal",(lambda $1 $2 (doSeq $1 $2)) // not sure what this is, is this a mistake?
+#and,"((((S{3}\((S{3}/PP_StringV{2}){3}/MutableField{1}){3}){3})\((S{3}\((S{3}/PP_StringV{2}){3}/MutableField{1}){3}){3})){0}/((S{3}\((S{3}/PP_StringV{2}){3}/MutableField{1}){3}){3})){0}", (lambda $1 $2 $3 (doSeq ($1 $2) ($1 $3))) //tried to do: set subject to hello and body to see you
 hi,S{0},(replyTo)
+# using:
+# using is like "and write", example: create new email using mom's email as the recipient, or create a contact for mom using mom@fd.com as the email
+# this could have been more elegant by creating them automatically using a format like: using,"and set"...
+using,"(((S{1}/PP_MutableField{3}){1}/StringV{2}){1}\S{0}){1}",(lambda $1 $2 $3 (doSeq $1(setFieldFromString $3 $2)))
+using,"(((S{1}/PP_MutableField{3}){1}/FieldVal{2}){1}\S{0}){1}",(lambda $1 $2 $3 (doSeq $1(setFieldFromFieldVal $3 $2)))
+using, ((S{1}/StringV{2}){1}\S{0}){1},(lambda $1 $2 (doSeq $1 (setWhatFromString $2)))
+using, ((S{1}/Field{2}){1}\S{0}){1},(lambda $1 $2 (doSeq $1 (setWhatFromField $2)))
 #
 # The following are used to hint on the type but are actually ignored
 #
