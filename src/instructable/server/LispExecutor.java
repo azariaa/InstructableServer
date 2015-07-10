@@ -99,19 +99,6 @@ public class LispExecutor
                 if (responseOfFailedCall.isPresent())
                     return responseOfFailedCall.get();
 
-//                //make sure all ActionResponse we got are success, otherwise just propagate them up //unless do_seq which is handled above.
-//                //this is actually irrelevant, since if an action fails it throws an exception see below.
-//                //TODO: all this is problematic, since if some of the action succeed (especially in do_seq) no indication is given to user.
-//                for (Object obj : argumentValues)
-//                {
-//                    if (obj instanceof ActionResponse)
-//                    {
-//                        if (!((ActionResponse) obj).isSuccess())
-//                        {
-//                            return (ActionResponse) obj;
-//                        }
-//                    }
-//                }
 
                 //first get function by name (no overloading so it is easy)
                 //we can't use IAllUserActions.class.getMethod(currentFunction), because we don't know the parameters
@@ -151,9 +138,6 @@ public class LispExecutor
                 if (!retVal.isSuccess())
                 {
                     responseOfFailedCall = Optional.of(retVal);
-                    //Important!!! This runtime exception is actually a returnValue and is later caught in ParserSettings.evaluate.
-                    //This is done this way, in order to stop the execution of the rest of the expression (without interfering with LispEval.eval()
-                    //throw retVal;
                 }
                 return retVal;
             } catch (NoSuchMethodException e)

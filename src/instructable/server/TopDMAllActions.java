@@ -188,7 +188,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     InternalState internalState;
-    String currentConcept = ""; //in use when update concept.
 
     @Override
     public ActionResponse sendEmail(InfoForCommand infoForCommand)

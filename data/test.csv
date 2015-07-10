@@ -83,3 +83,4 @@ current email's sender,(evalField (getProbFieldByInstanceNameAndFieldName inbox 
 I would like to teach you a new command,(teachNewCommand)
 read the current email in the inbox,(readInstance (getInstance outgoing_email inbox))
 new email and set subject to current email's subject and set the body of the outgoing email to blue and set the recipient list to the current email's sender and send,"(doSeq (createInstanceByConceptName outgoing_email) (doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName subject) (evalField (getProbFieldByInstanceNameAndFieldName inbox subject))) (doSeq (setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName outgoing_email body) (stringValue ""blue"")) (doSeq (setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName inbox sender))) (sendEmail)))))"
+send new email,(send email)

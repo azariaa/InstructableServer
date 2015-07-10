@@ -141,25 +141,15 @@ public class ParserSettings implements Cloneable
         functionToExecutes.forEach(function -> env.bindName(function.getFunctionName(), function, symbolTable));
 
         //change in evaluation that every unknown name will change to it as a string (changing "_" with " ")
-
-        //env.bindName("body", "body", symbolTable);
         //env.bindName("outgoing_email", "outgoing email", symbolTable);
-        //env.bindName("recipient_list", "recipient list", symbolTable);
-        //env.bindName("subject", "subject", symbolTable);
-        //env.bindName("bob", "bob", symbolTable);
 
         LispEval lispEval = new LispEval(symbolTable);
         SExpression sExpression = ExpressionParser.sExpression(symbolTable).parseSingleExpression(expression.toString());
 
         ActionResponse response;
-//        try
-//        {
+
         LispEval.EvalResult result = lispEval.eval(sExpression, env);
         response = (ActionResponse) result.getValue();
-//        } catch (ActionResponse actionResponse)
-//        {
-//            response = actionResponse;
-//        }
 
         return response;
     }
