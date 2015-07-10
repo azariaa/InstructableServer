@@ -1,35 +1,71 @@
 package instructable.server.ccg;
 
+import instructable.server.LispExecutor;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.jayantkrish.jklol.ccg.*;
+import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
+import com.jayantkrish.jklol.ccg.CcgBinaryRule;
+import com.jayantkrish.jklol.ccg.CcgCategory;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
+import com.jayantkrish.jklol.ccg.CcgInference;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.CcgPerceptronOracle;
+import com.jayantkrish.jklol.ccg.CcgUnaryRule;
+import com.jayantkrish.jklol.ccg.HeadedSyntacticCategory;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
 import com.jayantkrish.jklol.ccg.SyntacticCategory.Direction;
 import com.jayantkrish.jklol.ccg.chart.CcgBeamSearchChart;
 import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.*;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
+import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
 import com.jayantkrish.jklol.ccg.lexicon.SpanFeatureAnnotation;
 import com.jayantkrish.jklol.ccg.lexicon.StringContext;
-import com.jayantkrish.jklol.ccg.lexinduct.*;
+import com.jayantkrish.jklol.ccg.lexinduct.AlignmentExample;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentEmOracle;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTokenFeatureGenerator;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTree;
+import com.jayantkrish.jklol.ccg.lexinduct.ParametricCfgAlignmentModel;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 import com.jayantkrish.jklol.nlpannotation.AnnotatedSentence;
 import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
-import com.jayantkrish.jklol.training.*;
+import com.jayantkrish.jklol.training.ExpectationMaximization;
+import com.jayantkrish.jklol.training.GradientOptimizer;
+import com.jayantkrish.jklol.training.GradientOracle;
+import com.jayantkrish.jklol.training.NullLogFunction;
+import com.jayantkrish.jklol.training.StochasticGradientTrainer;
 import com.jayantkrish.jklol.util.CsvParser;
 import com.jayantkrish.jklol.util.IntegerArrayIterator;
 import com.jayantkrish.jklol.util.PairCountAccumulator;
-import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import instructable.server.LispExecutor;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.*;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 
 public class CcgUtils
@@ -105,6 +141,7 @@ public class CcgUtils
 
 	  CcgBeamSearchChart chart = new CcgBeamSearchChart(example.getSentence(), Integer.MAX_VALUE, 100);
 	  parser.parseCommon(chart, example.getSentence(), null, null, -1, 2);
+	  System.out.println(words);
 	  for (int i = 1; i < words.size(); i++) {
 		  for (int j = words.size() - 1; j >= i; j--) {
 			  List<String> subwords = words.subList(i, j + 1);
@@ -232,7 +269,7 @@ public class CcgUtils
 	    }
 
 	    for (int i : idxOfCandidates) {
-	      // System.out.println(words.get(i) + "/" + pos.get(i));
+	      // System.out.println(i + " " + words.get(i) + "/" + pos.get(i));
 	      
 	      // Figure out the argument order for the syntactic category being created.
 	      // This finds the right and left hand side arguments by word index in
