@@ -5,8 +5,10 @@ import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
 import com.jayantkrish.jklol.ccg.CcgExample;
@@ -30,6 +32,9 @@ public class TestDataDriven {
     
     List<CcgExample> examples = Lists.newArrayList();
     for (String[] exampleString : exampleStrings) {
+      Preconditions.checkArgument(exampleString.length == 2, "Error parsing csv %s",
+          Arrays.toString(exampleString));
+      
       Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exampleString[1]);
       CcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, parserSettings.posUsed,
           false, parserSettings.featureVectorGenerator);
