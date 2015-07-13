@@ -15,7 +15,7 @@ use, {write} //use hello world as the subject //use email's subject as the subje
 type,{write} //type hello in the subject
 enter,{write} //enter hello in the subject
 with,{using} //create new email using mom@fsd.com as the recipient
-in, {inside,instance} //put hello world in the subject //email in inbox
+in, {inside,instance,of} //put hello world in the subject //email in inbox //set body in outgoing email to blue
 the, {instance,field,outgoing} //in the inbox //the email //the subject of the door //subject of the email
 this, {instance,outgoing} //of this email
 as, {inside} // set hello world as the subject
@@ -63,6 +63,7 @@ mail,{email_ambiguous,email}
 message,{email_ambiguous,email}
 last,{previous} //last email
 address,{recipient}
+"recipient list",{recipient}
 title,{subject}
 ok,{yes}
 sure,{yes}
