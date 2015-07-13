@@ -6,6 +6,7 @@ import opennlp.tools.tokenize.DetokenizationDictionary;
 import opennlp.tools.tokenize.DictionaryDetokenizer;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 03-Jun-15.
@@ -51,8 +52,10 @@ public class CcgDetokenizer
      */
     private static Expression2 detokenizeToExpression(List<String> tokenizedStr)
     {
-        tokenizedStr.replaceAll(CcgDetokenizer::detokenizeOneToken);
-        return Expression2.constant("\"" + detokenizer.detokenize(tokenizedStr.toArray(new String[0]), null) + "\"");
+        //tokenizedStr.replaceAll(CcgDetokenizer::detokenizeOneToken);
+        List<String> replacedRules = tokenizedStr.stream().map(CcgDetokenizer::detokenizeOneToken).collect(Collectors.toList());
+
+        return Expression2.constant("\"" + detokenizer.detokenize(replacedRules.toArray(new String[0]), null) + "\"");
     }
 
     public static Function<List<String>, Expression2> getDetokenizer()
