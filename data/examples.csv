@@ -24,6 +24,7 @@ create an outgoing email and set the subject to I'm on my way,"(doSeq (createIns
 define person!,"(defineConcept (stringNoun ""person""))"
 define the concept person.,"(defineConcept (stringNoun ""person""))"
 define concept person,"(defineConcept (stringNoun ""person""))"
+define concept shoe,"(defineConcept (stringNoun ""shoe""))"
 add wings as a field in name,"(addFieldToConcept name (stringNoun ""wings""))"
 add email as a field in name,"(addFieldToConcept name (stringNoun ""email""))"
 add the email field to the concept name,"(addFieldToConcept name (stringNoun ""email""))"

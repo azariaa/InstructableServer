@@ -204,7 +204,9 @@ public class ParserSettings implements Cloneable
         List<String> lexiconAsList = new LinkedList<>();
         lexiconAsList.add(lexiconToRemove);
         List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
-        lexicon.removeAll(lexiconEntries);
+        //lexicon.removeAll(lexiconEntries);
+        LexiconEntry lexiconEntryToRemove = lexiconEntries.get(0);
+        lexicon = lexicon.stream().filter(lex->!lex.toCsvString().startsWith(lexiconEntryToRemove.toCsvString())).collect(Collectors.toList()); //the lexicon may have additional information (all the number thingies)
         updateGrammarFromExisting();
     }
 
