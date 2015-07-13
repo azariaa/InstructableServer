@@ -321,7 +321,7 @@ public class ParserSettings implements Cloneable
         parserSettings.parser = parser;
         parserSettings.parserFamily = parserFamily;
         parserSettings.parserParameters = parserParameters.duplicate();
-        parserSettings.env = env;
+        parserSettings.env = new Environment(env);
         parserSettings.symbolTable = new IndexedList<String>(symbolTable);
         parserSettings.posUsed = posUsed;
         parserSettings.learnedExamples = new HashMap<>(learnedExamples);

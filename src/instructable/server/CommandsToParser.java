@@ -66,7 +66,7 @@ public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
     {
         String what = conceptFieldInstance.toString();
         parserSettings.removeFromParserGrammar(actualName + "," + what + "Name{0}," + actualName.replace(" ", "_"));
-        //parserSettings.env.unbindName() //doesn't have this function, but it doesn't really matter
+        parserSettings.env.unbindName(actualName.replace(" ", "_"), parserSettings.symbolTable);
         //parserSettings.retrain(2);
     }
 
