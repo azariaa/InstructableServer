@@ -16,6 +16,7 @@ import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplificationException;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
 
 public class TestDialogues
 {
@@ -31,8 +32,9 @@ public class TestDialogues
         logger.setLevel(Level.SEVERE);
         AgentDataAndControl agentDataAndControl = new AgentDataAndControl(logger,false);
 
-        String[] tests = new String[]{"data/dialogues/send_email.csv", "data/dialogues/define_contact.csv",
-            "data/dialogues/forward.csv", "data/dialogues/reply.csv"};
+        //String[] tests = new String[]{"data/dialogues/send_email.csv", "data/dialogues/define_contact.csv",
+        // "data/dialogues/forward.csv", "data/dialogues/reply.csv"};
+        String[] tests = new String[]{"data/dialogues/log_151.csv"};
 
         System.out.println("here");
         
@@ -40,11 +42,12 @@ public class TestDialogues
         for (String test : tests)
         {
             gameId++;
-            runTest(test, gameId.toString(), agentDataAndControl, logger);
+            runTest(test, gameId.toString(), agentDataAndControl, logger, false);
         }
     }
 
-    private static void runTest(String filename, String gameId, AgentDataAndControl agentDataAndControl, Logger logger)
+    private static void runTest(String filename, String gameId, AgentDataAndControl agentDataAndControl,
+        Logger logger, boolean executeGold)
     {
         ExperimentTaskController experimentTaskController = new ExperimentTaskController(logger,gameId);
         agentDataAndControl.addNewGame(gameId, experimentTaskController, experimentTaskController);
@@ -83,7 +86,15 @@ public class TestDialogues
                 List<String> words = example.getSentence().getWords();
                 String sentence = CcgDetokenizer.getDetokenizer().apply(words.subList(1, words.size())).getConstant();
                 sentence = sentence.substring(1, sentence.length() - 1);
-                agentDataAndControl.executeExpressionForTestingOnly(gameId, sentence, correctLf);
+                if (executeGold) {
+                  agentDataAndControl.executeExpressionForTestingOnly(gameId, sentence, correctLf);
+                } else {
+                  if (!StaticAnalysis.isLambda(lf, 0)) {
+                    agentDataAndControl.executeExpressionForTestingOnly(gameId, sentence, lf);
+                  } else {
+                    System.out.println("can't execute");
+                  }
+                }
 
                 numCorrect += correct;
                 numParsed++;
