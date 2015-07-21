@@ -1,6 +1,7 @@
 package instructable.server.hirarchy;
 
 import instructable.server.ExecutionStatus;
+import instructable.server.dal.InstanceKB;
 
 import java.util.*;
 
@@ -10,14 +11,14 @@ import java.util.*;
  */
 public class InstanceContainer
 {
-
-    Map<String, Map<String, GenericInstance>> conceptToInstance = new HashMap<>(); //map from conceptNames to a map holding all instances of that concept//TODO: should be stored in DB
+    InstanceKB instanceKB;
 
     ConceptContainer conceptContainer;
 
-    public InstanceContainer(ConceptContainer conceptContainer)
+    public InstanceContainer(ConceptContainer conceptContainer, String userId)
     {
         this.conceptContainer = conceptContainer;
+        instanceKB = new InstanceKB(userId);
     }
 
     //save last access, and sort according to last access
@@ -56,11 +57,11 @@ public class InstanceContainer
     private List<GenericInstance> getAllPossibleInstances(List<String> conceptOptions, Optional<String> instanceName, boolean mutableOnly)
     {
         List<GenericInstance> allPossibleInstances = new LinkedList<>();
-        for (String concept : conceptToInstance.keySet())
+        for (String concept : instanceKB.conceptsWithInstances())
         {
             if (conceptOptions.contains(concept))
             {
-                for (GenericInstance genericInstance : conceptToInstance.get(concept).values())
+                for (GenericInstance genericInstance : instanceKB.getAllInstancesOf(concept))
                 {
                     if ((!instanceName.isPresent() || genericInstance.name.equals(instanceName.get())) &&
                             (!mutableOnly || genericInstance.mutable))
@@ -73,12 +74,11 @@ public class InstanceContainer
 
     public Optional<GenericInstance> getInstance(ExecutionStatus executionStatus, String conceptName, String instanceName)
     {
-        if (conceptToInstance.containsKey(conceptName))
+        if (instanceKB.hasAnyInstancesOfConcept(conceptName))
         {
-            Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
-            if (instances.containsKey(instanceName))
+            if (instanceKB.hasInstanceOfConcept(conceptName, instanceName))
             {
-                GenericInstance instance = instances.get(instanceName);
+                GenericInstance instance = instanceKB.getInstance(conceptName, instanceName);
                 instance.touch();
                 return Optional.of(instance);
             }
@@ -101,54 +101,43 @@ public class InstanceContainer
             executionStatus.add(ExecutionStatus.RetStatus.error, "there is no concept with the name \"" + "\", please define it first");
             return;
         }
-        GenericInstance instance = new GenericInstance(conceptName, instanceName, conceptContainer.conceptFieldMap.get(conceptName), isMutable);
+        GenericInstance instance = new GenericInstance(conceptName, instanceName, conceptContainer.getAllFieldDiscriptions(conceptName), isMutable);
 
         addInstance(executionStatus, instance);
     }
 
-    public void addInstance(ExecutionStatus executionStatus, GenericInstance conceptInstance)
+    public void addInstance(ExecutionStatus executionStatus, GenericInstance instance)
     {
-        String conceptName = conceptInstance.conceptName;
+        String conceptName = instance.conceptName;
         if (!conceptContainer.doesConceptExist(conceptName))
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "no concept with the name \"" + conceptName + "\" is defined, please define it first");
         }
         else
         {
-            if (!conceptToInstance.containsKey(conceptName))
-            {
-                conceptToInstance.put(conceptInstance.conceptName, new HashMap<>());
-            }
-
-            conceptToInstance.get(conceptInstance.conceptName).put(conceptInstance.name, conceptInstance);
+            instanceKB.addInstance(conceptName, instance);
         }
 
     }
 
     public void renameInstance(ExecutionStatus executionStatus, String conceptName, String instanceOldName, String instanceNewName)
     {
-        if (conceptToInstance.containsKey(conceptName))
+        if (instanceKB.hasAnyInstancesOfConcept(conceptName))
         {
-            Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
-            if (instances.containsKey(instanceOldName))
-            {
-                GenericInstance reqInstance = instances.get(instanceOldName);
-                reqInstance.name = instanceNewName;
-                instances.remove(instanceOldName);
-                instances.put(instanceNewName, reqInstance);
-                return;
-            }
+            instanceKB.renameInstance(conceptName, instanceOldName, instanceNewName);
         }
-        executionStatus.add(ExecutionStatus.RetStatus.warning, "the instance was not found");
+        else
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.warning, "the instance was not found");
+        }
     }
 
     public void fieldAddedToConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription newFieldDescription)
     {
-        if (conceptToInstance.containsKey(conceptName))
+        if (instanceKB.hasAnyInstancesOfConcept(conceptName))
         {
             //it's ok if no instances are found
-            Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
-            for (GenericInstance instance : instances.values())
+            for (GenericInstance instance : instanceKB.getAllInstancesOf(conceptName))
             {
                 instance.addFieldToObject(executionStatus, newFieldDescription);
             }
@@ -157,26 +146,23 @@ public class InstanceContainer
 
     public void setMutability(ExecutionStatus executionStatus, String conceptName, String instanceName, boolean newMutability)
     {
-        if (conceptToInstance.containsKey(conceptName))
+        if (instanceKB.hasAnyInstancesOfConcept(conceptName))
         {
-            Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
-            if (instances.containsKey(instanceName))
-            {
-                GenericInstance reqInstance = instances.get(instanceName);
-                reqInstance.mutable = newMutability;
-                return;
-            }
+            GenericInstance reqInstance = instanceKB.getInstance(conceptName,instanceName);
+            reqInstance.mutable = newMutability;
         }
-        executionStatus.add(ExecutionStatus.RetStatus.warning, "the instance was not found");
+        else
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.warning, "the instance was not found");
+        }
     }
 
     public void fieldRemovedFromConcept(ExecutionStatus executionStatus, String conceptName, String fieldName)
     {
-        if (conceptToInstance.containsKey(conceptName))
+        if (instanceKB.hasAnyInstancesOfConcept(conceptName))
         {
             //it's ok if no instances are found
-            Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
-            for (GenericInstance instance : instances.values())
+            for (GenericInstance instance : instanceKB.getAllInstancesOf(conceptName))
             {
                 instance.removeFieldFromObject(executionStatus, fieldName);
             }
@@ -192,9 +178,9 @@ public class InstanceContainer
         }
         else
         {
-            if (conceptToInstance.containsKey(conceptName) && conceptToInstance.get(conceptName).containsKey(instance.name))
+            if (instanceKB.hasInstanceOfConcept(conceptName,instance.getName()))
             {
-                conceptToInstance.get(conceptName).remove(instance.name);
+                instanceKB.deleteInstance(conceptName,instance.getName());
             }
             else
             {
@@ -206,7 +192,7 @@ public class InstanceContainer
 
     public void conceptUndefined(String conceptName)
     {
-        if (conceptToInstance.containsKey(conceptName))
-            conceptToInstance.remove(conceptName);
+        if (instanceKB.hasAnyInstancesOfConcept(conceptName))
+            instanceKB.deleteAllInstancesOf(conceptName);
     }
 }

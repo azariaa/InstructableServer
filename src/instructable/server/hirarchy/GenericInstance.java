@@ -35,6 +35,11 @@ public class GenericInstance
         return name;
     }
 
+    public void rename(String newName)
+    {
+        name = newName;
+    }
+
     public String getConceptName()
     {
         return conceptName;

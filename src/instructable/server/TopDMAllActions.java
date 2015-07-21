@@ -35,8 +35,9 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public TopDMAllActions(ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses)
     {
         this.usePendingResponses = usePendingResponses;
-        conceptContainer = new ConceptContainer();
-        instanceContainer = new InstanceContainer(conceptContainer);
+        String userId = userEmailAddress;
+        conceptContainer = new ConceptContainer(userId);
+        instanceContainer = new InstanceContainer(conceptContainer, userId);
         outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer, emailSender);
         inboxCommandController = new InboxCommandController(conceptContainer, instanceContainer);
         this.commandsToParser = commandsToParser;
@@ -813,7 +814,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         String conceptName = OutgoingEmail.strOutgoingEmailTypeAndName;
         ExecutionStatus executionStatus = new ExecutionStatus();
         outEmailCommandController.createNewEmail(executionStatus);
-        List<String> emailFieldNames = outEmailCommandController.changeToRelevantComposedEmailFields(conceptContainer.getFields(conceptName));
+        List<String> emailFieldNames = outEmailCommandController.changeToRelevantComposedEmailFields(conceptContainer.getAllFieldNames(conceptName));
 
         return TextFormattingUtils.testOkAndFormat(infoForCommand,
                 executionStatus,
@@ -861,7 +862,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     private String listFieldsOfConcept(String conceptName)
     {
         if (conceptContainer.doesConceptExist(conceptName))
-            return "\"" + conceptName + "\" fields are: " + userFriendlyList(conceptContainer.getFields(conceptName)) + ".";
+            return "\"" + conceptName + "\" fields are: " + userFriendlyList(conceptContainer.getAllFieldNames(conceptName)) + ".";
         return "";
     }
 

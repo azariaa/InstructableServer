@@ -1,8 +1,11 @@
 package instructable.server.hirarchy;
 
 import instructable.server.ExecutionStatus;
+import instructable.server.dal.ConceptFiledMap;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static instructable.server.TextFormattingUtils.userFriendlyList;
@@ -17,24 +20,24 @@ import static instructable.server.TextFormattingUtils.userFriendlyList;
  */
 public class ConceptContainer
 {
-    Map<String, List<FieldDescription>> conceptFieldMap; // a map holding all concepts and the list of their fields
+    private ConceptFiledMap conceptFieldMap;
 
-    public ConceptContainer()
+    public ConceptContainer(String userId)
     {
-        conceptFieldMap = new HashMap<>();
         //conceptFieldMap.put("email", Arrays.asList(EmailMessage.fieldDescriptions));
+        conceptFieldMap = new ConceptFiledMap(userId);
     }
 
     public boolean doesConceptExist(String concept)
     {
-        return conceptFieldMap.containsKey(concept);
+        return conceptFieldMap.hasConcept(concept);
     }
 
     public boolean doesFieldExistInConcept(String concept, String fieldName)
     {
-        if (conceptFieldMap.containsKey(concept))
+        if (conceptFieldMap.hasConcept(concept))
         {
-            List<FieldDescription> fieldDescriptionList = conceptFieldMap.get(concept);
+            List<FieldDescription> fieldDescriptionList = conceptFieldMap.getAllFieldDescriptions(concept);
             for (FieldDescription fieldDescription : fieldDescriptionList)
             {
                 if (fieldDescription.fieldName.equals(fieldName))
@@ -57,9 +60,9 @@ public class ConceptContainer
     {
         Optional<String> foundImmutableConcept = Optional.empty();
         List<String> candidates = new LinkedList<>();
-        for (String concept : conceptFieldMap.keySet())
+        for (String concept : conceptFieldMap.allConcepts())
         {
-            List<FieldDescription> fieldDescriptionList = conceptFieldMap.get(concept);
+            List<FieldDescription> fieldDescriptionList = conceptFieldMap.getAllFieldDescriptions(concept);
             for (FieldDescription fieldDescription : fieldDescriptionList)
             {
                 if (fieldDescription.fieldName.equals(fieldName))
@@ -92,14 +95,14 @@ public class ConceptContainer
 
     public void defineConcept(ExecutionStatus executionStatus, String conceptName)
     {
-        if (conceptFieldMap.containsKey(conceptName))
+        if (conceptFieldMap.hasConcept(conceptName))
         {
             executionStatus.add(ExecutionStatus.RetStatus.warning, "the concept \"" + conceptName + "\" is already defined. "
-                    + "Its fields are: " + userFriendlyList(getFields(conceptName)));
+                    + "Its fields are: " + userFriendlyList(getAllFieldNames(conceptName)));
         }
         else
         {
-            conceptFieldMap.put(conceptName, new LinkedList<>());
+            conceptFieldMap.newConcept(conceptName);
         }
     }
 
@@ -121,12 +124,12 @@ public class ConceptContainer
     {
         //TODO: check all these...
         //TODO: check no duplicate fields!!!
-        if (!conceptFieldMap.containsKey(conceptName))
+        if (!conceptFieldMap.hasConcept(conceptName))
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "the concept \"" + conceptName + "\" is not defined, please define it first");
             return;
         }
-        List<FieldDescription> conceptFields = conceptFieldMap.get(conceptName);
+        List<FieldDescription> conceptFields = conceptFieldMap.getAllFieldDescriptions(conceptName);
         for (FieldDescription fieldDescription : fieldDescriptions)
         {
             if (doesFieldExistInConcept(conceptName, fieldDescription.fieldName))
@@ -140,9 +143,9 @@ public class ConceptContainer
 
     public void removeFieldFromConcept(ExecutionStatus executionStatus, String conceptName, String fieldName)
     {
-        if (conceptFieldMap.containsKey(conceptName))
+        if (conceptFieldMap.hasConcept(conceptName))
         {
-            List<FieldDescription> currentFields = conceptFieldMap.get(conceptName);
+            List<FieldDescription> currentFields = conceptFieldMap.getAllFieldDescriptions(conceptName);
             if (currentFields.stream().anyMatch(x->x.fieldName.equals(fieldName)))
             {
                 currentFields.removeIf(x -> x.fieldName.equals(fieldName));
@@ -154,24 +157,28 @@ public class ConceptContainer
         executionStatus.add(ExecutionStatus.RetStatus.error, "the concept \"" + conceptName + "\" does not have a field named \"" + fieldName + "\"");
     }
 
-
-    public List<String> getFields(String conceptName)
+    public List<FieldDescription> getAllFieldDiscriptions(String conceptName)
     {
-        return new LinkedList<>(conceptFieldMap.get(conceptName).stream().map(fieldDescription -> fieldDescription.fieldName).collect(Collectors.toList()));
+        return conceptFieldMap.getAllFieldDescriptions(conceptName);
+    }
+
+    public List<String> getAllFieldNames(String conceptName)
+    {
+        return new LinkedList<>(conceptFieldMap.getAllFieldDescriptions(conceptName).stream().map(fieldDescription -> fieldDescription.fieldName).collect(Collectors.toList()));
     }
 
     //can't fail, but can return empty list
     public List<String> getAllConceptNames()
     {
         List<String> conceptNames = new LinkedList<>();
-        conceptNames.addAll(conceptFieldMap.keySet());
+        conceptNames.addAll(conceptFieldMap.allConcepts());
         return conceptNames;
     }
 
     public void undefineConcept(ExecutionStatus executionStatus, String conceptName)
     {
-        if (conceptFieldMap.containsKey(conceptName))
-            conceptFieldMap.remove(conceptName);
+        if (conceptFieldMap.hasConcept(conceptName))
+            conceptFieldMap.removeConcept(conceptName);
         else
             executionStatus.add(ExecutionStatus.RetStatus.error, "the concept \"" + conceptName + "\" was not found");
     }
