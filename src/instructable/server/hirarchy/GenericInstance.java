@@ -8,9 +8,16 @@ import java.util.*;
 
 /**
  * Created by Amos Azaria on 15-Apr-15.
+ * Any changes to instance (not to fields) must be reported to theInstance
  */
 public class GenericInstance
 {
+
+    //String name;
+    //String conceptName; //type, class, concept
+    //boolean mutable;
+    long lastAccess;
+    SingleInstance theInstance;
 
     private GenericInstance()
     {
@@ -27,12 +34,6 @@ public class GenericInstance
         //this.conceptName = conceptName;
         //this.mutable = mutable;
     }
-
-    //String name;
-    //String conceptName; //type, class, concept
-    //boolean mutable;
-    long lastAccess;
-    SingleInstance theInstance;
 
     public String getName()
     {

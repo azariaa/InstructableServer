@@ -2,6 +2,7 @@ package instructable.server.dal;
 
 import instructable.server.hirarchy.FieldDescription;
 import instructable.server.hirarchy.FieldHolder;
+import org.json.simple.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,7 @@ public class SingleInstance
         //TODO: no need to update DB. because DB only holds fields with values in them.
         for (FieldDescription fieldDescription : fieldsInType)
         {
-            fields.put(fieldDescription.fieldName, new FieldHolder(fieldDescription, instanceName));
+            fields.put(fieldDescription.fieldName, new FieldHolder(fieldDescription, instanceName, this));
         }
 
     }
@@ -58,6 +59,8 @@ public class SingleInstance
     {
         fields = new HashMap<>();
         //TODO: fill map from DB!!!
+
+        //FieldHolder.createFromDBdata()
 
     }
 
@@ -89,8 +92,8 @@ public class SingleInstance
 
     public void fieldWasAdded(FieldDescription fieldDescription)
     {
-        //TODO: no need to update DB, because the field is still empty.
-        fields.put(fieldDescription.fieldName, new FieldHolder(fieldDescription, instanceName));
+        //no need to update DB, because the field is still empty.
+        fields.put(fieldDescription.fieldName, new FieldHolder(fieldDescription, instanceName, this));
     }
 
     public void fieldWasRemovedFromConcept(String fieldName)
@@ -111,7 +114,13 @@ public class SingleInstance
 
     public void changeMutability(boolean newMutability)
     {
-        //TODO: updated DB!!!
+        //TODO: update DB!!!
         mutable = newMutability;
+    }
+
+    public void fieldChanged(String fieldName, JSONObject fieldVal)
+    {
+        //TODO: update DB!!!!
+        //update instance_values set field_jsonval = fieldVal.toString() where user_id=userId and concept_name=conceptName and instance_name=instanceName;
     }
 }
