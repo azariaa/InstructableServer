@@ -2,6 +2,7 @@ package instructable.server.hirarchy;
 
 import instructable.server.ExecutionStatus;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,17 +14,22 @@ public class OutgoingEmail extends EmailMessage
     boolean warnIfNoBody = true;
     boolean warnIfNoSubject = true;
 
-    public OutgoingEmail(ExecutionStatus executionStatus, String myEmail)
+    public OutgoingEmail(ExecutionStatus executionStatus, String userId, String myEmail)
     {
-        super(strOutgoingEmailTypeAndName, strOutgoingEmailTypeAndName, getFieldDescriptions(), true);
-        setField(executionStatus, senderStr, Optional.of(myEmail), Optional.empty(), false, true, true);
+        super(userId, strOutgoingEmailTypeAndName, strOutgoingEmailTypeAndName, true);
+        instance.setField(executionStatus, senderStr, Optional.of(myEmail), Optional.empty(), false, true, true);
     }
 
-    static public FieldDescription[] getFieldDescriptions()
+    public OutgoingEmail(GenericInstance instance)
+    {
+        super(instance);
+    }
+
+
+    static public List<FieldDescription> getFieldDescriptions()
     {
         return getFieldDescriptions(true);
     }
-
 
     public void checkSendingPrerequisites(ExecutionStatus executionStatus, boolean testWarnings)
     {

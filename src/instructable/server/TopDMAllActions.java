@@ -45,7 +45,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
-    public void addEmailMessageToInbox(IncomingEmail emailMessage)
+    public void addEmailMessageToInbox(EmailInfo emailMessage)
     {
         inboxCommandController.addEmailMessageToInbox(emailMessage);
     }

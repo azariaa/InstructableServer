@@ -25,12 +25,12 @@ import java.util.stream.Collectors;
 public class FieldHolder
 {
 
-    FieldHolder(FieldDescription fieldDescription, GenericInstance fieldParent)
+    public FieldHolder(FieldDescription fieldDescription, String parentInstanceName)
     {
         this.fieldName = fieldDescription.fieldName;
         this.fieldType = fieldDescription.fieldType;
         this.isList = fieldDescription.isList;
-        this.fieldParent = fieldParent;
+        this.parentInstanceName = parentInstanceName;
         this.mutable = fieldDescription.mutable;
 
         if (isList)
@@ -68,11 +68,11 @@ public class FieldHolder
     boolean mutable;
     FieldType field;
     List<FieldType> fieldList;
-    private GenericInstance fieldParent;
+    private String parentInstanceName;
 
     public String getParentInstanceName()
     {
-        return fieldParent.getName();
+        return parentInstanceName;
     }
 
 

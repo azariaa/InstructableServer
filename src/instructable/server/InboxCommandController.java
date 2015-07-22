@@ -1,9 +1,6 @@
 package instructable.server;
 
-import instructable.server.hirarchy.ConceptContainer;
-import instructable.server.hirarchy.GenericInstance;
-import instructable.server.hirarchy.IncomingEmail;
-import instructable.server.hirarchy.InstanceContainer;
+import instructable.server.hirarchy.*;
 
 import java.util.Optional;
 
@@ -14,22 +11,24 @@ public class InboxCommandController
 {
     int currentIncomingEmailIdx = 0;
     static public final String emailMessageNameStart = "inbox";
+    String userId;
     ConceptContainer conceptContainer;
     InstanceContainer instanceContainer;
 
     public InboxCommandController(ConceptContainer conceptContainer, InstanceContainer instanceContainer)
     {
+        userId = conceptContainer.getUserId();
         this.conceptContainer = conceptContainer;
         this.instanceContainer = instanceContainer;
         conceptContainer.defineConcept(new ExecutionStatus(), IncomingEmail.incomingEmailType, IncomingEmail.getFieldDescriptions());
 
     }
 
-    public void addEmailMessageToInbox(IncomingEmail emailMessage)
+    public void addEmailMessageToInbox(EmailInfo emailMessage)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
-        emailMessage.setName(instanceName(inboxSize()));
-        instanceContainer.addInstance(executionStatus, emailMessage);
+        IncomingEmail incomingEmail = new IncomingEmail(userId, emailMessage, instanceName(inboxSize()));
+        instanceContainer.addInstance(executionStatus, incomingEmail.getInstance());
     }
 
     public boolean isInboxInstanceName(String instanceName)

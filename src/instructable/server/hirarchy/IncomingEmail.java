@@ -12,25 +12,29 @@ public class IncomingEmail extends EmailMessage
 {
     public static final String incomingEmailType = "incoming email";
 
-    public IncomingEmail(String sender, String subject, List<String> recipientList, List<String> copyList, String body)
+    public IncomingEmail(String userId, EmailInfo emailInfo, String name)
     {
-        super(incomingEmailType, "TBD", getFieldDescriptions(), false);
+        super(userId, incomingEmailType, name, false);
         ExecutionStatus executionStatus = new ExecutionStatus();
-        setField(executionStatus, senderStr, Optional.of(sender), Optional.empty(), false, true, true);
-        setField(executionStatus, subjectStr, Optional.of(subject), Optional.empty(), false, true, true);
-        setField(executionStatus, bodyStr, Optional.of(body), Optional.empty(), false, true, true);
-        for (String recipient : recipientList)
+        instance.setField(executionStatus, senderStr, Optional.of(emailInfo.sender), Optional.empty(), false, true, true);
+        instance.setField(executionStatus, subjectStr, Optional.of(emailInfo.subject), Optional.empty(), false, true, true);
+        instance.setField(executionStatus, bodyStr, Optional.of(emailInfo.body), Optional.empty(), false, true, true);
+        for (String recipient : emailInfo.recipientList)
         {
-            setField(executionStatus, recipientListStr, Optional.of(recipient), Optional.empty(), true, true, true);
+            instance.setField(executionStatus, recipientListStr, Optional.of(recipient), Optional.empty(), true, true, true);
         }
 
-        for (String copy : copyList)
+        for (String copy : emailInfo.copyList)
         {
-            setField(executionStatus, recipientListStr, Optional.of(copy), Optional.empty(), true, true, true);
+            instance.setField(executionStatus, recipientListStr, Optional.of(copy), Optional.empty(), true, true, true);
         }
     }
 
-    static public FieldDescription[] getFieldDescriptions()
+//    public IncomingEmail(String userId, String sender, String subject, List<String> recipientList, List<String> copyList, String body)
+//    {
+//    }
+
+    static public List<FieldDescription> getFieldDescriptions()
     {
         return getFieldDescriptions(false);
     }

@@ -1,11 +1,9 @@
 package instructable.server.dal;
 
+import instructable.server.hirarchy.FieldDescription;
 import instructable.server.hirarchy.GenericInstance;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Amos Azaria on 21-Jul-15.
@@ -73,7 +71,7 @@ public class InstanceKB
         {
             conceptToInstance.put(conceptName, new HashMap<>());
         }
-        //TODO: update DB!!!
+        //TODO: update DB?! maybe was already added when created GenericInstance???
         conceptToInstance.get(conceptName).put(instance.getName(), instance);
     }
 
@@ -83,7 +81,7 @@ public class InstanceKB
         if (instances.containsKey(instanceOldName))
         {
             GenericInstance reqInstance = instances.get(instanceOldName);
-            reqInstance.rename(instanceNewName);
+            reqInstance.instanceWasRenamed(instanceNewName);
             instances.remove(instanceOldName);
             instances.put(instanceNewName, reqInstance);
             //TODO: update DB!!!
@@ -95,5 +93,12 @@ public class InstanceKB
     {
         conceptToInstance.get(conceptName).remove(instanceName);
         //TODO: update DB!!!
+    }
+
+    public void addInstance(String conceptName, String instanceName, boolean isMutable, List<FieldDescription> fieldDiscriptionList)
+    {
+        GenericInstance instance = GenericInstance.CreateNewGenericInstance(userId, conceptName, instanceName, isMutable, fieldDiscriptionList);
+
+        addInstance(conceptName, instance);
     }
 }

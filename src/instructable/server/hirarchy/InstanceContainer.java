@@ -63,8 +63,8 @@ public class InstanceContainer
             {
                 for (GenericInstance genericInstance : instanceKB.getAllInstancesOf(concept))
                 {
-                    if ((!instanceName.isPresent() || genericInstance.name.equals(instanceName.get())) &&
-                            (!mutableOnly || genericInstance.mutable))
+                    if ((!instanceName.isPresent() || genericInstance.getName().equals(instanceName.get())) &&
+                            (!mutableOnly || genericInstance.getMutable()))
                         allPossibleInstances.add(genericInstance);
                 }
             }
@@ -101,14 +101,15 @@ public class InstanceContainer
             executionStatus.add(ExecutionStatus.RetStatus.error, "there is no concept with the name \"" + "\", please define it first");
             return;
         }
-        GenericInstance instance = new GenericInstance(conceptName, instanceName, conceptContainer.getAllFieldDiscriptions(conceptName), isMutable);
+        instanceKB.addInstance(conceptName, instanceName, isMutable,conceptContainer.getAllFieldDiscriptions(conceptName));
+        //GenericInstance instance = GenericInstance.CreateNewGenericInstance(conceptName, instanceName, conceptContainer.getAllFieldDiscriptions(conceptName), isMutable);
 
-        addInstance(executionStatus, instance);
+        //addInstance(executionStatus, instance);
     }
 
     public void addInstance(ExecutionStatus executionStatus, GenericInstance instance)
     {
-        String conceptName = instance.conceptName;
+        String conceptName = instance.getConceptName();
         if (!conceptContainer.doesConceptExist(conceptName))
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "no concept with the name \"" + conceptName + "\" is defined, please define it first");
@@ -117,7 +118,6 @@ public class InstanceContainer
         {
             instanceKB.addInstance(conceptName, instance);
         }
-
     }
 
     public void renameInstance(ExecutionStatus executionStatus, String conceptName, String instanceOldName, String instanceNewName)
@@ -139,17 +139,17 @@ public class InstanceContainer
             //it's ok if no instances are found
             for (GenericInstance instance : instanceKB.getAllInstancesOf(conceptName))
             {
-                instance.addFieldToObject(executionStatus, newFieldDescription);
+                instance.fieldWasAddedToConcept(executionStatus, newFieldDescription);
             }
         }
     }
 
     public void setMutability(ExecutionStatus executionStatus, String conceptName, String instanceName, boolean newMutability)
     {
-        if (instanceKB.hasAnyInstancesOfConcept(conceptName))
+        if (instanceKB.hasInstanceOfConcept(conceptName, instanceName))
         {
             GenericInstance reqInstance = instanceKB.getInstance(conceptName,instanceName);
-            reqInstance.mutable = newMutability;
+            reqInstance.changeMutability(newMutability);
         }
         else
         {
@@ -164,14 +164,14 @@ public class InstanceContainer
             //it's ok if no instances are found
             for (GenericInstance instance : instanceKB.getAllInstancesOf(conceptName))
             {
-                instance.removeFieldFromObject(executionStatus, fieldName);
+                instance.fieldWasRemovedFromConcept(executionStatus, fieldName);
             }
         }
     }
 
     public void deleteInstance(ExecutionStatus executionStatus, GenericInstance instance)
     {
-        String conceptName = instance.conceptName;
+        String conceptName = instance.getConceptName();
         if (!conceptContainer.doesConceptExist(conceptName))
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "no concept with the name \"" + conceptName + "\" is defined, please define it first");

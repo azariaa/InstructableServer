@@ -3,7 +3,7 @@ package testing;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.*;
 import instructable.server.ccg.ParserSettings;
-import instructable.server.hirarchy.IncomingEmail;
+import instructable.server.hirarchy.EmailInfo;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
@@ -455,14 +455,14 @@ public class TestDirectly
             response = allUserActions.setFieldFromString(new InfoForCommand(userSays, null), response.getField(), "my.spouse@gmail.com");
         testHelpers.systemSays(response.getSayToUser());
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("bob7@myjob.com",
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo("bob7@myjob.com",
                 "department party",
                 Arrays.asList(new String[]{"you@myjob.com"}),
                 new LinkedList<String>(),
                 "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("dan@myjob.com",
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo("dan@myjob.com",
                 "another email",
                 Arrays.asList(new String[]{"you@myjob.com"}),
                 new LinkedList<String>(),

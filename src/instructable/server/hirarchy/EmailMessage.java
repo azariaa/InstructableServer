@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Amos Azaria on 15-Apr-15.
  */
-abstract public class EmailMessage extends GenericInstance
+abstract public class EmailMessage
 {
     public static final String subjectStr = "subject";
     public static final String bodyStr = "body";
@@ -18,7 +18,9 @@ abstract public class EmailMessage extends GenericInstance
     public static boolean useCopy = false;//removed copy: not needed for experiments
     public static final String copyListStr = "copy list";
 
-    protected static FieldDescription[] getFieldDescriptions(boolean mutable)
+    protected GenericInstance instance;
+
+    protected static List<FieldDescription> getFieldDescriptions(boolean mutable)
     {
 
         FieldDescription[] fieldDescriptions = new FieldDescription[]
@@ -35,43 +37,48 @@ abstract public class EmailMessage extends GenericInstance
             fieldDescriptionList.add(new FieldDescription(copyListStr, PossibleFieldType.emailAddress, true, mutable));
             fieldDescriptions = fieldDescriptionList.toArray(new FieldDescription[0]);
         }
-        return  fieldDescriptions;
+        return  Arrays.asList(fieldDescriptions);
+    }
+
+
+    public EmailMessage(String userId, String messageType, String messageId, boolean isMutable)
+    {
+        //TODO: may want to support adding theInstance to email messages. In that case, the field descriptions would need to come from the concept container
+        instance = GenericInstance.CreateNewGenericInstance(userId, messageType, messageId, isMutable, getFieldDescriptions(isMutable));
+    }
+
+    public EmailMessage(GenericInstance instance)
+    {
+        this.instance = instance;
     }
 
 
     // should only be called if email had no name at first.
     public void setName(String newEmailName)
     {
-        name = newEmailName;
-    }
-
-
-    public EmailMessage(String messageType, String messageId, FieldDescription[] fieldDescriptions, boolean isMutable)
-    {
-        //TODO: may want to support adding fields to email messages. In that case, the field descriptions would need to come from the concept container
-        super(messageType, messageId, Arrays.asList((fieldDescriptions)), isMutable);
+        instance.instanceWasRenamed(newEmailName);
     }
 
     public boolean hasRecipient()
     {
-        return !fieldIsEmpty(recipientListStr);
+        return !instance.fieldIsEmpty(recipientListStr);
     }
 
     public boolean hasCopy()
     {
         if (useCopy)
-            return !fieldIsEmpty(copyListStr);
+            return !instance.fieldIsEmpty(copyListStr);
         return false;
     }
 
     public boolean hasBody()
     {
-        return !fieldIsEmpty(bodyStr);
+        return !instance.fieldIsEmpty(bodyStr);
     }
 
     public boolean hasSubject()
     {
-        return !fieldIsEmpty(subjectStr);
+        return !instance.fieldIsEmpty(subjectStr);
     }
 
     public String getRecipient()
@@ -98,6 +105,11 @@ abstract public class EmailMessage extends GenericInstance
 
     private String getFieldWithoutChecking(String fieldName)
     {
-        return getField(new ExecutionStatus(), fieldName).get().fieldValForUser();
+        return instance.getField(new ExecutionStatus(), fieldName).get().fieldValForUser();
+    }
+
+    public GenericInstance getInstance()
+    {
+        return instance;
     }
 }

@@ -3,7 +3,7 @@ package instructable;
 import instructable.server.IEmailSender;
 import instructable.server.IIncomingEmailControlling;
 import instructable.server.TopDMAllActions;
-import instructable.server.hirarchy.IncomingEmail;
+import instructable.server.hirarchy.EmailInfo;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -275,14 +275,14 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     public void addInboxEmails(IIncomingEmailControlling incomingEmailControlling)
     {
         //no mission
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker1Email,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker1Email,
                 "Hi there",
                 Arrays.asList(myEmail),
                 new LinkedList<String>(),
                 "I'm feeling well today. I hope I will also feel well tomorrow and anytime! Please ignore this email and read the next one."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker1Email,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker1Email,
                 "Another email",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
@@ -293,42 +293,42 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
 
         //replying
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(momEmail,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(momEmail,
                 "Shirt color",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "I need to know your favorite color for a shirt. Please reply as soon as possible (make sure to use the same subject, as you should always do when replying to emails :)."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(bossEmail,
                 "Task I asked",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "Are you working on the task that I asked you to work on? Please reply immediately ."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker2Email,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker2Email,
                 "Working tomorrow",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "I don't feel like working tomorrow, do I have to? Please reply as soon as possible."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker1Email,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker1Email,
                 "What to do?",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "I'm done with all my tasks, what should I do next? Please reply as soon as possible."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(momEmail,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(momEmail,
                 "Are you still at work?",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "I must know if you are still at work. Please reply as soon as possible."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker3Email,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker3Email,
                 "Do you like work?",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
@@ -336,7 +336,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         ));
 
         //plain send
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker2Email,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker2Email,
                 "Tell Alex that I'm on my way",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
@@ -345,63 +345,63 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
 
 
         //forwarding
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(momEmail,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(momEmail,
                 "Family event",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "You must ask your boss to approve your vacation for the family event on "+familyEventDate+". Forward this email to your boss (make sure to use the same subject, and include the whole body, as you should always do when forwarding an email :)."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(bossEmail,
                 "Your vacation",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "Your vacation has been approved. Please forward this email to your mom."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker1Email,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker1Email,
                 worker2Name,
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "I asked "+worker2Name+" to do what you said, but I see that it must come from you. Please forward this email to "+worker2Name + "."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(bossEmail,
                 "Party time!",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "We will have a party next Thursday at 4:00pm. Please forward this email to " + worker2Name + "."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(bossEmail,
                 "Work before parting",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "We will all have to work very hard next Monday, Tuesday and Wednesday. Please forward this email to " + worker2Name + "."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(bossEmail,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(bossEmail,
                 "Rest during the weekend",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "Don't forget to rest well on the weekend so you can work well on Monday, Tuesday and Wednesday. Please forward this email to " + worker2Name + "."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker2Email,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker2Email,
                 "Cannot attend the party",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "I am sorry, but I can't attend next week's party. Please forward this email to " + bossName + "."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker3Email,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker3Email,
                 "Everyone ignores me",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "Thank you so much for not ignoring this email and reading it. Please reply and tell me that you saw it."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail(worker1Email,
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker1Email,
                 "I like attention",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),

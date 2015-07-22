@@ -3,9 +3,7 @@ package instructable.server.hirarchy;
 import instructable.server.ExecutionStatus;
 import instructable.server.dal.ConceptFiledMap;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static instructable.server.TextFormattingUtils.userFriendlyList;
@@ -13,7 +11,7 @@ import static instructable.server.TextFormattingUtils.userFriendlyList;
 /**
  * Created by Amos Azaria on 21-Apr-15.
  * <p>
- * This class has access to all defined concepts and their fields and types.
+ * This class has access to all defined concepts and their theInstance and types.
  * This class has the required information for creating an instance of a concept.
  * This class can access the data base
  * mutability on the field level.
@@ -21,6 +19,7 @@ import static instructable.server.TextFormattingUtils.userFriendlyList;
 public class ConceptContainer
 {
     private ConceptFiledMap conceptFieldMap;
+    private String userId;
 
     public ConceptContainer(String userId)
     {
@@ -106,7 +105,7 @@ public class ConceptContainer
         }
     }
 
-    public void defineConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription[] fieldDescriptions)
+    public void defineConcept(ExecutionStatus executionStatus, String conceptName, List<FieldDescription> fieldDescriptions)
     {
         defineConcept(executionStatus, conceptName);
         if (executionStatus.isOkOrComment())
@@ -117,13 +116,13 @@ public class ConceptContainer
 
     public void addFieldToConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription fieldDescription)
     {
-        addFieldsToConcept(executionStatus, conceptName, new FieldDescription[]{fieldDescription});
+        addFieldsToConcept(executionStatus, conceptName, Collections.singletonList(fieldDescription));
     }
 
-    public void addFieldsToConcept(ExecutionStatus executionStatus, String conceptName, FieldDescription[] fieldDescriptions)
+    public void addFieldsToConcept(ExecutionStatus executionStatus, String conceptName, List<FieldDescription> fieldDescriptions)
     {
         //TODO: check all these...
-        //TODO: check no duplicate fields!!!
+        //TODO: check no duplicate theInstance!!!
         if (!conceptFieldMap.hasConcept(conceptName))
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "the concept \"" + conceptName + "\" is not defined, please define it first");
@@ -181,5 +180,10 @@ public class ConceptContainer
             conceptFieldMap.removeConcept(conceptName);
         else
             executionStatus.add(ExecutionStatus.RetStatus.error, "the concept \"" + conceptName + "\" was not found");
+    }
+
+    public String getUserId()
+    {
+        return userId;
     }
 }

@@ -7,10 +7,10 @@ import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
  */
 public class FieldDescription
 {
-    String fieldName;
-    PossibleFieldType fieldType;
-    boolean isList;
-    boolean mutable;
+    public String fieldName;
+    public PossibleFieldType fieldType;
+    public boolean isList;
+    public boolean mutable;
 
     public FieldDescription(String fieldName, PossibleFieldType fieldType, boolean isList, boolean mutable)
     {

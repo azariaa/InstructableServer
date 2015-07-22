@@ -4,7 +4,7 @@ import instructable.server.IIncomingEmailControlling;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 import instructable.server.ccg.StringFeatureGenerator;
-import instructable.server.hirarchy.IncomingEmail;
+import instructable.server.hirarchy.EmailInfo;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -67,14 +67,14 @@ public class EnvironmentCreatorUtils
 
     public static void addInboxEmails(IIncomingEmailControlling incomingEmailControlling)
     {
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("bob7@myjob.com",
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo("bob7@myjob.com",
                 "department party",
                 Arrays.asList(new String[]{"you@myjob.com"}),
                 new LinkedList<String>(),
                 "We will have our department party next Wednesday at 4:00pm. Please forward this email to your spouse."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new IncomingEmail("dan@myjob.com",
+        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo("dan@myjob.com",
                 "another email",
                 Arrays.asList(new String[]{"you@myjob.com"}),
                 new LinkedList<String>(),
