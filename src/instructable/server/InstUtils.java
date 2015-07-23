@@ -1,6 +1,7 @@
 package instructable.server;
 
-import org.json.simple.JSONArray;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -118,8 +119,14 @@ public class InstUtils
     public static List<String> convertJArrToStrList(JSONArray jsonArray)
     {
         List<String> list = new ArrayList<String>();
-        for (int i=0; i<jsonArray.size(); i++) {
-            list.add(jsonArray.get(i).toString());
+        for (int i=0; i<jsonArray.length(); i++) {
+            try
+            {
+                list.add(jsonArray.get(i).toString());
+            } catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
         }
         return list;
     }

@@ -12,9 +12,9 @@ public class IncomingEmail extends EmailMessage
 {
     public static final String incomingEmailType = "incoming email";
 
-    public IncomingEmail(String userId, EmailInfo emailInfo, String name)
+    public IncomingEmail(InstanceContainer instanceContainer, EmailInfo emailInfo, String name)
     {
-        super(userId, incomingEmailType, name, false);
+        super(instanceContainer, incomingEmailType, name, false);
         ExecutionStatus executionStatus = new ExecutionStatus();
         instance.setField(executionStatus, senderStr, Optional.of(emailInfo.sender), Optional.empty(), false, true, true);
         instance.setField(executionStatus, subjectStr, Optional.of(emailInfo.subject), Optional.empty(), false, true, true);

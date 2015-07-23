@@ -11,24 +11,21 @@ public class InboxCommandController
 {
     int currentIncomingEmailIdx = 0;
     static public final String emailMessageNameStart = "inbox";
-    String userId;
     ConceptContainer conceptContainer;
     InstanceContainer instanceContainer;
 
     public InboxCommandController(ConceptContainer conceptContainer, InstanceContainer instanceContainer)
     {
-        userId = conceptContainer.getUserId();
+        //userId = conceptContainer.getUserId();
         this.conceptContainer = conceptContainer;
         this.instanceContainer = instanceContainer;
         conceptContainer.defineConcept(new ExecutionStatus(), IncomingEmail.incomingEmailType, IncomingEmail.getFieldDescriptions());
-
     }
 
     public void addEmailMessageToInbox(EmailInfo emailMessage)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
-        IncomingEmail incomingEmail = new IncomingEmail(userId, emailMessage, instanceName(inboxSize()));
-        instanceContainer.addInstance(executionStatus, incomingEmail.getInstance());
+        IncomingEmail incomingEmail = new IncomingEmail(instanceContainer, emailMessage, instanceName(inboxSize()));
     }
 
     public boolean isInboxInstanceName(String instanceName)

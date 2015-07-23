@@ -41,10 +41,12 @@ abstract public class EmailMessage
     }
 
 
-    public EmailMessage(String userId, String messageType, String messageId, boolean isMutable)
+    public EmailMessage(InstanceContainer instanceContainer, String messageType, String messageId, boolean isMutable)
     {
         //TODO: may want to support adding theInstance to email messages. In that case, the field descriptions would need to come from the concept container
-        instance = GenericInstance.CreateNewGenericInstance(userId, messageType, messageId, isMutable, getFieldDescriptions(isMutable));
+        //instance = GenericInstance.WrapAsGenericInstance(userId, messageType, messageId, isMutable, getFieldDescriptions(isMutable));
+        instanceContainer.addInstance(new ExecutionStatus(), messageType, messageId, isMutable);
+        instance = instanceContainer.getInstance(new ExecutionStatus(), messageType, messageId).get(); //not checking, since just created.
     }
 
     public EmailMessage(GenericInstance instance)

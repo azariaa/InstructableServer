@@ -14,9 +14,9 @@ public class OutgoingEmail extends EmailMessage
     boolean warnIfNoBody = true;
     boolean warnIfNoSubject = true;
 
-    public OutgoingEmail(ExecutionStatus executionStatus, String userId, String myEmail)
+    public OutgoingEmail(ExecutionStatus executionStatus, InstanceContainer instanceContainer, String myEmail)
     {
-        super(userId, strOutgoingEmailTypeAndName, strOutgoingEmailTypeAndName, true);
+        super(instanceContainer, strOutgoingEmailTypeAndName, strOutgoingEmailTypeAndName, true);
         instance.setField(executionStatus, senderStr, Optional.of(myEmail), Optional.empty(), false, true, true);
     }
 

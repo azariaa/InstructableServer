@@ -3,6 +3,7 @@ set the subject to I like this sender,"(setFieldFromString (getProbMutableFieldB
 set the body to bar time for all,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""bar time for all""))"
 set the recipient list to myself@myjob.com,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""myself@myjob.com""))"
 set the subject of this outgoing email to hello,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName outgoing_email subject) (stringValue ""hello""))"
+set subject to hello,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""hello""))"
 set the subject to the sender's email,(setFieldFromFieldVal (getProbMutableFieldByFieldName subject) (evalField (getProbFieldByFieldName sender)))
 set I am thinking about the sender as the subject,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""I am thinking about the sender""))"
 create tom as a name,"(createInstanceByFullNames name (stringNoun ""tom""))"
@@ -16,6 +17,7 @@ put this is a test in body,"(setFieldFromString (getProbMutableFieldByFieldName 
 send one email,(send outgoing_email)
 send the email,(send email)
 set myself@myjob.com as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""myself@myjob.com""))"
+set something as the body,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""something""))"
 set someone@myandyou.com as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""someone@myandyou.com""))"
 send,(sendEmail)
 compose a new email,(createInstanceByConceptName outgoing_email)
@@ -142,6 +144,7 @@ set to next email,(next email)
 set body to current body,(setFieldFromFieldVal (getProbMutableFieldByFieldName body) (evalField (getProbFieldByInstanceNameAndFieldName inbox body)))
 send email,(send email)
 learn new command eat, (teachNewCommand)
+learn new command, (teachNewCommand)
 new command,(teachNewCommand)
 teach command,(teachNewCommand)
 I want to teach you bo,(teachNewCommand)

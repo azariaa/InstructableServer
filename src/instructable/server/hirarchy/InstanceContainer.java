@@ -2,8 +2,12 @@ package instructable.server.hirarchy;
 
 import instructable.server.ExecutionStatus;
 import instructable.server.dal.InstanceKB;
+import instructable.server.dal.SingleInstance;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Amos Azaria on 21-Apr-15.
@@ -61,8 +65,9 @@ public class InstanceContainer
         {
             if (conceptOptions.contains(concept))
             {
-                for (GenericInstance genericInstance : instanceKB.getAllInstancesOf(concept))
+                for (SingleInstance singleInstance : instanceKB.getAllInstancesOf(concept))
                 {
+                    GenericInstance genericInstance = GenericInstance.WrapAsGenericInstance(singleInstance);
                     if ((!instanceName.isPresent() || genericInstance.getName().equals(instanceName.get())) &&
                             (!mutableOnly || genericInstance.getMutable()))
                         allPossibleInstances.add(genericInstance);
@@ -78,7 +83,7 @@ public class InstanceContainer
         {
             if (instanceKB.hasInstanceOfConcept(conceptName, instanceName))
             {
-                GenericInstance instance = instanceKB.getInstance(conceptName, instanceName);
+                GenericInstance instance = GenericInstance.WrapAsGenericInstance(instanceKB.getInstance(conceptName, instanceName));
                 instance.touch();
                 return Optional.of(instance);
             }
@@ -101,23 +106,10 @@ public class InstanceContainer
             executionStatus.add(ExecutionStatus.RetStatus.error, "there is no concept with the name \"" + "\", please define it first");
             return;
         }
-        instanceKB.addInstance(conceptName, instanceName, isMutable,conceptContainer.getAllFieldDiscriptions(conceptName));
-        //GenericInstance instance = GenericInstance.CreateNewGenericInstance(conceptName, instanceName, conceptContainer.getAllFieldDiscriptions(conceptName), isMutable);
+        instanceKB.addInstance(conceptName, instanceName, isMutable, conceptContainer.getAllFieldDiscriptions(conceptName));
+        //GenericInstance instance = GenericInstance.WrapAsGenericInstance(conceptName, instanceName, conceptContainer.getAllFieldDiscriptions(conceptName), isMutable);
 
         //addInstance(executionStatus, instance);
-    }
-
-    public void addInstance(ExecutionStatus executionStatus, GenericInstance instance)
-    {
-        String conceptName = instance.getConceptName();
-        if (!conceptContainer.doesConceptExist(conceptName))
-        {
-            executionStatus.add(ExecutionStatus.RetStatus.error, "no concept with the name \"" + conceptName + "\" is defined, please define it first");
-        }
-        else
-        {
-            instanceKB.addInstance(conceptName, instance);
-        }
     }
 
     public void renameInstance(ExecutionStatus executionStatus, String conceptName, String instanceOldName, String instanceNewName)
@@ -137,9 +129,9 @@ public class InstanceContainer
         if (instanceKB.hasAnyInstancesOfConcept(conceptName))
         {
             //it's ok if no instances are found
-            for (GenericInstance instance : instanceKB.getAllInstancesOf(conceptName))
+            for (SingleInstance instance : instanceKB.getAllInstancesOf(conceptName))
             {
-                instance.fieldWasAddedToConcept(executionStatus, newFieldDescription);
+                GenericInstance.WrapAsGenericInstance(instance).fieldWasAddedToConcept(executionStatus, newFieldDescription);
             }
         }
     }
@@ -148,7 +140,7 @@ public class InstanceContainer
     {
         if (instanceKB.hasInstanceOfConcept(conceptName, instanceName))
         {
-            GenericInstance reqInstance = instanceKB.getInstance(conceptName,instanceName);
+            GenericInstance reqInstance = GenericInstance.WrapAsGenericInstance(instanceKB.getInstance(conceptName, instanceName));
             reqInstance.changeMutability(newMutability);
         }
         else
@@ -162,9 +154,9 @@ public class InstanceContainer
         if (instanceKB.hasAnyInstancesOfConcept(conceptName))
         {
             //it's ok if no instances are found
-            for (GenericInstance instance : instanceKB.getAllInstancesOf(conceptName))
+            for (SingleInstance instance : instanceKB.getAllInstancesOf(conceptName))
             {
-                instance.fieldWasRemovedFromConcept(executionStatus, fieldName);
+                GenericInstance.WrapAsGenericInstance(instance).fieldWasRemovedFromConcept(executionStatus, fieldName);
             }
         }
     }

@@ -11,14 +11,12 @@ import java.util.Optional;
 public class OutEmailCommandController
 {
     private String myEmail;
-    private String userId;
     InstanceContainer instanceContainer;
     int numOfEmailsSent = 0;
     IEmailSender emailSender;
 
     OutEmailCommandController(String myEmail, ConceptContainer conceptContainer, InstanceContainer instanceContainer, IEmailSender emailSender)
     {
-        userId = conceptContainer.getUserId();
         this.myEmail = myEmail;
         conceptContainer.defineConcept(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.getFieldDescriptions());
         this.instanceContainer = instanceContainer;
@@ -70,8 +68,7 @@ public class OutEmailCommandController
 
     public void createNewEmail(ExecutionStatus executionStatus)
     {
-        OutgoingEmail outgoingEmail = new OutgoingEmail(executionStatus, userId, myEmail);
-        instanceContainer.addInstance(executionStatus, outgoingEmail.getInstance());
+        new OutgoingEmail(executionStatus, instanceContainer, myEmail);
     }
 
     public List<String> changeToRelevantComposedEmailFields(List<String> allEmailFields)

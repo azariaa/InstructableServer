@@ -3,18 +3,16 @@ package instructable.server.hirarchy;
 import instructable.server.ExecutionStatus;
 import instructable.server.InstUtils;
 import instructable.server.TextFormattingUtils;
-import instructable.server.dal.SingleInstance;
+import instructable.server.dal.IFieldChanged;
 import instructable.server.hirarchy.fieldTypes.EmailAddress;
 import instructable.server.hirarchy.fieldTypes.FieldType;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 import instructable.server.hirarchy.fieldTypes.StringField;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -22,15 +20,25 @@ import java.util.stream.Collectors;
  * <p>
  * This class is like a union of FieldType and List<FieldType>.
  * In future may add a pointer to a different instance.
- * must report any changes to this field to singleInstance (so these changes can be reflected in the DB)
+ * must report any changes to this field to reportsOnChanges (so these changes can be reflected in the DB)
  */
 public class FieldHolder
 {
-    SingleInstance singleInstance; //any change must be reported to the singleInstance
 
-    public FieldHolder(FieldDescription fieldDescription, String parentInstanceName, SingleInstance reportsOnChanges)
+    String fieldName;
+    PossibleFieldType fieldType;
+    boolean isList;
+    boolean mutable;
+    FieldType field;
+    List<FieldType> fieldList;
+    private String parentInstanceName;
+
+    IFieldChanged reportsOnChanges; //any change must be reported to the reportsOnChanges
+
+
+    public FieldHolder(FieldDescription fieldDescription, String parentInstanceName, IFieldChanged reportsOnChanges, Optional<JSONObject> jsonValue)
     {
-        singleInstance = reportsOnChanges;
+        this.reportsOnChanges = reportsOnChanges;
         this.fieldName = fieldDescription.fieldName;
         this.fieldType = fieldDescription.fieldType;
         this.isList = fieldDescription.isList;
@@ -45,14 +53,12 @@ public class FieldHolder
         {
             field = createNewField(fieldType);
         }
-    }
 
-    public static FieldHolder createFromDBdata(FieldDescription fieldDescription, String parentInstanceName, SingleInstance reportsOnChanges, JSONObject jsonObject)
-    {
-        FieldHolder fieldCreated = new FieldHolder(fieldDescription,parentInstanceName,reportsOnChanges);
-        ExecutionStatus dummy = new ExecutionStatus();
-        fieldCreated.setFromJSon(dummy, jsonObject, false, true, true, false); //don't update DB (assuming that this call was initiated by the DB).
-        return fieldCreated;
+        if (jsonValue.isPresent())
+        {
+            ExecutionStatus dummy = new ExecutionStatus();
+            setFromJSon(dummy, jsonValue.get(), false, true, true, false); //don't update DB (assuming that this call was initiated by the DB).
+        }
     }
 
     private static FieldType createNewField(PossibleFieldType fieldType)
@@ -72,14 +78,6 @@ public class FieldHolder
         }
         return fieldVal;
     }
-
-    String fieldName;
-    PossibleFieldType fieldType;
-    boolean isList;
-    boolean mutable;
-    FieldType field;
-    List<FieldType> fieldList;
-    private String parentInstanceName;
 
     public String getParentInstanceName()
     {
@@ -150,7 +148,7 @@ public class FieldHolder
         }
         set(executionStatus, listToSet.get(0), setAlsoImmutable, false);
         for (int i = 1; i < listToSet.size(); i++)
-            appendTo(executionStatus,listToSet.get(i),true,setAlsoImmutable, false);
+            appendTo(executionStatus, listToSet.get(i), true, setAlsoImmutable, false);
     }
 
     public void appendTo(ExecutionStatus executionStatus, String toAdd, boolean toEnd, boolean setAlsoImmutable)
@@ -203,28 +201,36 @@ public class FieldHolder
      */
     static public String fieldFromJSonForUser(JSONObject jsonObject)
     {
-        if (jsonObject.isEmpty() || (!jsonObject.containsKey(fieldListForJson) && !jsonObject.containsKey(fieldForJson)))
-            return "";
-        boolean isFromList = false;
-        if (jsonObject.containsKey(isListForJson) && (boolean) jsonObject.get(isListForJson) ||
-                !jsonObject.containsKey(isListForJson) && jsonObject.containsKey(fieldListForJson))
-            isFromList = true;
-        String retVal;
-        if (isFromList)
+        String retVal = "";
+        if (jsonObject.length() == 0 || (!jsonObject.has(fieldListForJson) && !jsonObject.has(fieldForJson)))
+            return retVal;
+        try
         {
-            retVal = "<empty>";
-            JSONArray jsonArray = (JSONArray) jsonObject.get(fieldListForJson);
-            if (jsonArray.size() >= 1)
+            boolean isFromList = false;
+            if (jsonObject.has(isListForJson) && (boolean) jsonObject.get(isListForJson) ||
+                    !jsonObject.has(isListForJson) && jsonObject.has(fieldListForJson))
             {
-                //if has only one, won't have separation symbol
-                retVal = (jsonArray.get(0)).toString();
-                for (int i = 1; i < jsonArray.size(); i++)
-                    retVal = retVal + TextFormattingUtils.uiListSepSymbol + (jsonArray.get(i)).toString();
+                isFromList = true;
             }
-        }
-        else
+            if (isFromList)
+            {
+                retVal = "<empty>";
+                JSONArray jsonArray = (JSONArray) jsonObject.get(fieldListForJson);
+                if (jsonArray.length() >= 1)
+                {
+                    //if has only one, won't have separation symbol
+                    retVal = (jsonArray.get(0)).toString();
+                    for (int i = 1; i < jsonArray.length(); i++)
+                        retVal = retVal + TextFormattingUtils.uiListSepSymbol + (jsonArray.get(i)).toString();
+                }
+            }
+            else
+            {
+                retVal = jsonObject.get(fieldForJson).toString();
+            }
+        } catch (JSONException e)
         {
-            retVal = jsonObject.get(fieldForJson).toString();
+            e.printStackTrace();
         }
         return retVal;
     }
@@ -239,16 +245,23 @@ public class FieldHolder
         JSONObject obj = new JSONObject();
 
 
-        obj.put(fieldTypeForJson, fieldType.toString());
-        obj.put(isListForJson, isList);
-        if (isList)
+        try
         {
-            JSONArray jArray = fieldList.stream().map(FieldType::asString).collect(Collectors.toCollection(() -> new JSONArray()));
-            obj.put(fieldListForJson, jArray);
-        }
-        else
+            obj.put(fieldTypeForJson, fieldType.toString());
+            obj.put(isListForJson, isList);
+            if (isList)
+            {
+                List<String> fieldStrList = fieldList.stream().map(FieldType::asString).collect(Collectors.toList());
+                JSONArray jArray = new JSONArray(fieldStrList);
+                obj.put(fieldListForJson, jArray);
+            }
+            else
+            {
+                obj.put(fieldForJson, field.asString());
+            }
+        } catch (JSONException e)
         {
-            obj.put(fieldForJson, field.asString());
+            e.printStackTrace();
         }
         return obj;
     }
@@ -267,69 +280,75 @@ public class FieldHolder
             return;
         }
         boolean mustSetFromList = false;
-        if (jsonObject.containsKey(isListForJson) && (boolean) jsonObject.get(isListForJson) ||
-                !jsonObject.containsKey(isListForJson) && jsonObject.containsKey(fieldListForJson))
-        {
-            mustSetFromList = true;
-        }
         boolean madeAChange = false;
-        if (mustSetFromList)
+        try
         {
-            List<String> fieldListAsString = InstUtils.convertJArrToStrList((JSONArray)jsonObject.get(fieldListForJson));
-            if (isList)
+            if (jsonObject.has(isListForJson) && (boolean) jsonObject.get(isListForJson) ||
+                    !jsonObject.has(isListForJson) && jsonObject.has(fieldListForJson))
             {
-                if (!addToExisting)
-                {
-                    fieldList.clear();
-                }
-                //if need to append to beginning, need first to reverse the array.
-                if (!appendToEnd)
-                    Collections.reverse(fieldListAsString);
-                for (String singleField : fieldListAsString)
-                {
-                    appendTo(executionStatus, singleField, appendToEnd, setAlsoImmutable, false); //don't update DB now, will update at end if required.
-                    madeAChange = true;
-                }
+                mustSetFromList = true;
             }
-            else
+            if (mustSetFromList)
             {
-                //if input is a list (array), and this isn't a list,
-                if (fieldListAsString.size() >= 1)
+                List<String> fieldListAsString = InstUtils.convertJArrToStrList((JSONArray) jsonObject.get(fieldListForJson));
+                if (isList)
                 {
-                    if (fieldListAsString.size() > 1)
+                    if (!addToExisting)
                     {
-                        executionStatus.add(ExecutionStatus.RetStatus.warning, "taking only first item out of " + fieldListAsString.size());
+                        fieldList.clear();
                     }
-                    //if it has only one item, take it,
-                    if (addToExisting)
+                    //if need to append to beginning, need first to reverse the array.
+                    if (!appendToEnd)
+                        Collections.reverse(fieldListAsString);
+                    for (String singleField : fieldListAsString)
                     {
-                        appendTo(executionStatus, fieldListAsString.get(0), appendToEnd, setAlsoImmutable, false); //don't update DB now, will update at end if required.
-                        madeAChange = true;
-                    }
-                    else
-                    {
-                        set(executionStatus, fieldListAsString.get(0), setAlsoImmutable, false); //don't update DB now, will update at end if required.
+                        appendTo(executionStatus, singleField, appendToEnd, setAlsoImmutable, false); //don't update DB now, will update at end if required.
                         madeAChange = true;
                     }
                 }
                 else
                 {
-                    executionStatus.add(ExecutionStatus.RetStatus.warning, "list is empty");
+                    //if input is a list (array), and this isn't a list,
+                    if (fieldListAsString.size() >= 1)
+                    {
+                        if (fieldListAsString.size() > 1)
+                        {
+                            executionStatus.add(ExecutionStatus.RetStatus.warning, "taking only first item out of " + fieldListAsString.size());
+                        }
+                        //if it has only one item, take it,
+                        if (addToExisting)
+                        {
+                            appendTo(executionStatus, fieldListAsString.get(0), appendToEnd, setAlsoImmutable, false); //don't update DB now, will update at end if required.
+                            madeAChange = true;
+                        }
+                        else
+                        {
+                            set(executionStatus, fieldListAsString.get(0), setAlsoImmutable, false); //don't update DB now, will update at end if required.
+                            madeAChange = true;
+                        }
+                    }
+                    else
+                    {
+                        executionStatus.add(ExecutionStatus.RetStatus.warning, "list is empty");
+                    }
                 }
-            }
-        }
-        else
-        {
-            if (addToExisting)
-            {
-                appendTo(executionStatus, (String) jsonObject.get(fieldForJson), appendToEnd, setAlsoImmutable, false); //don't update DB now, will update at end if required.
-                madeAChange = true;
             }
             else
             {
-                set(executionStatus, (String) jsonObject.get(fieldForJson), setAlsoImmutable, false); //don't update DB now, will update at end if required.
-                madeAChange = true;
+                if (addToExisting)
+                {
+                    appendTo(executionStatus, (String) jsonObject.get(fieldForJson), appendToEnd, setAlsoImmutable, false); //don't update DB now, will update at end if required.
+                    madeAChange = true;
+                }
+                else
+                {
+                    set(executionStatus, (String) jsonObject.get(fieldForJson), setAlsoImmutable, false); //don't update DB now, will update at end if required.
+                    madeAChange = true;
+                }
             }
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
         }
 
         if (updateDB && madeAChange)
@@ -338,7 +357,7 @@ public class FieldHolder
 
     private void updateDB()
     {
-        singleInstance.fieldChanged(fieldName, getFieldVal());
+        reportsOnChanges.fieldChanged(getFieldVal());
     }
 
     public String getFieldName()

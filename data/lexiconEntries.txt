@@ -10,6 +10,7 @@ cancel,S{0},(cancel)
 teach,S{0},(teachNewCommand)
 teach,(S{0}/Command{1}){0}, (lambda $1 (teachNewCommand))
 teach,(S{0}/StringV{1}){0}, (lambda $1 (teachNewCommand)) //users many times add information to this command, but it is ignored
+teach,(S{0}/S{1}){0}, (lambda $1 (teachNewCommand)) //teach new command
 next,S{0}/InstanceName{1},(lambda $1 (next $1))
 previous,S{0}/InstanceName{1},(lambda $1 (previous $1))
 "compose","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"

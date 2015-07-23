@@ -3,7 +3,7 @@ package instructable.server;
 import instructable.server.hirarchy.FieldHolder;
 import instructable.server.hirarchy.GenericInstance;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.

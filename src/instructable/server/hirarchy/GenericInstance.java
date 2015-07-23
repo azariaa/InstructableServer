@@ -2,7 +2,7 @@ package instructable.server.hirarchy;
 
 import instructable.server.ExecutionStatus;
 import instructable.server.dal.SingleInstance;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -24,15 +24,20 @@ public class GenericInstance
         lastAccess = System.nanoTime(); //System.currentTimeMillis(); doesn't work because in test may execute several commands in same millisecond
     }
 
-    public static GenericInstance CreateNewGenericInstance(String userId, String conceptName, String instanceName, boolean mutable, List<FieldDescription> fieldsInType)
+    public static GenericInstance WrapAsGenericInstance(SingleInstance interfaceWithInstanceData)
     {
         GenericInstance genericInstance = new GenericInstance();
-        genericInstance.theInstance = SingleInstance.createNewInstance(userId,conceptName,instanceName,mutable,fieldsInType);
+        genericInstance.theInstance = interfaceWithInstanceData;
         return genericInstance;
         //name = instanceName;
 
         //this.conceptName = conceptName;
         //this.mutable = mutable;
+    }
+
+    SingleInstance getDataInterface()
+    {
+        return theInstance;
     }
 
     public String getName()

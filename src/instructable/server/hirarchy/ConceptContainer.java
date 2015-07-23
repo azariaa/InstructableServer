@@ -24,6 +24,7 @@ public class ConceptContainer
     public ConceptContainer(String userId)
     {
         //conceptFieldMap.put("email", Arrays.asList(EmailMessage.fieldDescriptions));
+        this.userId = userId;
         conceptFieldMap = new ConceptFiledMap(userId);
     }
 
@@ -128,7 +129,7 @@ public class ConceptContainer
             executionStatus.add(ExecutionStatus.RetStatus.error, "the concept \"" + conceptName + "\" is not defined, please define it first");
             return;
         }
-        List<FieldDescription> conceptFields = conceptFieldMap.getAllFieldDescriptions(conceptName);
+        //List<FieldDescription> conceptFields = conceptFieldMap.getAllFieldDescriptions(conceptName);
         for (FieldDescription fieldDescription : fieldDescriptions)
         {
             if (doesFieldExistInConcept(conceptName, fieldDescription.fieldName))
@@ -136,7 +137,7 @@ public class ConceptContainer
                 executionStatus.add(ExecutionStatus.RetStatus.warning, "the concept \"" + conceptName + "\" already has the field \"" + fieldDescription.fieldName + "\"");
             }
             else
-                conceptFields.add(fieldDescription);
+                conceptFieldMap.addFieldToConcept(conceptName, fieldDescription);
         }
     }
 

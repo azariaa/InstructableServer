@@ -1,7 +1,6 @@
 package instructable.server.dal;
 
 import instructable.server.hirarchy.FieldDescription;
-import instructable.server.hirarchy.GenericInstance;
 
 import java.util.*;
 
@@ -13,7 +12,7 @@ import java.util.*;
 public class InstanceKB
 {
     String userId;
-    Map<String, Map<String, GenericInstance>> conceptToInstance; //map from conceptNames to a map holding all instances of that concept
+    Map<String, Map<String, SingleInstance>> conceptToInstance; //map from conceptNames to a map holding all instances of that concept
 
     public InstanceKB(String userId)
     {
@@ -39,7 +38,7 @@ public class InstanceKB
         return false;
     }
 
-    public GenericInstance getInstance(String conceptName, String instanceName)
+    public SingleInstance getInstance(String conceptName, String instanceName)
     {
         return conceptToInstance.get(conceptName).get(instanceName);
     }
@@ -55,7 +54,7 @@ public class InstanceKB
     }
 
 
-    public Collection<GenericInstance> getAllInstancesOf(String conceptName)
+    public Collection<SingleInstance> getAllInstancesOf(String conceptName)
     {
         return conceptToInstance.get(conceptName).values();
     }
@@ -65,22 +64,12 @@ public class InstanceKB
         conceptToInstance.put(conceptName, new HashMap<>());
     }
 
-    public void addInstance(String conceptName, GenericInstance instance)
-    {
-        if (!conceptToInstance.containsKey(conceptName))
-        {
-            conceptToInstance.put(conceptName, new HashMap<>());
-        }
-        //TODO: update DB?! maybe was already added when created GenericInstance???
-        conceptToInstance.get(conceptName).put(instance.getName(), instance);
-    }
-
     public void renameInstance(String conceptName, String instanceOldName, String instanceNewName)
     {
-        Map<String, GenericInstance> instances = conceptToInstance.get(conceptName);
+        Map<String, SingleInstance> instances = conceptToInstance.get(conceptName);
         if (instances.containsKey(instanceOldName))
         {
-            GenericInstance reqInstance = instances.get(instanceOldName);
+            SingleInstance reqInstance = instances.get(instanceOldName);
             reqInstance.instanceWasRenamed(instanceNewName);
             instances.remove(instanceOldName);
             instances.put(instanceNewName, reqInstance);
@@ -91,14 +80,22 @@ public class InstanceKB
 
     public void deleteInstance(String conceptName, String instanceName)
     {
+        SingleInstance instanceToDelete = conceptToInstance.get(conceptName).get(instanceName);
+        //call removeFromDB to update DB
+        instanceToDelete.removeFromDB();
         conceptToInstance.get(conceptName).remove(instanceName);
-        //TODO: update DB!!!
+
     }
 
     public void addInstance(String conceptName, String instanceName, boolean isMutable, List<FieldDescription> fieldDiscriptionList)
     {
-        GenericInstance instance = GenericInstance.CreateNewGenericInstance(userId, conceptName, instanceName, isMutable, fieldDiscriptionList);
+        SingleInstance singleInstance = SingleInstance.createNewInstance(userId, conceptName, instanceName, isMutable, fieldDiscriptionList); //also updates DB
+        //GenericInstance instance = GenericInstance.WrapAsGenericInstance(singleInstance);
 
-        addInstance(conceptName, instance);
+        if (!conceptToInstance.containsKey(conceptName))
+        {
+            conceptToInstance.put(conceptName, new HashMap<>());
+        }
+        conceptToInstance.get(conceptName).put(instanceName, singleInstance);
     }
 }

@@ -2,7 +2,7 @@ package instructable;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -79,7 +79,7 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
                     jsonObject.put(gameScoreStr, score);
                     jsonObject.put(gameTaskStr, currentTaskText);
                     jsonObject.put(recentTaskCompletedStr, recentTask);
-                    responseToSend = jsonObject.toJSONString();
+                    responseToSend = jsonObject.toString();//.toJSONString();
                     break;
                 case newGameJoinedStr:
                     break;

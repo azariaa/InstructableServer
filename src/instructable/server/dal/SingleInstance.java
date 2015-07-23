@@ -1,20 +1,32 @@
 package instructable.server.dal;
 
+
 import instructable.server.hirarchy.FieldDescription;
 import instructable.server.hirarchy.FieldHolder;
-import org.json.simple.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Created by Amos Azaria on 21-Jul-15.
- * No checking.
+ * No checking at all (callers responsibility).
  */
 public class SingleInstance
 {
+    static final String instancesTableName = "instances";
+    static final String mutableColName = "mutable";
+    static final String instanceValTableName = "instance_values";
+    static final String userIdColName = "user_id";
+    static final String conceptColName = "concept_name";
+    static final String instanceColName = "instance_name";
+    static final String fieldColName = "field_name";
+    static final String fieldJSonValColName = "field_jsonval";
+
     String userId;
     String conceptName;
     String instanceName;
@@ -29,16 +41,38 @@ public class SingleInstance
         this.mutable = mutable;
     }
 
-    public static SingleInstance loadInstanceFieldsFromDB(String userId, String conceptName, String instanceName, boolean mutable, List<FieldDescription> fieldsInType)
+    static SingleInstance loadInstanceFieldsFromDB(String userId, String conceptName, String instanceName, boolean mutable, List<FieldDescription> fieldsInType)
     {
-        SingleInstance singleInstance = new SingleInstance(userId,conceptName,instanceName,mutable);
+        //TODO: must be called on initialization!!!
+        SingleInstance singleInstance = new SingleInstance(userId, conceptName, instanceName, mutable);
         singleInstance.loadFieldsFromDB(fieldsInType);
         return singleInstance;
     }
 
-    public static SingleInstance createNewInstance(String userId, String conceptName, String instanceName, boolean mutable, List<FieldDescription> fieldsInType)
+    /**
+     * instance shouldn't already exist in DB.
+     */
+    static SingleInstance createNewInstance(String userId, String conceptName, String instanceName, boolean mutable, List<FieldDescription> fieldsInType)
     {
-        SingleInstance singleInstance = new SingleInstance(userId,conceptName,instanceName,mutable);
+        //update DB!!!
+        try (
+                Connection connection = InMindDataSource.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("insert into " + instancesTableName + " (" + userIdColName + "," + conceptColName + "," + instanceColName+","+mutableColName + ") values (?,?,?,?)");
+
+        )
+        {
+            pstmt.setString(1, userId);
+            pstmt.setString(2, conceptName);
+            pstmt.setString(3, instanceName);
+            pstmt.setBoolean(4, mutable);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        SingleInstance singleInstance = new SingleInstance(userId, conceptName, instanceName, mutable);
         singleInstance.createNewFields(fieldsInType);
         return singleInstance;
     }
@@ -47,10 +81,10 @@ public class SingleInstance
     {
         fields = new HashMap<>();
 
-        //TODO: no need to update DB. because DB only holds fields with values in them.
+        //no need to update DB. because DB only holds fields with values in them.
         for (FieldDescription fieldDescription : fieldsInType)
         {
-            fields.put(fieldDescription.fieldName, new FieldHolder(fieldDescription, instanceName, this));
+            fields.put(fieldDescription.fieldName, new FieldHolder(fieldDescription, instanceName, new FieldChanged(this,fieldDescription.fieldName), Optional.empty()));
         }
 
     }
@@ -58,9 +92,40 @@ public class SingleInstance
     private void loadFieldsFromDB(List<FieldDescription> fieldsInType)
     {
         fields = new HashMap<>();
-        //TODO: fill map from DB!!!
+        //fill map from DB!
+        //TODO: check if works
+        for (FieldDescription fieldDescription : fieldsInType)
+        {
+            Optional<JSONObject> jsonValue = Optional.empty();
+            try (
+                    Connection connection = InMindDataSource.getDataSource().getConnection();
+                    PreparedStatement pstmt = connection.prepareStatement("select " + fieldJSonValColName + " from "+instanceValTableName+" where " + userIdColName + "=?" + " and "+conceptColName+"=?"+" and "+instanceColName+"=?" + " and " + fieldColName +"=?");
+            )
+            {
+                pstmt.setString(1, userId);
+                pstmt.setString(2, conceptName);
+                pstmt.setString(3, instanceName);
+                pstmt.setString(4, fieldDescription.fieldName);
 
-        //FieldHolder.createFromDBdata()
+                try (ResultSet resultSet = pstmt.executeQuery())
+                {
+                    //may be empty
+                    String jsonValAsStr = resultSet.getString(fieldJSonValColName);
+                    if (jsonValAsStr != null)
+                    {
+                        jsonValue = Optional.of(new JSONObject(jsonValAsStr));
+                    }
+                } catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+            FieldHolder fieldHolder = new FieldHolder(fieldDescription, instanceName, new FieldChanged(this,fieldDescription.fieldName), jsonValue);
+            fields.put(fieldDescription.fieldName, fieldHolder);
+        }
 
     }
 
@@ -93,13 +158,28 @@ public class SingleInstance
     public void fieldWasAdded(FieldDescription fieldDescription)
     {
         //no need to update DB, because the field is still empty.
-        fields.put(fieldDescription.fieldName, new FieldHolder(fieldDescription, instanceName, this));
+        fields.put(fieldDescription.fieldName, new FieldHolder(fieldDescription, instanceName, new FieldChanged(this,fieldDescription.fieldName), Optional.empty()));
     }
 
     public void fieldWasRemovedFromConcept(String fieldName)
     {
-        //TODO: update the DB!!!
         fields.remove(fieldName);
+        //update the DB!!!
+        try (
+                Connection connection = InMindDataSource.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("delete from "+instancesTableName+" where " + userIdColName + "=?" + " and "+conceptColName+"=?"+" and "+instanceColName+"=?" + " and " + fieldColName +"=?");
+        )
+        {
+            pstmt.setString(1, userId);
+            pstmt.setString(2, conceptName);
+            pstmt.setString(3, instanceName);
+            pstmt.setString(4, fieldName);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public Set<String> getAllFieldNames()
@@ -112,15 +192,67 @@ public class SingleInstance
         return mutable;
     }
 
+    /**
+     * Instance must exist
+     *
+     * @param newMutability
+     */
     public void changeMutability(boolean newMutability)
     {
-        //TODO: update DB!!!
         mutable = newMutability;
+        //update DB!!!
+        try (
+                Connection connection = InMindDataSource.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("update " + instancesTableName + " set " + mutableColName + " = ?, where " + userIdColName + "=?" + " and "+conceptColName+"=?"+" and "+instanceColName+"=?");
+
+        )
+        {
+            pstmt.setBoolean(1, newMutability);
+            pstmt.setString(2, userId);
+            pstmt.setString(3, conceptName);
+            pstmt.setString(4, instanceName);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
-    public void fieldChanged(String fieldName, JSONObject fieldVal)
+    void removeFromDB()
     {
-        //TODO: update DB!!!!
-        //update instance_values set field_jsonval = fieldVal.toString() where user_id=userId and concept_name=conceptName and instance_name=instanceName;
+        //delete instance!!!
+        try (
+                Connection connection = InMindDataSource.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("delete from " + instancesTableName + " where " + userIdColName + "=?" + " and "+conceptColName+"=?"+" and "+instanceColName+"=?");
+
+        )
+        {
+            pstmt.setString(1, userId);
+            pstmt.setString(2, conceptName);
+            pstmt.setString(3, instanceName);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        //delete all fields that exist
+        try (
+                Connection connection = InMindDataSource.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("delete from "+instancesTableName+" where " + userIdColName + "=?" + " and "+conceptColName+"=?"+" and "+instanceColName+"=?");
+
+        )
+        {
+            pstmt.setString(1, userId);
+            pstmt.setString(2, conceptName);
+            pstmt.setString(3, instanceName);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 }
