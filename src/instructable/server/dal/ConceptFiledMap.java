@@ -1,9 +1,11 @@
 package instructable.server.dal;
 
 import instructable.server.hirarchy.FieldDescription;
+import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -36,7 +38,55 @@ public class ConceptFiledMap
     private void fillMap()
     {
         conceptFieldMap = new HashMap<>();
-        //TODO: connect to DB and fill map!
+        //connect to DB and fill map! //TODO: didn't check if works
+
+        try (
+                Connection connection = InMindDataSource.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("select " + conceptColName + " from " + conceptsTableName + " where " + userIdColName + "=?");
+        )
+        {
+            pstmt.setString(1, userId);
+
+            try (ResultSet resultSet = pstmt.executeQuery())
+            {
+                while (resultSet.next())
+                {
+                    String conceptName = resultSet.getString(conceptColName);
+                    conceptFieldMap.put(conceptName, new LinkedList<>());
+                }
+            }
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+
+        //add all field descriptions
+        try (
+                Connection connection = InMindDataSource.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("select " + conceptColName +"," + fieldColName + "," + fieldTypeCol + "," + isListColName + "," + mutableColName + " from " + conceptFieldTableName + " where " + userIdColName + "=?");
+        )
+        {
+            pstmt.setString(1, userId);
+
+            try (ResultSet resultSet = pstmt.executeQuery())
+            {
+                while (resultSet.next())
+                {
+                    String conceptName = resultSet.getString(conceptColName);
+                    String fieldName = resultSet.getString(fieldColName);
+                    String fieldType = resultSet.getString(fieldTypeCol);
+                    boolean isList = resultSet.getBoolean(isListColName);
+                    boolean mutable = resultSet.getBoolean(mutableColName);
+
+                    FieldDescription fieldDescription = new FieldDescription(fieldName, PossibleFieldType.valueOf(fieldType),isList,mutable);
+                    conceptFieldMap.get(conceptName).add(fieldDescription); //must exist!
+                }
+            }
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public boolean hasConcept(String concept)
@@ -54,6 +104,9 @@ public class ConceptFiledMap
         return conceptFieldMap.keySet();
     }
 
+    /**
+     *    Need to really be new.
+     **/
     public void newConcept(String conceptName)
     {
         conceptFieldMap.put(conceptName, new LinkedList<>());

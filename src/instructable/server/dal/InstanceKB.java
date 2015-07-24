@@ -2,6 +2,10 @@ package instructable.server.dal;
 
 import instructable.server.hirarchy.FieldDescription;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -14,16 +18,43 @@ public class InstanceKB
     String userId;
     Map<String, Map<String, SingleInstance>> conceptToInstance; //map from conceptNames to a map holding all instances of that concept
 
-    public InstanceKB(String userId)
+    public InstanceKB(String userId, ConceptFiledMap conceptFiledMap)
     {
         this.userId = userId;
-        fillMap();
+        fillMap(conceptFiledMap);
     }
 
-    private void fillMap()
+    private void fillMap(ConceptFiledMap conceptFiledMap)
     {
         conceptToInstance =  new HashMap<>();
-        //TODO: connect to DB and fill map!
+        //connect to DB and fill map! //TODO: didn't check if works
+
+        try (
+                Connection connection = InMindDataSource.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("select " + SingleInstance.conceptColName + "," + SingleInstance.instanceColName + "," + SingleInstance.mutableColName + " from " + SingleInstance.instancesTableName + " where " + SingleInstance.userIdColName + "=?");
+        )
+        {
+            pstmt.setString(1, userId);
+
+            try (ResultSet resultSet = pstmt.executeQuery())
+            {
+                while (resultSet.next())
+                {
+                    String conceptName = resultSet.getString(SingleInstance.conceptColName);
+                    String instanceName = resultSet.getString(SingleInstance.instanceColName);
+                    boolean mutable = resultSet.getBoolean(SingleInstance.mutableColName);
+
+                    SingleInstance instance = SingleInstance.loadInstanceFieldsFromDB(userId, conceptName, instanceName, mutable, conceptFiledMap.getAllFieldDescriptions(conceptName));
+                    if (!conceptToInstance.containsKey(conceptName))
+                        conceptToInstance.put(conceptName, new HashMap<>());
+                    Map<String, SingleInstance> allInstancesOfConcept = conceptToInstance.get(conceptName);
+                    allInstancesOfConcept.put(instanceName, instance);
+                }
+            }
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public boolean hasAnyInstancesOfConcept(String conceptName)
@@ -59,21 +90,15 @@ public class InstanceKB
         return conceptToInstance.get(conceptName).values();
     }
 
-    public void firstUseOfConcept(String conceptName)
-    {
-        conceptToInstance.put(conceptName, new HashMap<>());
-    }
-
     public void renameInstance(String conceptName, String instanceOldName, String instanceNewName)
     {
         Map<String, SingleInstance> instances = conceptToInstance.get(conceptName);
         if (instances.containsKey(instanceOldName))
         {
             SingleInstance reqInstance = instances.get(instanceOldName);
-            reqInstance.instanceWasRenamed(instanceNewName);
+            reqInstance.instanceWasRenamed(instanceNewName); //will also update DB
             instances.remove(instanceOldName);
             instances.put(instanceNewName, reqInstance);
-            //TODO: update DB!!!
             return;
         }
     }

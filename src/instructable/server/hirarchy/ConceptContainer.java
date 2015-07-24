@@ -187,4 +187,10 @@ public class ConceptContainer
     {
         return userId;
     }
+
+    //use with cautions
+    ConceptFiledMap getConceptFieldMap()
+    {
+        return conceptFieldMap;
+    }
 }

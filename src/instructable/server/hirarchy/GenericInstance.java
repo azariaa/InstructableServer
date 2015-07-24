@@ -16,12 +16,12 @@ public class GenericInstance
     //String name;
     //String conceptName; //type, class, concept
     //boolean mutable;
-    long lastAccess;
+    //long lastAccess;
     SingleInstance theInstance;
 
     private GenericInstance()
     {
-        lastAccess = System.nanoTime(); //System.currentTimeMillis(); doesn't work because in test may execute several commands in same millisecond
+        //lastAccess = System.nanoTime(); //System.currentTimeMillis(); doesn't work because in test may execute several commands in same millisecond
     }
 
     public static GenericInstance WrapAsGenericInstance(SingleInstance interfaceWithInstanceData)
@@ -85,7 +85,7 @@ public class GenericInstance
 
     public void touch()
     {
-        lastAccess = System.nanoTime();
+        theInstance.accessed(System.nanoTime());
     }
 
     /*
@@ -167,6 +167,11 @@ public class GenericInstance
     public void changeMutability(boolean newMutability)
     {
         theInstance.changeMutability(newMutability);
+    }
+
+    public long getLastAccess()
+    {
+        return theInstance.getLastAccess();
     }
 
 //    void removeEmptyStrings(List<String> org)

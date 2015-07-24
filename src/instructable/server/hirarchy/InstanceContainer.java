@@ -22,7 +22,7 @@ public class InstanceContainer
     public InstanceContainer(ConceptContainer conceptContainer, String userId)
     {
         this.conceptContainer = conceptContainer;
-        instanceKB = new InstanceKB(userId);
+        instanceKB = new InstanceKB(userId, conceptContainer.getConceptFieldMap());
     }
 
     //save last access, and sort according to last access
@@ -43,9 +43,9 @@ public class InstanceContainer
             @Override
             public int compare(GenericInstance o1, GenericInstance o2)
             {
-                if (o1.lastAccess == o2.lastAccess)
+                if (o1.getLastAccess() == o2.getLastAccess())
                     return 0;
-                return (o1.lastAccess < o2.lastAccess) ? 1 : -1;
+                return (o1.getLastAccess() < o2.getLastAccess()) ? 1 : -1;
             }
         });
         return Optional.of(allPossibleInstances.get(0));
