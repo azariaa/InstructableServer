@@ -1,6 +1,6 @@
 package testing;
 
-import instructable.EnvironmentCreatorUtils;
+import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.CommandsToParser;
 import instructable.server.IAllUserActions;
 import instructable.server.TopDMAllActions;
@@ -17,11 +17,11 @@ public class CommandLine
     public static void main(String[] args) throws Exception
     {
 
-        ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
+        ParserSettings parserSettings = CreateParserFromFiles.createParser();
         TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, true);
         IAllUserActions allUserActions = topDMAllActions;
 
-        EnvironmentCreatorUtils.addInboxEmails(topDMAllActions);
+        CreateParserFromFiles.addInboxEmails(topDMAllActions);
 
         Scanner scanIn = new Scanner(System.in);
         System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");

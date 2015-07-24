@@ -1,9 +1,8 @@
-package instructable;
+package instructable.server.dal;
 
 import instructable.server.IIncomingEmailControlling;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
-import instructable.server.ccg.StringFeatureGenerator;
 import instructable.server.hirarchy.EmailInfo;
 
 import java.io.IOException;
@@ -12,12 +11,13 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
  * Created by Amos Azaria on 20-May-15.
  */
-public class EnvironmentCreatorUtils
+public class CreateParserFromFiles
 {
   
   public static ParserSettings createParser() {
@@ -59,8 +59,9 @@ public class EnvironmentCreatorUtils
         };
 
 
-        return new ParserSettings(lexiconEntries, synonyms, unaryRules, new StringFeatureGenerator(),
-            CcgUtils.loadExamples(Paths.get(trainingExamples)));
+        ParserKnowledgeSeeder parserKnowledgeSeeder = new ParserKnowledgeSeeder(Optional.empty(), lexiconEntries, synonyms, unaryRules, CcgUtils.loadExamples(Paths.get(trainingExamples)));
+
+        return new ParserSettings(parserKnowledgeSeeder);
     }
 
 
@@ -83,7 +84,7 @@ public class EnvironmentCreatorUtils
     }
 
 
-    private EnvironmentCreatorUtils()
+    private CreateParserFromFiles()
     {
         //static class
     }

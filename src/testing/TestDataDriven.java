@@ -1,6 +1,6 @@
 package testing;
 
-import instructable.EnvironmentCreatorUtils;
+import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 
@@ -45,8 +45,8 @@ public class TestDataDriven {
   }
   
   private static void runTest() {
-    ParserSettings parserSettings = EnvironmentCreatorUtils.createParser(
-        "data/lexiconEntries.txt", "data/lexiconSyn.txt", "data/examples.csv");
+    ParserSettings parserSettings = CreateParserFromFiles.createParser(
+            "data/lexiconEntries.txt", "data/lexiconSyn.txt", "data/examples.csv");
 
     /*
     System.out.println("Adding training example");

@@ -4,6 +4,7 @@ import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.*;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
+import instructable.server.dal.CreateParserFromFiles;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -44,7 +45,7 @@ public class AgentDataAndControl
         this.usePendingResponses = usePendingResponses;
         parserSetAndActionsMap = new HashMap<>();
         logger.info("Creating environment.");
-        originalParserSettings = EnvironmentCreatorUtils.createParser();
+        originalParserSettings = CreateParserFromFiles.createParser();
         logger.info("Agent Ready!");
     }
 
@@ -55,7 +56,7 @@ public class AgentDataAndControl
             if (parserSetAndActionsMap.containsKey(gameId))
                 return parserSetAndActionsMap.get(gameId);
         }
-        ParserSetAndActions parserSetAndActions = getParserSetAndActions(emailSender, addInboxEmails);
+        ParserSetAndActions parserSetAndActions = getParserSetAndActions(emailSender, addInboxEmails, gameId);
         synchronized(parserSetAndActionsMap)
         {
             parserSetAndActionsMap.put(gameId,parserSetAndActions);
@@ -63,9 +64,9 @@ public class AgentDataAndControl
         return parserSetAndActions;
     }
 
-    private ParserSetAndActions getParserSetAndActions(IEmailSender emailSender, IAddInboxEmails addInboxEmails)
+    private ParserSetAndActions getParserSetAndActions(IEmailSender emailSender, IAddInboxEmails addInboxEmails, String gameId)
     {
-        ParserSettings parserSettingsCopy = originalParserSettings.clone();
+        ParserSettings parserSettingsCopy = originalParserSettings.createPSFromGeneralForNewUser(gameId);
         CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy);
         TopDMAllActions topDMAllActions = new TopDMAllActions(commandsToParser, emailSender, usePendingResponses);
         addInboxEmails.addInboxEmails(topDMAllActions);

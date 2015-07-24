@@ -1,5 +1,6 @@
 package instructable.server.ccg;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.*;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
@@ -22,6 +23,7 @@ import instructable.server.ActionResponse;
 import instructable.server.IAllUserActions;
 import instructable.server.InfoForCommand;
 import instructable.server.LispExecutor;
+import instructable.server.dal.ParserKnowledgeSeeder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,14 +31,26 @@ import java.util.stream.Collectors;
 /**
  * Created by Amos Azaria on 05-May-15.
  */
-public class ParserSettings implements Cloneable
+public class ParserSettings
 {
     static final int initialTraining = 10;
     static final int retrainAfterNewCommand = 1;
     static final boolean treatCorpusAsLearnedExamples = true;//false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
 
+    private ParserSettings()
+    {
 
-    public ParserSettings(List<String> lexiconEntries, List<String> synonyms, String[] unaryRules,
+    }
+
+    public ParserSettings(ParserKnowledgeSeeder parserKnowledgeSeeder)
+    {
+        this(parserKnowledgeSeeder.getInitialLexiconEntries(), parserKnowledgeSeeder.getSynonyms(),
+                parserKnowledgeSeeder.getUserDefinedEntries(), parserKnowledgeSeeder.getUnaryRules(),
+                new StringFeatureGenerator(), parserKnowledgeSeeder.getAllExamples());
+        this.parserKnowledgeSeeder = parserKnowledgeSeeder;
+    }
+
+    private ParserSettings(List<String> lexiconEntries, List<String> synonyms, List<String> userDefinedEntries, String[] unaryRules,
                           FeatureGenerator<StringContext, String> featureGenerator, List<String[]> examplesList)
     {
         final String midRowComment = "//";
@@ -75,6 +89,7 @@ public class ParserSettings implements Cloneable
 
         List<String> allLexiconEntries = new LinkedList<>(lexiconWithoutComments);
         allLexiconEntries.addAll(lexEntriesFromSyn);
+        allLexiconEntries.addAll(userDefinedEntries);
 
         List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(allLexiconEntries);
         lexicon = CcgUtils.induceLexiconHeadsAndDependencies(lexicon);
@@ -99,7 +114,7 @@ public class ParserSettings implements Cloneable
             if (treatCorpusAsLearnedExamples)
             {
                 //actually already tokenizes and POS exSentence above and will be doing it again in addToLearnedExamples, but this isn't significant.
-                addToLearnedExamples(exSentence, expression);
+                addToLearnedExamples(exSentence, expression, false);
             }
             List<String> allFunctionNames = LispExecutor.allFunctionNames();
             Set<String> freeSet = StaticAnalysis.getFreeVariables(example.getLogicalForm());
@@ -168,15 +183,14 @@ public class ParserSettings implements Cloneable
     /**
      * Adds new lexicon entries and unary rules to the grammar of the
      * CCG parser in {@code settings}.
-     *
-     * @param lexiconEntries
-     * @param unaryRules
+     * Not using unaryRules. If required, need to add customizable unaryRules to parserKnowledgeSeeder
      */
-    public void updateParserGrammar(List<LexiconEntry> lexiconEntries, List<CcgUnaryRule> unaryRules)
+    public void updateParserGrammar(List<LexiconEntry> lexiconEntries)//, List<CcgUnaryRule> unaryRules)
     {
+        parserKnowledgeSeeder.addNewUserLexicons(lexiconEntries.stream().map(LexiconEntry::toCsvString).collect(Collectors.toList())); //updating the DB
+
         lexicon.addAll(lexiconEntries);
         this.unaryRules.addAll(unaryRules);
-
         updateGrammarFromExisting();
     }
 
@@ -196,18 +210,23 @@ public class ParserSettings implements Cloneable
         List<String> lexiconAsList = new LinkedList<>();
         lexiconAsList.add(newLexicon);
         List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
-        this.updateParserGrammar(lexiconEntries, new LinkedList<>());
+        this.updateParserGrammar(lexiconEntries);//, new LinkedList<>());
     }
 
     public void removeFromParserGrammar(String lexiconToRemove)
     {
-        List<String> lexiconAsList = new LinkedList<>();
-        lexiconAsList.add(lexiconToRemove);
-        List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
-        //lexicon.removeAll(lexiconEntries);
-        LexiconEntry lexiconEntryToRemove = lexiconEntries.get(0);
-        lexicon = lexicon.stream().filter(lex->!lex.toCsvString().startsWith(lexiconEntryToRemove.toCsvString())).collect(Collectors.toList()); //the lexicon may have additional information (all the number thingies)
-        updateGrammarFromExisting();
+        if (parserKnowledgeSeeder.hasUserDefinedLex(lexiconToRemove))
+        {
+            parserKnowledgeSeeder.removeUserDefinedLex(lexiconToRemove); //updating the DB
+
+            List<String> lexiconAsList = new LinkedList<>();
+            lexiconAsList.add(lexiconToRemove);
+            List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
+            //lexicon.removeAll(lexiconEntries);
+            LexiconEntry lexiconEntryToRemove = lexiconEntries.get(0);
+            lexicon = lexicon.stream().filter(lex -> !lex.toCsvString().startsWith(lexiconEntryToRemove.toCsvString())).collect(Collectors.toList()); //the lexicon may have additional information (all the number thingies)
+            updateGrammarFromExisting();
+        }
     }
 
 
@@ -264,29 +283,19 @@ public class ParserSettings implements Cloneable
     {
         Expression2 expressionLearnt = CcgUtils.combineCommands(commandsLearnt);
         //we first tokenize the sentence (after adding the start symbol) then we join back the tokens, to make sure that it matches future sentences with identical tokens.
-        addToLearnedExamples(originalCommand, expressionLearnt);
-//        FileWriter out = null;
-//        try
-//        {
-//            out = new FileWriter(tempFileName, true);
-//            out.write(originalCommand + "," + expression.toString() + "\n");
-//            out.close();
-//        } catch (IOException e)
-//        {
-//            e.printStackTrace();
-//        }
+        addToLearnedExamples(originalCommand, expressionLearnt, true);
 
         CcgExample example = CcgUtils.createCcgExample(originalCommand, expressionLearnt, posUsed, false, featureVectorGenerator);
 
         List<LexiconEntry> newEntries = CcgUtils.induceLexiconEntriesHeuristic(example, parser);
         System.out.println(newEntries);
 
-        updateParserGrammar(newEntries, Lists.newArrayList());
+        updateParserGrammar(newEntries);//, Lists.newArrayList());
         ccgExamples.add(example);
         retrain(retrainAfterNewCommand);
     }
 
-    private void addToLearnedExamples(String originalCommand, Expression2 expressionLearnt)
+    private void addToLearnedExamples(String originalCommand, Expression2 expressionLearnt, boolean updateDB)
     {
         List<String> tokens = new LinkedList<>();
         tokens.add(CcgUtils.startSymbol);
@@ -294,6 +303,10 @@ public class ParserSettings implements Cloneable
         CcgUtils.tokenizeAndPOS(originalCommand, tokens, dummy, false, posUsed);
         String jointTokenizedSentence = String.join(" ", tokens);
         learnedExamples.put(jointTokenizedSentence, expressionLearnt);
+        if (updateDB)
+        {
+            parserKnowledgeSeeder.addNewUserExample(new String[] {jointTokenizedSentence, expressionLearnt.toString()});
+        }
     }
 
     public void retrain(int iterations)
@@ -305,17 +318,16 @@ public class ParserSettings implements Cloneable
         this.parserParameters = newParameters;
     }
 
-    @Override
-    public ParserSettings clone()
+    /**
+     * Important: This function can only be called if the current ParserSettings is general (not for a specific user), and the user is new in the system!
+     * @param newUserId
+     * @return
+     */
+    public ParserSettings createPSFromGeneralForNewUser(String newUserId)
     {
-        ParserSettings parserSettings = null;//new ParserSettings();
-        try
-        {
-            parserSettings = (ParserSettings) super.clone();
-        } catch (CloneNotSupportedException e)
-        {
-            e.printStackTrace(); //this is so stupid, and can never happen. (C# is so much better :)
-        }
+        Preconditions.checkState(parserKnowledgeSeeder.isGeneralUser());
+        //should also check that newUserId is actually new.
+        ParserSettings parserSettings = new ParserSettings();
         parserSettings.ccgExamples = new LinkedList<>(ccgExamples);
         parserSettings.lexicon = new LinkedList<>(lexicon); //(LinkedList<LexiconEntry>)lexicon.clone();
         parserSettings.unaryRules = new LinkedList<>(unaryRules);
@@ -327,11 +339,13 @@ public class ParserSettings implements Cloneable
         parserSettings.symbolTable = new IndexedList<String>(symbolTable);
         parserSettings.posUsed = posUsed;
         parserSettings.learnedExamples = new HashMap<>(learnedExamples);
+        parserSettings.parserKnowledgeSeeder = new ParserKnowledgeSeeder(parserKnowledgeSeeder, newUserId);
         return parserSettings;
     }
 
-    public List<CcgExample> ccgExamples;
+    ParserKnowledgeSeeder parserKnowledgeSeeder;
 
+    public List<CcgExample> ccgExamples;
     //learnedExamples examples are matched BEFORE parsing //the String key in these examples are the tokens joined back using " " (this is done to improve performance using hash-map)
     // if the (treatCorpusAsLearnedExamples==true) so copies all corpus in ccgExamples to learnedExamples
     public Map<String, Expression2> learnedExamples;

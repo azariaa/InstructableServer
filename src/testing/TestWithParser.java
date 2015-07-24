@@ -1,6 +1,6 @@
 package testing;
 
-import instructable.EnvironmentCreatorUtils;
+import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.CommandsToParser;
 import instructable.server.IAllUserActions;
 import instructable.server.IIncomingEmailControlling;
@@ -37,7 +37,7 @@ public class TestWithParser
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
 
-        ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
+        ParserSettings parserSettings = CreateParserFromFiles.createParser();
 
         IAllUserActions allUserActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, false);
 

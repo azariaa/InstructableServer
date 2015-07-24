@@ -6,7 +6,7 @@ import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
-import instructable.EnvironmentCreatorUtils;
+import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.CommandsToParser;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
@@ -25,7 +25,7 @@ public class TestLexiconInduction {
 
     private static void runTest() throws Exception
     {
-    	ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
+    	ParserSettings parserSettings = CreateParserFromFiles.createParser();
     	CcgParser parser = parserSettings.parser;
     	ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
     	List<String[]> exampleStrings = CcgUtils.loadExamples(Paths.get("learntCommands.csv"));
@@ -54,7 +54,7 @@ public class TestLexiconInduction {
 
     	System.out.println("Initial parameters");
     	System.out.println(parserSettings.parserFamily.getParameterDescription(parserSettings.parserParameters));
-    	parserSettings.updateParserGrammar(newEntries, Lists.newArrayList());
+    	parserSettings.updateParserGrammar(newEntries);//, Lists.newArrayList());
     	SufficientStatistics newParameters = CcgUtils.train(parserSettings.parserFamily, examples, 10, null);
     	
     	CcgParser newParser = parserSettings.parserFamily.getModelFromParameters(newParameters);
@@ -77,7 +77,7 @@ public class TestLexiconInduction {
     
     private static void runTestCommandsToParser() throws Exception
     {
-    	ParserSettings parserSettings = EnvironmentCreatorUtils.createParser();
+    	ParserSettings parserSettings = CreateParserFromFiles.createParser();
     	CommandsToParser commandsToParser = new CommandsToParser(parserSettings);
     	ExpressionParser<Expression2> p = ExpressionParser.expression2();
     	ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();

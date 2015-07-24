@@ -1,6 +1,6 @@
 package testing;
 
-import instructable.EnvironmentCreatorUtils;
+import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.CommandsToParser;
 import instructable.server.IAllUserActions;
 import instructable.server.TopDMAllActions;
@@ -23,7 +23,7 @@ public class JunitTest {
 
   @BeforeClass
   public static void classSetUp() {
-    parserSettings = EnvironmentCreatorUtils.createParser();
+    parserSettings = CreateParserFromFiles.createParser();
     testHelpers = new TestHelpers(testingMode, fileName);
   }
   
