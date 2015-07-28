@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import testing.TestWithParser.TestHelpers;
 
+import java.util.Optional;
+
 public class JunitTest {
   
   private static ParserSettings parserSettings;
@@ -23,7 +25,7 @@ public class JunitTest {
 
   @BeforeClass
   public static void classSetUp() {
-    parserSettings = CreateParserFromFiles.createParser();
+    parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
     testHelpers = new TestHelpers(testingMode, fileName);
   }
   

@@ -7,6 +7,7 @@ import instructable.server.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 /**
@@ -17,7 +18,7 @@ public class CommandLine
     public static void main(String[] args) throws Exception
     {
 
-        ParserSettings parserSettings = CreateParserFromFiles.createParser();
+        ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
         TopDMAllActions topDMAllActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, true);
         IAllUserActions allUserActions = topDMAllActions;
 

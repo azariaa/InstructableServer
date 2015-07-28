@@ -45,7 +45,7 @@ public class AgentDataAndControl
         this.usePendingResponses = usePendingResponses;
         parserSetAndActionsMap = new HashMap<>();
         logger.info("Creating environment.");
-        originalParserSettings = CreateParserFromFiles.createParser();
+        originalParserSettings = CreateParserFromFiles.createParser(Optional.empty());//create a general parser
         logger.info("Agent Ready!");
     }
 

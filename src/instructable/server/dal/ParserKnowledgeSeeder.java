@@ -1,5 +1,11 @@
 package instructable.server.dal;
 
+import com.google.common.base.Preconditions;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +17,14 @@ import java.util.Optional;
  */
 public class ParserKnowledgeSeeder
 {
-    final String forAllUsers = "all";
+    //final String forAllUsers = "all";
+
+    private final String lexEntriesTable = "lex_entries";
+    private final String examplesTable = "parse_examples";
+    private final String userIdCol = "user_id";
+    private final String lexEntryCol = "lex_entry";
+    private final String exampleSentenceCol = "example_sentence";
+    private final String exampleLFCol = "example_lf";
 
     final Optional<String> userId;
     final private List<String> lexiconEntries;
@@ -55,8 +68,48 @@ public class ParserKnowledgeSeeder
     private void fillUserSpecificFromDB()
     {
         //TODO: fill from DB
-        if (!isGeneralUser())
+        if (userId.isPresent())
         {
+            try (
+                    Connection connection = InMindDataSource.getDataSource().getConnection();
+                    PreparedStatement pstmt = connection.prepareStatement("select " + lexEntryCol + " from " + lexEntriesTable + " where " + userIdCol + "=?");
+            )
+            {
+                pstmt.setString(1, userId.get());
+
+                try (ResultSet resultSet = pstmt.executeQuery())
+                {
+                    while (resultSet.next())
+                    {
+                        String lexEntry = resultSet.getString(lexEntryCol);
+                        userDefinedEntries.add(lexEntry);
+                    }
+                }
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+
+            try (
+                    Connection connection = InMindDataSource.getDataSource().getConnection();
+                    PreparedStatement pstmt = connection.prepareStatement("select " + exampleSentenceCol + "," + exampleLFCol + " from " + examplesTable + " where " + userIdCol + "=?");
+            )
+            {
+                pstmt.setString(1, userId.get());
+
+                try (ResultSet resultSet = pstmt.executeQuery())
+                {
+                    while (resultSet.next())
+                    {
+                        String exampleSentence = resultSet.getString(exampleSentenceCol);
+                        String exampleLF = resultSet.getString(exampleLFCol);
+                        userExamples.add(new String[]{exampleSentence, exampleLF});
+                    }
+                }
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
 
         }
     }
@@ -106,24 +159,72 @@ public class ParserKnowledgeSeeder
 
     public void addNewUserLexicons(List<String> newLexiconEntries)
     {
+        Preconditions.checkState(!isGeneralUser());
         userDefinedEntries.addAll(newLexiconEntries);
-        //TODO: update DB!!!
+        //update DB!
+        for (String newLex : newLexiconEntries)
+        {
+            try (
+                    Connection connection = InMindDataSource.getDataSource().getConnection();
+                    PreparedStatement pstmt = connection.prepareStatement("insert into " + lexEntriesTable + " (" + userIdCol + "," + lexEntryCol + ") values (?,?)");
+            )
+            {
+                pstmt.setString(1, userId.get());
+                pstmt.setString(2, newLex);
+                pstmt.executeUpdate();
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void addNewUserExample(String[] newExample)
     {
+        Preconditions.checkState(!isGeneralUser());
         userExamples.add(newExample);
-        //TODO: add to DB!!!
+        //add to DB!
+        try (
+                Connection connection = InMindDataSource.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("insert into " + examplesTable + " (" + userIdCol + "," + exampleSentenceCol + "," + exampleLFCol + ") values (?,?,?)");
+        )
+        {
+            pstmt.setString(1, userId.get());
+            String exampleSentence = newExample[0];
+            pstmt.setString(2, exampleSentence);
+            String exampleLF = newExample[1];
+            pstmt.setString(3, exampleLF);
+            pstmt.executeUpdate();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void removeUserDefinedLex(String lexiconToRemove)
     {
+        Preconditions.checkState(!isGeneralUser());
         userDefinedEntries.remove(lexiconToRemove);
-        //TODO: update DB!!!
+
+        try (
+                Connection connection = InMindDataSource.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("delete from " + lexEntriesTable + " where " + userIdCol + "=? and " + lexEntryCol + "=?");
+        )
+        {
+            pstmt.setString(1, userId.get());
+            pstmt.setString(2, lexiconToRemove);
+            pstmt.executeUpdate();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
     }
+
+    //should also have remove user example...
 
     public boolean hasUserDefinedLex(String lexiconToRemove)
     {
-        return userDefinedEntries.stream().anyMatch(s->s.startsWith(lexiconToRemove));
+        return userDefinedEntries.stream().anyMatch(s -> s.startsWith(lexiconToRemove));
     }
 }

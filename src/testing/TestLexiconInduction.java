@@ -25,7 +25,7 @@ public class TestLexiconInduction {
 
     private static void runTest() throws Exception
     {
-    	ParserSettings parserSettings = CreateParserFromFiles.createParser();
+    	ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
     	CcgParser parser = parserSettings.parser;
     	ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
     	List<String[]> exampleStrings = CcgUtils.loadExamples(Paths.get("learntCommands.csv"));
@@ -77,7 +77,7 @@ public class TestLexiconInduction {
     
     private static void runTestCommandsToParser() throws Exception
     {
-    	ParserSettings parserSettings = CreateParserFromFiles.createParser();
+    	ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
     	CommandsToParser commandsToParser = new CommandsToParser(parserSettings);
     	ExpressionParser<Expression2> p = ExpressionParser.expression2();
     	ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();

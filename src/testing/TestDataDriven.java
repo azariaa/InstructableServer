@@ -1,13 +1,5 @@
 package testing;
 
-import instructable.server.dal.CreateParserFromFiles;
-import instructable.server.ccg.CcgUtils;
-import instructable.server.ccg.ParserSettings;
-
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
@@ -20,6 +12,14 @@ import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
 import com.jayantkrish.jklol.ccg.util.SemanticParserUtils;
+import instructable.server.ccg.CcgUtils;
+import instructable.server.ccg.ParserSettings;
+import instructable.server.dal.CreateParserFromFiles;
+
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public class TestDataDriven {
 
@@ -45,7 +45,7 @@ public class TestDataDriven {
   }
   
   private static void runTest() {
-    ParserSettings parserSettings = CreateParserFromFiles.createParser(
+    ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"),
             "data/lexiconEntries.txt", "data/lexiconSyn.txt", "data/examples.csv");
 
     /*

@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
@@ -37,7 +38,7 @@ public class TestWithParser
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
 
-        ParserSettings parserSettings = CreateParserFromFiles.createParser();
+        ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
 
         IAllUserActions allUserActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, false);
 

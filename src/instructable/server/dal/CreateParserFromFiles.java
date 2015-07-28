@@ -20,11 +20,11 @@ import java.util.Optional;
 public class CreateParserFromFiles
 {
   
-  public static ParserSettings createParser() {
-    return createParser("data/lexiconEntries.txt", "data/lexiconSyn.txt", "data/examples.csv");
+  public static ParserSettings createParser(Optional<String> userId) {
+    return createParser(userId, "data/lexiconEntries.txt", "data/lexiconSyn.txt", "data/examples.csv");
   }
 
-    public static ParserSettings createParser(String lexicon, String lexiconSyn, String trainingExamples)
+    public static ParserSettings createParser(Optional<String> userId, String lexicon, String lexiconSyn, String trainingExamples)
     {
 
         List<String> lexiconEntries = null;
@@ -59,7 +59,7 @@ public class CreateParserFromFiles
         };
 
 
-        ParserKnowledgeSeeder parserKnowledgeSeeder = new ParserKnowledgeSeeder(Optional.empty(), lexiconEntries, synonyms, unaryRules, CcgUtils.loadExamples(Paths.get(trainingExamples)));
+        ParserKnowledgeSeeder parserKnowledgeSeeder = new ParserKnowledgeSeeder(userId, lexiconEntries, synonyms, unaryRules, CcgUtils.loadExamples(Paths.get(trainingExamples)));
 
         return new ParserSettings(parserKnowledgeSeeder);
     }
