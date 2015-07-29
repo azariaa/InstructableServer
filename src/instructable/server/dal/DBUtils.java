@@ -43,7 +43,7 @@ public class DBUtils
     static public void removeUserFromTable(String userId, String tableName)
     {
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("delete from " + tableName + " where " + DBUtils.userIdColName + "=? ");
         )
         {

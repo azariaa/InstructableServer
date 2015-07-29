@@ -33,7 +33,7 @@ public class ConceptFiledMap
         //connect to DB and fill map! //TODO: didn't check if works
 
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.conceptColName + " from " + DBUtils.conceptsTableName + " where " + DBUtils.userIdColName + "=?");
         )
         {
@@ -55,7 +55,7 @@ public class ConceptFiledMap
 
         //add all field descriptions
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.conceptColName +"," + DBUtils.fieldColName + "," + DBUtils.fieldTypeCol + "," + DBUtils.isListColName + "," + DBUtils.mutableColName + " from " + DBUtils.conceptFieldTableName + " where " + DBUtils.userIdColName + "=?");
         )
         {
@@ -105,7 +105,7 @@ public class ConceptFiledMap
 
         //update DB!!!
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.conceptsTableName + " (" + DBUtils.userIdColName + "," + DBUtils.conceptColName + ") values (?,?)");
         )
         {
@@ -126,7 +126,7 @@ public class ConceptFiledMap
         //update DB!
         //first delete concept
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.conceptsTableName + " where " + DBUtils.userIdColName + "=? and " + DBUtils.conceptColName + "=?");
         )
         {
@@ -141,7 +141,7 @@ public class ConceptFiledMap
 
         //then delete all fields
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.conceptFieldTableName + " where " + DBUtils.userIdColName + "=? and " + DBUtils.conceptColName + "=?");
 
         )
@@ -162,7 +162,7 @@ public class ConceptFiledMap
 
         //update DB!!!
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.conceptFieldTableName + " (" + DBUtils.userIdColName + "," + DBUtils.conceptColName + "," + DBUtils.fieldColName + "," + DBUtils.fieldTypeCol + "," + DBUtils.isListColName + "," + DBUtils.mutableColName + ") values (?,?,?,?,?,?)");
         )
         {

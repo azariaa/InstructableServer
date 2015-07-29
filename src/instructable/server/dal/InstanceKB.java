@@ -30,7 +30,7 @@ public class InstanceKB
         //connect to DB and fill map! //TODO: didn't check if works
 
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.conceptColName + "," + DBUtils.instanceColName + "," + DBUtils.mutableColName + " from " + DBUtils.instancesTableName + " where " + DBUtils.userIdColName + "=?");
         )
         {

@@ -50,7 +50,7 @@ public class SingleInstance
     {
         //update DB!!!
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.instancesTableName + " (" + DBUtils.userIdColName + "," + DBUtils.conceptColName + "," + DBUtils.instanceColName + "," + DBUtils.mutableColName + ") values (?,?,?,?)");
         )
         {
@@ -89,7 +89,7 @@ public class SingleInstance
         //TODO: check if works
 
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.fieldColName + "," + DBUtils.fieldJSonValColName + " from " + DBUtils.instanceValTableName + " where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
         )
         {
@@ -148,7 +148,7 @@ public class SingleInstance
 
         //update DB instance
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("update " + DBUtils.instancesTableName + " set " + DBUtils.instanceColName + " = ? where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
         )
         {
@@ -165,7 +165,7 @@ public class SingleInstance
 
         //update all fields in DB
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("update " + DBUtils.instanceValTableName + " set " + DBUtils.instanceColName + " = ? where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
         )
         {
@@ -211,7 +211,7 @@ public class SingleInstance
         fields.remove(fieldName);
         //update the DB!!!
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.instancesTableName + " where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?" + " and " + DBUtils.fieldColName + "=?");
         )
         {
@@ -247,7 +247,7 @@ public class SingleInstance
         mutable = newMutability;
         //update DB!!!
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("update " + DBUtils.instancesTableName + " set " + DBUtils.mutableColName + " = ? where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
 
         )
@@ -268,7 +268,7 @@ public class SingleInstance
     {
         //delete instance!!!
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.instancesTableName + " where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
 
         )
@@ -285,7 +285,7 @@ public class SingleInstance
 
         //delete all fields that exist
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.instancesTableName + " where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
 
         )

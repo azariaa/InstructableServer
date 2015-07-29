@@ -10,7 +10,7 @@ import javax.sql.DataSource;
  * (dataSource is immutable, so this is thread safe. However all connections must be created when needed and closed of course).
  * Should really use resource file...
  */
-public class InMindDataSource
+public class InstDataSource
 {
     private static final String userName = "root";
     private static final String password = "InMind7";
@@ -38,7 +38,7 @@ public class InMindDataSource
         return dataSource;
     }
 
-    private InMindDataSource()
+    private InstDataSource()
     {
     }
 }

@@ -64,7 +64,7 @@ public class ParserKnowledgeSeeder
         if (userId.isPresent())
         {
             try (
-                    Connection connection = InMindDataSource.getDataSource().getConnection();
+                    Connection connection = InstDataSource.getDataSource().getConnection();
                     PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.lexEntryCol + " from " + DBUtils.lexEntriesTable + " where " + DBUtils.userIdCol + "=?");
             )
             {
@@ -84,7 +84,7 @@ public class ParserKnowledgeSeeder
             }
 
             try (
-                    Connection connection = InMindDataSource.getDataSource().getConnection();
+                    Connection connection = InstDataSource.getDataSource().getConnection();
                     PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.exampleSentenceCol + "," + DBUtils.exampleLFCol + " from " + DBUtils.examplesTable + " where " + DBUtils.userIdCol + "=?");
             )
             {
@@ -158,7 +158,7 @@ public class ParserKnowledgeSeeder
         for (String newLex : newLexiconEntries)
         {
             try (
-                    Connection connection = InMindDataSource.getDataSource().getConnection();
+                    Connection connection = InstDataSource.getDataSource().getConnection();
                     PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.lexEntriesTable + " (" + DBUtils.userIdCol + "," + DBUtils.lexEntryCol + ") values (?,?)");
             )
             {
@@ -178,7 +178,7 @@ public class ParserKnowledgeSeeder
         userExamples.add(newExample);
         //add to DB!
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.examplesTable + " (" + DBUtils.userIdCol + "," + DBUtils.exampleSentenceCol + "," + DBUtils.exampleLFCol + ") values (?,?,?)");
         )
         {
@@ -200,7 +200,7 @@ public class ParserKnowledgeSeeder
         userDefinedEntries.remove(lexiconToRemove);
 
         try (
-                Connection connection = InMindDataSource.getDataSource().getConnection();
+                Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.lexEntriesTable + " where " + DBUtils.userIdCol + "=? and " + DBUtils.lexEntryCol + "=?");
         )
         {
