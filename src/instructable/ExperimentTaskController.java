@@ -2,7 +2,6 @@ package instructable;
 
 import instructable.server.IEmailSender;
 import instructable.server.IIncomingEmailControlling;
-import instructable.server.TopDMAllActions;
 import instructable.server.hirarchy.EmailInfo;
 
 import java.util.*;
@@ -62,7 +61,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     static final String worker1Email = "caseyousoon8@myworkplace.com";
     static final String worker2Email = "charlieisasleep4@myworkplace.com";
     static final String worker3Email = "aaronworkshard3@myworkplace.com";
-    static final String myEmail = TopDMAllActions.userEmailAddress;
+    static final String myEmail = "you@myworkplace.com";//TopDMAllActions.userEmailAddress; //in production every user should have a different email
 
     static final String familyEventDate = "September 28th";
 

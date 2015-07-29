@@ -18,15 +18,6 @@ import java.util.*;
  */
 public class SingleInstance
 {
-    static final String instancesTableName = "instances";
-    static final String mutableColName = "mutable";
-    static final String instanceValTableName = "instance_values";
-    static final String userIdColName = "user_id";
-    static final String conceptColName = "concept_name";
-    static final String instanceColName = "instance_name";
-    static final String fieldColName = "field_name";
-    static final String fieldJSonValColName = "field_jsonval";
-
     String userId;
     String conceptName;
     String instanceName;
@@ -60,8 +51,7 @@ public class SingleInstance
         //update DB!!!
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("insert into " + instancesTableName + " (" + userIdColName + "," + conceptColName + "," + instanceColName + "," + mutableColName + ") values (?,?,?,?)");
-
+                PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.instancesTableName + " (" + DBUtils.userIdColName + "," + DBUtils.conceptColName + "," + DBUtils.instanceColName + "," + DBUtils.mutableColName + ") values (?,?,?,?)");
         )
         {
             pstmt.setString(1, userId);
@@ -100,7 +90,7 @@ public class SingleInstance
 
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("select " + fieldColName + "," + fieldJSonValColName + " from " + instanceValTableName + " where " + userIdColName + "=?" + " and " + conceptColName + "=?" + " and " + instanceColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.fieldColName + "," + DBUtils.fieldJSonValColName + " from " + DBUtils.instanceValTableName + " where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
         )
         {
             pstmt.setString(1, userId);
@@ -112,8 +102,8 @@ public class SingleInstance
                 Map<String, Optional<JSONObject>> fieldsVals = new HashMap<>();
                 while (resultSet.next())
                 {
-                    String fieldResName = resultSet.getString(fieldColName);
-                    String jsonValAsStr = resultSet.getString(fieldJSonValColName);
+                    String fieldResName = resultSet.getString(DBUtils.fieldColName);
+                    String jsonValAsStr = resultSet.getString(DBUtils.fieldJSonValColName);
                     Optional<JSONObject> jsonValue = Optional.empty();
                     try
                     {
@@ -159,7 +149,7 @@ public class SingleInstance
         //update DB instance
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("update " + instancesTableName + " set " + instanceColName + " = ?, where " + userIdColName + "=?" + " and " + conceptColName + "=?" + " and " + instanceColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("update " + DBUtils.instancesTableName + " set " + DBUtils.instanceColName + " = ? where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
         )
         {
             pstmt.setString(1, newName);
@@ -176,7 +166,7 @@ public class SingleInstance
         //update all fields in DB
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("update " + instanceValTableName + " set " + instanceColName + " = ?, where " + userIdColName + "=?" + " and " + conceptColName + "=?" + " and " + instanceColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("update " + DBUtils.instanceValTableName + " set " + DBUtils.instanceColName + " = ? where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
         )
         {
             pstmt.setString(1, newName);
@@ -222,7 +212,7 @@ public class SingleInstance
         //update the DB!!!
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("delete from " + instancesTableName + " where " + userIdColName + "=?" + " and " + conceptColName + "=?" + " and " + instanceColName + "=?" + " and " + fieldColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.instancesTableName + " where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?" + " and " + DBUtils.fieldColName + "=?");
         )
         {
             pstmt.setString(1, userId);
@@ -258,7 +248,7 @@ public class SingleInstance
         //update DB!!!
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("update " + instancesTableName + " set " + mutableColName + " = ?, where " + userIdColName + "=?" + " and " + conceptColName + "=?" + " and " + instanceColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("update " + DBUtils.instancesTableName + " set " + DBUtils.mutableColName + " = ? where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
 
         )
         {
@@ -279,7 +269,7 @@ public class SingleInstance
         //delete instance!!!
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("delete from " + instancesTableName + " where " + userIdColName + "=?" + " and " + conceptColName + "=?" + " and " + instanceColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.instancesTableName + " where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
 
         )
         {
@@ -296,7 +286,7 @@ public class SingleInstance
         //delete all fields that exist
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("delete from " + instancesTableName + " where " + userIdColName + "=?" + " and " + conceptColName + "=?" + " and " + instanceColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.instancesTableName + " where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
 
         )
         {

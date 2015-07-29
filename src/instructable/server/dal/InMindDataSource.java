@@ -38,9 +38,7 @@ public class InMindDataSource
         return dataSource;
     }
 
-
     private InMindDataSource()
     {
-
     }
 }

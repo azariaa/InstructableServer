@@ -7,6 +7,7 @@ import instructable.server.IIncomingEmailControlling;
 import instructable.server.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
+import instructable.server.dal.DBUtils;
 import instructable.server.hirarchy.EmailInfo;
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,12 +36,15 @@ public class TestWithParser
 
     private static void runTest() throws Exception
     {
+        String userId = "tempUser";
+
+        DBUtils.clearUserData(userId);
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
 
-        ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
+        ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of(userId));
 
-        IAllUserActions allUserActions = new TopDMAllActions(new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, false);
+        IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", userId, new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, false);
 
         TestSimplifier testSimplifier = new TestSimplifier(allUserActions, testHelpers, parserSettings);
 

@@ -33,7 +33,7 @@ public class FieldChanged implements IFieldChanged
         //insert into instanceValTableName () values (userId,conceptName,instanceName,fieldName,fieldVal.toString()) on duplicate key update fieldJSonValColName=fieldVal.toString()
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("insert into "+SingleInstance.instanceValTableName+" (" + SingleInstance.userIdColName + "," + SingleInstance.conceptColName + "," + SingleInstance.instanceColName + "," + SingleInstance.fieldColName + "," + SingleInstance.fieldJSonValColName + ") values (?,?,?,?,?) on duplicate key update " + SingleInstance.fieldJSonValColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("insert into "+ DBUtils.instanceValTableName+" (" + DBUtils.userIdColName + "," + DBUtils.conceptColName + "," + DBUtils.instanceColName + "," + DBUtils.fieldColName + "," + DBUtils.fieldJSonValColName + ") values (?,?,?,?,?) on duplicate key update " + DBUtils.fieldJSonValColName + "=?");
         )
         {
             pstmt.setString(1, singleInstance.userId);

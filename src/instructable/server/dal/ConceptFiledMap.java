@@ -17,14 +17,6 @@ import java.util.*;
  */
 public class ConceptFiledMap
 {
-    static final String conceptsTableName = "concepts";
-    static final String userIdColName = "user_id";
-    static final String conceptColName = "concept_name";
-    static final String conceptFieldTableName = "concept_fields";
-    static final String fieldColName = "field_name";
-    static final String fieldTypeCol = "field_type";
-    static final String isListColName = "isList";
-    static final String mutableColName = "mutable";
 
     Map<String, List<FieldDescription>> conceptFieldMap;
     String userId;
@@ -42,7 +34,7 @@ public class ConceptFiledMap
 
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("select " + conceptColName + " from " + conceptsTableName + " where " + userIdColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.conceptColName + " from " + DBUtils.conceptsTableName + " where " + DBUtils.userIdColName + "=?");
         )
         {
             pstmt.setString(1, userId);
@@ -51,7 +43,7 @@ public class ConceptFiledMap
             {
                 while (resultSet.next())
                 {
-                    String conceptName = resultSet.getString(conceptColName);
+                    String conceptName = resultSet.getString(DBUtils.conceptColName);
                     conceptFieldMap.put(conceptName, new LinkedList<>());
                 }
             }
@@ -64,7 +56,7 @@ public class ConceptFiledMap
         //add all field descriptions
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("select " + conceptColName +"," + fieldColName + "," + fieldTypeCol + "," + isListColName + "," + mutableColName + " from " + conceptFieldTableName + " where " + userIdColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.conceptColName +"," + DBUtils.fieldColName + "," + DBUtils.fieldTypeCol + "," + DBUtils.isListColName + "," + DBUtils.mutableColName + " from " + DBUtils.conceptFieldTableName + " where " + DBUtils.userIdColName + "=?");
         )
         {
             pstmt.setString(1, userId);
@@ -73,11 +65,11 @@ public class ConceptFiledMap
             {
                 while (resultSet.next())
                 {
-                    String conceptName = resultSet.getString(conceptColName);
-                    String fieldName = resultSet.getString(fieldColName);
-                    String fieldType = resultSet.getString(fieldTypeCol);
-                    boolean isList = resultSet.getBoolean(isListColName);
-                    boolean mutable = resultSet.getBoolean(mutableColName);
+                    String conceptName = resultSet.getString(DBUtils.conceptColName);
+                    String fieldName = resultSet.getString(DBUtils.fieldColName);
+                    String fieldType = resultSet.getString(DBUtils.fieldTypeCol);
+                    boolean isList = resultSet.getBoolean(DBUtils.isListColName);
+                    boolean mutable = resultSet.getBoolean(DBUtils.mutableColName);
 
                     FieldDescription fieldDescription = new FieldDescription(fieldName, PossibleFieldType.valueOf(fieldType),isList,mutable);
                     conceptFieldMap.get(conceptName).add(fieldDescription); //must exist!
@@ -114,8 +106,7 @@ public class ConceptFiledMap
         //update DB!!!
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("insert into " + conceptsTableName + " (" + userIdColName + "," + conceptColName + ") values (?,?)");
-
+                PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.conceptsTableName + " (" + DBUtils.userIdColName + "," + DBUtils.conceptColName + ") values (?,?)");
         )
         {
             pstmt.setString(1, userId);
@@ -136,8 +127,7 @@ public class ConceptFiledMap
         //first delete concept
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("delete from " + conceptsTableName + " where " + userIdColName + "=? and " + conceptColName + "=?");
-
+                PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.conceptsTableName + " where " + DBUtils.userIdColName + "=? and " + DBUtils.conceptColName + "=?");
         )
         {
             pstmt.setString(1, userId);
@@ -152,7 +142,7 @@ public class ConceptFiledMap
         //then delete all fields
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("delete from " + conceptFieldTableName + " where " + userIdColName + "=? and " + conceptColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.conceptFieldTableName + " where " + DBUtils.userIdColName + "=? and " + DBUtils.conceptColName + "=?");
 
         )
         {
@@ -173,8 +163,7 @@ public class ConceptFiledMap
         //update DB!!!
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("insert into " + conceptFieldTableName + " (" + userIdColName + "," + conceptColName + "," + fieldColName + "," + fieldTypeCol + "," + isListColName + "," + mutableColName + ") values (?,?,?,?,?,?)");
-
+                PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.conceptFieldTableName + " (" + DBUtils.userIdColName + "," + DBUtils.conceptColName + "," + DBUtils.fieldColName + "," + DBUtils.fieldTypeCol + "," + DBUtils.isListColName + "," + DBUtils.mutableColName + ") values (?,?,?,?,?,?)");
         )
         {
             pstmt.setString(1, userId);

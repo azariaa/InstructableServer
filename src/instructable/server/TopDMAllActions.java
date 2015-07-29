@@ -23,19 +23,19 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     ICommandsToParser commandsToParser;
     OutEmailCommandController outEmailCommandController;
     InboxCommandController inboxCommandController;
-    static public final String userEmailAddress = "you@myworkplace.com";
 
     static private final String ambiguousEmailInstanceName = "email"; //can either be outgoing email, or inbox
     static private final String yesExpression = "(yes)";
     static private final String createEmailExpression = "(createInstanceByConceptName outgoing_email)";
 
+    String userEmailAddress;
     Optional<JSONObject> previousFieldEval = Optional.empty();
     boolean usePendingResponses = true;
 
-    public TopDMAllActions(ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses)
+    public TopDMAllActions(String userEmailAddress, String userId, ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses)
     {
+        this.userEmailAddress = userEmailAddress;
         this.usePendingResponses = usePendingResponses;
-        String userId = userEmailAddress;
         conceptContainer = new ConceptContainer(userId);
         instanceContainer = new InstanceContainer(conceptContainer, userId);
         outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer, emailSender);

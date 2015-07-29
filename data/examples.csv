@@ -11,6 +11,7 @@ create name david.,"(createInstanceByFullNames name (stringNoun ""david""))"
 create name for david,"(createInstanceByFullNames name (stringNoun ""david""))"
 set body to glue,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""glue""))"
 set subject to party,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""party""))"
+set subject to green,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""green""))"
 yes,(yes)
 ok,(yes)
 put this is a test in body,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""this is a test""))"

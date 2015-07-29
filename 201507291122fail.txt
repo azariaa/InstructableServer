@@ -86,20 +86,22 @@ U: set jane's email to be jane@gmail.com
 S: The "email" field in "jane" was set to: "jane@gmail.com".
 
 U: recipientify bob
-S: It is: bob@gmail.com
-S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
+S: Sorry, but I don't understand.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
 U: yes
-S: Sorry, but I did not understand what you said yes to, please give the full request.
+S: Great! When you say, for example: "recipientify bob", what shall I do first?
 
 U: take bob's email
 S: It is: bob@gmail.com
+S: What shall I do next (when executing: "recipientify bob")?
 
 U: and set it as the recipient
 S: The "recipient list" field in "outgoing email" was set to: "bob@gmail.com".
+S: What shall I do next (when executing: "recipientify bob")?
 
 U: that's it
-S: Not sure what you are talking about.
+S: I now know what to do when you say (for example): "recipientify bob"!
 
 U: recipientify jane
 S: It is: jane@gmail.com
@@ -212,15 +214,15 @@ S: Composing new email. "outgoing email" fields are: subject, body and recipient
 S: What shall I do next (when executing: "reply blue")?
 
 U: set body to blue
-S: The "body" field in "outgoing email" was set to: "blue".
-S: What shall I do next (when executing: "reply blue")?
+S: Sorry, but I don't know what to set outgoing email's body to. Please repeat and tell me what to set it to (e.g. set outgoing email's body to something).
+S: What should I do instead (when executing: "reply blue")?
 
 U: end
 S: I now know what to do when you say (for example): "reply blue"!
 
 U: reply I'm still at work where are you
-S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
-S: The "body" field in "outgoing email" was set to: "I'm still at work where are you".
+S: Sorry, but I don't understand.
+S: Would you like to teach me what to do in this case (either say yes or simply ignore this question)?
 
 U: previous email
 S: Set to previous incoming email successfully.

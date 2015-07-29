@@ -31,7 +31,7 @@ public class InstanceKB
 
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("select " + SingleInstance.conceptColName + "," + SingleInstance.instanceColName + "," + SingleInstance.mutableColName + " from " + SingleInstance.instancesTableName + " where " + SingleInstance.userIdColName + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.conceptColName + "," + DBUtils.instanceColName + "," + DBUtils.mutableColName + " from " + DBUtils.instancesTableName + " where " + DBUtils.userIdColName + "=?");
         )
         {
             pstmt.setString(1, userId);
@@ -40,9 +40,9 @@ public class InstanceKB
             {
                 while (resultSet.next())
                 {
-                    String conceptName = resultSet.getString(SingleInstance.conceptColName);
-                    String instanceName = resultSet.getString(SingleInstance.instanceColName);
-                    boolean mutable = resultSet.getBoolean(SingleInstance.mutableColName);
+                    String conceptName = resultSet.getString(DBUtils.conceptColName);
+                    String instanceName = resultSet.getString(DBUtils.instanceColName);
+                    boolean mutable = resultSet.getBoolean(DBUtils.mutableColName);
 
                     SingleInstance instance = SingleInstance.loadInstanceFieldsFromDB(userId, conceptName, instanceName, mutable, conceptFiledMap.getAllFieldDescriptions(conceptName));
                     if (!conceptToInstance.containsKey(conceptName))

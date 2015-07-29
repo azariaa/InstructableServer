@@ -68,7 +68,7 @@ public class AgentDataAndControl
     {
         ParserSettings parserSettingsCopy = originalParserSettings.createPSFromGeneralForNewUser(gameId);
         CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy);
-        TopDMAllActions topDMAllActions = new TopDMAllActions(commandsToParser, emailSender, usePendingResponses);
+        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", gameId, commandsToParser, emailSender, usePendingResponses);
         addInboxEmails.addInboxEmails(topDMAllActions);
         return new ParserSetAndActions(parserSettingsCopy, topDMAllActions, commandsToParser);
     }

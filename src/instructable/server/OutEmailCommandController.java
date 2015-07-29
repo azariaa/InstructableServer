@@ -68,6 +68,14 @@ public class OutEmailCommandController
 
     public void createNewEmail(ExecutionStatus executionStatus)
     {
+        //first delete old one if exists.
+        Optional<GenericInstance> emailBeingComposed = instanceContainer.getInstance(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
+        if (emailBeingComposed.isPresent())
+        {
+            instanceContainer.deleteInstance(new ExecutionStatus(), emailBeingComposed.get());
+        }
+
+        //now create a new one
         new OutgoingEmail(executionStatus, instanceContainer, myEmail);
     }
 

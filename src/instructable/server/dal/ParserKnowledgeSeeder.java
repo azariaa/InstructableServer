@@ -19,13 +19,6 @@ public class ParserKnowledgeSeeder
 {
     //final String forAllUsers = "all";
 
-    private final String lexEntriesTable = "lex_entries";
-    private final String examplesTable = "parse_examples";
-    private final String userIdCol = "user_id";
-    private final String lexEntryCol = "lex_entry";
-    private final String exampleSentenceCol = "example_sentence";
-    private final String exampleLFCol = "example_lf";
-
     final Optional<String> userId;
     final private List<String> lexiconEntries;
     final private List<String> synonyms;
@@ -72,7 +65,7 @@ public class ParserKnowledgeSeeder
         {
             try (
                     Connection connection = InMindDataSource.getDataSource().getConnection();
-                    PreparedStatement pstmt = connection.prepareStatement("select " + lexEntryCol + " from " + lexEntriesTable + " where " + userIdCol + "=?");
+                    PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.lexEntryCol + " from " + DBUtils.lexEntriesTable + " where " + DBUtils.userIdCol + "=?");
             )
             {
                 pstmt.setString(1, userId.get());
@@ -81,7 +74,7 @@ public class ParserKnowledgeSeeder
                 {
                     while (resultSet.next())
                     {
-                        String lexEntry = resultSet.getString(lexEntryCol);
+                        String lexEntry = resultSet.getString(DBUtils.lexEntryCol);
                         userDefinedEntries.add(lexEntry);
                     }
                 }
@@ -92,7 +85,7 @@ public class ParserKnowledgeSeeder
 
             try (
                     Connection connection = InMindDataSource.getDataSource().getConnection();
-                    PreparedStatement pstmt = connection.prepareStatement("select " + exampleSentenceCol + "," + exampleLFCol + " from " + examplesTable + " where " + userIdCol + "=?");
+                    PreparedStatement pstmt = connection.prepareStatement("select " + DBUtils.exampleSentenceCol + "," + DBUtils.exampleLFCol + " from " + DBUtils.examplesTable + " where " + DBUtils.userIdCol + "=?");
             )
             {
                 pstmt.setString(1, userId.get());
@@ -101,8 +94,8 @@ public class ParserKnowledgeSeeder
                 {
                     while (resultSet.next())
                     {
-                        String exampleSentence = resultSet.getString(exampleSentenceCol);
-                        String exampleLF = resultSet.getString(exampleLFCol);
+                        String exampleSentence = resultSet.getString(DBUtils.exampleSentenceCol);
+                        String exampleLF = resultSet.getString(DBUtils.exampleLFCol);
                         userExamples.add(new String[]{exampleSentence, exampleLF});
                     }
                 }
@@ -166,7 +159,7 @@ public class ParserKnowledgeSeeder
         {
             try (
                     Connection connection = InMindDataSource.getDataSource().getConnection();
-                    PreparedStatement pstmt = connection.prepareStatement("insert into " + lexEntriesTable + " (" + userIdCol + "," + lexEntryCol + ") values (?,?)");
+                    PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.lexEntriesTable + " (" + DBUtils.userIdCol + "," + DBUtils.lexEntryCol + ") values (?,?)");
             )
             {
                 pstmt.setString(1, userId.get());
@@ -186,7 +179,7 @@ public class ParserKnowledgeSeeder
         //add to DB!
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("insert into " + examplesTable + " (" + userIdCol + "," + exampleSentenceCol + "," + exampleLFCol + ") values (?,?,?)");
+                PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.examplesTable + " (" + DBUtils.userIdCol + "," + DBUtils.exampleSentenceCol + "," + DBUtils.exampleLFCol + ") values (?,?,?)");
         )
         {
             pstmt.setString(1, userId.get());
@@ -208,7 +201,7 @@ public class ParserKnowledgeSeeder
 
         try (
                 Connection connection = InMindDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("delete from " + lexEntriesTable + " where " + userIdCol + "=? and " + lexEntryCol + "=?");
+                PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.lexEntriesTable + " where " + DBUtils.userIdCol + "=? and " + DBUtils.lexEntryCol + "=?");
         )
         {
             pstmt.setString(1, userId.get());

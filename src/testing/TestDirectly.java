@@ -27,7 +27,7 @@ public class TestDirectly
 
     private static void runTest() throws Exception
     {
-        IAllUserActions allUserActions = new TopDMAllActions(new ICommandsToParser()
+        IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", "test", new ICommandsToParser()
         {
             @Override
             public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, Optional<ActionResponse> replyWhenDone)
