@@ -99,16 +99,16 @@ public class InstanceContainer
         return Optional.empty();
     }
 
-    public void addInstance(ExecutionStatus executionStatus, String conceptName, String instanceName, boolean isMutable)
+    public Optional<GenericInstance> addInstance(ExecutionStatus executionStatus, String conceptName, String instanceName, boolean isMutable)
     {
         if (!conceptContainer.doesConceptExist(conceptName))
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "there is no concept with the name \"" + "\", please define it first");
-            return;
+            return Optional.empty();
         }
-        instanceKB.addInstance(conceptName, instanceName, isMutable, conceptContainer.getAllFieldDiscriptions(conceptName));
+        SingleInstance newInstance = instanceKB.addInstance(conceptName, instanceName, isMutable, conceptContainer.getAllFieldDiscriptions(conceptName));
+        return Optional.of(GenericInstance.WrapAsGenericInstance(newInstance));
         //GenericInstance instance = GenericInstance.WrapAsGenericInstance(conceptName, instanceName, conceptContainer.getAllFieldDiscriptions(conceptName), isMutable);
-
         //addInstance(executionStatus, instance);
     }
 

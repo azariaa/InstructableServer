@@ -32,7 +32,6 @@ public class ActionResponse //extends RuntimeException
                 learningSentence = actionResponse.learningSentence;
             if (!actionResponse.isSuccess())
             {
-                //this actually never happens, since in case of failure an exception is raised. (this is problematic).
                 success = false;
                 break;
             }

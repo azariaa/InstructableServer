@@ -112,7 +112,7 @@ public class InstanceKB
 
     }
 
-    public void addInstance(String conceptName, String instanceName, boolean isMutable, List<FieldDescription> fieldDiscriptionList)
+    public SingleInstance addInstance(String conceptName, String instanceName, boolean isMutable, List<FieldDescription> fieldDiscriptionList)
     {
         SingleInstance singleInstance = SingleInstance.createNewInstance(userId, conceptName, instanceName, isMutable, fieldDiscriptionList); //also updates DB
         //GenericInstance instance = GenericInstance.WrapAsGenericInstance(singleInstance);
@@ -122,5 +122,6 @@ public class InstanceKB
             conceptToInstance.put(conceptName, new HashMap<>());
         }
         conceptToInstance.get(conceptName).put(instanceName, singleInstance);
+        return  singleInstance;
     }
 }

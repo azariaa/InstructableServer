@@ -12,7 +12,8 @@ public class OutEmailCommandController
 {
     private String myEmail;
     InstanceContainer instanceContainer;
-    int numOfEmailsSent = 0;
+    int numOfEmailsSent = 0; //TODO: should be retrieved from the DB
+    int numOfDrafts = 0; //TODO: should be retrieved from the DB
     IEmailSender emailSender;
 
     OutEmailCommandController(String myEmail, ConceptContainer conceptContainer, InstanceContainer instanceContainer, IEmailSender emailSender)
@@ -53,9 +54,9 @@ public class OutEmailCommandController
                 sendThisEmail(executionStatus, email.get());
                 if (executionStatus.noError())
                 {
-                    numOfEmailsSent++;
                     instanceContainer.setMutability(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName, false);
-                    instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName, "sent" + numOfEmailsSent);
+                    instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName, getCurrentSentName());
+                    numOfEmailsSent++;
                 }
             }
         }
@@ -68,20 +69,69 @@ public class OutEmailCommandController
 
     public void createNewEmail(ExecutionStatus executionStatus)
     {
-        //first delete old one if exists.
+        //first rename old one to draft if exists.
+        Optional<GenericInstance> emailBeingComposed = instanceContainer.getInstance(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
+        if (emailBeingComposed.isPresent())
+        {
+            instanceContainer.renameInstance(new ExecutionStatus(),emailBeingComposed.get().getConceptName(), emailBeingComposed.get().getName(), getCurrentDraftName());
+            numOfDrafts++;
+            //instanceContainer.deleteInstance(new ExecutionStatus(), emailBeingComposed.get());
+        }
+        //now create a new one
+        new OutgoingEmail(executionStatus, instanceContainer, myEmail);
+    }
+
+    /**
+     *
+     * @param executionStatus
+     * @param restoreFromDraft true for restore from draft, false for restore from sent
+     */
+
+    public void restoreEmailFrom(ExecutionStatus executionStatus, boolean restoreFromDraft)
+    {
+        //first delete current email
         Optional<GenericInstance> emailBeingComposed = instanceContainer.getInstance(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
         if (emailBeingComposed.isPresent())
         {
             instanceContainer.deleteInstance(new ExecutionStatus(), emailBeingComposed.get());
         }
 
-        //now create a new one
-        new OutgoingEmail(executionStatus, instanceContainer, myEmail);
+        if (restoreFromDraft)
+        {
+            if (numOfDrafts > 0)
+            {
+                numOfDrafts--;
+                instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, getCurrentDraftName(), OutgoingEmail.strOutgoingEmailTypeAndName);
+            }
+            else
+                executionStatus.add(ExecutionStatus.RetStatus.error, "no draft found");
+        }
+        else //restoreFromSent
+        {
+            if (numOfEmailsSent > 0)
+            {
+                numOfEmailsSent--;
+                instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, getCurrentSentName(), OutgoingEmail.strOutgoingEmailTypeAndName);
+            }
+            else
+                executionStatus.add(ExecutionStatus.RetStatus.error, "no sent email found");
+        }
     }
+
 
     public List<String> changeToRelevantComposedEmailFields(List<String> allEmailFields)
     {
         allEmailFields.remove(EmailMessage.senderStr);
         return allEmailFields;
+    }
+
+    private String getCurrentSentName()
+    {
+        return "sent" + numOfEmailsSent;
+    }
+
+    private String getCurrentDraftName()
+    {
+        return "draft" + numOfDrafts;
     }
 }

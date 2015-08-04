@@ -12,6 +12,7 @@ create name for david,"(createInstanceByFullNames name (stringNoun ""david""))"
 set body to glue,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""glue""))"
 set subject to party,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""party""))"
 set subject to green,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""green""))"
+set subject to orange,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""orange""))"
 yes,(yes)
 ok,(yes)
 put this is a test in body,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""this is a test""))"
@@ -154,3 +155,5 @@ create new mail with current email's sender as recipient,(doSeq (createInstanceB
 create new email using the sender as the recipient,(doSeq (createInstanceByConceptName outgoing_email) (setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByFieldName sender))))
 I want to teach you what to do when I ask you to send an email and go over, (teachNewCommand)
 teach a very long sentence which describes what the agent should do when I type swipe, (teachNewCommand)
+undo, (undo)
+undo last command, (undo)

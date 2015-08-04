@@ -26,7 +26,7 @@ import java.util.Optional;
 public class TestWithParser
 {
     static boolean testingMode = true;
-    static String fileName = "Jul09test.txt";
+    static String fileName = "Aug04test.txt";
     //static final int waitForLearning = 4000;//not required any more
 
     public static void main(String[] args) throws Exception
@@ -75,6 +75,8 @@ public class TestWithParser
 
         testSimplifier.userSays(new String[] {"learn a new command","cancel"});
         testSimplifier.userSays(new String[] {"new command","make bob the recipient","cancel"});
+
+        testSimplifier.userSays(new String[] {"create new email", "set subject to hello", "set subject to good-bye", "create new email", "undo", "read outgoing email", "undo last command"});
 
         testHelpers.endTest();
         //emailSomeoneSomeText()

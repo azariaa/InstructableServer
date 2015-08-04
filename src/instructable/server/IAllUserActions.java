@@ -121,6 +121,11 @@ public interface IAllUserActions
 
     ActionResponse replyTo(InfoForCommand infoForCommand);
 
+    ActionResponse undo(InfoForCommand infoForCommand);
+    ActionResponse removeLastLearnedCommand(InfoForCommand infoForCommand); //same as undo, but only if in learning mode
+    //deleteLearnedCommand ??? how to do this?
+
+
 
     //future work: ActionResponse undoLastAction(InfoForCommand infoForCommand);
 

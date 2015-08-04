@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import static instructable.server.TextFormattingUtils.noEmailFound;
 import static instructable.server.TextFormattingUtils.userFriendlyList;
@@ -23,6 +24,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     ICommandsToParser commandsToParser;
     OutEmailCommandController outEmailCommandController;
     InboxCommandController inboxCommandController;
+    CommandHistory commandHistory;
 
     static private final String ambiguousEmailInstanceName = "email"; //can either be outgoing email, or inbox
     static private final String yesExpression = "(yes)";
@@ -34,6 +36,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
     public TopDMAllActions(String userEmailAddress, String userId, ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses)
     {
+        commandHistory = new CommandHistory();
         this.userEmailAddress = userEmailAddress;
         this.usePendingResponses = usePendingResponses;
         conceptContainer = new ConceptContainer(userId);
@@ -42,7 +45,9 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         inboxCommandController = new InboxCommandController(conceptContainer, instanceContainer);
         this.commandsToParser = commandsToParser;
         internalState = new InternalState();
+        commandHistory.startRecording();
     }
+
 
     @Override
     public void addEmailMessageToInbox(EmailInfo emailMessage)
@@ -95,10 +100,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             internalLearningStateMode = InternalLearningStateMode.pendOnLearning;
         }
+
         public void learnNextCommand()
         {
             internalLearningStateMode = internalLearningStateMode.learnNext;
         }
+
         public boolean shouldLearnedNext()
         {
             return internalLearningStateMode == internalLearningStateMode.learnNext;
@@ -118,7 +125,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             return lastCommandOrLearningCommand;
         }
 
-        public void userGaveCommand(InfoForCommand infoForCommand, boolean success)
+        public void userGaveCommand(InfoForCommand infoForCommand, boolean success, boolean isExecutingUndoNow)
         {
             pendingOnEmailCreation = false;
             if (internalLearningStateMode == InternalLearningStateMode.learning)
@@ -127,7 +134,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 //TODO: not the best way to do this, since some actions in the same expression may succeed and some not. also what if the user end the last command with "and that's it"?
                 if (success)
                 {
-                    if(infoForCommand.hashCode() != lastInfoForCommandHashCode)
+                    if ((infoForCommand.hashCode() != lastInfoForCommandHashCode)
+                            && !isExecutingUndoNow) //make sure we don't add the "undo" command
                     {
                         lastInfoForCommandHashCode = infoForCommand.hashCode();
                         expressionsLearnt.add(infoForCommand.expression);
@@ -135,7 +143,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 }
                 else //if failed need to remove current expression from list of expressions
                 {
-                    if(infoForCommand.hashCode() == lastInfoForCommandHashCode)
+                    if (infoForCommand.hashCode() == lastInfoForCommandHashCode)
                     {
                         lastInfoForCommandHashCode = 0;
                         expressionsLearnt.remove(expressionsLearnt.size() - 1); //remove last
@@ -147,6 +155,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             {
                 internalLearningStateMode = InternalLearningStateMode.none;
                 lastCommandOrLearningCommand = infoForCommand.userSentence;
+            }
+        }
+
+        public void removeLastCommandIfLearning()
+        {
+            if (internalLearningStateMode == InternalLearningStateMode.learning && !expressionsLearnt.isEmpty())
+            {
+                expressionsLearnt.remove(expressionsLearnt.size() - 1);
             }
         }
 
@@ -195,7 +211,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
         outEmailCommandController.sendEmail(executionStatus);
-        ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
         if (executionStatus.isError())
         {
             if (!outEmailCommandController.isAnEmailBeingComposed())
@@ -206,13 +221,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
 
         StringBuilder response = new StringBuilder();
-        return TextFormattingUtils.testOkAndFormat(infoForCommand,
+        return testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
                 Optional.of("Email sent successfully."),
                 false,//true,
-                internalState);
+                Optional.of( () -> createNewEmailOrRestore(infoForCommand,true,false) ));
     }
 
     @Override
@@ -236,11 +251,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             {
                 infoForCommand.expression = ExpressionParser.expression2().parseSingleExpression(createEmailExpression);
             }
-            //composeEmail(infoForCommand);
-            return createInstanceByConceptName(infoForCommand, OutgoingEmail.strOutgoingEmailTypeAndName);
+            return createNewEmailOrRestore(infoForCommand, false, true);//createInstanceByConceptName(infoForCommand, OutgoingEmail.strOutgoingEmailTypeAndName);//identical
         }
         else if (internalState.isPendingOnLearning())
         {
+            commandHistory.push(infoForCommand, () -> cancel(infoForCommand));
             String lastCommand = internalState.startLearning();
             return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first?", true, Optional.empty());
         }
@@ -303,13 +318,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 }
             }
         }
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
                 Optional.of("Got instance \"" + instanceName + "\" of concept \"" + conceptName + "\"."),
                 false,
-                internalState);
+                Optional.empty()); //nothing to undo here
         if (actionResponse.isSuccess())
         {
             actionResponse.addInstance(instance.get());
@@ -323,13 +338,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<FieldHolder> field = instance.getField(executionStatus, fieldName);
 
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
                 Optional.of("Got field \"" + fieldName + "\" from instance \"" + instance.getName() + "\"."),
                 false,
-                internalState);
+                Optional.empty()); //nothing to undo here
         if (actionResponse.isSuccess())
         {
             actionResponse.addField(field.get());
@@ -343,13 +358,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.empty(), Optional.empty(), false, infoForCommand.userSentence);
 
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
                 Optional.of("Got instance \"" + (instance.isPresent() ? instance.get().getName() : "") + "\"."),
                 false,
-                internalState);
+                Optional.empty()); //nothing to undo here
         if (actionResponse.isSuccess())
         {
             actionResponse.addInstance(instance.get());
@@ -371,13 +386,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty(), false, infoForCommand.userSentence);
 
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
                 Optional.of("Got instance \"" + instanceName + "\"."),
                 false,
-                internalState);
+                Optional.empty()); //nothing to undo here
         if (actionResponse.isSuccess())
         {
             actionResponse.addInstance(instance.get());
@@ -420,7 +435,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly, infoForCommand.userSentence);
-        if (instance.isPresent() && instance.get().getConceptName().equals(OutgoingEmail.strOutgoingEmailTypeAndName)&& !instanceName.isPresent() && !mutableOnly) //since the user didn't need mutable, and didn't explicitly mention the outgoing email, he probably wants the inbox
+        if (instance.isPresent() && instance.get().getConceptName().equals(OutgoingEmail.strOutgoingEmailTypeAndName) && !instanceName.isPresent() && !mutableOnly) //since the user didn't need mutable, and didn't explicitly mention the outgoing email, he probably wants the inbox
         {
             instanceName = Optional.of(inboxCommandController.getCurrentEmailName());
             instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly, infoForCommand.userSentence);
@@ -434,13 +449,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 successStr = "Got field \"" + fieldName + "\" from instance \"" + field.get().getParentInstanceName() + "\".";
         }
 
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
                 Optional.of(successStr),
                 false,
-                internalState);
+                Optional.empty()); //nothing to undo here
         if (actionResponse.isSuccess())
         {
             actionResponse.addField(field.get());
@@ -483,20 +498,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         return failWithMessage(infoForCommand, "there is no previously evaluated field");
     }
 
-    private ActionResponse failWithMessage(InfoForCommand infoForCommand, String sentence)
-    {
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        executionStatus.add(ExecutionStatus.RetStatus.error, sentence);
-
-        return TextFormattingUtils.testOkAndFormat(infoForCommand,
-                executionStatus,
-                true,
-                true,
-                Optional.empty(), //will fail for sure
-                false,
-                internalState);
-    }
-
     @Override
     public ActionResponse evalField(InfoForCommand infoForCommand, FieldHolder field)
     {
@@ -504,13 +505,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         requestedField = field.getFieldVal();
 
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 new ExecutionStatus(),
                 true,
                 true,
                 Optional.of("It is: " + FieldHolder.fieldFromJSonForUser(requestedField)),
                 false,//changed to false, but this might be ok being true, (all other except unknownCommand are false.)
-                internalState
+                Optional.empty() //nothing to undo here
         );
         if (actionResponse.isSuccess())
             previousFieldEval = Optional.of(requestedField);
@@ -534,13 +535,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             }
         }
 
-        return TextFormattingUtils.testOkAndFormat(infoForCommand,
+        return testOkAndFormat(infoForCommand,
                 new ExecutionStatus(),
                 true,
                 true,
                 Optional.of(instanceContent.toString()),
                 false, //shouldn't fail
-                internalState
+                Optional.empty() //nothing to undo here
         );
     }
 
@@ -574,9 +575,9 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse setWhatFromField(InfoForCommand infoForCommand, FieldHolder field)
     {
         String parentNiceName = field.getParentInstanceName();
-        if (parentNiceName.contains(inboxCommandController.emailMessageNameStart))
+        if (parentNiceName.contains(InboxCommandController.emailMessageNameStart))
         {
-            parentNiceName = inboxCommandController.emailMessageNameStart;
+            parentNiceName = InboxCommandController.emailMessageNameStart;
         }
         return failWithMessage(infoForCommand, "I don't know what should be set to " + parentNiceName + "'s " + field.getFieldName() + ". " +
                 "Please repeat and tell me what should be set to it (e.g. set example to " + parentNiceName + "'s " + field.getFieldName() + ")");
@@ -639,8 +640,10 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (!val.isPresent() && !jsonVal.isPresent())
         {
-            return new ActionResponse("I don't know what I should set it to, please say set "+theField.getParentInstanceName()+"'s " + theField.getFieldName()  + " to something", false, Optional.empty()); //TODO: again, what if learning
+            return new ActionResponse("I don't know what I should set it to, please say set " + theField.getParentInstanceName() + "'s " + theField.getFieldName() + " to something", false, Optional.empty()); //TODO: again, what if learning
         }
+
+        JSONObject oldVal = theField.getFieldVal();
 
         ExecutionStatus executionStatus = new ExecutionStatus();
         if (jsonVal.isPresent())
@@ -672,20 +675,19 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             successStr = "\"" + valForOutput + "\" was added to the \"" + theField.getFieldName() + "\" field in \"" + theField.getParentInstanceName() + "\".";
         }
 
-        return TextFormattingUtils.testOkAndFormat(infoForCommand,
+        return testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
                 Optional.of(successStr),
                 false,//Don't want to teach, since it might keep failing, by parsing again to the same original command
-                internalState);
-
+                Optional.of(() -> setAndAdd(infoForCommand, theField, Optional.empty(), Optional.of(oldVal), false, false)));
     }
 
     @Override
     public ActionResponse defineConcept(InfoForCommand infoForCommand, String newConceptName)
     {
-        if(InstUtils.isEmailAddress(newConceptName))
+        if (InstUtils.isEmailAddress(newConceptName))
         {
             return failWithMessage(infoForCommand, "concept names cannot be email addresses");
         }
@@ -694,13 +696,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         conceptContainer.defineConcept(executionStatus, newConceptName);
 
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
-                        executionStatus,
-                        true,
-                        true,
-                        Optional.of("Concept \"" + newConceptName + "\" was defined successfully. Please add fields to it."),
-                        false,
-                        internalState);
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
+                executionStatus,
+                true,
+                true,
+                Optional.of("Concept \"" + newConceptName + "\" was defined successfully. Please add fields to it."),
+                false,
+                Optional.of(() -> undefineConcept(infoForCommand, newConceptName)));
         if (actionResponse.isSuccess())
         {
             commandsToParser.newConceptDefined(newConceptName);
@@ -739,7 +741,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse addFieldToConceptWithType(InfoForCommand infoForCommand, String conceptName, String fieldName, PossibleFieldType possibleFieldType, boolean isList, boolean mutable)
     {
-        if(InstUtils.isEmailAddress(fieldName))
+        if (InstUtils.isEmailAddress(fieldName))
         {
             return failWithMessage(infoForCommand, "field names cannot be email addresses");
         }
@@ -755,13 +757,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (executionStatus.noError())
             instanceContainer.fieldAddedToConcept(executionStatus, conceptName, fieldDescription);
 
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
                 Optional.of("Field \"" + fieldName + "\" was added to concept \"" + conceptName + "\"."),
                 false,
-                internalState);
+                Optional.of(() -> removeFieldFromConcept(infoForCommand, conceptName, fieldName)));
         if (actionResponse.isSuccess())
         {
             commandsToParser.newFieldDefined(fieldName);
@@ -782,13 +784,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (executionStatus.noError())
             instanceContainer.fieldRemovedFromConcept(executionStatus, conceptName, fieldName);
 
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
                 Optional.of("Field \"" + fieldName + "\" was removed from concept \"" + conceptName + "\"."),
                 false,
-                internalState);
+                Optional.of(() -> failWithMessage(infoForCommand, "undo is currently not supported for delete commands")));//could just add the field, but this function also deletes all usages of this field.
         if (actionResponse.isSuccess())
         {
             //if this field doesn't appear at any other concept
@@ -804,48 +806,74 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName) ||
                 conceptName.equals(ambiguousEmailInstanceName)) //this is actually an instance name, but user's intention is clear.
         {
-            return createNewEmail(infoForCommand);
+            return createNewEmailOrRestore(infoForCommand, false, true);
         }
         return failWithMessage(infoForCommand, "creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name)");
     }
 
-    private ActionResponse createNewEmail(InfoForCommand infoForCommand)
+    /**
+     *
+     * @param restore undo an email creation or email sent
+     * @param restoreFromDraft if true restore from draft, if false restore from sent email
+     * @return
+     */
+    private ActionResponse createNewEmailOrRestore(InfoForCommand infoForCommand, boolean restore, boolean restoreFromDraft)
     {
         String conceptName = OutgoingEmail.strOutgoingEmailTypeAndName;
         ExecutionStatus executionStatus = new ExecutionStatus();
-        outEmailCommandController.createNewEmail(executionStatus);
-        List<String> emailFieldNames = outEmailCommandController.changeToRelevantComposedEmailFields(conceptContainer.getAllFieldNames(conceptName));
+        if (restore)
+        {
+            outEmailCommandController.restoreEmailFrom(executionStatus, restoreFromDraft);
+        }
+        else
+        {
+            outEmailCommandController.createNewEmail(executionStatus);
+        }
 
-        return TextFormattingUtils.testOkAndFormat(infoForCommand,
+        String successSentence;
+        if (restore)
+        {
+            if(restoreFromDraft)
+                successSentence = "Draft restored successfully.";
+            else
+                successSentence = "Sent email restored successfully (but was still sent).";
+        }
+        else
+        {
+            List<String> emailFieldNames = outEmailCommandController.changeToRelevantComposedEmailFields(conceptContainer.getAllFieldNames(conceptName));
+            successSentence = "Composing new email. " + "\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + ".";
+        }
+
+        return testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
                 true,
-                Optional.of("Composing new email. " + "\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + "."),
+                Optional.of(successSentence),
                 false,//true,
-                internalState);
+                Optional.of(() -> createNewEmailOrRestore(infoForCommand, !restore, restoreFromDraft)));
     }
 
     @Override
     public ActionResponse createInstanceByFullNames(InfoForCommand infoForCommand, String conceptName, String newInstanceName)
     {
-        if(InstUtils.isEmailAddress(newInstanceName))
+        if (InstUtils.isEmailAddress(newInstanceName))
         {
             return failWithMessage(infoForCommand, "instance names cannot be email addresses");
         }
         ExecutionStatus executionStatus = new ExecutionStatus();
         if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
         {
-            return createNewEmail(infoForCommand);
+            return createNewEmailOrRestore(infoForCommand, false, true);
         }
-        instanceContainer.addInstance(executionStatus, conceptName, newInstanceName, true);
+        Optional<GenericInstance> instanceAdded = instanceContainer.addInstance(executionStatus, conceptName, newInstanceName, true);
 
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
                 Optional.of("Instance \"" + newInstanceName + "\" (of concept \"" + conceptName + "\") was created. " + listFieldsOfConcept(conceptName)), //listFieldsOfConcept is safe.
                 false,
-                internalState);
+                Optional.of(() -> deleteInstance(infoForCommand, instanceAdded.get())));//instanceAdded should contain a value if no error
         if (actionResponse.isSuccess())
         {
             commandsToParser.newInstanceDefined(newInstanceName);
@@ -856,8 +884,9 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
     /**
      * safe call.
+     *
      * @param conceptName
-     * @return  returns empty string if concept does not exist
+     * @return returns empty string if concept does not exist
      */
     private String listFieldsOfConcept(String conceptName)
     {
@@ -889,7 +918,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (internalState.shouldLearnedNext())
         {
-            internalState.userGaveCommand(infoForCommand,false);
+            internalState.userGaveCommand(infoForCommand, false, false);
             internalState.pendOnLearning();
             return yes(infoForCommand);
         }
@@ -897,13 +926,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         executionStatus.add(ExecutionStatus.RetStatus.error, "I don't understand");
 
-        return TextFormattingUtils.testOkAndFormat(infoForCommand,
+        return testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
                 Optional.empty(), //will fail anyway, because added error above.
                 true,
-                internalState);
+                Optional.empty());//shouldn't be used because failed
     }
 
     @Override
@@ -959,7 +988,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                         commandBeingLearnt,
                         commandsLearnt,
                         Optional.empty()
-                        );
+                );
                 return new ActionResponse(learningSuccessStr, true, Optional.empty());
             }
         }
@@ -987,7 +1016,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse undefineConcept(InfoForCommand infoForCommand, String conceptName)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
-        if (conceptName.equals(IncomingEmail.incomingEmailType)|| conceptName.equals(ambiguousEmailInstanceName) || conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+        if (conceptName.equals(IncomingEmail.incomingEmailType) || conceptName.equals(ambiguousEmailInstanceName) || conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "emails concepts are built-in and cannot be undefined");
         }
@@ -998,13 +1027,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             instanceContainer.conceptUndefined(conceptName);
         }
 
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
                 Optional.of("concept \"" + conceptName + "\" was undefined and all its instances were deleted."), //TODO: very harsh, should ask if sure before doing this.
                 false,
-                internalState);
+                Optional.of(() -> failWithMessage(infoForCommand, "undo is currently not supported for delete commands")));
         if (actionResponse.isSuccess())
         {
             commandsToParser.undefineConcept(conceptName);
@@ -1018,24 +1047,24 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         String instanceName = instance.getName();
         String conceptName = instance.getConceptName();
         ExecutionStatus executionStatus = new ExecutionStatus();
-        if (instance.getConceptName().equals(IncomingEmail.incomingEmailType)|| conceptName.equals(ambiguousEmailInstanceName))
+        if (instance.getConceptName().equals(IncomingEmail.incomingEmailType) || conceptName.equals(ambiguousEmailInstanceName))
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "emails in the inbox can't be deleted. Instead move to the next email (say \"next email\")");
         }
         if (executionStatus.noError())
             instanceContainer.deleteInstance(executionStatus, instance);
 
-        ActionResponse actionResponse = TextFormattingUtils.testOkAndFormat(infoForCommand,
+        ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 executionStatus,
                 true,
                 true,
                 Optional.of("Instance \"" + instanceName + "\" of concept \"" + conceptName + "\" was deleted."),
                 false,
-                internalState);
+                Optional.of(() -> failWithMessage(infoForCommand, "undo is currently not supported for delete commands"))); //in order to support "undo" of delete command, may create an additional column in the DB of deleted which holds which command deleted it.
         if (actionResponse.isSuccess())
         {
             //if this field doesn't appear at any other concept
-            if (!instanceContainer.getMostPlausibleInstance(new ExecutionStatus(),conceptContainer.getAllConceptNames(),Optional.of(instanceName),false).isPresent())
+            if (!instanceContainer.getMostPlausibleInstance(new ExecutionStatus(), conceptContainer.getAllConceptNames(), Optional.of(instanceName), false).isPresent())
                 commandsToParser.removeInstance(instanceName);
         }
         return actionResponse;
@@ -1045,13 +1074,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse next(InfoForCommand infoForCommand, String instanceName)
     {
-        return  nextAndPrev(infoForCommand, instanceName, true);
+        return nextAndPrev(infoForCommand, instanceName, true);
     }
 
     @Override
     public ActionResponse previous(InfoForCommand infoForCommand, String instanceName)
     {
-        return  nextAndPrev(infoForCommand, instanceName, false);
+        return nextAndPrev(infoForCommand, instanceName, false);
     }
 
     private ActionResponse nextAndPrev(InfoForCommand infoForCommand, String instanceName, boolean wantsNext)
@@ -1067,23 +1096,134 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
             instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName()); //just touching it to update last instance being touched (for "it", etc.).
 
-            return TextFormattingUtils.testOkAndFormat(infoForCommand,
+            return testOkAndFormat(infoForCommand,
                     executionStatus,
                     true,
                     true,
-                    Optional.of("Set to "+nextOrPrev+" incoming email successfully."),
+                    Optional.of("Set to " + nextOrPrev + " incoming email successfully."),
                     false,
-                    internalState);
+                    Optional.of(() -> nextAndPrev(infoForCommand, instanceName, !wantsNext)));
         }
-        return failWithMessage(infoForCommand, "I don't know how to give you the "+nextOrPrev+" " + instanceName);
+        return failWithMessage(infoForCommand, "I don't know how to give you the " + nextOrPrev + " " + instanceName);
     }
 
     @Override
     public ActionResponse replyTo(InfoForCommand infoForCommand)
     {
-        String userSaid =infoForCommand.userSentence.toLowerCase();
+        String userSaid = infoForCommand.userSentence.toLowerCase();
         if (userSaid.equals("hi") || userSaid.startsWith("hello"))
             return new ActionResponse("Sorry, but I don't do small-talk. Please give me a command.", true, Optional.empty());
         return new ActionResponse("Don't know what to say", false, Optional.empty());
+    }
+
+    @Override
+    public ActionResponse undo(InfoForCommand infoForCommand)
+    {
+        internalState.removeLastCommandIfLearning(); //undo learning.
+        Optional<ActionResponse> response = commandHistory.undo();
+        if (response.isPresent())
+            return response.get();
+        return failWithMessage(infoForCommand, "undo failed.");
+    }
+
+    @Override
+    public ActionResponse removeLastLearnedCommand(InfoForCommand infoForCommand)
+    {
+        if (internalState.isInLearningMode())
+            return undo(infoForCommand);
+        return failWithMessage(infoForCommand, "I'm not learning anything right now.");
+    }
+
+
+    private ActionResponse failWithMessage(InfoForCommand infoForCommand, String sentence)
+    {
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        executionStatus.add(ExecutionStatus.RetStatus.error, sentence);
+
+        return testOkAndFormat(infoForCommand,
+                executionStatus,
+                true,
+                true,
+                Optional.empty(), //will fail for sure
+                false,
+                Optional.empty() //shouldn't be used because failed
+        );
+    }
+
+
+    /*
+        internalState can be null if askToTeachIfFails is false
+        returns success.
+     */
+    public ActionResponse testOkAndFormat(InfoForCommand infoForCommand,
+                                          ExecutionStatus executionStatus,
+                                          boolean failWithWarningToo,
+                                          boolean ignoreComments,
+                                          Optional<String> optionalSuccessSentence,
+                                          boolean askToTeachIfFails,
+                                          Optional<Callable<ActionResponse>> callableForUndo)
+    {
+        StringBuilder response = new StringBuilder();
+        Optional<String> learningSentence = Optional.empty();
+        boolean isInLearningPhase = internalState.isInLearningMode();
+        ExecutionStatus.RetStatus retStatus = executionStatus.getStatus();
+        boolean success = retStatus == ExecutionStatus.RetStatus.ok || retStatus == ExecutionStatus.RetStatus.comment ||
+                (retStatus == ExecutionStatus.RetStatus.warning && !failWithWarningToo);
+
+        internalState.userGaveCommand(infoForCommand, success, commandHistory.isExecutingAnUndoNow()); //this also clears pending on learning or  email creation
+
+        if (retStatus == ExecutionStatus.RetStatus.error || retStatus == ExecutionStatus.RetStatus.warning ||
+                (retStatus == ExecutionStatus.RetStatus.comment && !ignoreComments))
+        {
+            ExecutionStatus.StatusAndMessage statusAndMessage = executionStatus.getStatusAndMessage();
+            if (statusAndMessage.message.isPresent())
+            {
+                if (success)
+                {
+                    response.append("I see that " + statusAndMessage.message.get() + ". ");
+                }
+                else
+                {
+                    response.append("Sorry, but " + statusAndMessage.message.get() + ".");
+
+                    if (isInLearningPhase)
+                    {
+                        learningSentence = Optional.of("What should I do instead (when executing: \"" + internalState.lastCommandOrLearningCommand + "\")?");
+                    }
+                }
+            }
+            else if (executionStatus.isError())
+            {
+                response.append("There was some kind of error.");
+            }
+        }
+
+        if (!success && askToTeachIfFails && !isInLearningPhase)
+        {
+            response.append("\nWould you like to teach me what to do in this case (either say yes or simply ignore this question)?");
+            internalState.pendOnLearning();
+        }
+
+        if (success && optionalSuccessSentence.isPresent())
+        {
+            response.append(optionalSuccessSentence.get());
+            if (isInLearningPhase)
+                learningSentence = Optional.of("What shall I do next (when executing: \"" + internalState.lastCommandOrLearningCommand + "\")?");
+        }
+
+        if (learningSentence.isPresent())
+        {
+            if (internalState.shouldFailLearning())
+                learningSentence = Optional.of("I didn't learn anything. If you want to teach me what to do when you say \"" + internalState.lastCommandOrLearningCommand + "\", say it again, and answer \"yes\" when I ask if you want to teach me.");
+            else if (internalState.isLearningForTooLong() || internalState.userHavingTrouble())
+            {
+                learningSentence = Optional.of(learningSentence.get() + "\nI noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want me to end and learn this new command, say \"end\". If you want me to cancel this command say \"cancel\".");
+            }
+        }
+
+        if (success && callableForUndo.isPresent())
+            commandHistory.push(infoForCommand, callableForUndo.get());
+
+        return new ActionResponse(response.toString(), success, learningSentence);
     }
 }

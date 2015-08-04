@@ -61,7 +61,13 @@ display,{what,read}
 email,{email_ambiguous}
 mail,{email_ambiguous,email}
 message,{email_ambiguous,email}
-last,{previous} //last email
+last,{previous} //last email //last learned
+previously,{previous}
+learnt,{learned} //previously learnt command
+undo,{undo_command,undo_learned}
+cancel,{undo_command,undo_learned} //cancel last command
+remove,{undo_command,undo_learned}
+"go back",{undo}
 address,{recipient}
 "recipient list",{recipient}
 title,{subject}

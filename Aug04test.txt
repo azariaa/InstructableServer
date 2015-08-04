@@ -285,4 +285,29 @@ S: Great! When you say, for example: "make bob the recipient", what shall I do f
 U: cancel
 S: Ok, I won't learn it.
 
+U: create new email
+S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
+
+U: set subject to hello
+S: The "subject" field in "outgoing email" was set to: "hello".
+
+U: set subject to good-bye
+S: The "subject" field in "outgoing email" was set to: "good-bye".
+
+U: create new email
+S: Composing new email. "outgoing email" fields are: subject, body and recipient list.
+
+U: undo
+S: Draft restored successfully.
+
+U: read outgoing email
+S: instance: "outgoing email" (of concept "outgoing email").
+S: recipient list: <empty>
+S: sender: you@myworkplace.com
+S: subject: good-bye
+S: body: 
+
+U: undo last command
+S: The "subject" field in "outgoing email" was set to: "hello".
+
 
