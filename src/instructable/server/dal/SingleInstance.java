@@ -270,7 +270,6 @@ public class SingleInstance
         try (
                 Connection connection = InstDataSource.getDataSource().getConnection();
                 PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.instancesTableName + " where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
-
         )
         {
             pstmt.setString(1, userId);
@@ -286,8 +285,7 @@ public class SingleInstance
         //delete all fields that exist
         try (
                 Connection connection = InstDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.instancesTableName + " where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
-
+                PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.instanceValTableName + " where " + DBUtils.userIdColName + "=?" + " and " + DBUtils.conceptColName + "=?" + " and " + DBUtils.instanceColName + "=?");
         )
         {
             pstmt.setString(1, userId);

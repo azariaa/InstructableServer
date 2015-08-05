@@ -89,17 +89,11 @@ public class OutEmailCommandController
 
     public void restoreEmailFrom(ExecutionStatus executionStatus, boolean restoreFromDraft)
     {
-        //first delete current email
-        Optional<GenericInstance> emailBeingComposed = instanceContainer.getInstance(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
-        if (emailBeingComposed.isPresent())
-        {
-            instanceContainer.deleteInstance(new ExecutionStatus(), emailBeingComposed.get());
-        }
-
         if (restoreFromDraft)
         {
             if (numOfDrafts > 0)
             {
+                deleteCurrentEmailIfExists();
                 numOfDrafts--;
                 instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, getCurrentDraftName(), OutgoingEmail.strOutgoingEmailTypeAndName);
             }
@@ -110,11 +104,22 @@ public class OutEmailCommandController
         {
             if (numOfEmailsSent > 0)
             {
+                deleteCurrentEmailIfExists();
                 numOfEmailsSent--;
                 instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, getCurrentSentName(), OutgoingEmail.strOutgoingEmailTypeAndName);
             }
             else
                 executionStatus.add(ExecutionStatus.RetStatus.error, "no sent email found");
+        }
+    }
+
+    private void deleteCurrentEmailIfExists()
+    {
+        //first delete current email
+        Optional<GenericInstance> emailBeingComposed = instanceContainer.getInstance(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
+        if (emailBeingComposed.isPresent())
+        {
+            instanceContainer.deleteInstance(new ExecutionStatus(), emailBeingComposed.get());
         }
     }
 
