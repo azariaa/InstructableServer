@@ -16,6 +16,7 @@ undo_command,(S{0}/Command{1}){0},(undo)
 undo_command,(S{0}/LastLearned{1}){0},(removeLastLearnedCommand)
 next,S{0}/InstanceName{1},(lambda $1 (next $1))
 previous,S{0}/InstanceName{1},(lambda $1 (previous $1))
+newest,S{0}/InstanceName{1},(lambda $1 (newest $1))
 "compose","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 "create","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
 compose,((S{0}/StringN{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))

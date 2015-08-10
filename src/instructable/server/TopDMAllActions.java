@@ -1085,7 +1085,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
-    public ActionResponse lastEmail(InfoForCommand infoForCommand, String instanceName)
+    public ActionResponse newest(InfoForCommand infoForCommand, String instanceName)
     {
         return nextPrevLastIdx(infoForCommand, instanceName, new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.last));
     }

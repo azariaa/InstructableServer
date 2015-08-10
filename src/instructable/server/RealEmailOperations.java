@@ -110,7 +110,7 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
     }
 
     /**
-     * @return -1 on case of error (or if inbox is empty).
+     * @return 0 on case of error (or if inbox is empty).
      */
     @Override
     public int getLastEmailIdx()
@@ -125,11 +125,11 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
             store.connect("imap.gmail.com", username, password);
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_ONLY);
-            return inbox.getMessageCount() - 1;
+            return inbox.getMessageCount(); //at least GMail starts from 1, so no need for - 1;
         } catch (MessagingException e)
         {
             e.printStackTrace();
-            return -1;
+            return 0;
         }
     }
 
