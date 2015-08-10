@@ -119,6 +119,8 @@ public interface IAllUserActions
 
     ActionResponse previous(InfoForCommand infoForCommand, String instanceName);
 
+    ActionResponse lastEmail(InfoForCommand infoForCommand, String instanceName);
+
     ActionResponse replyTo(InfoForCommand infoForCommand);
 
     ActionResponse undo(InfoForCommand infoForCommand);

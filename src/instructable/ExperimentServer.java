@@ -15,10 +15,10 @@ import java.util.logging.Logger;
 /**
  * Created by Amos Azaria on 28-May-15.
  */
-public class EmailAndExperimentServer implements HttpHandler, AgentDataAndControl.ResponseToUserListener
+public class ExperimentServer implements HttpHandler, AgentDataAndControl.ResponseToUserListener
 {
     static public final String gameIdParam = "gameId";
-    static public final String actionParam = "action";
+    static public final String actionParam = RealtimeAgentServer.actionParam;
     static public final String getTasksInfoStr = "getTasksInfo";
     static public final String newGameJoinedStr = "newGameJoined";
     static public final String sayToAgentStr = "sayToAgent";
@@ -26,13 +26,14 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
     static public final String gameScoreStr = "gameScore";
     static public final String gameTaskStr = "gameTask";
     static public final String recentTaskCompletedStr = "recentTaskCompleted";
+    static public final String resendRequested = "resendRequested";
     Logger logger;
     AgentDataAndControl agentDataAndControl;
 
     final Object mapLock = new Object();
     Map<String, ExperimentTaskController> missionsCompletedByUser = new HashMap<>();
 
-    public EmailAndExperimentServer(AgentDataAndControl agentDataAndControl)
+    public ExperimentServer(AgentDataAndControl agentDataAndControl)
     {
         this.agentDataAndControl = agentDataAndControl;
         logger = agentDataAndControl.logger;
@@ -65,7 +66,7 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
                 if (!action.equals(newGameJoinedStr))
                     logger.warning("gameId not in map, adding now. gameId:" + gameId);
                 ExperimentTaskController experimentTaskControl = newGameStarted(gameId);
-                agentDataAndControl.addNewGame(gameId, experimentTaskControl, experimentTaskControl);
+                agentDataAndControl.addNewUser(gameId, experimentTaskControl, Optional.of(experimentTaskControl), Optional.empty());
             }
             ExperimentTaskController experimentTaskController = getUserTasks(gameId).get();
             String responseToSend = "";
@@ -92,7 +93,7 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
                             responseToSend = agentDataAndControl.executeSentenceForUser(gameId, userSays);
 
                         }
-                        else if (parameters.containsKey(AgentServer.resendRequested))
+                        else if (parameters.containsKey(resendRequested))
                         {
                             responseToSend = agentDataAndControl.getPendingResponse(gameId);
                         }
@@ -150,15 +151,15 @@ public class EmailAndExperimentServer implements HttpHandler, AgentDataAndContro
 
 
     @Override
-    public void responseSentToUser(String gameId, String agentResponse, boolean success)
+    public void responseSentToUser(String userId, String agentResponse, boolean success)
     {
         if (success)
         {
             ExperimentTaskController experimentTaskController;
             synchronized (mapLock)
             {
-                if (missionsCompletedByUser.containsKey(gameId))
-                    experimentTaskController = missionsCompletedByUser.get(gameId);
+                if (missionsCompletedByUser.containsKey(userId))
+                    experimentTaskController = missionsCompletedByUser.get(userId);
                 else
                     return;
             }

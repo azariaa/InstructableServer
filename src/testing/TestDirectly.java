@@ -84,7 +84,7 @@ public class TestDirectly
                     {
                         //do nothing
                     }
-                }, false);
+                }, false, Optional.empty());
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
 

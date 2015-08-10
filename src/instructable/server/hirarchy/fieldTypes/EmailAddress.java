@@ -23,8 +23,17 @@ public class EmailAddress extends FieldType
             return;
         }
 
+        String onlyInsideAngleBrackets = val;
+        if (val.contains("<") && val.contains(">") && (val.indexOf(">") > val.indexOf("<")))
+        {
+            onlyInsideAngleBrackets = val.substring(val.indexOf("<")+1, val.indexOf(">"));
+            if (InstUtils.isEmailAddress(onlyInsideAngleBrackets))
+                fieldVal = onlyInsideAngleBrackets;
+        }
+
+
         //tries to fix email address, especially useful for speech input.
-        String tryToCorrect = val.replace(" at ", " @ ");
+        String tryToCorrect = onlyInsideAngleBrackets.replace(" at ", " @ ");
         tryToCorrect = tryToCorrect.replace(" dot ", " . ");
         tryToCorrect = tryToCorrect.replaceAll("[;,]","").trim();
         if (InstUtils.isEmailAddress(tryToCorrect))

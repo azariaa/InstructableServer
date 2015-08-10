@@ -1,5 +1,6 @@
 package instructable.server;
 
+import com.google.common.base.Preconditions;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.hirarchy.*;
@@ -34,7 +35,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     Optional<JSONObject> previousFieldEval = Optional.empty();
     boolean usePendingResponses = true;
 
-    public TopDMAllActions(String userEmailAddress, String userId, ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses)
+    public TopDMAllActions(String userEmailAddress, String userId, ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses, Optional<IEmailFetcher> emailFetcher)
     {
         commandHistory = new CommandHistory();
         this.userEmailAddress = userEmailAddress;
@@ -42,7 +43,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         conceptContainer = new ConceptContainer(userId);
         instanceContainer = new InstanceContainer(conceptContainer, userId);
         outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer, emailSender);
-        inboxCommandController = new InboxCommandController(conceptContainer, instanceContainer);
+        inboxCommandController = new InboxCommandController(conceptContainer, instanceContainer, emailFetcher);
         this.commandsToParser = commandsToParser;
         internalState = new InternalState();
         commandHistory.startRecording();
@@ -1074,25 +1075,70 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse next(InfoForCommand infoForCommand, String instanceName)
     {
-        return nextAndPrev(infoForCommand, instanceName, true);
+        return nextPrevLastIdx(infoForCommand, instanceName,  new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.next));
     }
 
     @Override
     public ActionResponse previous(InfoForCommand infoForCommand, String instanceName)
     {
-        return nextAndPrev(infoForCommand, instanceName, false);
+        return nextPrevLastIdx(infoForCommand, instanceName, new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.previous));
     }
 
-    private ActionResponse nextAndPrev(InfoForCommand infoForCommand, String instanceName, boolean wantsNext)
+    @Override
+    public ActionResponse lastEmail(InfoForCommand infoForCommand, String instanceName)
     {
-        String nextOrPrev = wantsNext ? "next" : "previous";
+        return nextPrevLastIdx(infoForCommand, instanceName, new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.last));
+    }
+
+    private static class CNextPrevLastIdx
+    {
+        public CNextPrevLastIdx(ENextPrevLastIdx nextPrevLastIdx)
+        {
+            this.nextPrevLastIdx = nextPrevLastIdx;
+        }
+
+        public CNextPrevLastIdx(ENextPrevLastIdx nextPrevLastIdx, int idx)
+        {
+            this.nextPrevLastIdx = nextPrevLastIdx;
+            this.idx = idx;
+        }
+
+        enum ENextPrevLastIdx {next, previous, last, idx};
+        public ENextPrevLastIdx nextPrevLastIdx;
+        public int idx;
+    }
+
+    private ActionResponse nextPrevLastIdx(InfoForCommand infoForCommand, String instanceName, CNextPrevLastIdx nextPrevLastIdx)
+    {
+        String nextOrPrev = nextPrevLastIdx.nextPrevLastIdx.name();
         if (instanceName.equals(ambiguousEmailInstanceName) || inboxCommandController.isInboxInstanceName(instanceName))
         {
+            final CNextPrevLastIdx opposite;
             ExecutionStatus executionStatus = new ExecutionStatus();
-            if (wantsNext)
+            if (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.next)
+            {
                 inboxCommandController.setToNextEmail(executionStatus);
-            else
+                opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.previous);
+            }
+            else if (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.previous)
+            {
                 inboxCommandController.setToPrevEmail(executionStatus);
+                opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.next);
+            }
+            else if (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.last)
+            {
+                int prevIdx = inboxCommandController.setToNewestEmail();
+                opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.idx, prevIdx);
+            }
+            else if (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.idx)
+            {
+                int prevIdx = inboxCommandController.setToIndex(nextPrevLastIdx.idx);
+                opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.idx, prevIdx);
+            }else
+            {
+                opposite = null;
+                Preconditions.checkState(opposite != null);
+            }
 
             instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName()); //just touching it to update last instance being touched (for "it", etc.).
 
@@ -1102,7 +1148,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                     true,
                     Optional.of("Set to " + nextOrPrev + " incoming email successfully."),
                     false,
-                    Optional.of(() -> nextAndPrev(infoForCommand, instanceName, !wantsNext)));
+                    Optional.of(() -> nextPrevLastIdx(infoForCommand, instanceName, opposite)));
         }
         return failWithMessage(infoForCommand, "I don't know how to give you the " + nextOrPrev + " " + instanceName);
     }

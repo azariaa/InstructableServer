@@ -26,8 +26,9 @@ import java.util.logging.*;
  */
 public class Service
 {
+    static private final boolean isExperiment = false;
     static public final int portToUse = 18892;
-    static public final String contextSayToAgent = "say";
+    static public final String contextRealtimeAgent = "realtimeAgent";
     static public final String contextEmailAndExperiment = "emailAndExperiment";
     //TODO: add userID as a mandatory field (need to clone original parser and create a new TopDMAllActions for evey new user).
     private static final Logger logger = Logger.getLogger(Service.class.getName());
@@ -76,9 +77,9 @@ public class Service
             ExecutorService executor = Executors.newFixedThreadPool(20);
             HttpServer server = HttpServer.create(new InetSocketAddress(portToListenOn), 0);
             AgentDataAndControl agentDataAndControl = new AgentDataAndControl(logger,true);
-            HttpContext agentContext = server.createContext("/" + contextSayToAgent, new AgentServer(agentDataAndControl));
+            HttpContext agentContext = server.createContext("/" + contextRealtimeAgent, new RealtimeAgentServer(agentDataAndControl));
             agentContext.getFilters().add(new ParameterFilter());
-            HttpContext emailAndExperimentContext = server.createContext("/" + contextEmailAndExperiment, new EmailAndExperimentServer(agentDataAndControl));
+            HttpContext emailAndExperimentContext = server.createContext("/" + contextEmailAndExperiment, new ExperimentServer(agentDataAndControl));
             emailAndExperimentContext.getFilters().add(new ParameterFilter());
             server.setExecutor(executor);
             server.start();

@@ -52,3 +52,4 @@ logging/
 .idea/workspace.xml
 /bin/
 .idea/
+src/testing/UserCredentials.java

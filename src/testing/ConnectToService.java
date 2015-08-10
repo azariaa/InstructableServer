@@ -1,7 +1,7 @@
 package testing;
 
-import instructable.AgentServer;
-import instructable.EmailAndExperimentServer;
+import instructable.RealtimeAgentServer;
+import instructable.ExperimentServer;
 import instructable.Service;
 
 import java.io.BufferedReader;
@@ -19,7 +19,8 @@ import java.util.Scanner;
  */
 public class ConnectToService
 {
-    static private final String pGameId = "a992";
+    static private final boolean useRealtimeAgent = true;
+    static private final String userId = "a992";
     static private final String USER_AGENT = "Mozilla/5.0";
 
     public static void main(String[] args) throws Exception
@@ -30,7 +31,7 @@ public class ConnectToService
 
     private static void initializeGameId() throws Exception
     {
-        String url = "http://localhost:"+ Service.portToUse + "/" + Service.contextEmailAndExperiment;// + "?" + Service.userSaysParam + "=" +URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
+        String url = "http://localhost:"+ Service.portToUse + "/" + (useRealtimeAgent? Service.contextRealtimeAgent : Service.contextEmailAndExperiment);// + "?" + Service.userSaysParam + "=" +URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -40,8 +41,15 @@ public class ConnectToService
         con.setRequestProperty("User-Agent", USER_AGENT);
         con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-        String parameters =  AgentServer.gameIdParam + "=" + pGameId;
-        parameters += "&" + EmailAndExperimentServer.actionParam + "=" + EmailAndExperimentServer.newGameJoinedStr;
+        String parameters =  (useRealtimeAgent? RealtimeAgentServer.userIdParam : ExperimentServer.gameIdParam) + "=" + userId;
+        parameters += "&" + (useRealtimeAgent? RealtimeAgentServer.actionParam : ExperimentServer.actionParam) + "=" + (useRealtimeAgent? RealtimeAgentServer.actionNewRealUser : ExperimentServer.newGameJoinedStr);
+        if (useRealtimeAgent)
+        {
+            parameters += "&" + RealtimeAgentServer.username + "=" + "234jhf84kj";
+            parameters += "&" + RealtimeAgentServer.encPwd + "=" + "fsk2iue73";
+            parameters += "&" + RealtimeAgentServer.email + "=" + UserCredentials.email;
+            parameters += "&" + RealtimeAgentServer.realPwd + "=" + UserCredentials.password;
+        }
 
         // Send post request
         con.setDoOutput(true);
@@ -71,7 +79,7 @@ public class ConnectToService
 
                 //print result
                 System.out.println(say);
-                if (say.contains(AgentServer.whenContainedSendAnotherRequest))
+                if (say.contains(RealtimeAgentServer.whenContainedSendAnotherRequest))
                 {
                     say = getSayToUser(null); //ask for resend
                     System.out.println(say);
@@ -93,7 +101,7 @@ public class ConnectToService
      */
     private static String getSayToUser(String userSays) throws IOException
     {
-        String url = "http://localhost:"+ Service.portToUse + "/" + Service.contextSayToAgent;// + "?" + Service.userSaysParam + "=" +URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
+        String url = "http://localhost:"+ Service.portToUse + "/" + Service.contextRealtimeAgent;// + "?" + Service.userSaysParam + "=" +URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -103,11 +111,16 @@ public class ConnectToService
         con.setRequestProperty("User-Agent", USER_AGENT);
         con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-        String parameters =  AgentServer.gameIdParam + "=" + pGameId;
+        String parameters =  RealtimeAgentServer.userIdParam + "=" + userId;
         if (userSays != null)
-            parameters += "&" + AgentServer.userSaysParam + "=" + URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
+        {
+            parameters += "&" + RealtimeAgentServer.actionParam + "=" + RealtimeAgentServer.actionUserSays;
+            parameters += "&" + RealtimeAgentServer.userSaysParam + "=" + URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
+        }
         else
-            parameters += "&" + AgentServer.resendRequested + "=true";
+        {
+            parameters += "&" + RealtimeAgentServer.actionParam + "=" + RealtimeAgentServer.actionResendRequested;
+        }
 
         // Send post request
         con.setDoOutput(true);

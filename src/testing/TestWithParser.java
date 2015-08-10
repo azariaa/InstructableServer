@@ -44,7 +44,7 @@ public class TestWithParser
 
         ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of(userId));
 
-        IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", userId, new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, false);
+        IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", userId, new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, false, Optional.empty());
 
         TestSimplifier testSimplifier = new TestSimplifier(allUserActions, testHelpers, parserSettings);
 

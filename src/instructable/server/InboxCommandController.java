@@ -9,23 +9,32 @@ import java.util.Optional;
  */
 public class InboxCommandController
 {
-    int currentIncomingEmailIdx = 0;
+    int currentIncomingEmailIdx;
     static public final String emailMessageNameStart = "inbox";
     ConceptContainer conceptContainer;
     InstanceContainer instanceContainer;
+    Optional<IEmailFetcher> emailFetcher;
 
-    public InboxCommandController(ConceptContainer conceptContainer, InstanceContainer instanceContainer)
+    public InboxCommandController(ConceptContainer conceptContainer, InstanceContainer instanceContainer, Optional<IEmailFetcher> emailFetcher)
     {
         //userId = conceptContainer.getUserId();
         this.conceptContainer = conceptContainer;
         this.instanceContainer = instanceContainer;
+        this.emailFetcher = emailFetcher;
+        if (emailFetcher.isPresent())
+            currentIncomingEmailIdx = emailFetcher.get().getLastEmailIdx();
+        else
+            currentIncomingEmailIdx = 0;
         conceptContainer.defineConcept(new ExecutionStatus(), IncomingEmail.incomingEmailType, IncomingEmail.getFieldDescriptions());
     }
 
+    /**
+     * for use only for experiments. In real world will use EmailFetcher
+     * @param emailMessage
+     */
     public void addEmailMessageToInbox(EmailInfo emailMessage)
     {
-        ExecutionStatus executionStatus = new ExecutionStatus();
-        IncomingEmail incomingEmail = new IncomingEmail(instanceContainer, emailMessage, instanceName(inboxSize()));
+        new IncomingEmail(instanceContainer, emailMessage, instanceName(inboxSize()));
     }
 
     public boolean isInboxInstanceName(String instanceName)
@@ -36,12 +45,37 @@ public class InboxCommandController
 
     public String getCurrentEmailName()
     {
+        makeSureEmailIsPresentInDb();
         return emailMessageNameStart + currentIncomingEmailIdx;
     }
 
     public Optional<GenericInstance> getCurrentIncomingEmail(ExecutionStatus executionStatus)
     {
-        return instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, instanceName(currentIncomingEmailIdx));
+        boolean ok = makeSureEmailIsPresentInDb();
+        if (ok)
+            return instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, instanceName(currentIncomingEmailIdx));
+        executionStatus.add(ExecutionStatus.RetStatus.error, "the email was not found");
+        return Optional.empty();
+    }
+
+    /**
+     *
+     * @return true is ok.
+     */
+    private boolean makeSureEmailIsPresentInDb()
+    {
+        //TODO: what happens if email was deleted? Maybe current email is different?
+        if (emailFetcher.isPresent() && !instanceContainer.getInstance(new ExecutionStatus(), IncomingEmail.incomingEmailType, instanceName(currentIncomingEmailIdx)).isPresent())
+        {
+            Optional<EmailInfo> emailInfo = emailFetcher.get().getEmailInfo(currentIncomingEmailIdx);
+            if (emailInfo.isPresent())
+            {
+                new IncomingEmail(instanceContainer, emailInfo.get(), instanceName(currentIncomingEmailIdx));
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
 
     public void setToNextEmail(ExecutionStatus executionStatus)
@@ -61,6 +95,26 @@ public class InboxCommandController
             executionStatus.add(ExecutionStatus.RetStatus.error, "there is no previous email");
     }
 
+    /**
+     * sets to last email, returns index before setting.
+     * @return
+     */
+    public int setToNewestEmail()
+    {
+        return setToIndex(inboxSize() - 1);
+    }
+
+    /**
+     * sets to index, returns index before setting.
+     * @return
+     */
+    public int setToIndex(int newIdx)
+    {
+        int previousIdx = currentIncomingEmailIdx;
+        currentIncomingEmailIdx = newIdx;
+        return previousIdx;
+    }
+
     private String instanceName(int emailIdx)
     {
         return emailMessageNameStart + emailIdx;
@@ -68,6 +122,8 @@ public class InboxCommandController
 
     private int inboxSize()
     {
+        if (emailFetcher.isPresent())
+            return emailFetcher.get().getLastEmailIdx() + 1;
         return instanceContainer.getAllInstances(IncomingEmail.incomingEmailType).size();
     }
     //TODO: delete?

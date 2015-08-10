@@ -134,7 +134,6 @@ public class SingleInstance
         {
             e.printStackTrace();
         }
-
     }
 
     public String getInstanceName()

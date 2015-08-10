@@ -19,7 +19,7 @@ public class CommandLine
     {
 
         ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
-        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, true);
+        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, true, Optional.empty());
         IAllUserActions allUserActions = topDMAllActions;
 
         CreateParserFromFiles.addInboxEmails(topDMAllActions);

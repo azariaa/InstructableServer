@@ -97,7 +97,7 @@ public class GenericInstance
         if (!theInstance.containsField(fieldToAdd.fieldName))
         {
             theInstance.fieldWasAdded(fieldToAdd);
-            return ;
+            return;
         }
     }
 
