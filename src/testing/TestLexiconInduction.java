@@ -1,20 +1,25 @@
 package testing;
 
-import com.google.common.collect.Lists;
-import com.jayantkrish.jklol.ccg.*;
-import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
-import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
-import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.CommandsToParser;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
+import instructable.server.ccg.WeightedCcgExample;
+import instructable.server.dal.CreateParserFromFiles;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import com.google.common.collect.Lists;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.UnfilledDependency;
+import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 
 public class TestLexiconInduction {
     public static void main(String[] args) throws Exception
@@ -29,16 +34,16 @@ public class TestLexiconInduction {
     	CcgParser parser = parserSettings.parser;
     	ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
     	List<String[]> exampleStrings = CcgUtils.loadExamples(Paths.get("learntCommands.csv"));
-    	List<CcgExample> examples = Lists.newArrayList();
+    	List<WeightedCcgExample> examples = Lists.newArrayList();
     	for (String[] exampleString : exampleStrings) {
     		Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exampleString[1]);
-            CcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, parserSettings.posUsed, true,
+            WeightedCcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, parserSettings.posUsed, true,
                 parserSettings.featureVectorGenerator);
             examples.add(example);
     	}
 
     	List<LexiconEntry> newEntries = Lists.newArrayList();
-    	for (CcgExample example : examples) {
+    	for (WeightedCcgExample example : examples) {
     		System.out.println(example.getSentence().getWords());
     		System.out.println(example.getLogicalForm());
     		CcgParse predicted = parser.beamSearch(example.getSentence(), 100).get(0);
@@ -62,7 +67,7 @@ public class TestLexiconInduction {
     	  System.out.println(entry.getWords() + " " + entry.getCategory().getLogicalForm());
     	}
     	
-    	for (CcgExample example : examples) {
+    	for (WeightedCcgExample example : examples) {
     	  List<CcgParse> parses = newParser.beamSearch(example.getSentence(), 10);
     	  
     	  System.out.println(example.getSentence().getWords());
@@ -91,7 +96,7 @@ public class TestLexiconInduction {
 
     	CcgParser newParser = parserSettings.parser;
     	
-    	CcgExample example = CcgUtils.createCcgExample(Arrays.asList(sentence.split(" ")), expressions.get(0));
+    	WeightedCcgExample example = CcgUtils.createCcgExample(Arrays.asList(sentence.split(" ")), expressions.get(0));
     	List<CcgParse> parses = newParser.beamSearch(example.getSentence(), 10);
     	  
     	System.out.println(example.getSentence().getWords());
