@@ -26,6 +26,7 @@ public class RealtimeAgentServer implements HttpHandler
     static public final String encPwd = "encPwd";
     static public final String email = "email";
     static public final String realPwd = "realPwd";
+    static public final String successContains = "successfully"; //TODO: again hard coded
 
     RealtimeAgentServer(AgentDataAndControl agentDataAndControl)
     {

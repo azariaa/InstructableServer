@@ -66,7 +66,7 @@ public class ExperimentServer implements HttpHandler, AgentDataAndControl.Respon
                 if (!action.equals(newGameJoinedStr))
                     logger.warning("gameId not in map, adding now. gameId:" + gameId);
                 ExperimentTaskController experimentTaskControl = newGameStarted(gameId);
-                agentDataAndControl.addNewUser(gameId, experimentTaskControl, Optional.of(experimentTaskControl), Optional.empty());
+                agentDataAndControl.addNewUser(gameId, experimentTaskControl, Optional.of(experimentTaskControl), Optional.empty(), false);
             }
             ExperimentTaskController experimentTaskController = getUserTasks(gameId).get();
             String responseToSend = "";

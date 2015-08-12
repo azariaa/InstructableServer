@@ -45,7 +45,7 @@ public class TestDialogues
         Logger logger, boolean executeGold)
     {
         ExperimentTaskController experimentTaskController = new ExperimentTaskController(logger,gameId);
-        agentDataAndControl.addNewUser(gameId, experimentTaskController, Optional.of(experimentTaskController), Optional.empty());
+        agentDataAndControl.addNewUser(gameId, experimentTaskController, Optional.of(experimentTaskController), Optional.empty(), false);
 
         ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
         ExpressionComparator comparator = new SimplificationComparator(simplifier);

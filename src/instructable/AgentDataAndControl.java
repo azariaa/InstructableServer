@@ -51,12 +51,15 @@ public class AgentDataAndControl
         logger.info("Agent Ready!");
     }
 
-    public ParserSetAndActions addNewUser(String userId, IEmailSender emailSender, Optional<IAddInboxEmails> addInboxEmails, Optional<IEmailFetcher> emailFetcher)
+    public ParserSetAndActions addNewUser(String userId, IEmailSender emailSender, Optional<IAddInboxEmails> addInboxEmails, Optional<IEmailFetcher> emailFetcher, boolean replaceOld)
     {
-        synchronized (parserSetAndActionsMap)
+        if (!replaceOld)
         {
-            if (parserSetAndActionsMap.containsKey(userId))
-                return parserSetAndActionsMap.get(userId);
+            synchronized (parserSetAndActionsMap)
+            {
+                if (parserSetAndActionsMap.containsKey(userId))
+                    return parserSetAndActionsMap.get(userId);
+            }
         }
         ParserSetAndActions parserSetAndActions = getParserSetAndActions(userId, emailSender, addInboxEmails, emailFetcher);
         synchronized (parserSetAndActionsMap)
@@ -168,7 +171,7 @@ public class AgentDataAndControl
         Optional<RealEmailOperations> emailSender = EmailPassword.getRealEmailOp(username, encPassword, email, realPwd);
         if (!emailSender.isPresent())
             return "Error setting new password";
-        addNewUser(userId, emailSender.get(), Optional.empty(), Optional.of((IEmailFetcher) emailSender.get()));
+        addNewUser(userId, emailSender.get(), Optional.empty(), Optional.of((IEmailFetcher) emailSender.get()), true); //replace if old existed
         return "email and password set successfully";
     }
 
@@ -177,8 +180,8 @@ public class AgentDataAndControl
         Optional<RealEmailOperations> emailSender = EmailPassword.getRealEmailOp(username, encPassword);
         if (!emailSender.isPresent())
             return "Error getting password. Please set password again.";
-        addNewUser(userId, emailSender.get(), Optional.empty(), Optional.of(emailSender.get()));
-        return "new user added successfully";
+        addNewUser(userId, emailSender.get(), Optional.empty(), Optional.of(emailSender.get()), false);
+        return "new user added " + RealtimeAgentServer.successContains + ".";
     }
 
 }
