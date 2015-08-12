@@ -1,29 +1,8 @@
 package instructable.server.ccg;
 
-import instructable.server.ActionResponse;
-import instructable.server.IAllUserActions;
-import instructable.server.InfoForCommand;
-import instructable.server.LispExecutor;
-import instructable.server.dal.ParserKnowledgeSeeder;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.jayantkrish.jklol.ccg.CcgExactInference;
-import com.jayantkrish.jklol.ccg.CcgExample;
-import com.jayantkrish.jklol.ccg.CcgInference;
-import com.jayantkrish.jklol.ccg.CcgParse;
-import com.jayantkrish.jklol.ccg.CcgParser;
-import com.jayantkrish.jklol.ccg.CcgUnaryRule;
-import com.jayantkrish.jklol.ccg.LexiconEntry;
-import com.jayantkrish.jklol.ccg.ParametricCcgParser;
+import com.jayantkrish.jklol.ccg.*;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
@@ -40,6 +19,14 @@ import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
 import com.jayantkrish.jklol.training.NullLogFunction;
 import com.jayantkrish.jklol.util.IndexedList;
+import instructable.server.ActionResponse;
+import instructable.server.IAllUserActions;
+import instructable.server.InfoForCommand;
+import instructable.server.LispExecutor;
+import instructable.server.dal.ParserKnowledgeSeeder;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 05-May-15.
@@ -49,6 +36,8 @@ public class ParserSettings
     static final int initialTraining = 10;
     static final int retrainAfterNewCommand = 1;
     static final boolean treatCorpusAsLearnedExamples = true;//false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
+
+    private static final Expression2 unknownExpression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
 
     private ParserSettings()
     {
@@ -189,13 +178,33 @@ public class ParserSettings
 
     public CcgUtils.SayAndExpression parseAndEval(IAllUserActions allUserActions, String userSays)
     {
-        Expression2 expression;
-        ActionResponse response;
-        expression = parse(userSays);
-        System.out.println("debug:" + expression.toString());
+        return parseAndEval(allUserActions, new LinkedList<>(Collections.singleton(userSays)));
+    }
 
-        response = this.evaluate(allUserActions, userSays, expression);
-        return new CcgUtils.SayAndExpression(response.getSayToUser(), expression.toString(), response.isSuccess());
+    /**
+     * Will parse the sentences in the list by order and will execute the first sentence which doesn't parse to unknown.
+     * If all parse to unknown, will use the first sentence.
+     * @param allUserActions
+     * @param userSays must not be empty
+     * @return
+     */
+    public CcgUtils.SayAndExpression parseAndEval(IAllUserActions allUserActions, List<String> userSays)
+    {
+        Preconditions.checkArgument(!userSays.isEmpty());
+        for (String sentence : userSays)
+        {
+            Expression2 expression;
+            expression = parse(sentence);
+            if (!expression.equals(unknownExpression))
+            {
+                System.out.println("debug:" + expression.toString());
+                ActionResponse response = this.evaluate(allUserActions, sentence, expression);
+                return new CcgUtils.SayAndExpression(response.getSayToUser(), expression.toString(), response.isSuccess());
+            }
+        }
+        System.out.println("debug:" + unknownExpression.toString());
+        ActionResponse response = this.evaluate(allUserActions, userSays.get(0), unknownExpression);
+        return new CcgUtils.SayAndExpression(response.getSayToUser(), unknownExpression.toString(), response.isSuccess());
     }
 
     /**
@@ -286,7 +295,7 @@ public class ParserSettings
         if (parse == null ||
                 (failNextCommand && !parse.getLogicalForm().hasSubexpression(ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.cancelStr + ")")))) //fail all but a "cancel" command
         {
-            expression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
+            expression = unknownExpression;
         }
         else
         {

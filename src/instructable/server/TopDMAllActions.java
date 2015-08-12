@@ -1087,7 +1087,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse newest(InfoForCommand infoForCommand, String instanceName)
     {
-        return nextPrevLastIdx(infoForCommand, instanceName, new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.last));
+        return nextPrevLastIdx(infoForCommand, instanceName, new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.newest));
     }
 
     private static class CNextPrevLastIdx
@@ -1103,7 +1103,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             this.idx = idx;
         }
 
-        enum ENextPrevLastIdx {next, previous, last, idx};
+        enum ENextPrevLastIdx {next, previous, newest, requested};
         public ENextPrevLastIdx nextPrevLastIdx;
         public int idx;
     }
@@ -1125,15 +1125,15 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 inboxCommandController.setToPrevEmail(executionStatus);
                 opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.next);
             }
-            else if (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.last)
+            else if (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.newest)
             {
                 int prevIdx = inboxCommandController.setToNewestEmail();
-                opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.idx, prevIdx);
+                opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.requested, prevIdx);
             }
-            else if (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.idx)
+            else if (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.requested)
             {
                 int prevIdx = inboxCommandController.setToIndex(nextPrevLastIdx.idx);
-                opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.idx, prevIdx);
+                opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.requested, prevIdx);
             }else
             {
                 opposite = null;

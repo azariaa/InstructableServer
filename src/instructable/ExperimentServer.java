@@ -6,9 +6,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -90,12 +88,20 @@ public class ExperimentServer implements HttpHandler, AgentDataAndControl.Respon
                         if (parameters.containsKey(userSaysParam))
                         {
                             String userSays = parameters.get(userSaysParam).toString();
-                            responseToSend = agentDataAndControl.executeSentenceForUser(gameId, userSays);
+                            Optional<String> res = agentDataAndControl.executeSentenceForUser(gameId, new LinkedList<>(Collections.singleton(userSays)));
+                            if (res.isPresent())
+                                responseToSend = res.get();
+                            else
+                                responseToSend = RealtimeAgentServer.userNotRegistered;
 
                         }
                         else if (parameters.containsKey(resendRequested))
                         {
-                            responseToSend = agentDataAndControl.getPendingResponse(gameId);
+                            Optional<String> res = agentDataAndControl.getPendingResponse(gameId);
+                            if (res.isPresent())
+                                responseToSend = res.get();
+                            else
+                                responseToSend = RealtimeAgentServer.userNotRegistered;
                         }
                     } catch (Exception ex)
                     {

@@ -5,8 +5,9 @@ import com.sun.net.httpserver.HttpHandler;
 import instructable.server.IAllUserActions;
 
 import java.io.OutputStream;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 28-May-15.
@@ -27,6 +28,9 @@ public class RealtimeAgentServer implements HttpHandler
     static public final String email = "email";
     static public final String realPwd = "realPwd";
     static public final String successContains = "successfully"; //TODO: again hard coded
+    static public final String multiAltSentenceConcat = "^";
+    static public final String multiAltSentenceConcatForRegEx = "\\^";
+    static public final String userNotRegistered = "user not registered";
 
     RealtimeAgentServer(AgentDataAndControl agentDataAndControl)
     {
@@ -60,8 +64,14 @@ public class RealtimeAgentServer implements HttpHandler
                 switch (actionType)
                 {
                     case actionResendRequested:
-                        systemReply = agentDataAndControl.getPendingResponse(userId);
+                    {
+                        Optional<String> res = agentDataAndControl.getPendingResponse(userId);
+                        if (res.isPresent())
+                            systemReply = res.get();
+                        else
+                            systemReply = userNotRegistered;
                         break;
+                    }
                     case actionNewRealUser:
                         if (!(parameters.containsKey(username) && parameters.containsKey(encPwd)))
                         {
@@ -82,7 +92,13 @@ public class RealtimeAgentServer implements HttpHandler
                         if (parameters.containsKey(userSaysParam))
                         {
                             String userSays = parameters.get(userSaysParam).toString();
-                            systemReply = agentDataAndControl.executeSentenceForUser(userId, userSays);
+                            //if doesn't contain multiAltSentenceConcat(^) will have only a single entry
+                            List<String> userSentences = Arrays.asList(userSays.split(multiAltSentenceConcatForRegEx)).stream().filter(s->!s.isEmpty()).collect(Collectors.toList());
+                            Optional<String> res = agentDataAndControl.executeSentenceForUser(userId, userSentences);
+                            if (res.isPresent())
+                                systemReply = res.get();
+                            else
+                                systemReply = userNotRegistered;
                         }
                         else
                         {

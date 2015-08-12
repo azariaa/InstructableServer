@@ -92,30 +92,32 @@ public class AgentDataAndControl
             logger.warning("shouldn't happen that responseToUserListenerList.size() is: " + responseToUserListenerList.size());
     }
 
-    public String executeSentenceForUser(String userId, String userSays)
+    public Optional<String> executeSentenceForUser(String userId, List<String> userSays)
     {
-        return executeSentenceOrGetPending(userId, Optional.of(userSays));
+        return executeSentenceOrGetPending(userId, userSays);
     }
 
-    public String getPendingResponse(String userId)
+    public Optional<String> getPendingResponse(String userId)
     {
-        return executeSentenceOrGetPending(userId, Optional.empty());
+        return executeSentenceOrGetPending(userId, new LinkedList<>());
     }
 
     /**
      * @param userId
-     * @param userSays set to Optional.empty() for a pending response.
-     * @return
+     * @param userSays set to empty list for a pending response. If there is more than one sentence, the parser will choose the one which doesn't parse to unknown command.
+     * @return agent's response to user's sentence. Optional.empty, if user wasn't found.
      */
-    private String executeSentenceOrGetPending(String userId, Optional<String> userSays)
+    private Optional<String> executeSentenceOrGetPending(String userId, List<String> userSays)
     {
-        boolean getPendingResponse = !userSays.isPresent();
-        logger.info("UserID:" + userId + ". " + (getPendingResponse ? "Requested pending response." : "User says: " + userSays.get()));
+        boolean getPendingResponse = userSays.isEmpty();
+        logger.info("UserID:" + userId + ". " + (getPendingResponse ? "Requested pending response." : "User says: " + userSays.get(0)));
         ParserSetAndActions parserSetAndActions;
         synchronized (parserSetAndActionsMap)
         {
             parserSetAndActions = parserSetAndActionsMap.get(userId);
         }
+        if (parserSetAndActions == null)
+            return Optional.empty();
         String sayToUser = "";
         boolean success = false;
         if (getPendingResponse)
@@ -129,7 +131,7 @@ public class AgentDataAndControl
         }
         else
         {
-            CcgUtils.SayAndExpression response = parserSetAndActions.parserSettings.parseAndEval(parserSetAndActions.allUserActions, userSays.get());
+            CcgUtils.SayAndExpression response = parserSetAndActions.parserSettings.parseAndEval(parserSetAndActions.allUserActions, userSays);
             logger.info("UserID:" + userId + ". Lambda expression: " + response.lExpression);
             sayToUser = response.sayToUser;
             success = response.success;
@@ -138,7 +140,7 @@ public class AgentDataAndControl
         {
             responseToUserListener.responseSentToUser(userId, sayToUser, success);
         }
-        return sayToUser;
+        return Optional.of(sayToUser);
     }
 
     public ParserSettings getParserSettingsForTestingOnly(String userId)
