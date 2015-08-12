@@ -1,35 +1,69 @@
 package instructable.server.ccg;
 
+import instructable.server.LispExecutor;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.jayantkrish.jklol.ccg.*;
+import com.jayantkrish.jklol.ccg.CcgBeamSearchInference;
+import com.jayantkrish.jklol.ccg.CcgBinaryRule;
+import com.jayantkrish.jklol.ccg.CcgCategory;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgFeatureFactory;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.CcgUnaryRule;
+import com.jayantkrish.jklol.ccg.HeadedSyntacticCategory;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
 import com.jayantkrish.jklol.ccg.SyntacticCategory.Direction;
 import com.jayantkrish.jklol.ccg.chart.CcgBeamSearchChart;
 import com.jayantkrish.jklol.ccg.cli.AlignmentLexiconInduction;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
-import com.jayantkrish.jklol.ccg.lambda2.*;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.ccg.lambda2.LambdaApplicationReplacementRule;
+import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
+import com.jayantkrish.jklol.ccg.lambda2.VariableCanonicalizationReplacementRule;
 import com.jayantkrish.jklol.ccg.lexicon.SpanFeatureAnnotation;
 import com.jayantkrish.jklol.ccg.lexicon.StringContext;
-import com.jayantkrish.jklol.ccg.lexinduct.*;
+import com.jayantkrish.jklol.ccg.lexinduct.AlignmentExample;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentEmOracle;
+import com.jayantkrish.jklol.ccg.lexinduct.CfgAlignmentModel;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTokenFeatureGenerator;
+import com.jayantkrish.jklol.ccg.lexinduct.ExpressionTree;
+import com.jayantkrish.jklol.ccg.lexinduct.ParametricCfgAlignmentModel;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
 import com.jayantkrish.jklol.nlpannotation.AnnotatedSentence;
 import com.jayantkrish.jklol.preprocessing.DictionaryFeatureVectorGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
-import com.jayantkrish.jklol.training.*;
+import com.jayantkrish.jklol.training.ExpectationMaximization;
+import com.jayantkrish.jklol.training.GradientOptimizer;
+import com.jayantkrish.jklol.training.GradientOracle;
+import com.jayantkrish.jklol.training.NullLogFunction;
+import com.jayantkrish.jklol.training.StochasticGradientTrainer;
 import com.jayantkrish.jklol.util.CsvParser;
 import com.jayantkrish.jklol.util.IntegerArrayIterator;
 import com.jayantkrish.jklol.util.PairCountAccumulator;
-import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import instructable.server.LispExecutor;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.*;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 
 
 public class CcgUtils
@@ -90,7 +124,7 @@ public class CcgUtils
     	return entries;
     }
 
-  public static List<LexiconEntry> induceLexiconEntriesHeuristic(CcgExample example, CcgParser parser)  {
+  public static List<LexiconEntry> induceLexiconEntriesHeuristic(WeightedCcgExample example, CcgParser parser)  {
 	  ExpressionSimplifier simplifier = getExpressionSimplifier();
 
 	  List<String> words = example.getSentence().getWords();
@@ -378,12 +412,12 @@ public class CcgUtils
         constantsToIgnore, 0, 2, 2);
   }
 
-    public static CcgExample createCcgExample(List<String> tokens, Expression2 expression)
+    public static WeightedCcgExample createCcgExample(List<String> tokens, Expression2 expression)
     {
       List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
       AnnotatedSentence sentence = new AnnotatedSentence(tokens, pos);
 
-      return new CcgExample(sentence, null, null, expression, null);
+      return new WeightedCcgExample(sentence, expression, 1.0);
   }
 
 
@@ -440,15 +474,16 @@ public class CcgUtils
      * @return
      */
     public static SufficientStatistics train(ParametricCcgParser parametricCcgParser,
-                                             List<CcgExample> trainingExamples,
+                                             List<WeightedCcgExample> trainingExamples,
                                              int numPasses, SufficientStatistics initialParameters) {
         ExpressionSimplifier simplifier = getExpressionSimplifier();
         ExpressionComparator comparator = new SimplificationComparator(simplifier);
 
         int beamSize = 300;
-        CcgInference inferenceAlgorithm = new CcgBeamSearchInference(null, comparator, beamSize,
+        CcgBeamSearchInference inferenceAlgorithm = new CcgBeamSearchInference(null, comparator, beamSize,
                 -1, Integer.MAX_VALUE, Runtime.getRuntime().availableProcessors(), false);
-        GradientOracle<CcgParser, CcgExample> oracle = new CcgPerceptronOracle(parametricCcgParser, inferenceAlgorithm, 0.0);
+        GradientOracle<CcgParser, WeightedCcgExample> oracle = new WeightedCcgPerceptronOracle(
+            parametricCcgParser, inferenceAlgorithm, comparator);
 //        GradientOracle<CcgParser, CcgExample> oracle = new CcgLoglikelihoodOracle(parametricCcgParser, new ExpressionComparator()
 //        {
 //            @Override
@@ -475,8 +510,8 @@ public class CcgUtils
         return parameters;
     }
 
-    public static CcgExample createCcgExample(String sentence, Expression2 expression, Set<String> usedPOS, boolean addNewPOS,
-        FeatureVectorGenerator<StringContext> stringFeatureGenerator)
+    public static WeightedCcgExample createCcgExample(String sentence, Expression2 expression,
+        Set<String> usedPOS, boolean addNewPOS, FeatureVectorGenerator<StringContext> stringFeatureGenerator)
     {
         //List<String> pos = Collections.nCopies(tokens.size(), ParametricCcgParser.DEFAULT_POS_TAG);
         List<String> tokens = new LinkedList<>();
@@ -491,19 +526,18 @@ public class CcgUtils
           supertaggedSentence = supertaggedSentence.addAnnotation(STRING_FEATURE_ANNOTATION_NAME, annotation);
         }
 
-        return new CcgExample(supertaggedSentence, null, null, expression, null);
+        return new WeightedCcgExample(supertaggedSentence, expression, 1.0);
     }
-    
-    public static List<CcgExample> featurizeExamples(List<CcgExample> examples,
+
+    public static List<WeightedCcgExample> featurizeExamples(List<WeightedCcgExample> examples,
         FeatureVectorGenerator<StringContext> stringFeatureGenerator) {
-      List<CcgExample> newExamples = Lists.newArrayList();
-      for (CcgExample example : examples) {
+      List<WeightedCcgExample> newExamples = Lists.newArrayList();
+      for (WeightedCcgExample example : examples) {
         AnnotatedSentence sent = example.getSentence();
         SpanFeatureAnnotation annotation = SpanFeatureAnnotation.annotate(sent, stringFeatureGenerator);
         AnnotatedSentence newSent = sent.addAnnotation(STRING_FEATURE_ANNOTATION_NAME, annotation);
 
-        newExamples.add(new CcgExample(newSent, example.getDependencies(), example.getSyntacticParse(),
-            example.getLogicalForm(), example.getLexiconEntries()));
+        newExamples.add(new WeightedCcgExample(newSent, example.getLogicalForm(), example.getWeight()));
       }
       return newExamples;
     }

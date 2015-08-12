@@ -1,8 +1,29 @@
 package instructable.server.ccg;
 
+import instructable.server.ActionResponse;
+import instructable.server.IAllUserActions;
+import instructable.server.InfoForCommand;
+import instructable.server.LispExecutor;
+import instructable.server.dal.ParserKnowledgeSeeder;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.jayantkrish.jklol.ccg.*;
+import com.jayantkrish.jklol.ccg.CcgExactInference;
+import com.jayantkrish.jklol.ccg.CcgExample;
+import com.jayantkrish.jklol.ccg.CcgInference;
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.CcgParser;
+import com.jayantkrish.jklol.ccg.CcgUnaryRule;
+import com.jayantkrish.jklol.ccg.LexiconEntry;
+import com.jayantkrish.jklol.ccg.ParametricCcgParser;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
@@ -19,14 +40,6 @@ import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
 import com.jayantkrish.jklol.training.NullLogFunction;
 import com.jayantkrish.jklol.util.IndexedList;
-import instructable.server.ActionResponse;
-import instructable.server.IAllUserActions;
-import instructable.server.InfoForCommand;
-import instructable.server.LispExecutor;
-import instructable.server.dal.ParserKnowledgeSeeder;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 05-May-15.
@@ -109,7 +122,7 @@ public class ParserSettings
             String exSentence = examplesList.get(i)[0];
             String exLogicalForm = examplesList.get(i)[1];
             Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exLogicalForm);
-            CcgExample example = CcgUtils.createCcgExample(exSentence, expression, posUsed, true, null);
+            WeightedCcgExample example = CcgUtils.createCcgExample(exSentence, expression, posUsed, true, null);
             ccgExamples.add(example);
             if (treatCorpusAsLearnedExamples)
             {
@@ -127,7 +140,12 @@ public class ParserSettings
             //StaticAnalysis.inferType() //TODO: Jayant will add this functionality
         }
 
-        List<StringContext> allContexts = StringContext.getContextsFromExamples(ccgExamples);
+        List<CcgExample> reformattedExamples = Lists.newArrayList();
+        for (WeightedCcgExample w : ccgExamples) {
+          reformattedExamples.add(new CcgExample(w.getSentence(), null, null, w.getLogicalForm(), null));
+        }
+        
+        List<StringContext> allContexts = StringContext.getContextsFromExamples(reformattedExamples);
         FeatureVectorGenerator<StringContext> featureVectorGenerator = DictionaryFeatureVectorGenerator
                 .createFromData(allContexts, featureGenerator, true);
         this.ccgExamples = CcgUtils.featurizeExamples(ccgExamples, featureVectorGenerator);
@@ -285,7 +303,7 @@ public class ParserSettings
         //we first tokenize the sentence (after adding the start symbol) then we join back the tokens, to make sure that it matches future sentences with identical tokens.
         addToLearnedExamples(originalCommand, expressionLearnt, true);
 
-        CcgExample example = CcgUtils.createCcgExample(originalCommand, expressionLearnt, posUsed, false, featureVectorGenerator);
+        WeightedCcgExample example = CcgUtils.createCcgExample(originalCommand, expressionLearnt, posUsed, false, featureVectorGenerator);
 
         List<LexiconEntry> newEntries = CcgUtils.induceLexiconEntriesHeuristic(example, parser);
         System.out.println(newEntries);
@@ -345,7 +363,7 @@ public class ParserSettings
 
     ParserKnowledgeSeeder parserKnowledgeSeeder;
 
-    public List<CcgExample> ccgExamples;
+    public List<WeightedCcgExample> ccgExamples;
     //learnedExamples examples are matched BEFORE parsing //the String key in these examples are the tokens joined back using " " (this is done to improve performance using hash-map)
     // if the (treatCorpusAsLearnedExamples==true) so copies all corpus in ccgExamples to learnedExamples
     public Map<String, Expression2> learnedExamples;

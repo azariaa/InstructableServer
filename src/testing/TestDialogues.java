@@ -1,17 +1,23 @@
 package testing;
 
-import com.jayantkrish.jklol.ccg.CcgExample;
-import com.jayantkrish.jklol.ccg.CcgParse;
-import com.jayantkrish.jklol.ccg.lambda2.*;
 import instructable.AgentDataAndControl;
 import instructable.ExperimentTaskController;
 import instructable.server.ccg.CcgDetokenizer;
 import instructable.server.ccg.CcgUtils;
+import instructable.server.ccg.WeightedCcgExample;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplificationException;
+import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
+import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
+import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
 
 public class TestDialogues
 {
@@ -50,11 +56,11 @@ public class TestDialogues
         ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
         ExpressionComparator comparator = new SimplificationComparator(simplifier);
 
-        List<CcgExample> testExamples = TestDataDriven.readExamplesFromFile(filename, agentDataAndControl.getParserSettingsForTestingOnly(gameId));
+        List<WeightedCcgExample> testExamples = TestDataDriven.readExamplesFromFile(filename, agentDataAndControl.getParserSettingsForTestingOnly(gameId));
 
         int numCorrect = 0;
         int numParsed = 0;
-        for (CcgExample example : testExamples) {
+        for (WeightedCcgExample example : testExamples) {
             CcgParse parse = agentDataAndControl.getParserSettingsForTestingOnly(gameId).parser.parse(example.getSentence());
             System.out.println("====");
             System.out.println("SENT: " + example.getSentence());
