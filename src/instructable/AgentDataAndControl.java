@@ -131,7 +131,7 @@ public class AgentDataAndControl
         }
         else
         {
-            CcgUtils.SayAndExpression response = parserSetAndActions.parserSettings.parseAndEval(parserSetAndActions.allUserActions, userSays);
+            CcgUtils.SayAndExpression response = parserSetAndActions.parserSettings.parseAndEval(Optional.of(userId), parserSetAndActions.allUserActions, userSays);
             logger.info("UserID:" + userId + ". Lambda expression: " + response.lExpression);
             sayToUser = response.sayToUser;
             success = response.success;

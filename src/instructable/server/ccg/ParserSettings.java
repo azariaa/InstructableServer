@@ -23,6 +23,7 @@ import instructable.server.ActionResponse;
 import instructable.server.IAllUserActions;
 import instructable.server.InfoForCommand;
 import instructable.server.LispExecutor;
+import instructable.server.dal.InteractionRecording;
 import instructable.server.dal.ParserKnowledgeSeeder;
 
 import java.util.*;
@@ -178,17 +179,18 @@ public class ParserSettings
 
     public CcgUtils.SayAndExpression parseAndEval(IAllUserActions allUserActions, String userSays)
     {
-        return parseAndEval(allUserActions, new LinkedList<>(Collections.singleton(userSays)));
+        return parseAndEval(Optional.empty(), allUserActions, new LinkedList<>(Collections.singleton(userSays)));
     }
 
     /**
      * Will parse the sentences in the list by order and will execute the first sentence which doesn't parse to unknown.
      * If all parse to unknown, will use the first sentence.
+     * @param userId olny required if would like to store interaction in DB.
      * @param allUserActions
-     * @param userSays must not be empty
+     * @param userSays
      * @return
      */
-    public CcgUtils.SayAndExpression parseAndEval(IAllUserActions allUserActions, List<String> userSays)
+    public CcgUtils.SayAndExpression parseAndEval(Optional<String> userId, IAllUserActions allUserActions, List<String> userSays)
     {
         Preconditions.checkArgument(!userSays.isEmpty());
         for (String sentence : userSays)
@@ -197,14 +199,19 @@ public class ParserSettings
             expression = parse(sentence);
             if (!expression.equals(unknownExpression))
             {
-                System.out.println("debug:" + expression.toString());
-                ActionResponse response = this.evaluate(allUserActions, sentence, expression);
-                return new CcgUtils.SayAndExpression(response.getSayToUser(), expression.toString(), response.isSuccess());
+                return executeLogicalForm(userId, allUserActions, userSays, sentence, expression);
             }
         }
-        System.out.println("debug:" + unknownExpression.toString());
-        ActionResponse response = this.evaluate(allUserActions, userSays.get(0), unknownExpression);
-        return new CcgUtils.SayAndExpression(response.getSayToUser(), unknownExpression.toString(), response.isSuccess());
+        return executeLogicalForm(userId, allUserActions, userSays,  userSays.get(0), unknownExpression);
+    }
+
+    private CcgUtils.SayAndExpression executeLogicalForm(Optional<String> userId, IAllUserActions allUserActions, List<String> userSays, String sentence, Expression2 expression)
+    {
+        System.out.println("debug:" + expression.toString());
+        ActionResponse response = this.evaluate(allUserActions, sentence, expression);
+        if (userId.isPresent())
+            InteractionRecording.addUserUtterance(userId.get(), userSays, sentence, expression.toString(), response.getSayToUser(), response.isSuccess());
+        return new CcgUtils.SayAndExpression(response.getSayToUser(), expression.toString(), response.isSuccess());
     }
 
     /**
