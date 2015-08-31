@@ -35,7 +35,7 @@ public class EmailAddress extends FieldType
         //tries to fix email address, especially useful for speech input.
         String tryToCorrect = onlyInsideAngleBrackets.replace(" at ", " @ ");
         tryToCorrect = tryToCorrect.replace(" dot ", " . ");
-        tryToCorrect = tryToCorrect.replaceAll("[;,]","").trim();
+        tryToCorrect = tryToCorrect.replaceAll("[;, ]","").trim();
         if (InstUtils.isEmailAddress(tryToCorrect))
         {
             fieldVal = tryToCorrect;
