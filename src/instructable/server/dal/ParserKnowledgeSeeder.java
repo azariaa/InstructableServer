@@ -56,6 +56,7 @@ public class ParserKnowledgeSeeder
         this.globalExamples = parserKnowledgeSeeder.globalExamples; //immutable
         this.userDefinedEntries = new LinkedList<>();
         this.userExamples = new LinkedList<>();
+        fillUserSpecificFromDB();
     }
 
     private void fillUserSpecificFromDB()
@@ -219,5 +220,48 @@ public class ParserKnowledgeSeeder
     public boolean hasUserDefinedLex(String lexiconToRemove)
     {
         return userDefinedEntries.stream().anyMatch(s -> s.startsWith(lexiconToRemove));
+    }
+
+    public static boolean userExists(String userId)
+    {
+        boolean userExists = false;
+        try (
+                Connection connection = InstDataSource.getDataSource().getConnection();
+                PreparedStatement pstmt = connection.prepareStatement("select * from " + DBUtils.lexEntriesTable + " where " + DBUtils.userIdCol + "=?");
+        )
+        {
+            pstmt.setString(1, userId);
+            try (ResultSet resultSet = pstmt.executeQuery())
+            {
+                if (resultSet.next())
+                {
+                    userExists = true;
+                }
+            }
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        if (!userExists)
+        {
+            try (
+                    Connection connection = InstDataSource.getDataSource().getConnection();
+                    PreparedStatement pstmt = connection.prepareStatement("select * from " + DBUtils.examplesTable + " where " + DBUtils.userIdCol + "=?");
+            )
+            {
+                pstmt.setString(1, userId);
+                try (ResultSet resultSet = pstmt.executeQuery())
+                {
+                    if (resultSet.next())
+                    {
+                        userExists = true;
+                    }
+                }
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return userExists;
     }
 }

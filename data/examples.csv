@@ -9,6 +9,7 @@ set I am thinking about the sender as the subject,"(setFieldFromString (getProbM
 create tom as a name,"(createInstanceByFullNames name (stringNoun ""tom""))"
 create name david.,"(createInstanceByFullNames name (stringNoun ""david""))"
 create name for david,"(createInstanceByFullNames name (stringNoun ""david""))"
+create name beth,"(createInstanceByFullNames name (stringNoun ""beth""))"
 set body to glue,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""glue""))"
 set subject to party,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""party""))"
 set subject to green,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""green""))"

@@ -94,6 +94,17 @@ public class ParserSettings
         allLexiconEntries.addAll(lexEntriesFromSyn);
         allLexiconEntries.addAll(userDefinedEntries);
 
+        for (String lexEntry : allLexiconEntries) //binding names. this will not bind names which appear inside logical forms, but it probably good enough.
+        {
+            String[] tokens = lexEntry.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+            //go over all names and bind them
+            String name = tokens[2].trim();//get the third item (after two commas, but not in quotes
+            if (name.startsWith("\"") && name.endsWith("\""))
+                name = name.substring(1,name.length()-1);
+            if (!name.startsWith("(") && !name.startsWith("*"))
+                env.bindName(name, name.replace("_", " "), symbolTable);
+        }
+
         List<LexiconEntry> lexicon = LexiconEntry.parseLexiconEntries(allLexiconEntries);
         lexicon = CcgUtils.induceLexiconHeadsAndDependencies(lexicon);
 
@@ -202,7 +213,7 @@ public class ParserSettings
                 return executeLogicalForm(userId, allUserActions, userSays, sentence, expression);
             }
         }
-        return executeLogicalForm(userId, allUserActions, userSays,  userSays.get(0), unknownExpression);
+        return executeLogicalForm(userId, allUserActions, userSays, userSays.get(0), unknownExpression);
     }
 
     private CcgUtils.SayAndExpression executeLogicalForm(Optional<String> userId, IAllUserActions allUserActions, List<String> userSays, String sentence, Expression2 expression)
@@ -346,10 +357,29 @@ public class ParserSettings
     public void retrain(int iterations)
     {
         SufficientStatistics newParameters = CcgUtils.train(parserFamily,
-            ccgExamples, iterations, parserParameters);
+                ccgExamples, iterations, parserParameters);
         
         parser = parserFamily.getModelFromParameters(newParameters);
         this.parserParameters = newParameters;
+    }
+
+
+    /**
+     * Important: This function can only be called if the current ParserSettings is general (not for a specific user)!
+     * @param userId
+     * @return
+     */
+    public ParserSettings createPSFromGeneralForUser(String userId)
+    {
+        Preconditions.checkState(parserKnowledgeSeeder.isGeneralUser());
+        if (!ParserKnowledgeSeeder.userExists(userId))
+        {
+            return createPSFromGeneralForNewUser(userId);
+        }
+        else
+        {
+            return new ParserSettings(new ParserKnowledgeSeeder(parserKnowledgeSeeder, userId));
+        }
     }
 
     /**
@@ -357,9 +387,8 @@ public class ParserSettings
      * @param newUserId
      * @return
      */
-    public ParserSettings createPSFromGeneralForNewUser(String newUserId)
+    private ParserSettings createPSFromGeneralForNewUser(String newUserId)
     {
-        Preconditions.checkState(parserKnowledgeSeeder.isGeneralUser());
         //should also check that newUserId is actually new.
         ParserSettings parserSettings = new ParserSettings();
         parserSettings.ccgExamples = new LinkedList<>(ccgExamples);

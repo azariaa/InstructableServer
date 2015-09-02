@@ -57,7 +57,7 @@ public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
     private void newDefined(ConceptFieldInstance conceptFieldInstance, String actualName)
     {
         String what = conceptFieldInstance.toString();
-        parserSettings.updateParserGrammar(actualName + "," + what + "Name{0}," + actualName.replace(" ", "_") + ",0 " + actualName.replace(" ", "_"));
+        parserSettings.updateParserGrammar("\""+actualName + "\",\"" + what + "Name{0}\",\"" + actualName.replace(" ", "_") + "\",0 \"" + actualName.replace(" ", "_")+"\"");
         parserSettings.env.bindName(actualName.replace(" ", "_"), actualName.replace("_", " "), parserSettings.symbolTable);
         //parserSettings.retrain(2);
     }
@@ -65,7 +65,7 @@ public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
     private void toRemove(ConceptFieldInstance conceptFieldInstance, String actualName)
     {
         String what = conceptFieldInstance.toString();
-        parserSettings.removeFromParserGrammar(actualName + "," + what + "Name{0}," + actualName.replace(" ", "_"));
+        parserSettings.removeFromParserGrammar("\""+actualName + "\",\"" + what + "Name{0}\",\"" + actualName.replace(" ", "_")+"\"");
         parserSettings.env.unbindName(actualName.replace(" ", "_"), parserSettings.symbolTable);
         //parserSettings.retrain(2);
     }

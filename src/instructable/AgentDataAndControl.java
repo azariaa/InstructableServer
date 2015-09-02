@@ -71,7 +71,7 @@ public class AgentDataAndControl
 
     private ParserSetAndActions getParserSetAndActions(String userId, IEmailSender emailSender, Optional<IAddInboxEmails> addInboxEmails, Optional<IEmailFetcher> emailFetcher)
     {
-        ParserSettings parserSettingsCopy = originalParserSettings.createPSFromGeneralForNewUser(userId);
+        ParserSettings parserSettingsCopy = originalParserSettings.createPSFromGeneralForUser(userId);
         CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy);
         TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", userId, commandsToParser, emailSender, usePendingResponses, emailFetcher);
         if (addInboxEmails.isPresent())
