@@ -12,9 +12,11 @@ public class OutEmailCommandController
 {
     private String myEmail;
     InstanceContainer instanceContainer;
-    int numOfEmailsSent = 0; //TODO: should be retrieved from the DB
-    int numOfDrafts = 0; //TODO: should be retrieved from the DB
+    long numOfEmailsSent;//retrieved from the DB
+    long numOfDrafts; //retrieved from the DB
     IEmailSender emailSender;
+    private static final String sentPrefix = "sent";
+    private static final String draftPrefix = "draft";
 
     OutEmailCommandController(String myEmail, ConceptContainer conceptContainer, InstanceContainer instanceContainer, IEmailSender emailSender)
     {
@@ -22,6 +24,9 @@ public class OutEmailCommandController
         conceptContainer.defineConcept(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.getFieldDescriptions());
         this.instanceContainer = instanceContainer;
         this.emailSender = emailSender;
+        List<GenericInstance> allOutEmails = instanceContainer.getAllInstances(OutgoingEmail.strOutgoingEmailTypeAndName);
+        numOfEmailsSent = allOutEmails.stream().filter(x->x.getName().startsWith(sentPrefix)).count();
+        numOfDrafts = allOutEmails.stream().filter(x->x.getName().startsWith(draftPrefix)).count();
     }
 
     public boolean isAnEmailBeingComposed()
@@ -132,11 +137,11 @@ public class OutEmailCommandController
 
     private String getCurrentSentName()
     {
-        return "sent" + numOfEmailsSent;
+        return sentPrefix + numOfEmailsSent;
     }
 
     private String getCurrentDraftName()
     {
-        return "draft" + numOfDrafts;
+        return draftPrefix + numOfDrafts;
     }
 }
