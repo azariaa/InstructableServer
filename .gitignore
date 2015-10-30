@@ -45,8 +45,8 @@ Temporary Items
 # Built classes
 *.class
 
-#logging
-logging/
+#logging is dealt from within
+
 
 #workspace
 .idea/workspace.xml
