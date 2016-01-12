@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `instructable_kb`.`instance_values` (
   `concept_name` VARCHAR(45) NOT NULL,
   `instance_name` VARCHAR(45) NOT NULL,
   `field_name` VARCHAR(45) NOT NULL,
-  `field_jsonval` VARCHAR(500) NULL DEFAULT NULL,
+  `field_jsonval` VARCHAR(1000) NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`, `concept_name`, `instance_name`, `field_name`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
