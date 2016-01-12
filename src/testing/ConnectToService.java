@@ -19,7 +19,7 @@ import java.util.Scanner;
  */
 public class ConnectToService
 {
-    static private final boolean useRealtimeAgent = true;
+    static private final boolean useRealtimeAgent = true; //determines whether to provide actual user credentials for sending real emails.
     static private final String userId = "a992";
     static private final String USER_AGENT = "Mozilla/5.0";
 
