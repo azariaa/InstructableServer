@@ -24,7 +24,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     InstanceContainer instanceContainer;
     ICommandsToParser commandsToParser;
     OutEmailCommandController outEmailCommandController;
-    InboxCommandController inboxCommandController;
+    public InboxCommandController inboxCommandController;
     CommandHistory commandHistory;
 
     static private final String ambiguousEmailInstanceName = "email"; //can either be outgoing email, or inbox
