@@ -1064,8 +1064,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 Optional.of(() -> failWithMessage(infoForCommand, "undo is currently not supported for delete commands"))); //in order to support "undo" of delete command, may create an additional column in the DB of deleted which holds which command deleted it.
         if (actionResponse.isSuccess())
         {
-            //if this field doesn't appear at any other concept
-            if (!instanceContainer.getMostPlausibleInstance(new ExecutionStatus(), conceptContainer.getAllConceptNames(), Optional.of(instanceName), false).isPresent())
+            //if this instance name doesn't appear at any other concept
+            if (!instanceContainer.getMostPlausibleInstance(new ExecutionStatus(), conceptContainer.getAllConceptNames(), Optional.of(instanceName), false).isPresent() &&
+                    (!instance.getConceptName().equals(IncomingEmail.incomingEmailType)) &&
+                    (!conceptName.equals(ambiguousEmailInstanceName)) &&
+                    (!instanceName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+                    )
                 commandsToParser.removeInstance(instanceName);
         }
         return actionResponse;

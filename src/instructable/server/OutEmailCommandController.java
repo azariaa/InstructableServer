@@ -29,6 +29,7 @@ public class OutEmailCommandController
         numOfDrafts = allOutEmails.stream().filter(x->x.getName().startsWith(draftPrefix)).count();
     }
 
+
     public boolean isAnEmailBeingComposed()
     {
         return getEmailBeingComposed(new ExecutionStatus()).isPresent();
