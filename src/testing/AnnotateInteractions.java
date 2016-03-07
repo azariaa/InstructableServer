@@ -125,7 +125,7 @@ public class AnnotateInteractions
 					System.out.println("SysResponse:\t"+curResponse+ "\nOldResponse:\t"+oldResponse); //+"\nPrediction:"+parsedLogicalForm+"\tEnv:"+currentEmail);
 
 					Boolean canParseNow = (!(response.sayToUser.toLowerCase().contains("sorry")));
-					Boolean canParseEarlier = (!oldResponse.toLowerCase().contains("sorry")) && oldResponse.toLowerCase().equals(curResponse.toLowerCase());//Amos: if they are different, so probably the old one was wrong
+					Boolean canParseEarlier = (!oldResponse.toLowerCase().contains("sorry")) && oldResponse.trim().toLowerCase().equals(curResponse.toLowerCase());//Amos: if they are different, so probably the old one was wrong
 
                     if (waitUntilUtterance > lineNo)
                         continue;
