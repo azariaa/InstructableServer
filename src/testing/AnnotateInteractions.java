@@ -109,7 +109,7 @@ public class AnnotateInteractions
 					//Retrieve userUtterance
 					System.out.println("\n------------------------------------------------------------------------------------------------------------------\n");
 					System.out.println("\nWorking with gameId: "+gameId+"\tuId: "+lineNo);
-					String userUtterance = line.split("\t")[3];
+					String userUtterance = line.split("\t")[3].trim();
 					System.out.println("U: " + userUtterance);
 					String currentEmail = ((TopDMAllActions) allUserActions).inboxCommandController.getCurrentEmailName();
 
@@ -125,7 +125,7 @@ public class AnnotateInteractions
 					System.out.println("SysResponse:\t"+curResponse+ "\nOldResponse:\t"+oldResponse); //+"\nPrediction:"+parsedLogicalForm+"\tEnv:"+currentEmail);
 
 					Boolean canParseNow = (!(response.sayToUser.toLowerCase().contains("sorry")));
-					Boolean canParseEarlier = (!oldResponse.toLowerCase().contains("sorry")) && oldResponse.trim().toLowerCase().equals(curResponse.toLowerCase());//Amos: if they are different, so probably the old one was wrong
+					Boolean canParseEarlier = (!oldResponse.toLowerCase().contains("sorry")) && oldResponse.trim().toLowerCase().equals(response.sayToUser.trim().replaceAll("\n", " ").toLowerCase());//Amos: if they are different, so probably the old one was wrong
 
                     if (waitUntilUtterance > lineNo)
                         continue;
