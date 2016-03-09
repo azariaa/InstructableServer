@@ -79,6 +79,7 @@ public class OutEmailCommandController
         Optional<GenericInstance> emailBeingComposed = instanceContainer.getInstance(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName);
         if (emailBeingComposed.isPresent())
         {
+            instanceContainer.setMutability(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName, false); //old draft will be immutable, user will need to restore draft in order to change it
             instanceContainer.renameInstance(new ExecutionStatus(),emailBeingComposed.get().getConceptName(), emailBeingComposed.get().getName(), getCurrentDraftName());
             numOfDrafts++;
             //instanceContainer.deleteInstance(new ExecutionStatus(), emailBeingComposed.get());
@@ -102,6 +103,8 @@ public class OutEmailCommandController
                 deleteCurrentEmailIfExists();
                 numOfDrafts--;
                 instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, getCurrentDraftName(), OutgoingEmail.strOutgoingEmailTypeAndName);
+                if (executionStatus.isOkOrComment())
+                    instanceContainer.setMutability(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName, true);
             }
             else
                 executionStatus.add(ExecutionStatus.RetStatus.error, "no draft found");
@@ -113,6 +116,8 @@ public class OutEmailCommandController
                 deleteCurrentEmailIfExists();
                 numOfEmailsSent--;
                 instanceContainer.renameInstance(executionStatus, OutgoingEmail.strOutgoingEmailTypeAndName, getCurrentSentName(), OutgoingEmail.strOutgoingEmailTypeAndName);
+                if (executionStatus.isOkOrComment())
+                    instanceContainer.setMutability(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.strOutgoingEmailTypeAndName, true);
             }
             else
                 executionStatus.add(ExecutionStatus.RetStatus.error, "no sent email found");

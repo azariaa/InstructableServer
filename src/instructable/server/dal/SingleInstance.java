@@ -300,7 +300,7 @@ public class SingleInstance
 
     public void accessed(long l)
     {
-
+        lastAccess = l;
     }
 
     public long getLastAccess()
