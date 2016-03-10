@@ -99,9 +99,12 @@ public class AnnotateInteractions
 
 
                 int waitUntilUtterance = 1;
+                Boolean didSomethingLastRound = false; //required for undoing
+                Boolean didSomethingThisRound = false; //required for undoing
 				//begin annotating
 				for ( ;lineNo < allLines.size(); lineNo+=2)
                 {
+                    didSomethingLastRound = didSomethingThisRound;
                     String line = allLines.get(lineNo-1); //list is 0 based
 
 					//Retrieve userUtterance
@@ -125,6 +128,7 @@ public class AnnotateInteractions
 					Boolean canParseNow = true;//(!(response.sayToUser.toLowerCase().contains("sorry")));
 					Boolean canParseEarlier = //(!oldResponse.toLowerCase().contains("sorry")) &&
                             oldResponse.trim().toLowerCase().equals(response.sayToUser.trim().replaceAll("\n", " ").toLowerCase());//Amos: if they are different, so probably the old one was wrong
+                    didSomethingThisRound = (!(response.sayToUser.toLowerCase().contains("sorry")));
 
                     if (waitUntilUtterance > lineNo)
                         continue;
@@ -145,8 +149,10 @@ public class AnnotateInteractions
                     else if(cnfString.equals("b"))
                     {
                         System.out.println("moving back");
-                        parserSettings.parseAndEval(allUserActions, "undo"); //undo this command
-                        parserSettings.parseAndEval(allUserActions, "undo"); //undo previous command, so can redo it
+                        if (didSomethingThisRound)
+                            parserSettings.parseAndEval(allUserActions, "undo"); //undo this command
+                        if (didSomethingLastRound)
+                            parserSettings.parseAndEval(allUserActions, "undo"); //undo previous command, so can redo it
                         lineNo-=4;
                     }
                     else{ //manual mode:
