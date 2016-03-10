@@ -1,25 +1,21 @@
 package testing;
 
-import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.CommandsToParser;
 import instructable.server.IAllUserActions;
 import instructable.server.IIncomingEmailControlling;
 import instructable.server.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
+import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.dal.DBUtils;
 import instructable.server.hirarchy.EmailInfo;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 
 /**
@@ -95,16 +91,18 @@ public class AnnotateInteractions
 				int gameId = Integer.parseInt(toks[0]);
 				int uId = (toks.length>1) ? Integer.parseInt(toks[1]): 1;
 
-				BufferedReader br = new BufferedReader(new FileReader(workDir+"txt/"+gameId+".txt"));
-				int lineNo=1;
+                List<String> allLines = Files.readAllLines(Paths.get(workDir+"txt/"+gameId+".txt"));
+
 
 				//Reach line to start annotating
-				for(int i=1;i<uId;i++){	br.readLine(); lineNo++;}
+                int lineNo=uId;
+
 
                 int waitUntilUtterance = 1;
 				//begin annotating
-				String line;
-				for (;(line = br.readLine()) != null; lineNo+=2) {
+				for ( ;lineNo < allLines.size(); lineNo+=2)
+                {
+                    String line = allLines.get(lineNo-1); //list is 0 based
 
 					//Retrieve userUtterance
 					System.out.println("\n------------------------------------------------------------------------------------------------------------------\n");
@@ -118,7 +116,7 @@ public class AnnotateInteractions
 					String parsedLogicalForm = response.lExpression.toString();
 
 					String curResponse = response.sayToUser.trim().replaceAll("\n", "|");
-					String oldResponse = br.readLine().split("\t")[3];
+					String oldResponse = allLines.get(lineNo+1-1).split("\t")[3];
 					if(oldResponse.startsWith("\"")){
 						oldResponse = oldResponse.substring(1, oldResponse.length()-1);
 					}
@@ -131,7 +129,7 @@ public class AnnotateInteractions
                     if (waitUntilUtterance > lineNo)
                         continue;
 
-					String cnfString = getConfirmation(gameId, lineNo, parsedLogicalForm, curResponse, canParseNow, canParseEarlier, currentEmail, userUtterance, "Should I log this (y), log as ignored (i) skip (s) or go to manual mode(m)?").toLowerCase();
+					String cnfString = getConfirmation(gameId, lineNo, parsedLogicalForm, curResponse, canParseNow, canParseEarlier, currentEmail, userUtterance, "Should I log this (y), log as ignored (i) skip (s) back (b) or go to manual mode(m)?").toLowerCase();
 					if(cnfString.equals("y")||cnfString.equals("yes")){
 						logInstance(gameId, lineNo, parsedLogicalForm, curResponse, canParseNow, canParseEarlier, currentEmail, userUtterance, curResponse, oldResponse, "system");
 						System.out.println("Instance logged");
@@ -143,6 +141,13 @@ public class AnnotateInteractions
                     else if(cnfString.equals("s"))
                     {
                         System.out.println("Instance skipped, moving to next.");
+                    }
+                    else if(cnfString.equals("b"))
+                    {
+                        System.out.println("moving back");
+                        parserSettings.parseAndEval(allUserActions, "undo"); //undo this command
+                        parserSettings.parseAndEval(allUserActions, "undo"); //undo previous command, so can redo it
+                        lineNo-=4;
                     }
                     else{ //manual mode:
 
@@ -223,7 +228,6 @@ public class AnnotateInteractions
 						}		
 					} //end Manual annotation
 				}
-				br.close();
 			} 
 			catch (Exception e){
 				e.printStackTrace();
