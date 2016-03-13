@@ -128,7 +128,7 @@ public class AnnotateInteractions
 					Boolean canParseNow = true;//(!(response.sayToUser.toLowerCase().contains("sorry")));
 					Boolean canParseEarlier = //(!oldResponse.toLowerCase().contains("sorry")) &&
                             oldResponse.trim().toLowerCase().equals(response.sayToUser.trim().replaceAll("\n", " ").toLowerCase());//Amos: if they are different, so probably the old one was wrong
-                    didSomethingThisRound = (!(response.sayToUser.toLowerCase().contains("sorry")));
+                    didSomethingThisRound = response.success;//(!(response.sayToUser.toLowerCase().contains("sorry")));
 
                     if (waitUntilUtterance > lineNo)
                         continue;
