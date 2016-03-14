@@ -12,7 +12,7 @@ import java.util.List;
 public class CalendarEvent
 {
     public static final String strCalendarEventTypeAndName = "calendar event";
-    public static final String titleStr = "title";
+    public static final String titleStr = "subject";//"title";
     public static final String descriptionStr = "description";
     public static final String dateTimeStr = "date and time";
     public static final String participantsListStr = "participant list";

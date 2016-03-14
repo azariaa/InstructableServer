@@ -1,6 +1,7 @@
 package testing;
 
 import instructable.server.dal.CreateParserFromFiles;
+import instructable.server.dal.DBUtils;
 import instructable.server.parser.CommandsToParser;
 import instructable.server.backend.IAllUserActions;
 import instructable.server.backend.TopDMAllActions;
@@ -18,7 +19,9 @@ public class CommandLine
     public static void main(String[] args) throws Exception
     {
 
-        ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
+        String userId = "tempUser";
+        DBUtils.clearUserData(userId);
+        ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of(userId));
         TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, true, Optional.empty());
         IAllUserActions allUserActions = topDMAllActions;
 

@@ -4,10 +4,7 @@ import instructable.server.backend.ExecutionStatus;
 import instructable.server.backend.InstUtils;
 import instructable.server.backend.TextFormattingUtils;
 import instructable.server.dal.IFieldChanged;
-import instructable.server.hirarchy.fieldTypes.EmailAddress;
-import instructable.server.hirarchy.fieldTypes.FieldType;
-import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
-import instructable.server.hirarchy.fieldTypes.StringField;
+import instructable.server.hirarchy.fieldTypes.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,6 +71,9 @@ public class FieldHolder
                 break;
             case singleLineString:
                 fieldVal = new StringField(false);
+                break;
+            case date:
+                fieldVal = new DateType();
                 break;
         }
         return fieldVal;

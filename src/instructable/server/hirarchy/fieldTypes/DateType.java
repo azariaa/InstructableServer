@@ -16,10 +16,10 @@ import java.util.Optional;
 public class DateType extends FieldType
 {
 
-    static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy MM dd HH mm ss");
+    static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /*
-    returns true if manged to set
+    returns true if managed to set
      */
     public void setDate(ExecutionStatus executionStatus, String val)
     {
@@ -31,7 +31,6 @@ public class DateType extends FieldType
         }
 
         executionStatus.add(ExecutionStatus.RetStatus.error, "\"" + val + "\" is not a proper date");
-        return;
     }
 
     public Optional<Date> getDate()

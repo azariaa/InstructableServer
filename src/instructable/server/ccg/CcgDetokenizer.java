@@ -15,7 +15,7 @@ public class CcgDetokenizer
 {
     static String[][] detokenizeConverter = new String[][]{new String[]{"i","I"}};
 
-    static String tokensToMove[] = new String[]{".", "!", "?", ",", "$", "(", ")", "[", "]", "\"", "'", ":", "n't", "'m", "'s", "n't"};
+    static String tokensToMove[] = new String[]{".", "!", "?", ",", "$", "(", ")", "[", "]", "\"", "'", ":", "n't", "'m", "'s", "n't", "'ll"};
     static DetokenizationDictionary.Operation operations[] = new DetokenizationDictionary.Operation[]{
             DetokenizationDictionary.Operation.MOVE_LEFT,
             DetokenizationDictionary.Operation.MOVE_LEFT,
@@ -27,6 +27,7 @@ public class CcgDetokenizer
             DetokenizationDictionary.Operation.MOVE_RIGHT,
             DetokenizationDictionary.Operation.MOVE_LEFT,
             DetokenizationDictionary.Operation.RIGHT_LEFT_MATCHING,
+            DetokenizationDictionary.Operation.MOVE_LEFT,
             DetokenizationDictionary.Operation.MOVE_LEFT,
             DetokenizationDictionary.Operation.MOVE_LEFT,
             DetokenizationDictionary.Operation.MOVE_LEFT,

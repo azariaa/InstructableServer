@@ -144,3 +144,16 @@ jane,InstanceName{0},jane
 room,ConceptName{0},room
 tables,FieldName{0},tables
 ghc8114,InstanceName{0},ghc8114
+#
+# Added to support calendar events
+#
+event,ConceptName{0},calendar_event
+event,InstanceName{0},calendar_event
+save,"S{0}","(saveCalendarEvent)","0 saveCalendarEvent"
+save,"S{0}/InstanceName","(lambda $1 (save $1))" 
+#title,FieldName{0},title,0 title //using subject instead
+description,FieldName{0},description,0 description
+time,FieldName{0},date_and_time,0 date_and_time
+date,FieldName{0},date_and_time,0 date_and_time
+participants,FieldName{0},participant_list,0 participant_list
+participant,FieldName{0},participant_list,0 participant_list

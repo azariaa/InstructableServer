@@ -76,7 +76,7 @@ public class CalendarEventController
     public void createNewEvent(ExecutionStatus executionStatus)
     {
         //first rename old one to draft if exists.
-        Optional<GenericInstance> composedCalendarEvent = instanceContainer.getInstance(executionStatus, CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.strCalendarEventTypeAndName);
+        Optional<GenericInstance> composedCalendarEvent = instanceContainer.getInstance(new ExecutionStatus(), CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.strCalendarEventTypeAndName);
         if (composedCalendarEvent.isPresent())
         {
             instanceContainer.setMutability(executionStatus, CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.strCalendarEventTypeAndName, false); //old draft will be immutable, user will need to restore draft in order to change it
@@ -85,7 +85,7 @@ public class CalendarEventController
             //instanceContainer.deleteInstance(new ExecutionStatus(), emailBeingComposed.get());
         }
         //now create a new one
-        new CalendarEvent(instanceContainer, "eventidid", true);
+        new CalendarEvent(instanceContainer, CalendarEvent.strCalendarEventTypeAndName, true);
     }
 
     public void restoreEventFrom(ExecutionStatus executionStatus, boolean restoreFromDraft)
