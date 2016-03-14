@@ -1,4 +1,4 @@
-package instructable.server;
+package instructable.server.backend;
 
 import java.util.Optional;
 

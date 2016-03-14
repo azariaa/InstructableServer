@@ -1,4 +1,4 @@
-package instructable.server;
+package instructable.server.controllers;
 
 import instructable.server.hirarchy.EmailInfo;
 

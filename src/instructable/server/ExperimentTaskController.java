@@ -1,7 +1,7 @@
-package instructable;
+package instructable.server;
 
-import instructable.server.IEmailSender;
-import instructable.server.IIncomingEmailControlling;
+import instructable.server.controllers.IEmailSender;
+import instructable.server.backend.IIncomingEmailControlling;
 import instructable.server.hirarchy.EmailInfo;
 
 import java.util.*;

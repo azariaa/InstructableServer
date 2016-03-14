@@ -1,4 +1,4 @@
-package instructable;
+package instructable.server;
 
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpContext;

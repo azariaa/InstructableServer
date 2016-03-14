@@ -1,8 +1,8 @@
-package instructable;
+package instructable.server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import instructable.server.IAllUserActions;
+import instructable.server.backend.IAllUserActions;
 
 import java.io.OutputStream;
 import java.util.*;

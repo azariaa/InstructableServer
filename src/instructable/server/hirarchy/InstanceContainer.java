@@ -1,6 +1,6 @@
 package instructable.server.hirarchy;
 
-import instructable.server.ExecutionStatus;
+import instructable.server.backend.ExecutionStatus;
 import instructable.server.dal.InstanceKB;
 import instructable.server.dal.SingleInstance;
 

@@ -1,6 +1,6 @@
 package instructable.server.dal;
 
-import instructable.server.IIncomingEmailControlling;
+import instructable.server.backend.IIncomingEmailControlling;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 import instructable.server.hirarchy.EmailInfo;

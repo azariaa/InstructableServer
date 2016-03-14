@@ -1,10 +1,12 @@
-package instructable.server;
+package instructable.server.backend;
 
 import com.google.common.base.Preconditions;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import instructable.server.controllers.*;
 import instructable.server.hirarchy.*;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
+import instructable.server.parser.ICommandsToParser;
 import org.json.JSONObject;
 
 import java.util.LinkedList;
@@ -12,8 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-import static instructable.server.TextFormattingUtils.noEmailFound;
-import static instructable.server.TextFormattingUtils.userFriendlyList;
+import static instructable.server.backend.TextFormattingUtils.noEmailFound;
+import static instructable.server.backend.TextFormattingUtils.userFriendlyList;
 
 /**
  * Created by Amos Azaria on 20-Apr-15.
@@ -24,6 +26,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     InstanceContainer instanceContainer;
     ICommandsToParser commandsToParser;
     OutEmailCommandController outEmailCommandController;
+    CalendarEventController calendarEventController;
     public InboxCommandController inboxCommandController;
     CommandHistory commandHistory;
 
@@ -35,7 +38,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     Optional<JSONObject> previousFieldEval = Optional.empty();
     boolean usePendingResponses = true;
 
-    public TopDMAllActions(String userEmailAddress, String userId, ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses, Optional<IEmailFetcher> emailFetcher)
+    public TopDMAllActions(String userEmailAddress, String userId, ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses,
+                           Optional<IEmailFetcher> emailFetcher)//, Optional<ICalendarAccessor> calendarAccessor)
     {
         commandHistory = new CommandHistory();
         this.userEmailAddress = userEmailAddress;
@@ -44,6 +48,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         instanceContainer = new InstanceContainer(conceptContainer, userId);
         outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer, emailSender);
         inboxCommandController = new InboxCommandController(conceptContainer, instanceContainer, emailFetcher);
+        calendarEventController = new CalendarEventController(conceptContainer, instanceContainer, Optional.empty());//calendarAccessor);
         this.commandsToParser = commandsToParser;
         internalState = new InternalState();
         commandHistory.startRecording();
@@ -220,8 +225,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             }
         }
 
-
-        StringBuilder response = new StringBuilder();
         return testOkAndFormat(infoForCommand,
                 executionStatus,
                 false,
@@ -240,6 +243,40 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             return sendEmail(infoForCommand);
         }
         return failWithMessage(infoForCommand, "I don't know how to send " + instanceName);
+    }
+
+    @Override
+    public ActionResponse saveCalendarEvent(InfoForCommand infoForCommand)
+    {
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        calendarEventController.saveEvent(executionStatus);
+        //TODO:
+//        if (executionStatus.isError())
+//        {
+//            if (!outEmailCommandController.isAnEmailBeingComposed())
+//            {
+//                return TextFormattingUtils.noEmailFound(internalState);
+//            }
+//        }
+
+        return testOkAndFormat(infoForCommand,
+                executionStatus,
+                false,
+                true,
+                Optional.of("Event saved to calendar successfully."),
+                false,//true,
+                Optional.of(() -> createNewEventOrRestore(infoForCommand, true, false)));
+    }
+
+    @Override
+    public ActionResponse save(InfoForCommand infoForCommand, String instanceName)
+    {
+        //instanceName can actually also be a conceptName (probably outgoing_email), for example when saying: "send an email", or "send one email"
+        if (instanceName.equals(CalendarEvent.strCalendarEventTypeAndName))
+        {
+            return saveCalendarEvent(infoForCommand);
+        }
+        return failWithMessage(infoForCommand, "I don't know how to save " + instanceName);
     }
 
     public ActionResponse yes(InfoForCommand infoForCommand)
@@ -809,6 +846,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             return createNewEmailOrRestore(infoForCommand, false, true);
         }
+
+        if (conceptName.equals(CalendarEvent.strCalendarEventTypeAndName))
+        {
+            return createNewEventOrRestore(infoForCommand, false, true);
+        }
         return failWithMessage(infoForCommand, "creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name)");
     }
 
@@ -852,6 +894,49 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 Optional.of(successSentence),
                 false,//true,
                 Optional.of(() -> createNewEmailOrRestore(infoForCommand, !restore, restoreFromDraft)));
+    }
+
+
+    /**
+     *
+     * @param restore undo an event creation or event saved
+     * @param restoreFromDraft if true restore from draft, if false restore from saved event (and delete event)
+     * @return
+     */
+    private ActionResponse createNewEventOrRestore(InfoForCommand infoForCommand, boolean restore, boolean restoreFromDraft)
+    {
+        String conceptName = CalendarEvent.strCalendarEventTypeAndName;
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        if (restore)
+        {
+            calendarEventController.restoreEventFrom(executionStatus, restoreFromDraft);
+        }
+        else
+        {
+            calendarEventController.createNewEvent(executionStatus);
+        }
+
+        String successSentence;
+        if (restore)
+        {
+            if(restoreFromDraft)
+                successSentence = "Draft restored successfully.";
+            else
+                successSentence = "Event restored successfully (and deleted).";
+        }
+        else
+        {
+            List<String> emailFieldNames = conceptContainer.getAllFieldNames(conceptName);
+            successSentence = "Creating new event. " + "\"" + conceptName + "\" fields are: " + userFriendlyList(emailFieldNames) + ".";
+        }
+
+        return testOkAndFormat(infoForCommand,
+                executionStatus,
+                false,
+                true,
+                Optional.of(successSentence),
+                false,//true,
+                Optional.of(() -> createNewEventOrRestore(infoForCommand, !restore, restoreFromDraft)));
     }
 
     @Override

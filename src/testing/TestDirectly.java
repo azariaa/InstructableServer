@@ -1,9 +1,11 @@
 package testing;
 
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import instructable.server.*;
+import instructable.server.backend.*;
 import instructable.server.ccg.ParserSettings;
+import instructable.server.controllers.IEmailSender;
 import instructable.server.hirarchy.EmailInfo;
+import instructable.server.parser.ICommandsToParser;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;

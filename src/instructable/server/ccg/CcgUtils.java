@@ -24,7 +24,7 @@ import com.jayantkrish.jklol.util.CsvParser;
 import com.jayantkrish.jklol.util.IntegerArrayIterator;
 import com.jayantkrish.jklol.util.PairCountAccumulator;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import instructable.server.LispExecutor;
+import instructable.server.parser.LispExecutor;
 
 import java.io.BufferedReader;
 import java.io.File;

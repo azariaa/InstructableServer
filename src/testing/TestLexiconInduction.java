@@ -1,6 +1,6 @@
 package testing;
 
-import instructable.server.CommandsToParser;
+import instructable.server.parser.CommandsToParser;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 import instructable.server.ccg.WeightedCcgExample;

@@ -1,4 +1,4 @@
-package instructable.server;
+package instructable.server.backend;
 
 import org.apache.commons.lang3.StringUtils;
 

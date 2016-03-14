@@ -1,9 +1,9 @@
 package testing;
 
-import instructable.server.CommandsToParser;
-import instructable.server.IAllUserActions;
-import instructable.server.IIncomingEmailControlling;
-import instructable.server.TopDMAllActions;
+import instructable.server.parser.CommandsToParser;
+import instructable.server.backend.IAllUserActions;
+import instructable.server.backend.IIncomingEmailControlling;
+import instructable.server.backend.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 import instructable.server.dal.CreateParserFromFiles;

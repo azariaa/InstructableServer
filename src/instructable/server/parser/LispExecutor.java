@@ -1,8 +1,11 @@
-package instructable.server;
+package instructable.server.parser;
 
 import com.google.common.base.Preconditions;
 import com.jayantkrish.jklol.lisp.Environment;
 import com.jayantkrish.jklol.lisp.FunctionValue;
+import instructable.server.backend.ActionResponse;
+import instructable.server.backend.IAllUserActions;
+import instructable.server.backend.InfoForCommand;
 import instructable.server.hirarchy.FieldHolder;
 import instructable.server.hirarchy.GenericInstance;
 import org.json.JSONObject;

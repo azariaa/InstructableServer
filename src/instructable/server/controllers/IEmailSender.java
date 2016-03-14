@@ -1,4 +1,4 @@
-package instructable.server;
+package instructable.server.controllers;
 
 /**
  * Created by Amos Azaria on 02-Jun-15.

@@ -1,4 +1,4 @@
-package instructable.server;
+package instructable.server.backend;
 
 import instructable.server.hirarchy.FieldHolder;
 import instructable.server.hirarchy.GenericInstance;
@@ -17,6 +17,10 @@ public interface IAllUserActions
     ActionResponse sendEmail(InfoForCommand infoForCommand);
 
     ActionResponse send(InfoForCommand infoForCommand, String instanceName);
+
+    ActionResponse saveCalendarEvent(InfoForCommand infoForCommand);
+
+    ActionResponse save(InfoForCommand infoForCommand, String instanceName);
 
     //ActionResponse composeEmail(InfoForCommand infoForCommand);
 

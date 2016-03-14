@@ -1,11 +1,18 @@
-package instructable;
+package instructable.server;
 
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import instructable.server.*;
+import instructable.server.backend.ActionResponse;
+import instructable.server.backend.IAllUserActions;
+import instructable.server.backend.IGetAwaitingResponse;
+import instructable.server.backend.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
+import instructable.server.controllers.IEmailFetcher;
+import instructable.server.controllers.IEmailSender;
+import instructable.server.controllers.RealEmailOperations;
 import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.dal.EmailPassword;
+import instructable.server.parser.CommandsToParser;
 
 import java.util.*;
 import java.util.logging.Logger;

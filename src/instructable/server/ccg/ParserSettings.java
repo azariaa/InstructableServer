@@ -19,10 +19,10 @@ import com.jayantkrish.jklol.preprocessing.FeatureGenerator;
 import com.jayantkrish.jklol.preprocessing.FeatureVectorGenerator;
 import com.jayantkrish.jklol.training.NullLogFunction;
 import com.jayantkrish.jklol.util.IndexedList;
-import instructable.server.ActionResponse;
-import instructable.server.IAllUserActions;
-import instructable.server.InfoForCommand;
-import instructable.server.LispExecutor;
+import instructable.server.backend.ActionResponse;
+import instructable.server.backend.IAllUserActions;
+import instructable.server.backend.InfoForCommand;
+import instructable.server.parser.LispExecutor;
 import instructable.server.dal.InteractionRecording;
 import instructable.server.dal.ParserKnowledgeSeeder;
 

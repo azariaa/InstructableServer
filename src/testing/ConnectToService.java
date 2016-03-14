@@ -1,8 +1,8 @@
 package testing;
 
-import instructable.RealtimeAgentServer;
-import instructable.ExperimentServer;
-import instructable.Service;
+import instructable.server.RealtimeAgentServer;
+import instructable.server.ExperimentServer;
+import instructable.server.Service;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

@@ -1,8 +1,8 @@
 package instructable.server.hirarchy;
 
-import instructable.server.ExecutionStatus;
-import instructable.server.InstUtils;
-import instructable.server.TextFormattingUtils;
+import instructable.server.backend.ExecutionStatus;
+import instructable.server.backend.InstUtils;
+import instructable.server.backend.TextFormattingUtils;
 import instructable.server.dal.IFieldChanged;
 import instructable.server.hirarchy.fieldTypes.EmailAddress;
 import instructable.server.hirarchy.fieldTypes.FieldType;

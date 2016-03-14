@@ -1,4 +1,4 @@
-package instructable.server;
+package instructable.server.backend;
 
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 

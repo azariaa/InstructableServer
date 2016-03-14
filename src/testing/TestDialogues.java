@@ -1,7 +1,7 @@
 package testing;
 
-import instructable.AgentDataAndControl;
-import instructable.ExperimentTaskController;
+import instructable.server.AgentDataAndControl;
+import instructable.server.ExperimentTaskController;
 import instructable.server.ccg.CcgDetokenizer;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.WeightedCcgExample;

@@ -1,7 +1,7 @@
 package instructable.server.dal;
 
 import com.google.common.base.Preconditions;
-import instructable.server.RealEmailOperations;
+import instructable.server.controllers.RealEmailOperations;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 

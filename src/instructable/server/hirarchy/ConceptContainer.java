@@ -1,12 +1,12 @@
 package instructable.server.hirarchy;
 
-import instructable.server.ExecutionStatus;
+import instructable.server.backend.ExecutionStatus;
 import instructable.server.dal.ConceptFiledMap;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static instructable.server.TextFormattingUtils.userFriendlyList;
+import static instructable.server.backend.TextFormattingUtils.userFriendlyList;
 
 /**
  * Created by Amos Azaria on 21-Apr-15.

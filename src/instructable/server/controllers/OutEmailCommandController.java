@@ -1,5 +1,6 @@
-package instructable.server;
+package instructable.server.controllers;
 
+import instructable.server.backend.ExecutionStatus;
 import instructable.server.hirarchy.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class OutEmailCommandController
     private static final String sentPrefix = "sent";
     private static final String draftPrefix = "draft";
 
-    OutEmailCommandController(String myEmail, ConceptContainer conceptContainer, InstanceContainer instanceContainer, IEmailSender emailSender)
+    public OutEmailCommandController(String myEmail, ConceptContainer conceptContainer, InstanceContainer instanceContainer, IEmailSender emailSender)
     {
         this.myEmail = myEmail;
         conceptContainer.defineConcept(new ExecutionStatus(), OutgoingEmail.strOutgoingEmailTypeAndName, OutgoingEmail.getFieldDescriptions());

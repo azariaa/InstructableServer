@@ -1,6 +1,6 @@
 package instructable.server.ccg;
 
-import instructable.server.InstUtils;
+import instructable.server.backend.InstUtils;
 
 import java.util.LinkedList;
 import java.util.List;

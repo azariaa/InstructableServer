@@ -1,5 +1,7 @@
-package instructable.server;
+package instructable.server.controllers;
 
+import instructable.server.controllers.IEmailFetcher;
+import instructable.server.controllers.IEmailSender;
 import instructable.server.hirarchy.EmailInfo;
 
 import javax.mail.*;

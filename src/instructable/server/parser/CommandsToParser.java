@@ -1,6 +1,8 @@
-package instructable.server;
+package instructable.server.parser;
 
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import instructable.server.backend.ActionResponse;
+import instructable.server.backend.IGetAwaitingResponse;
 import instructable.server.ccg.ParserSettings;
 
 import java.util.List;

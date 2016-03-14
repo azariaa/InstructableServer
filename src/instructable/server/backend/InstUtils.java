@@ -1,4 +1,4 @@
-package instructable.server;
+package instructable.server.backend;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,6 +17,11 @@ public class InstUtils
 {
     static Set<String> pluralWords = null;
     static Set<String> singularWords = null;
+
+    public static Optional<Date> getDate(String val)
+    {
+        return Optional.of(new Date());
+    }
 
     public enum Plurality {unknown,singular,plural};
     public static Plurality wordPlurality(String word)

@@ -1,6 +1,6 @@
-package instructable;
+package instructable.server;
 
-import instructable.server.IIncomingEmailControlling;
+import instructable.server.backend.IIncomingEmailControlling;
 
 /**
  * Created by Amos Azaria on 02-Jun-15.
