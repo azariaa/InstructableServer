@@ -558,7 +558,18 @@ public class CcgUtils
       return newLexicon;
     }
 
-    static MaxentTagger maxentTagger = new MaxentTagger("resources/english-left3words-distsim.tagger");
+    static MaxentTagger maxentTagger;
+    static
+    {
+        try
+        {
+            maxentTagger = new MaxentTagger("resources/english-left3words-distsim.tagger");
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
 
 
     /**

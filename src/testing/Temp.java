@@ -86,7 +86,15 @@ public class Temp
         }
 
         //String text = "My dog likes to shake his stuffed chickadee toy.";
-        MaxentTagger tagger = new MaxentTagger(taggerPath);
+        MaxentTagger tagger = null;
+        try
+        {
+            tagger = new MaxentTagger(taggerPath);
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
         ShiftReduceParser model = ShiftReduceParser.loadModel(modelPath);
         Scanner scanIn = new Scanner(System.in);
 

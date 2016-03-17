@@ -1,32 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+<module external.linked.project.id="InstructableServer" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$" external.system.id="GRADLE" external.system.module.group="" external.system.module.version="1.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/build/classes/main" />
+    <output-test url="file://$MODULE_DIR$/build/classes/test" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
+      <excludeFolder url="file://$MODULE_DIR$/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="lib" level="project" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/json-simple-1.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="JUnit4">
-        <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit-4.11.jar!/" />
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/hamcrest-core-1.3.jar!/" />
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/hamcrest-library-1.3.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="Gradle: junit:junit:4.11" level="project" />
+    <orderEntry type="library" name="Gradle: org.codehaus.jackson:jackson-core-asl:1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.opennlp:opennlp-tools:1.5.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.hamcrest:hamcrest-core:1.3" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.opennlp:opennlp-maxent:3.0.3" level="project" />
+    <orderEntry type="library" name="Gradle: net.sf.jwordnet:jwnl:1.3.3" level="project" />
+    <orderEntry type="library" name="Gradle: xerces:xercesImpl:2.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: xalan:xalan:2.7.0" level="project" />
+    <orderEntry type="library" name="Gradle: xml-apis:xml-apis:2.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: edu.stanford.nlp:stanford-parser:3.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.json:json:20090211" level="project" />
+    <orderEntry type="library" name="Gradle: com.googlecode.efficient-java-matrix-library:ejml:0.23" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.12" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.commons:commons-lang3:3.0" level="project" />
+    <orderEntry type="library" name="Gradle: javax.mail:mail:1.4.7" level="project" />
+    <orderEntry type="library" name="Gradle: javax.activation:activation:1.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.guava:guava:11.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.findbugs:jsr305:1.3.9" level="project" />
+    <orderEntry type="library" name="Gradle: :jklol:" level="project" />
+    <orderEntry type="library" name="Gradle: mysql:mysql-connector-java:5.1.35" level="project" />
+    <orderEntry type="library" name="Gradle: edu.stanford.nlp:stanford-corenlp:3.5.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.io7m.xom:xom:1.2.10" level="project" />
+    <orderEntry type="library" name="Gradle: joda-time:joda-time:2.1" level="project" />
+    <orderEntry type="library" name="Gradle: de.jollyday:jollyday:0.4.7" level="project" />
+    <orderEntry type="library" name="Gradle: javax.json:javax.json-api:1.0" level="project" />
+    <orderEntry type="library" name="Gradle: javax.xml.bind:jaxb-api:2.2.7" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.7.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.joestelmach:natty:0.12" level="project" />
+    <orderEntry type="library" name="Gradle: org.antlr:antlr-runtime:3.5.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.mnode.ical4j:ical4j:1.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: commons-logging:commons-logging:1.1.1" level="project" />
+    <orderEntry type="library" name="Gradle: commons-codec:commons-codec:1.5" level="project" />
+    <orderEntry type="library" name="Gradle: commons-lang:commons-lang:2.6" level="project" />
+    <orderEntry type="library" name="Gradle: backport-util-concurrent:backport-util-concurrent:3.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.api-client:google-api-client:1.20.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.oauth-client:google-oauth-client-jetty:1.20.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.apis:google-api-services-calendar:v3-rev125-1.20.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.oauth-client:google-oauth-client:1.20.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.http-client:google-http-client-jackson2:1.20.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.guava:guava-jdk5:13.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.oauth-client:google-oauth-client-java6:1.20.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.mortbay.jetty:jetty:6.1.26" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.http-client:google-http-client:1.20.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.mortbay.jetty:jetty-util:6.1.26" level="project" />
+    <orderEntry type="library" name="Gradle: org.mortbay.jetty:servlet-api:2.5-20081211" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.httpcomponents:httpclient:4.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.httpcomponents:httpcore:4.0.1" level="project" />
   </component>
 </module>
