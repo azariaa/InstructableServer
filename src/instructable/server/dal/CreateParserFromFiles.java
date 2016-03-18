@@ -1,9 +1,9 @@
 package instructable.server.dal;
 
-import instructable.server.backend.IIncomingEmailControlling;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 import instructable.server.hirarchy.EmailInfo;
+import instructable.server.senseffect.IIncomingEmailControlling;
 
 import java.io.IOException;
 import java.nio.file.Files;

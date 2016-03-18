@@ -155,5 +155,7 @@ save,"S{0}/InstanceName","(lambda $1 (save $1))"
 description,FieldName{0},description,0 description
 time,FieldName{0},date_and_time,0 date_and_time
 date,FieldName{0},date_and_time,0 date_and_time
+"date and time",FieldName{0},date_and_time,0 date_and_time
 participants,FieldName{0},participant_list,0 participant_list
 participant,FieldName{0},participant_list,0 participant_list
+duration,FieldName{0},duration,0 duration

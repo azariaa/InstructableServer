@@ -5,5 +5,5 @@ package instructable.server.hirarchy.fieldTypes;
  */
 public enum PossibleFieldType
 {
-    singleLineString, multiLineString, emailAddress, date
+    singleLineString, multiLineString, emailAddress, date, typeDouble
 };//, emailAddressList};

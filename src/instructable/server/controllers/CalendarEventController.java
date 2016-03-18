@@ -1,7 +1,11 @@
 package instructable.server.controllers;
 
 import instructable.server.backend.ExecutionStatus;
-import instructable.server.hirarchy.*;
+import instructable.server.hirarchy.CalendarEventInfo;
+import instructable.server.hirarchy.ConceptContainer;
+import instructable.server.hirarchy.GenericInstance;
+import instructable.server.hirarchy.InstanceContainer;
+import instructable.server.senseffect.ICalendarAccessor;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,8 +26,8 @@ public class CalendarEventController
     {
         this.calendarAccessor = calendarAccessor;
         this.instanceContainer = instanceContainer;
-        conceptContainer.defineConcept(new ExecutionStatus(), CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.getFieldDescriptions(true));
-        List<GenericInstance> allOutEmails = instanceContainer.getAllInstances(CalendarEvent.strCalendarEventTypeAndName);
+        conceptContainer.defineConcept(new ExecutionStatus(), CalendarEventInfo.strCalendarEventTypeAndName, CalendarEventInfo.getFieldDescriptions(true));
+        List<GenericInstance> allOutEmails = instanceContainer.getAllInstances(CalendarEventInfo.strCalendarEventTypeAndName);
         numOfDrafts = allOutEmails.stream().filter(x->x.getName().startsWith(draftPrefix)).count();
         numOfEventsSaved = allOutEmails.stream().filter(x->x.getName().startsWith(savedPrefix)).count();
     }
@@ -36,21 +40,28 @@ public class CalendarEventController
         }
         else
         {
-            Optional<CalendarEvent>  composedCalendarEvent = getCalendarEventBeingComposed(executionStatus);
+            Optional<CalendarEventInfo>  composedCalendarEvent = getCalendarEventBeingComposed(executionStatus);
             if (composedCalendarEvent.isPresent() && checkSavingPrerequisites(executionStatus, composedCalendarEvent.get()))
             {
-                calendarAccessor.get().SaveEvent();
+                CalendarEventInfo eventInfo = composedCalendarEvent.get();
+                calendarAccessor.get().SaveEvent(
+                        eventInfo.getTitle(),
+                        eventInfo.getDescription(),
+                        eventInfo.getDate().get(), //must have date, because checked in prerequisites.
+                        eventInfo.getDuration(),
+                        eventInfo.getParticipants()
+                );
                 if (executionStatus.noError())
                 {
-                    instanceContainer.setMutability(executionStatus, CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.strCalendarEventTypeAndName, false);
-                    instanceContainer.renameInstance(executionStatus, CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.strCalendarEventTypeAndName, getCurrentSavedName());
+                    instanceContainer.setMutability(executionStatus, CalendarEventInfo.strCalendarEventTypeAndName, CalendarEventInfo.strCalendarEventTypeAndName, false);
+                    instanceContainer.renameInstance(executionStatus, CalendarEventInfo.strCalendarEventTypeAndName, CalendarEventInfo.strCalendarEventTypeAndName, getCurrentSavedName());
                     numOfEventsSaved++;
                 }
             }
         }
     }
 
-    private boolean checkSavingPrerequisites(ExecutionStatus executionStatus, CalendarEvent calendarEvent)
+    private boolean checkSavingPrerequisites(ExecutionStatus executionStatus, CalendarEventInfo calendarEvent)
     {
         if (calendarEvent.hasDate())
             return true;
@@ -59,12 +70,12 @@ public class CalendarEventController
         return false;
     }
 
-    public Optional<CalendarEvent> getCalendarEventBeingComposed(ExecutionStatus executionStatus)
+    public Optional<CalendarEventInfo> getCalendarEventBeingComposed(ExecutionStatus executionStatus)
     {
-        Optional<GenericInstance> composedCalendarEvent = instanceContainer.getInstance(executionStatus, CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.strCalendarEventTypeAndName);
+        Optional<GenericInstance> composedCalendarEvent = instanceContainer.getInstance(executionStatus, CalendarEventInfo.strCalendarEventTypeAndName, CalendarEventInfo.strCalendarEventTypeAndName);
         if (composedCalendarEvent.isPresent())
         {
-            return Optional.of(new CalendarEvent(composedCalendarEvent.get()));
+            return Optional.of(new CalendarEventInfo(composedCalendarEvent.get()));
         }
         else
         {
@@ -76,16 +87,16 @@ public class CalendarEventController
     public void createNewEvent(ExecutionStatus executionStatus)
     {
         //first rename old one to draft if exists.
-        Optional<GenericInstance> composedCalendarEvent = instanceContainer.getInstance(new ExecutionStatus(), CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.strCalendarEventTypeAndName);
+        Optional<GenericInstance> composedCalendarEvent = instanceContainer.getInstance(new ExecutionStatus(), CalendarEventInfo.strCalendarEventTypeAndName, CalendarEventInfo.strCalendarEventTypeAndName);
         if (composedCalendarEvent.isPresent())
         {
-            instanceContainer.setMutability(executionStatus, CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.strCalendarEventTypeAndName, false); //old draft will be immutable, user will need to restore draft in order to change it
+            instanceContainer.setMutability(executionStatus, CalendarEventInfo.strCalendarEventTypeAndName, CalendarEventInfo.strCalendarEventTypeAndName, false); //old draft will be immutable, user will need to restore draft in order to change it
             instanceContainer.renameInstance(new ExecutionStatus(), composedCalendarEvent.get().getConceptName(), composedCalendarEvent.get().getName(), getCurrentDraftName());
             numOfDrafts++;
             //instanceContainer.deleteInstance(new ExecutionStatus(), emailBeingComposed.get());
         }
         //now create a new one
-        new CalendarEvent(instanceContainer, CalendarEvent.strCalendarEventTypeAndName, true);
+        new CalendarEventInfo(instanceContainer, CalendarEventInfo.strCalendarEventTypeAndName, true);
     }
 
     public void restoreEventFrom(ExecutionStatus executionStatus, boolean restoreFromDraft)
@@ -96,9 +107,9 @@ public class CalendarEventController
             {
                 deleteCurrentEventIfExists();
                 numOfDrafts--;
-                instanceContainer.renameInstance(executionStatus, CalendarEvent.strCalendarEventTypeAndName, getCurrentDraftName(), CalendarEvent.strCalendarEventTypeAndName);
+                instanceContainer.renameInstance(executionStatus, CalendarEventInfo.strCalendarEventTypeAndName, getCurrentDraftName(), CalendarEventInfo.strCalendarEventTypeAndName);
                 if (executionStatus.isOkOrComment())
-                    instanceContainer.setMutability(new ExecutionStatus(), CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.strCalendarEventTypeAndName, true);
+                    instanceContainer.setMutability(new ExecutionStatus(), CalendarEventInfo.strCalendarEventTypeAndName, CalendarEventInfo.strCalendarEventTypeAndName, true);
             }
             else
                 executionStatus.add(ExecutionStatus.RetStatus.error, "no draft found");
@@ -109,9 +120,9 @@ public class CalendarEventController
             {
                 deleteCurrentEventIfExists();
                 numOfEventsSaved--;
-                instanceContainer.renameInstance(executionStatus, CalendarEvent.strCalendarEventTypeAndName, getCurrentSavedName(), CalendarEvent.strCalendarEventTypeAndName);
+                instanceContainer.renameInstance(executionStatus, CalendarEventInfo.strCalendarEventTypeAndName, getCurrentSavedName(), CalendarEventInfo.strCalendarEventTypeAndName);
                 if (executionStatus.isOkOrComment())
-                    instanceContainer.setMutability(new ExecutionStatus(), CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.strCalendarEventTypeAndName, true);
+                    instanceContainer.setMutability(new ExecutionStatus(), CalendarEventInfo.strCalendarEventTypeAndName, CalendarEventInfo.strCalendarEventTypeAndName, true);
             }
             else
                 executionStatus.add(ExecutionStatus.RetStatus.error, "no saved event found");
@@ -120,7 +131,7 @@ public class CalendarEventController
 
     private void deleteCurrentEventIfExists()
     {
-        Optional<GenericInstance> eventBeingComposed = instanceContainer.getInstance(new ExecutionStatus(), CalendarEvent.strCalendarEventTypeAndName, CalendarEvent.strCalendarEventTypeAndName);
+        Optional<GenericInstance> eventBeingComposed = instanceContainer.getInstance(new ExecutionStatus(), CalendarEventInfo.strCalendarEventTypeAndName, CalendarEventInfo.strCalendarEventTypeAndName);
         if (eventBeingComposed.isPresent())
         {
             instanceContainer.deleteInstance(new ExecutionStatus(), eventBeingComposed.get());

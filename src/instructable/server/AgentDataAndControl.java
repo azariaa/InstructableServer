@@ -7,12 +7,13 @@ import instructable.server.backend.IGetAwaitingResponse;
 import instructable.server.backend.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
-import instructable.server.controllers.IEmailFetcher;
-import instructable.server.controllers.IEmailSender;
-import instructable.server.controllers.RealEmailOperations;
+import instructable.server.senseffect.IAddInboxEmails;
 import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.dal.EmailPassword;
 import instructable.server.parser.CommandsToParser;
+import instructable.server.senseffect.IEmailFetcher;
+import instructable.server.senseffect.IEmailSender;
+import instructable.server.senseffect.RealEmailOperations;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -80,7 +81,7 @@ public class AgentDataAndControl
     {
         ParserSettings parserSettingsCopy = originalParserSettings.createPSFromGeneralForUser(userId);
         CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy);
-        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", userId, commandsToParser, emailSender, usePendingResponses, emailFetcher);
+        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", userId, commandsToParser, emailSender, usePendingResponses, emailFetcher, Optional.empty());
         if (addInboxEmails.isPresent())
             addInboxEmails.get().addInboxEmails(topDMAllActions);
         return new ParserSetAndActions(parserSettingsCopy, topDMAllActions, commandsToParser);

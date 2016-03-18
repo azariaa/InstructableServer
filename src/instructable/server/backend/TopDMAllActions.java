@@ -3,10 +3,16 @@ package instructable.server.backend;
 import com.google.common.base.Preconditions;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import instructable.server.controllers.*;
+import instructable.server.controllers.CalendarEventController;
+import instructable.server.controllers.InboxCommandController;
+import instructable.server.controllers.OutEmailCommandController;
 import instructable.server.hirarchy.*;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 import instructable.server.parser.ICommandsToParser;
+import instructable.server.senseffect.ICalendarAccessor;
+import instructable.server.senseffect.IEmailFetcher;
+import instructable.server.senseffect.IEmailSender;
+import instructable.server.senseffect.IIncomingEmailControlling;
 import org.json.JSONObject;
 
 import java.util.LinkedList;
@@ -39,7 +45,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     boolean usePendingResponses = true;
 
     public TopDMAllActions(String userEmailAddress, String userId, ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses,
-                           Optional<IEmailFetcher> emailFetcher)//, Optional<ICalendarAccessor> calendarAccessor)
+                           Optional<IEmailFetcher> emailFetcher,
+                           Optional<ICalendarAccessor> calendarAccessor)
     {
         commandHistory = new CommandHistory();
         this.userEmailAddress = userEmailAddress;
@@ -48,7 +55,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         instanceContainer = new InstanceContainer(conceptContainer, userId);
         outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer, emailSender);
         inboxCommandController = new InboxCommandController(conceptContainer, instanceContainer, emailFetcher);
-        calendarEventController = new CalendarEventController(conceptContainer, instanceContainer, Optional.empty());//calendarAccessor);
+        calendarEventController = new CalendarEventController(conceptContainer, instanceContainer, calendarAccessor);
         this.commandsToParser = commandsToParser;
         internalState = new InternalState();
         commandHistory.startRecording();
@@ -272,7 +279,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse save(InfoForCommand infoForCommand, String instanceName)
     {
         //instanceName can actually also be a conceptName (probably outgoing_email), for example when saying: "send an email", or "send one email"
-        if (instanceName.equals(CalendarEvent.strCalendarEventTypeAndName))
+        if (instanceName.equals(CalendarEventInfo.strCalendarEventTypeAndName))
         {
             return saveCalendarEvent(infoForCommand);
         }
@@ -847,7 +854,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             return createNewEmailOrRestore(infoForCommand, false, true);
         }
 
-        if (conceptName.equals(CalendarEvent.strCalendarEventTypeAndName))
+        if (conceptName.equals(CalendarEventInfo.strCalendarEventTypeAndName))
         {
             return createNewEventOrRestore(infoForCommand, false, true);
         }
@@ -905,7 +912,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
      */
     private ActionResponse createNewEventOrRestore(InfoForCommand infoForCommand, boolean restore, boolean restoreFromDraft)
     {
-        String conceptName = CalendarEvent.strCalendarEventTypeAndName;
+        String conceptName = CalendarEventInfo.strCalendarEventTypeAndName;
         ExecutionStatus executionStatus = new ExecutionStatus();
         if (restore)
         {

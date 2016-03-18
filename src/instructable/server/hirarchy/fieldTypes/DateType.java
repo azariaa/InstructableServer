@@ -21,7 +21,7 @@ public class DateType extends FieldType
     /*
     returns true if managed to set
      */
-    public void setDate(ExecutionStatus executionStatus, String val)
+    public void setDouble(ExecutionStatus executionStatus, String val)
     {
         Optional<Date> dateRes = InstUtils.getDate(val);
         if (dateRes.isPresent())
@@ -50,7 +50,15 @@ public class DateType extends FieldType
     @Override
     public boolean isEmpty()
     {
-        return fieldVal == null;
+        try
+        {
+            dateFormat.parse(fieldVal);
+            return false;
+        }
+        catch (Exception e)
+        {
+            return true;
+        }
     }
 
     @Override
@@ -59,7 +67,7 @@ public class DateType extends FieldType
         //can't add to an email address, just replace it.
         //may indicate that the user really means to have a list of emails
         ExecutionStatus settingRetVal = new ExecutionStatus();
-        setDate(settingRetVal, toAdd);
+        setDouble(settingRetVal, toAdd);
         if (settingRetVal.isOkOrComment())
         {
             executionStatus.add(ExecutionStatus.RetStatus.warning, "a date time cannot be added, and therefore was replaced");
@@ -75,6 +83,6 @@ public class DateType extends FieldType
     @Override
     public void setFromString(ExecutionStatus executionStatus, String val)
     {
-        setDate(executionStatus, val);
+        setDouble(executionStatus, val);
     }
 }

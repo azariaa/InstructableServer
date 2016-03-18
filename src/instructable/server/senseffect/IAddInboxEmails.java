@@ -1,6 +1,4 @@
-package instructable.server;
-
-import instructable.server.backend.IIncomingEmailControlling;
+package instructable.server.senseffect;
 
 /**
  * Created by Amos Azaria on 02-Jun-15.

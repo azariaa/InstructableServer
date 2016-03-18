@@ -1,5 +1,7 @@
 package instructable.server.backend;
 
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -17,10 +19,15 @@ public class InstUtils
 {
     static Set<String> pluralWords = null;
     static Set<String> singularWords = null;
+    static Parser parser = new Parser();
 
     public static Optional<Date> getDate(String val)
     {
-        return Optional.of(new Date()); //TODO: always returns now!!!
+        List<DateGroup> dates = parser.parse(val);
+        if (dates.size() > 0)
+            return Optional.of(dates.get(0).getDates().get(0));
+        else
+            return Optional.empty();
     }
 
     public enum Plurality {unknown,singular,plural};

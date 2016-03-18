@@ -1,14 +1,14 @@
 package testing;
 
-import instructable.server.dal.CreateParserFromFiles;
-import instructable.server.parser.CommandsToParser;
 import instructable.server.backend.IAllUserActions;
-import instructable.server.backend.IIncomingEmailControlling;
 import instructable.server.backend.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
+import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.dal.DBUtils;
 import instructable.server.hirarchy.EmailInfo;
+import instructable.server.parser.CommandsToParser;
+import instructable.server.senseffect.IIncomingEmailControlling;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
@@ -44,7 +44,7 @@ public class TestWithParser
 
         ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of(userId));
 
-        IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", userId, new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, false, Optional.empty());
+        IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", userId, new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, false, Optional.empty(), Optional.empty());
 
         TestSimplifier testSimplifier = new TestSimplifier(allUserActions, testHelpers, parserSettings);
 

@@ -1,7 +1,5 @@
 package testing;
 
-import com.joestelmach.natty.DateGroup;
-import com.joestelmach.natty.Parser;
 import instructable.server.backend.IAllUserActions;
 import instructable.server.backend.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
@@ -9,9 +7,8 @@ import instructable.server.ccg.ParserSettings;
 import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.dal.DBUtils;
 import instructable.server.parser.CommandsToParser;
+import instructable.server.senseffect.RealCalendar;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 /**
@@ -25,27 +22,14 @@ public class CommandLine
         String userId = "tempUser";
         DBUtils.clearUserData(userId);
         ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of(userId));
-        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, true, Optional.empty());
+        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, true, Optional.empty(), Optional.of(new RealCalendar()));
         IAllUserActions allUserActions = topDMAllActions;
 
         CreateParserFromFiles.addInboxEmails(topDMAllActions);
 
         Scanner scanIn = new Scanner(System.in);
-        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        System.out.println("\nS: What would you want me to do?");
         //clearConsole();
-        System.out.println("S: What would you want me to do?");
-        String[] exampleDates = {
-                "2015-10-10",
-                "2015/10/10",
-                "2015-10-30 15:30"
-        };
-
-        Parser parser = new Parser();
-        for (String dateString : exampleDates) {
-            List<DateGroup> dates = parser.parse(dateString);
-            Date date = dates.get(0).getDates().get(0);
-            System.out.println(date);
-        }
         while (true)
         {
             String userSays = scanIn.nextLine();

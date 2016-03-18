@@ -1,8 +1,9 @@
 package instructable.server;
 
-import instructable.server.controllers.IEmailSender;
-import instructable.server.backend.IIncomingEmailControlling;
 import instructable.server.hirarchy.EmailInfo;
+import instructable.server.senseffect.IAddInboxEmails;
+import instructable.server.senseffect.IEmailSender;
+import instructable.server.senseffect.IIncomingEmailControlling;
 
 import java.util.*;
 import java.util.logging.Logger;

@@ -1,14 +1,14 @@
 package testing;
 
-import instructable.server.parser.CommandsToParser;
 import instructable.server.backend.IAllUserActions;
-import instructable.server.backend.IIncomingEmailControlling;
 import instructable.server.backend.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.dal.DBUtils;
 import instructable.server.hirarchy.EmailInfo;
+import instructable.server.parser.CommandsToParser;
+import instructable.server.senseffect.IIncomingEmailControlling;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -76,7 +76,7 @@ public class AnnotateInteractions
             DBUtils.clearUserData(userId); //Amos added
 			ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of(userId));
 			IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", userId, new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {
-            }, false, Optional.empty());
+            }, false, Optional.empty(), Optional.empty());
 			addContextEmails((TopDMAllActions) allUserActions);
 			System.out.println("Ready to annotate!");
 

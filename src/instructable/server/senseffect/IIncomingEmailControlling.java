@@ -1,4 +1,4 @@
-package instructable.server.backend;
+package instructable.server.senseffect;
 
 import instructable.server.hirarchy.EmailInfo;
 

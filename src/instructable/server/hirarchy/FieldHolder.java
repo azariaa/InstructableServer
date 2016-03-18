@@ -75,6 +75,9 @@ public class FieldHolder
             case date:
                 fieldVal = new DateType();
                 break;
+            case typeDouble:
+                fieldVal = new TypeDouble();
+                break;
         }
         return fieldVal;
     }

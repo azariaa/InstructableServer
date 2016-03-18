@@ -1,7 +1,8 @@
 package instructable.server.dal;
 
 import com.google.common.base.Preconditions;
-import instructable.server.controllers.RealEmailOperations;
+import instructable.server.senseffect.RealCalendar;
+import instructable.server.senseffect.RealEmailOperations;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -175,6 +176,12 @@ public class EmailPassword
 
     }
 
+    /**
+     *  assume already has password
+     * @param username
+     * @param decryptionPswd
+     * @return
+     */
     public static Optional<RealEmailOperations> getRealEmailOp(String username, String decryptionPswd)
     {
         Optional<EmailPassword> emailPassword = retrieveEmailNPassword(username, decryptionPswd);
@@ -194,5 +201,15 @@ public class EmailPassword
             e.printStackTrace();
         }
         return Optional.empty();
+    }
+
+//    public static RealEmailOperations getRealEmailOp(EmailPassword emailPassword)
+//    {
+//        return new RealEmailOperations(emailPassword.email, emailPassword.password, emailPassword.email);
+//    }
+
+    public static RealCalendar getRealCalendarOp(EmailPassword emailPassword)
+    {
+        return new RealCalendar(); //doesn't use username and password.
     }
 }

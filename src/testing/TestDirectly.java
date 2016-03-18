@@ -1,11 +1,15 @@
 package testing;
 
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import instructable.server.backend.*;
+import instructable.server.backend.ActionResponse;
+import instructable.server.backend.IAllUserActions;
+import instructable.server.backend.InfoForCommand;
+import instructable.server.backend.TopDMAllActions;
 import instructable.server.ccg.ParserSettings;
-import instructable.server.controllers.IEmailSender;
 import instructable.server.hirarchy.EmailInfo;
 import instructable.server.parser.ICommandsToParser;
+import instructable.server.senseffect.IEmailSender;
+import instructable.server.senseffect.IIncomingEmailControlling;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintWriter;
@@ -86,7 +90,7 @@ public class TestDirectly
                     {
                         //do nothing
                     }
-                }, false, Optional.empty());
+                }, false, Optional.empty(), Optional.empty());
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
 

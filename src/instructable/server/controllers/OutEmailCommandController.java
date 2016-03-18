@@ -2,6 +2,7 @@ package instructable.server.controllers;
 
 import instructable.server.backend.ExecutionStatus;
 import instructable.server.hirarchy.*;
+import instructable.server.senseffect.IEmailSender;
 
 import java.util.List;
 import java.util.Optional;
