@@ -16,7 +16,7 @@ import java.util.Optional;
 public class DateType extends FieldType
 {
 
-    static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /*
     returns true if managed to set

@@ -4,6 +4,7 @@ import instructable.server.backend.ExecutionStatus;
 import instructable.server.hirarchy.fieldTypes.DateType;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 import instructable.server.hirarchy.fieldTypes.TypeDouble;
+import instructable.server.senseffect.ICalendarAccessor;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -13,9 +14,10 @@ import java.util.Optional;
 /**
  * Created by Amos Azaria on 15-Apr-15.
  */
-public class CalendarEventInfo
+public class CalendarEvent
 {
     public static final String strCalendarEventTypeAndName = "calendar event";
+
     public static final String titleStr = "subject";//"title";
     public static final String descriptionStr = "description";
     public static final String dateTimeStr = "date and time";
@@ -43,14 +45,29 @@ public class CalendarEventInfo
     }
 
 
-    public CalendarEventInfo(InstanceContainer instanceContainer, String eventId, boolean isMutable)
+    public CalendarEvent(InstanceContainer instanceContainer, String eventId, boolean isMutable)
     {
         instanceContainer.addInstance(new ExecutionStatus(), strCalendarEventTypeAndName, eventId, isMutable);
         instance = instanceContainer.getInstance(new ExecutionStatus(), strCalendarEventTypeAndName, eventId).get(); //not checking, since just created.
         instance.setField(new ExecutionStatus(), durationStr, Optional.of(defaultDuration.toString()), Optional.empty(), false, false, false);
     }
 
-    public CalendarEventInfo(GenericInstance instance)
+    public CalendarEvent(InstanceContainer instanceContainer, ICalendarAccessor.EventFields eventFields, boolean isMutable)
+    {
+        this(instanceContainer, eventFields.eventId, isMutable);
+        simpleSet(titleStr, eventFields.title);
+        simpleSet(descriptionStr, eventFields.description);
+        simpleSet(dateTimeStr, DateType.dateFormat.format(eventFields.time));
+        simpleSet(durationStr, eventFields.durationInMinutes.toString());
+    }
+
+    private void simpleSet(String field, String val)
+    {
+        if (field != null && val != null)
+            instance.setField(new ExecutionStatus(), field, Optional.of(val), Optional.empty(), false, false, true);
+    }
+
+    public CalendarEvent(GenericInstance instance)
     {
         this.instance = instance;
     }

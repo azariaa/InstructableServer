@@ -279,7 +279,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse save(InfoForCommand infoForCommand, String instanceName)
     {
         //instanceName can actually also be a conceptName (probably outgoing_email), for example when saying: "send an email", or "send one email"
-        if (instanceName.equals(CalendarEventInfo.strCalendarEventTypeAndName))
+        if (instanceName.equals(CalendarEvent.strCalendarEventTypeAndName))
         {
             return saveCalendarEvent(infoForCommand);
         }
@@ -854,7 +854,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             return createNewEmailOrRestore(infoForCommand, false, true);
         }
 
-        if (conceptName.equals(CalendarEventInfo.strCalendarEventTypeAndName))
+        if (conceptName.equals(CalendarEvent.strCalendarEventTypeAndName))
         {
             return createNewEventOrRestore(infoForCommand, false, true);
         }
@@ -912,7 +912,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
      */
     private ActionResponse createNewEventOrRestore(InfoForCommand infoForCommand, boolean restore, boolean restoreFromDraft)
     {
-        String conceptName = CalendarEventInfo.strCalendarEventTypeAndName;
+        String conceptName = CalendarEvent.strCalendarEventTypeAndName;
         ExecutionStatus executionStatus = new ExecutionStatus();
         if (restore)
         {
@@ -1245,6 +1245,50 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                     Optional.of("Set to " + nextOrPrev + " incoming email successfully."),
                     false,
                     Optional.of(() -> nextPrevLastIdx(infoForCommand, instanceName, opposite)));
+        }
+        else if (instanceName.equals(CalendarEvent.strCalendarEventTypeAndName))
+        {
+            final CNextPrevLastIdx opposite;
+            GenericInstance instance = null;
+            ExecutionStatus executionStatus = new ExecutionStatus();
+            if ((nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.next) ||
+                    (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.previous))
+            {
+            boolean wantsNext = (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.next);
+
+                Optional<GenericInstance> ret = calendarEventController.getNextPrevCalendarEvent(executionStatus, wantsNext);
+                if (ret.isPresent())
+                {
+                    instance = ret.get();
+                    if (wantsNext)
+                        opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.previous);
+                    else
+                        opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.next);
+                }
+                else
+                    opposite = null; //must set to something, will anyway fail so won't undo
+            }
+            else
+            {
+                executionStatus.add(ExecutionStatus.RetStatus.error, "Cannot get latest meeting");
+                opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.previous);
+            }
+
+            instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName());
+
+            ActionResponse actionResponse = testOkAndFormat(infoForCommand,
+                    executionStatus,
+                    true,
+                    true,
+                    Optional.of("Set to " + nextOrPrev + " incoming email successfully."),
+                    false,
+                    Optional.of(() -> nextPrevLastIdx(infoForCommand, instanceName, opposite)));
+            if (executionStatus.noError())
+            {
+                //actionResponse.addInstance(instance);
+                return readInstance(infoForCommand, instance);
+            }
+            return actionResponse;
         }
         return failWithMessage(infoForCommand, "I don't know how to give you the " + nextOrPrev + " " + instanceName);
     }

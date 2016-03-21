@@ -21,10 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by Amos Azaria on 15-Jul-15.
@@ -193,17 +190,17 @@ public class RealCalendar implements ICalendarAccessor
 
 
     @Override
-    public void SaveEvent(String title, String description, Date time, double durationInMinutes, List<String> participants)
+    public void SaveEvent(EventFields eventFields)//String title, String description, Date time, double durationInMinutes, List<String> participants)
     {
         try
         {
             Event eventToAdd = new Event();
-            if (title != null)
-                eventToAdd.setSummary(title);
-            if (description != null)
-                eventToAdd.setDescription(description);
-            EventDateTime startTime = new EventDateTime().setDateTime(new DateTime(time.getTime()));
-            EventDateTime endTime = new EventDateTime().setDateTime(new DateTime(time.getTime() + (long)(durationInMinutes*60*1000)));
+            if (eventFields.title != null)
+                eventToAdd.setSummary(eventFields.title);
+            if (eventFields.description != null)
+                eventToAdd.setDescription(eventFields.description);
+            EventDateTime startTime = new EventDateTime().setDateTime(new DateTime(eventFields.time.getTime()));
+            EventDateTime endTime = new EventDateTime().setDateTime(new DateTime(eventFields.time.getTime() + (long)(eventFields.durationInMinutes*60*1000)));
             eventToAdd.setStart(startTime);
             eventToAdd.setEnd(endTime);
 
@@ -213,6 +210,91 @@ public class RealCalendar implements ICalendarAccessor
         {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public Optional<EventFields> getNextPrevCalendarEvent(boolean next, Date startingFrom, Double currEventDuration)
+    {
+        DateTime startingAsDateTime = new DateTime(new Date(startingFrom.getTime() + (next ? (int)(currEventDuration*60*1000) : 0)));//, TimeZone.getDefault());
+        Events events = null;
+        if (next)
+        {
+            try
+            {
+                events = calService.events().list("primary")
+                        .setMaxResults(1)
+                        .setTimeMin(startingAsDateTime)
+                        .setOrderBy("startTime")
+                        .setSingleEvents(true)
+                        .execute();
+            } catch (IOException e)
+            {
+                return Optional.empty();
+            }
+            List<Event> items = events.getItems();
+            if (items.size() == 0)
+            {
+                return Optional.empty();
+            }
+            return Optional.of(getEventFieldsFromGoogleEvent(items.get(0)));
+        }
+        else
+        {
+            int daysBack = 1;
+            while (daysBack <= 100)
+            {
+                try
+                {
+                    //can't sort descending, so checking latest from 1, 10 and 100 days back.
+                    events = calService.events().list("primary")
+                            //.setMaxResults(1)
+                            .setTimeMax(startingAsDateTime)
+                            .setTimeMin(new DateTime(startingFrom.getTime() - daysBack * 24 * 60 * 60 * 1000))
+                            .setOrderBy("startTime")
+                            //.setOrderBy("d")
+                            .setSingleEvents(true)
+                            .execute();
+                } catch (IOException e)
+                {
+                    return Optional.empty();
+                }
+                if (events != null && events.getItems().size() > 0)
+                {
+                    break;
+                }
+                daysBack *= 10;
+            }
+            if (events == null)
+                return Optional.empty();
+
+            List<Event> items = events.getItems();
+            if (items.size() == 0)
+            {
+                return Optional.empty();
+            }
+            return Optional.of(getEventFieldsFromGoogleEvent(items.get(items.size()-1)));
+        }
+    }
+
+    EventFields getEventFieldsFromGoogleEvent(Event event)
+    {
+        Date eventTime = new Date(event.getStart().getDateTime().getValue());
+        String eventId = "event";//event.getId()
+        if (event.getSummary() != null && event.getSummary().length() > 4)
+        {
+            eventId = event.getSummary().split(" ")[0];
+            if (eventId.length() > 10)
+                eventId = eventId.substring(0,10);
+        }
+        eventId = eventId + ((eventTime.getTime()/1000/10) % 10000000); //adding eventTime so will work also with recurrent
+        return new EventFields(
+                eventId,
+                event.getSummary(),
+                event.getDescription(),
+                eventTime,
+                (event.getEnd().getDateTime().getValue() - event.getStart().getDateTime().getValue())/(1000*60),
+                new LinkedList<String>()
+        );
     }
 
     public void printUpcomingEvents() throws IOException
@@ -239,7 +321,7 @@ public class RealCalendar implements ICalendarAccessor
                 DateTime start = event.getStart().getDateTime();
                 if (start == null)
                 {
-                    start = event.getStart().getDate();
+                    start = event.getStart().getDateTime();
                 }
                 System.out.printf("%s (%s)\n", event.getSummary(), start);
             }
