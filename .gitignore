@@ -57,3 +57,7 @@ InstructableServer.zip
 data/anno/
 resources/client_secret.json
 build/libs/instructableServer.jar
+.gradle/
+build/distributions/
+build/libs/InstructableServer-1.0.jar
+build/
