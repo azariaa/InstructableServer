@@ -89,3 +89,4 @@ nevermind,{cancel}
 forget, {cancel}
 "start over", {cancel}
 wait,{stop}
+meeting,{event}

@@ -56,3 +56,4 @@ src/testing/UserCredentials.java
 InstructableServer.zip
 data/anno/
 resources/client_secret.json
+build/libs/instructableServer.jar

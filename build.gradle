@@ -1,11 +1,33 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'testing.CommandLine'
+mainClassName = 'instructable.server.Service'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 version = '1.0'
 
+
+jar {
+
+    archiveName = "instructableServer.jar"
+
+    from {
+
+        configurations.runtime.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+    manifest {
+        attributes 'Main-Class': 'instructable.server.Service'
+    }
+
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+}
 
 sourceSets {
     main{

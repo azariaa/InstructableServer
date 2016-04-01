@@ -40,7 +40,7 @@ public class CalendarEventController
     {
         if (!calendarAccessor.isPresent())
         {
-            executionStatus.add(ExecutionStatus.RetStatus.error, "no calendar is attached.");
+            executionStatus.add(ExecutionStatus.RetStatus.error, "no calendar is attached");
             return Optional.empty();
         }
         Optional<ICalendarAccessor.EventFields> event;
