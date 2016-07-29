@@ -48,7 +48,7 @@ public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
         return retVal;
     }
 
-    private enum ConceptFieldInstance {Concept,Field,Instance}
+    private enum ConceptFieldInstance {Concept,Field,Instance}//,Script}
 
     @Override
     public void newConceptDefined(String conceptName)
@@ -83,6 +83,12 @@ public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
     {
         newDefined(ConceptFieldInstance.Instance, instanceName);
     }
+
+//    @Override
+//    public void newScriptDefined(String scriptName)
+//    {
+//        newDefined(ConceptFieldInstance.Script, scriptName);
+//    }
 
     @Override
     public void removeField(String fieldName)

@@ -22,6 +22,8 @@ public interface ICommandsToParser
     //needs to add instanceName to the lexicon and the conceptName to the environment table
     void newInstanceDefined(String instanceName);
 
+//    void newScriptDefined(String instanceName); //new script is treated just as new example
+
     void removeField(String fieldName);
 
     void removeInstance(String instanceName);

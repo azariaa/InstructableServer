@@ -127,11 +127,14 @@ public interface IAllUserActions
 
     ActionResponse replyTo(InfoForCommand infoForCommand);
 
+    ActionResponse say(InfoForCommand infoForCommand, String toSay);
+
     ActionResponse undo(InfoForCommand infoForCommand);
     ActionResponse removeLastLearnedCommand(InfoForCommand infoForCommand); //same as undo, but only if in learning mode
     //deleteLearnedCommand ??? how to do this?
 
-
+    ActionResponse runScript(InfoForCommand infoForCommand, String scriptToRun);
+    ActionResponse demonstrate(InfoForCommand infoForCommand);
 
     //future work: ActionResponse undoLastAction(InfoForCommand infoForCommand);
 

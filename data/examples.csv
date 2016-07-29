@@ -158,3 +158,5 @@ I want to teach you what to do when I ask you to send an email and go over, (tea
 teach a very long sentence which describes what the agent should do when I type swipe, (teachNewCommand)
 undo, (undo)
 undo last command, (undo)
+say I love you,"(say (stringValue ""I love you""))"
+no,(no)

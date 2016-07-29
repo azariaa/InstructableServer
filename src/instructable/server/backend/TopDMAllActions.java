@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 import static instructable.server.backend.TextFormattingUtils.noEmailFound;
 import static instructable.server.backend.TextFormattingUtils.userFriendlyList;
@@ -39,6 +40,9 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     static private final String ambiguousEmailInstanceName = "email"; //can either be outgoing email, or inbox
     static private final String yesExpression = "(yes)";
     static private final String createEmailExpression = "(createInstanceByConceptName outgoing_email)";
+    static private final String runScriptPre = "runScript:";
+    static private final String demonstrateStr = "demonstrate:";
+    static private final Function<String,String> runScriptExpression = (scriptName) -> "(runScript \""+scriptName+"\")";
 
     String userEmailAddress;
     Optional<JSONObject> previousFieldEval = Optional.empty();
@@ -84,7 +88,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         private InternalLearningStateMode internalLearningStateMode;
         private boolean pendingOnEmailCreation;
-        List<Expression2> expressionsLearnt = new LinkedList<>();
+        List<Expression2> expressionsBeingLearned = new LinkedList<>();
         int failCount = 0;
         String lastCommandOrLearningCommand = "";
         int lastInfoForCommandHashCode;
@@ -128,7 +132,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             internalLearningStateMode = InternalLearningStateMode.none;
             pendingOnEmailCreation = false;
-            expressionsLearnt = new LinkedList<>();
+            expressionsBeingLearned = new LinkedList<>();
             failCount = 0;
         }
 
@@ -151,7 +155,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                             && !isExecutingUndoNow) //make sure we don't add the "undo" command
                     {
                         lastInfoForCommandHashCode = infoForCommand.hashCode();
-                        expressionsLearnt.add(infoForCommand.expression);
+                        expressionsBeingLearned.add(infoForCommand.expression);
                     }
                 }
                 else //if failed need to remove current expression from list of expressions
@@ -159,7 +163,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                     if (infoForCommand.hashCode() == lastInfoForCommandHashCode)
                     {
                         lastInfoForCommandHashCode = 0;
-                        expressionsLearnt.remove(expressionsLearnt.size() - 1); //remove last
+                        expressionsBeingLearned.remove(expressionsBeingLearned.size() - 1); //remove last
                     }
                     failCount++;
                 }
@@ -173,29 +177,29 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         public void removeLastCommandIfLearning()
         {
-            if (internalLearningStateMode == InternalLearningStateMode.learning && !expressionsLearnt.isEmpty())
+            if (internalLearningStateMode == InternalLearningStateMode.learning && !expressionsBeingLearned.isEmpty())
             {
-                expressionsLearnt.remove(expressionsLearnt.size() - 1);
+                expressionsBeingLearned.remove(expressionsBeingLearned.size() - 1);
             }
         }
 
         public List<Expression2> endLearningGetSentences()
         {
             internalLearningStateMode = InternalLearningStateMode.none;
-            List<Expression2> userSentences = expressionsLearnt;
-            expressionsLearnt = new LinkedList<>();
+            List<Expression2> userSentences = expressionsBeingLearned;
+            expressionsBeingLearned = new LinkedList<>();
             failCount = 0;
             return userSentences;
         }
 
         public boolean learnedSomething()
         {
-            return expressionsLearnt.size() > 0;
+            return expressionsBeingLearned.size() > 0;
         }
 
         public boolean shouldFailLearning()
         {
-            if (failCount >= 3 && expressionsLearnt.size() == 0)
+            if (failCount >= 3 && expressionsBeingLearned.size() == 0)
             {
                 reset();
                 return true;
@@ -205,14 +209,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         public boolean userHavingTrouble()
         {
-            if (failCount >= 4 || (failCount >= 2 && expressionsLearnt.size() < failCount - 1))
+            if (failCount >= 4 || (failCount >= 2 && expressionsBeingLearned.size() < failCount - 1))
                 return true;
             return false;
         }
 
         public boolean isLearningForTooLong()
         {
-            return expressionsLearnt.size() + failCount >= aLotOfExpressions;
+            return expressionsBeingLearned.size() + failCount >= aLotOfExpressions;
         }
 
     }
@@ -302,7 +306,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             commandHistory.push(infoForCommand, () -> cancel(infoForCommand));
             String lastCommand = internalState.startLearning();
-            return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first?", true, Optional.empty());
+            return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first? (say demonstrate to demonstrate)", true, Optional.empty());
         }
         else
         {
@@ -1039,7 +1043,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         internalState.learnNextCommand();
         commandsToParser.failNextCommand();
-        return new ActionResponse("I'm happy to hear that want to teach me a new command. Now say the command the way you would use it, then I will ask you what exactly to do in that case, I will try to generalize to similar sentences (if you don't want me to learn say \"cancel\")", true, Optional.empty());
+        return new ActionResponse("I'm happy to learn a new command. Now say the command the way you would use it, then I will ask you what exactly to do. I will try to generalize to similar sentences (if you don't want me to learn say \"cancel\")", true, Optional.empty());
     }
 
     /*
@@ -1303,6 +1307,18 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
+    public ActionResponse say(InfoForCommand infoForCommand, String toSay)
+    {
+        return testOkAndFormat(infoForCommand,
+                new ExecutionStatus(),
+                false,
+                true,
+                Optional.of(toSay),
+                false,//can't fail
+                Optional.of(() -> say(infoForCommand, "I'm taking back my words")));
+    }
+
+    @Override
     public ActionResponse undo(InfoForCommand infoForCommand)
     {
         internalState.removeLastCommandIfLearning(); //undo learning.
@@ -1310,6 +1326,70 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (response.isPresent())
             return response.get();
         return failWithMessage(infoForCommand, "undo failed.");
+    }
+
+    @Override
+    public ActionResponse runScript(InfoForCommand infoForCommand, String scriptToRun)
+    {
+        return testOkAndFormat(infoForCommand,
+                new ExecutionStatus(),
+                false,
+                true,
+                Optional.of(runScriptPre + scriptToRun),
+                false,//can't fail
+                Optional.of(() -> failWithMessage(infoForCommand, "undo is currently not supported for scripts"))
+        );
+    }
+
+    @Override
+    public ActionResponse demonstrate(InfoForCommand infoForCommand)
+    {
+        if (!internalState.isInLearningMode())
+            return teachNewCommand(infoForCommand);
+        if (internalState.learnedSomething())
+            return failWithMessage(infoForCommand, "speech commands can only be combined with already demonstrated commands. Please cancel current command, and teach me by demonstration a new command. Then you can combine it with speech commands");
+
+        String scriptName = internalState.lastCommandOrLearningCommand;
+        InfoForCommand infoForDemonstrate = new InfoForCommand(scriptName, ExpressionParser.expression2().parseSingleExpression(runScriptExpression.apply(scriptName)));
+        internalState.userGaveCommand(infoForDemonstrate, true, false);
+        List commandsLearnt = internalState.endLearningGetSentences();
+
+        //make sure learnt at least one successful sentence
+        if (commandsLearnt.size() > 0)
+        {
+            if (usePendingResponses)
+            {
+                new Thread()
+                {
+                    @Override
+                    public void run()
+                    {
+                        commandsToParser.addTrainingEg(
+                                scriptName,
+                                commandsLearnt,
+                                Optional.empty());
+
+                    }
+                }.start();
+            }
+            else
+            {
+                commandsToParser.addTrainingEg(
+                        scriptName,
+                        commandsLearnt,
+                        Optional.empty()
+                );
+            }
+        }
+
+        return testOkAndFormat(infoForCommand,
+                new ExecutionStatus(),
+                false,
+                true,
+                Optional.of(demonstrateStr + scriptName),
+                false,//can't fail
+                Optional.of(() -> failWithMessage(infoForCommand, "undo is currently not supported for scripts")) //TODO: add undefine script
+        );
     }
 
     @Override
@@ -1386,7 +1466,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         if (!success && askToTeachIfFails && !isInLearningPhase)
         {
-            response.append("\nWould you like to teach me what to do in this case (either say yes or simply ignore this question)?");
+            //response.append("\nWould you like to teach me what to do in this case (either say yes or simply ignore this question)?");
+            response.append("\nWould you like to teach me (say yes or just ignore)?");
             internalState.pendOnLearning();
         }
 

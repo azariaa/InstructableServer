@@ -90,3 +90,4 @@ forget, {cancel}
 "start over", {cancel}
 wait,{stop}
 meeting,{event}
+ignore,{no}
