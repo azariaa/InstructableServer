@@ -1,5 +1,6 @@
 package instructable.server.parser;
 
+import com.jayantkrish.jklol.ccg.LexiconEntry;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.backend.ActionResponse;
 import instructable.server.backend.IGetAwaitingResponse;
@@ -7,9 +8,11 @@ import instructable.server.ccg.ParserSettings;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by Amos Azaria on 13-May-15.
+ * Every update to the parser also updates DB
  */
 public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
 {
@@ -58,8 +61,13 @@ public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
 
     private void newDefined(ConceptFieldInstance conceptFieldInstance, String actualName)
     {
-        String what = conceptFieldInstance.toString();
-        parserSettings.updateParserGrammar("\""+actualName + "\",\"" + what + "Name{0}\",\"" + actualName.replace(" ", "_") + "\",0 \"" + actualName.replace(" ", "_")+"\"");
+        newDefined(conceptFieldInstance.toString() + "Name", actualName);
+
+    }
+
+    private void newDefined(String what, String actualName)
+    {
+        parserSettings.updateParserGrammar("\""+actualName + "\",\"" + what + "{0}\",\"" + actualName.replace(" ", "_") + "\",0 \"" + actualName.replace(" ", "_")+"\"");
         parserSettings.env.bindName(actualName.replace(" ", "_"), actualName.replace("_", " "), parserSettings.symbolTable);
         //parserSettings.retrain(2);
     }
@@ -84,11 +92,14 @@ public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
         newDefined(ConceptFieldInstance.Instance, instanceName);
     }
 
-//    @Override
-//    public void newScriptDefined(String scriptName)
-//    {
-//        newDefined(ConceptFieldInstance.Script, scriptName);
-//    }
+    @Override
+    public void newDemonstrateAlt(String type, List<String> names)
+    {
+        List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(names.stream().map(actualName-> "\""+actualName + "\",\"" + type + "{0}\",\"" + actualName.replace(" ", "_") + "\",0 \"" + actualName.replace(" ", "_")+"\"").collect(Collectors.toList()));
+        parserSettings.updateParserGrammar(lexiconEntries);
+        for (String actualName : names)
+            parserSettings.env.bindName(actualName.replace(" ", "_"), actualName.replace("_", " "), parserSettings.symbolTable);
+    }
 
     @Override
     public void removeField(String fieldName)

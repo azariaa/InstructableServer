@@ -133,8 +133,11 @@ public interface IAllUserActions
     ActionResponse removeLastLearnedCommand(InfoForCommand infoForCommand); //same as undo, but only if in learning mode
     //deleteLearnedCommand ??? how to do this?
 
-    ActionResponse runScript(InfoForCommand infoForCommand, String scriptToRun);
+
+//    ActionResponse sugExecFromJSON(InfoForCommand infoForCommand, String jsonBlock);
+    ActionResponse sugExecClick(InfoForCommand infoForCommand, String filterText);
     ActionResponse demonstrate(InfoForCommand infoForCommand);
+    ActionResponse userHasDemonstrated(InfoForCommand infoForCommand, JSONObject json);
 
     //future work: ActionResponse undoLastAction(InfoForCommand infoForCommand);
 

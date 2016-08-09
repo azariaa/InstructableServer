@@ -165,3 +165,5 @@ duration,FieldName{0},duration,0 duration
 # added for scripts
 #
 demonstrate,S{0},(demonstrate)
+click,(S{0}/StringN{1}){0},(lambda $1 (sugExecClick $1))
+click,actionType{0},actionType,0 actionType

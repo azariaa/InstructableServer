@@ -22,9 +22,11 @@ import com.jayantkrish.jklol.util.IndexedList;
 import instructable.server.backend.ActionResponse;
 import instructable.server.backend.IAllUserActions;
 import instructable.server.backend.InfoForCommand;
-import instructable.server.parser.LispExecutor;
 import instructable.server.dal.InteractionRecording;
 import instructable.server.dal.ParserKnowledgeSeeder;
+import instructable.server.parser.LispExecutor;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -204,16 +206,41 @@ public class ParserSettings
     public CcgUtils.SayAndExpression parseAndEval(Optional<String> userId, IAllUserActions allUserActions, List<String> userSays)
     {
         Preconditions.checkArgument(!userSays.isEmpty());
-        for (String sentence : userSays)
+        Optional<CcgUtils.SayAndExpression> specialCase = execIfSpecialCase(userId, allUserActions, userSays);
+        if (specialCase.isPresent())
+            return specialCase.get();
+        for (String sentence : userSays) //trying all alternatives
         {
-            Expression2 expression;
-            expression = parse(sentence);
+            Expression2 expression = parse(sentence);
             if (!expression.equals(unknownExpression))
             {
                 return executeLogicalForm(userId, allUserActions, userSays, sentence, expression);
             }
         }
+        //all alternatives failed
         return executeLogicalForm(userId, allUserActions, userSays, userSays.get(0), unknownExpression);
+    }
+
+    private Optional<CcgUtils.SayAndExpression> execIfSpecialCase(Optional<String> userId, IAllUserActions allUserActions, List<String> userSays)
+    {
+        String commandType = "FINISHED_RECORDING" + ":";
+        if (userSays.size() == 1 && userSays.get(0).startsWith(commandType))
+        {
+            String sentence = userSays.get(0);
+            String jsonPart = sentence.substring(commandType.length());
+            try
+            {
+                JSONObject asJson = new JSONObject(jsonPart);
+                ActionResponse response = allUserActions.userHasDemonstrated(new InfoForCommand(sentence, unknownExpression), asJson); //unknownExpression is used instead of null
+                if (userId.isPresent())
+                    InteractionRecording.addUserUtterance(userId.get(), userSays, sentence, "", response.getSayToUserOrExec(), response.isSuccess());
+                return Optional.of(new CcgUtils.SayAndExpression(response.getSayToUserOrExec(), commandType, response.isSuccess()));
+            } catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        return Optional.empty();
     }
 
     private CcgUtils.SayAndExpression executeLogicalForm(Optional<String> userId, IAllUserActions allUserActions, List<String> userSays, String sentence, Expression2 expression)
@@ -221,8 +248,8 @@ public class ParserSettings
         System.out.println("debug:" + expression.toString());
         ActionResponse response = this.evaluate(allUserActions, sentence, expression);
         if (userId.isPresent())
-            InteractionRecording.addUserUtterance(userId.get(), userSays, sentence, expression.toString(), response.getSayToUser(), response.isSuccess());
-        return new CcgUtils.SayAndExpression(response.getSayToUser(), expression.toString(), response.isSuccess());
+            InteractionRecording.addUserUtterance(userId.get(), userSays, sentence, expression.toString(), response.getSayToUserOrExec(), response.isSuccess());
+        return new CcgUtils.SayAndExpression(response.getSayToUserOrExec(), expression.toString(), response.isSuccess());
     }
 
     /**

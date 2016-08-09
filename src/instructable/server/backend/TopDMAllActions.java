@@ -3,6 +3,7 @@ package instructable.server.backend;
 import com.google.common.base.Preconditions;
 import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
+import instructable.server.Consts;
 import instructable.server.controllers.CalendarEventController;
 import instructable.server.controllers.InboxCommandController;
 import instructable.server.controllers.OutEmailCommandController;
@@ -13,6 +14,7 @@ import instructable.server.senseffect.ICalendarAccessor;
 import instructable.server.senseffect.IEmailFetcher;
 import instructable.server.senseffect.IEmailSender;
 import instructable.server.senseffect.IIncomingEmailControlling;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.LinkedList;
@@ -40,9 +42,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     static private final String ambiguousEmailInstanceName = "email"; //can either be outgoing email, or inbox
     static private final String yesExpression = "(yes)";
     static private final String createEmailExpression = "(createInstanceByConceptName outgoing_email)";
-    static private final String runScriptPre = "runScript:";
-    static private final String demonstrateStr = "demonstrate:";
-    static private final Function<String,String> runScriptExpression = (scriptName) -> "(runScript \""+scriptName+"\")";
+    static private final Function<String, String> runScriptExpression = (scriptName) -> "(runScript \"" + scriptName + "\")";
 
     String userEmailAddress;
     Optional<JSONObject> previousFieldEval = Optional.empty();
@@ -242,7 +242,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 Optional.of("Email sent successfully."),
                 false,//true,
-                Optional.of( () -> createNewEmailOrRestore(infoForCommand,true,false) ));
+                Optional.of(() -> createNewEmailOrRestore(infoForCommand, true, false)));
     }
 
     @Override
@@ -866,8 +866,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     /**
-     *
-     * @param restore undo an email creation or email sent
+     * @param restore          undo an email creation or email sent
      * @param restoreFromDraft if true restore from draft, if false restore from sent email
      * @return
      */
@@ -887,7 +886,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         String successSentence;
         if (restore)
         {
-            if(restoreFromDraft)
+            if (restoreFromDraft)
                 successSentence = "Draft restored successfully.";
             else
                 successSentence = "Sent email restored successfully (but was still sent).";
@@ -909,8 +908,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
 
     /**
-     *
-     * @param restore undo an event creation or event saved
+     * @param restore          undo an event creation or event saved
      * @param restoreFromDraft if true restore from draft, if false restore from saved event (and delete event)
      * @return
      */
@@ -930,7 +928,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         String successSentence;
         if (restore)
         {
-            if(restoreFromDraft)
+            if (restoreFromDraft)
                 successSentence = "Draft restored successfully.";
             else
                 successSentence = "Event restored successfully (and deleted).";
@@ -1175,7 +1173,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse next(InfoForCommand infoForCommand, String instanceName)
     {
-        return nextPrevLastIdx(infoForCommand, instanceName,  new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.next));
+        return nextPrevLastIdx(infoForCommand, instanceName, new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.next));
     }
 
     @Override
@@ -1203,7 +1201,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             this.idx = idx;
         }
 
-        enum ENextPrevLastIdx {next, previous, newest, requested};
+        enum ENextPrevLastIdx
+        {
+            next, previous, newest, requested
+        }
+
+        ;
         public ENextPrevLastIdx nextPrevLastIdx;
         public int idx;
     }
@@ -1234,7 +1237,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             {
                 int prevIdx = inboxCommandController.setToIndex(nextPrevLastIdx.idx);
                 opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.requested, prevIdx);
-            }else
+            }
+            else
             {
                 opposite = null;
                 Preconditions.checkState(opposite != null);
@@ -1258,7 +1262,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             if ((nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.next) ||
                     (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.previous))
             {
-            boolean wantsNext = (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.next);
+                boolean wantsNext = (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.next);
 
                 Optional<GenericInstance> ret = calendarEventController.getNextPrevCalendarEvent(executionStatus, wantsNext);
                 if (ret.isPresent())
@@ -1328,18 +1332,18 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         return failWithMessage(infoForCommand, "undo failed.");
     }
 
-    @Override
-    public ActionResponse runScript(InfoForCommand infoForCommand, String scriptToRun)
-    {
-        return testOkAndFormat(infoForCommand,
-                new ExecutionStatus(),
-                false,
-                true,
-                Optional.of(runScriptPre + scriptToRun),
-                false,//can't fail
-                Optional.of(() -> failWithMessage(infoForCommand, "undo is currently not supported for scripts"))
-        );
-    }
+//    @Override
+//    public ActionResponse runScript(InfoForCommand infoForCommand, String scriptToRun)
+//    {
+//        return testOkAndFormat(infoForCommand,
+//                new ExecutionStatus(),
+//                false,
+//                true,
+//                Optional.of(runScriptPre + scriptToRun),
+//                false,//can't fail
+//                Optional.of(() -> failWithMessage(infoForCommand, "undo is currently not supported for scripts"))
+//        );
+//    }
 
     @Override
     public ActionResponse demonstrate(InfoForCommand infoForCommand)
@@ -1350,46 +1354,150 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             return failWithMessage(infoForCommand, "speech commands can only be combined with already demonstrated commands. Please cancel current command, and teach me by demonstration a new command. Then you can combine it with speech commands");
 
         String scriptName = internalState.lastCommandOrLearningCommand;
-        InfoForCommand infoForDemonstrate = new InfoForCommand(scriptName, ExpressionParser.expression2().parseSingleExpression(runScriptExpression.apply(scriptName)));
-        internalState.userGaveCommand(infoForDemonstrate, true, false);
-        List commandsLearnt = internalState.endLearningGetSentences();
+//        InfoForCommand infoForDemonstrate = new InfoForCommand(scriptName, ExpressionParser.expression2().parseSingleExpression(runScriptExpression.apply(scriptName)));
+//        internalState.userGaveCommand(infoForDemonstrate, true, false);
+//        List commandsLearnt = internalState.endLearningGetSentences();
 
-        //make sure learnt at least one successful sentence
-        if (commandsLearnt.size() > 0)
+//        //make sure learnt at least one successful sentence
+//        if (commandsLearnt.size() > 0)
+//        {
+//            if (usePendingResponses)
+//            {
+//                new Thread()
+//                {
+//                    @Override
+//                    public void run()
+//                    {
+//                        commandsToParser.addTrainingEg(
+//                                scriptName,
+//                                commandsLearnt,
+//                                Optional.empty());
+//
+//                    }
+//                }.start();
+//            }
+//            else
+//            {
+//                commandsToParser.addTrainingEg(
+//                        scriptName,
+//                        commandsLearnt,
+//                        Optional.empty()
+//                );
+//            }
+//        }
+
+        return new ActionResponse(Consts.demonstrateStr + scriptName, true, Optional.empty());
+    }
+
+//    @Override
+//    public ActionResponse sugExecFromJSON(InfoForCommand infoForCommand, String jsonBlock)
+//    {
+//        try
+//        {
+//            JSONObject asJson = new JSONObject(jsonBlock);
+//            return new ActionResponse(asJson, true, Optional.empty());
+//        } catch (JSONException e)
+//        {
+//            e.printStackTrace();
+//        }
+//        return failWithMessage(infoForCommand, "there is a problem with the json");
+//    }
+
+    @Override
+    public ActionResponse sugExecClick(InfoForCommand infoForCommand, String filterText)
+    {
+
+        Optional<JSONObject> jsonToExec = createJSONforSug("CLICK", filterText);
+        if (jsonToExec.isPresent())
+            return new ActionResponse(jsonToExec.get(), true, Optional.empty()); //TODO: fix learning sentence here!!!!
+        return failWithMessage(infoForCommand, "there is a problem with the json");
+    }
+
+    private Optional<JSONObject> createJSONforSug(String actionType, String filterText)
+    {
+        try
         {
-            if (usePendingResponses)
-            {
-                new Thread()
-                {
-                    @Override
-                    public void run()
-                    {
-                        commandsToParser.addTrainingEg(
-                                scriptName,
-                                commandsLearnt,
-                                Optional.empty());
-
-                    }
-                }.start();
-            }
-            else
-            {
-                commandsToParser.addTrainingEg(
-                        scriptName,
-                        commandsLearnt,
-                        Optional.empty()
-                );
-            }
+            //////debug only!!!! //TODO: remove this!!!!!!
+            filterText = filterText.substring(0, 1).toUpperCase() + filterText.substring(1);
+            /////////////
+            JSONObject asBlock = new JSONObject();
+            asBlock.put("actionType", actionType);
+            JSONObject filter = new JSONObject();
+            filter.put("text", filterText);
+            asBlock.put("filter", filter);
+            JSONObject asJson = new JSONObject();
+            asJson.put("nextBlock", asBlock);
+            return Optional.of(asJson);
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
+        return Optional.empty();
+    }
 
-        return testOkAndFormat(infoForCommand,
-                new ExecutionStatus(),
-                false,
-                true,
-                Optional.of(demonstrateStr + scriptName),
-                false,//can't fail
-                Optional.of(() -> failWithMessage(infoForCommand, "undo is currently not supported for scripts")) //TODO: add undefine script
-        );
+
+    @Override
+    public ActionResponse userHasDemonstrated(InfoForCommand infoForCommand, JSONObject json)
+    {
+        System.out.print(json.toString());
+        if (!internalState.isInLearningMode())
+            return failWithMessage(infoForCommand, "I wasn't expecting a demonstration from you");
+        //pull out all alternatives
+
+        try
+        {
+            JSONObject nextBlock = json.getJSONObject("nextBlock");
+            while (nextBlock != null)
+            {
+                JSONArray altList = nextBlock.getJSONObject("filter").getJSONArray("alternativeLabels");
+                //add all alternatives as new types
+                List<String> allAlternatives = new LinkedList<>();
+                for (int i = 0; i < altList.length(); i++)
+                {
+                    try
+                    {
+                        boolean shouldAdd = true;
+                        String singleAlt = altList.getJSONObject(i).getString("value");
+                        for (int j = 0; j < singleAlt.length(); j++)
+                        {
+                            if (!Character.isLetterOrDigit(singleAlt.charAt(j)))
+                            {
+                                shouldAdd = false;
+                                break;
+                            }
+                        }
+                        if (shouldAdd)
+                            allAlternatives.add(singleAlt.toLowerCase());
+                    } catch (Exception e)
+                    {
+                        System.out.print("error when adding alt, i:" + i);
+                        try
+                        {
+                            String alt = altList.getJSONObject(i).getString("value");
+                            System.out.print(". alt: " + alt);
+                        }
+                        catch (Exception ignored)
+                        {
+                            System.out.print(". error fetching alternative");
+                        }
+                    }
+                }
+                commandsToParser.newDemonstrateAlt("SugOption", allAlternatives);
+                //add command demonstrated
+                //convert json to a json with only one command
+                String actionType = nextBlock.getString("actionType");
+                String filterText = nextBlock.getJSONObject("filter").getString("text").toLowerCase();
+                //commandsToParser.newDemonstrateAlt("SugOption", filterText); //just double checking we added this alternative
+
+                internalState.userGaveCommand(new InfoForCommand("n/a", ExpressionParser.expression2().parseSingleExpression("(sugExecClick " /*+ actionType + " "*/ + filterText + ")")), true, false);
+                nextBlock = nextBlock.getJSONObject("nextBlock");  //TODO: make sure this works. need to loop also through other alternatives
+            }
+            //learn
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return end(infoForCommand);
     }
 
     @Override

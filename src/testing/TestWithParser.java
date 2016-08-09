@@ -573,7 +573,7 @@ public class TestWithParser
 //                    }
 //                }
 //            }
-//            testHelpers.systemSays(actionResponse.getSayToUser());
+//            testHelpers.systemSays(actionResponse.getSayToUserOrExec());
 //        }
         response = parserSettings.parseAndEval(allUserActions, userSays);
         testHelpers.systemSays(response.sayToUser);

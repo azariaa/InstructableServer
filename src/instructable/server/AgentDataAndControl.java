@@ -132,7 +132,7 @@ public class AgentDataAndControl
             Optional<ActionResponse> responseOptional = parserSetAndActions.getAwaitingCommand.getNSetPendingActionResponse();
             if (responseOptional.isPresent())
             {
-                sayToUser = responseOptional.get().getSayToUser();
+                sayToUser = responseOptional.get().getSayToUserOrExec();
                 success = true;
             }
         }

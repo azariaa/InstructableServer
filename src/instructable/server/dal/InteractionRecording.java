@@ -32,8 +32,13 @@ public class InteractionRecording
                 PreparedStatement pstmt = connection.prepareStatement("insert into "+ interactionTable + " (" + userIdCol + "," + fullAltCol + "," + selSentenceCol + "," + logicalFormCol + "," + systemReplyCol + "," + isSuccessCol + ") values (?,?,?,?,?,?)");
         )
         {
+            String allAlterASR = String.join("^", fullUserAlternatives);
+            if (selectedSentence.length() >= 3000-1)
+                selectedSentence = selectedSentence.substring(0,3000-2);
+            if (selectedSentence.length() >= 1000-1)
+                selectedSentence = selectedSentence.substring(0,1000-2);
             pstmt.setString(1, userId);
-            pstmt.setString(2, String.join("^", fullUserAlternatives));
+            pstmt.setString(2, allAlterASR);
             pstmt.setString(3, selectedSentence);
             pstmt.setString(4, logicalForm);
             pstmt.setString(5, systemReply);
