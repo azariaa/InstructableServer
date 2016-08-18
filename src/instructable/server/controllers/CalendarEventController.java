@@ -99,7 +99,7 @@ public class CalendarEventController
         if (calendarEvent.hasDate())
             return true;
         else
-        executionStatus.add(ExecutionStatus.RetStatus.error, "the event has not time associated with it. Please set the date and time before saving it to your calendar");
+        executionStatus.add(ExecutionStatus.RetStatus.error, "the event has no time associated with it. Please set the date and time before saving it to your calendar");
         return false;
     }
 

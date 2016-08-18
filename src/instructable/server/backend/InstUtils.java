@@ -143,6 +143,11 @@ public class InstUtils
         return list;
     }
 
+    public static String alphaNumLower(String org) //this is problematic for multilingual
+    {
+        return org.replaceAll("[^a-zA-Z0-9' ]", "").toLowerCase().trim();
+    }
+
     private InstUtils()
     {
         //static class

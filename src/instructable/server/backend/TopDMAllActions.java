@@ -1404,26 +1404,25 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 //    }
 
     @Override
-    public ActionResponse sugExecClick(InfoForCommand infoForCommand, String filterText)
+    public ActionResponse sugExecClick(InfoForCommand infoForCommand, String buttonText)
     {
 
-        Optional<JSONObject> jsonToExec = createJSONforSug("CLICK", filterText);
+        Optional<JSONObject> jsonToExec = createJSONforSug("CLICK", buttonText);
         if (jsonToExec.isPresent())
             return new ActionResponse(jsonToExec.get(), true, Optional.empty()); //TODO: fix learning sentence here!!!!
         return failWithMessage(infoForCommand, "there is a problem with the json");
     }
 
-    private Optional<JSONObject> createJSONforSug(String actionType, String filterText)
+    private Optional<JSONObject> createJSONforSug(String actionType, String buttonText)
     {
         try
         {
-            //////debug only!!!! //TODO: remove this!!!!!!
-            filterText = filterText.substring(0, 1).toUpperCase() + filterText.substring(1);
-            /////////////
+                //buttonText = buttonText.substring(0, 1).toUpperCase() + buttonText.substring(1);//capitilize first letter for debug purposes
             JSONObject asBlock = new JSONObject();
             asBlock.put("actionType", actionType);
             JSONObject filter = new JSONObject();
-            filter.put("text", filterText);
+            filter.put("textOrChildTextOrContentDescription", buttonText);
+            //filter.put("text", buttonText);
             asBlock.put("filter", filter);
             JSONObject asJson = new JSONObject();
             asJson.put("nextBlock", asBlock);
@@ -1442,11 +1441,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         System.out.print(json.toString());
         if (!internalState.isInLearningMode())
             return failWithMessage(infoForCommand, "I wasn't expecting a demonstration from you");
-        //pull out all alternatives
 
+        String commandBeingLearned = internalState.lastCommandOrLearningCommand;
+        String cmdForType = commandBeingLearned.replace(" ", "_");
+        //pull out all alternatives
         try
         {
             JSONObject nextBlock = json.getJSONObject("nextBlock");
+            int blockNum = 0;
             while (nextBlock != null)
             {
                 JSONArray altList = nextBlock.getJSONObject("filter").getJSONArray("alternativeLabels");
@@ -1458,16 +1460,17 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                     {
                         boolean shouldAdd = true;
                         String singleAlt = altList.getJSONObject(i).getString("value");
-                        for (int j = 0; j < singleAlt.length(); j++)
+                        singleAlt = InstUtils.alphaNumLower(singleAlt);
+                        //it is not likely that the user will use very long alternatives, so we shorten them-up
+                        if (singleAlt.split(" ").length > 3)
                         {
-                            if (!Character.isLetterOrDigit(singleAlt.charAt(j)))
-                            {
-                                shouldAdd = false;
-                                break;
-                            }
+                            String[] singleAltWords = singleAlt.split(" ");
+                            singleAlt = singleAltWords[0] + " " + singleAltWords[1] + " " + singleAltWords[2];
                         }
-                        if (shouldAdd)
-                            allAlternatives.add(singleAlt.toLowerCase());
+                        if (singleAlt.length() > 50)
+                            singleAlt = singleAlt.substring(0, 50);
+                        if (!singleAlt.equals(""))
+                            allAlternatives.add(InstUtils.alphaNumLower(singleAlt));
                     } catch (Exception e)
                     {
                         System.out.print("error when adding alt, i:" + i);
@@ -1482,15 +1485,36 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                         }
                     }
                 }
-                commandsToParser.newDemonstrateAlt("SugOption", allAlternatives);
+                commandsToParser.newDemonstrateAlt(cmdForType+blockNum, allAlternatives);
                 //add command demonstrated
                 //convert json to a json with only one command
                 String actionType = nextBlock.getString("actionType");
-                String filterText = nextBlock.getJSONObject("filter").getString("text").toLowerCase();
-                //commandsToParser.newDemonstrateAlt("SugOption", filterText); //just double checking we added this alternative
 
-                internalState.userGaveCommand(new InfoForCommand("n/a", ExpressionParser.expression2().parseSingleExpression("(sugExecClick " /*+ actionType + " "*/ + filterText + ")")), true, false);
-                nextBlock = nextBlock.getJSONObject("nextBlock");  //TODO: make sure this works. need to loop also through other alternatives
+                JSONObject filter = nextBlock.getJSONObject("filter");
+                if (filter != null)
+                {
+                    String buttonText = null;
+
+                    buttonText = nextBlock.getJSONObject("filter").getString("text");
+                    if (buttonText == null || buttonText.equals(""))
+                    {
+                        buttonText = nextBlock.getString("contentDescription");
+                    }
+                    if (buttonText == null || buttonText.equals(""))
+                    {
+                        JSONObject childFilter = filter.getJSONObject("childFilter");
+                        if (childFilter != null)
+                            buttonText = childFilter.getString("text");
+                    }
+                    //commandsToParser.newDemonstrateAlt("SugOption", filterText); //just double checking we added this alternative
+                    if (buttonText != null && !buttonText.equals(""))
+                    {
+                        buttonText = InstUtils.alphaNumLower(buttonText);
+                        internalState.userGaveCommand(new InfoForCommand("n/a", ExpressionParser.expression2().parseSingleExpression("(sugExecClick " /*+ actionType + " "*/ + buttonText + ")")), true, false);
+                    }
+                }
+                nextBlock = nextBlock.getJSONObject("nextBlock");
+                blockNum++;
             }
             //learn
         } catch (Exception ex)
