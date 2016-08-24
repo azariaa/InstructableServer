@@ -1458,7 +1458,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 {
                     try
                     {
-                        boolean shouldAdd = true;
                         String singleAlt = altList.getJSONObject(i).getString("value");
                         singleAlt = InstUtils.alphaNumLower(singleAlt);
                         //it is not likely that the user will use very long alternatives, so we shorten them-up
@@ -1490,19 +1489,25 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 //convert json to a json with only one command
                 String actionType = nextBlock.getString("actionType");
 
-                JSONObject filter = nextBlock.getJSONObject("filter");
+                JSONObject filter = null;
+                if (nextBlock.has("filter"))
+                    filter = nextBlock.getJSONObject("filter");
                 if (filter != null)
                 {
                     String buttonText = null;
 
-                    buttonText = nextBlock.getJSONObject("filter").getString("text");
+                    if (filter.has("text"))
+                        buttonText = filter.getString("text");
                     if (buttonText == null || buttonText.equals(""))
                     {
-                        buttonText = nextBlock.getString("contentDescription");
+                        if (nextBlock.has("contentDescription"))
+                            buttonText = nextBlock.getString("contentDescription");
                     }
                     if (buttonText == null || buttonText.equals(""))
                     {
-                        JSONObject childFilter = filter.getJSONObject("childFilter");
+                        JSONObject childFilter = null;
+                        if (filter.has("childFilter"))
+                            childFilter = filter.getJSONObject("childFilter");
                         if (childFilter != null)
                             buttonText = childFilter.getString("text");
                     }
@@ -1510,10 +1515,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                     if (buttonText != null && !buttonText.equals(""))
                     {
                         buttonText = InstUtils.alphaNumLower(buttonText);
-                        internalState.userGaveCommand(new InfoForCommand("n/a", ExpressionParser.expression2().parseSingleExpression("(sugExecClick " /*+ actionType + " "*/ + buttonText + ")")), true, false);
+                        internalState.userGaveCommand(new InfoForCommand("n/a", ExpressionParser.expression2().parseSingleExpression("(sugExecClick " /*+ actionType + " "*/ + buttonText.replace(" ", "_") + ")")), true, false);
                     }
                 }
-                nextBlock = nextBlock.getJSONObject("nextBlock");
+                if (nextBlock.has("nextBlock"))
+                    nextBlock = nextBlock.getJSONObject("nextBlock");
+                else
+                    nextBlock = null;
                 blockNum++;
             }
             //learn

@@ -232,9 +232,10 @@ public class ParserSettings
             {
                 JSONObject asJson = new JSONObject(jsonPart);
                 ActionResponse response = allUserActions.userHasDemonstrated(new InfoForCommand(sentence, unknownExpression), asJson); //unknownExpression is used instead of null
+                String sayToUserOrExec = response.getSayToUserOrExec();
                 if (userId.isPresent())
-                    InteractionRecording.addUserUtterance(userId.get(), userSays, sentence, "", response.getSayToUserOrExec(), response.isSuccess());
-                return Optional.of(new CcgUtils.SayAndExpression(response.getSayToUserOrExec(), commandType, response.isSuccess()));
+                    InteractionRecording.addUserUtterance(userId.get(), userSays, sentence, "", sayToUserOrExec, response.isSuccess());
+                return Optional.of(new CcgUtils.SayAndExpression(sayToUserOrExec, commandType, response.isSuccess()));
             } catch (JSONException e)
             {
                 e.printStackTrace();
@@ -247,9 +248,10 @@ public class ParserSettings
     {
         System.out.println("debug:" + expression.toString());
         ActionResponse response = this.evaluate(allUserActions, sentence, expression);
+        String sayToUserOrExec = response.getSayToUserOrExec();
         if (userId.isPresent())
-            InteractionRecording.addUserUtterance(userId.get(), userSays, sentence, expression.toString(), response.getSayToUserOrExec(), response.isSuccess());
-        return new CcgUtils.SayAndExpression(response.getSayToUserOrExec(), expression.toString(), response.isSuccess());
+            InteractionRecording.addUserUtterance(userId.get(), userSays, sentence, expression.toString(), sayToUserOrExec, response.isSuccess());
+        return new CcgUtils.SayAndExpression(sayToUserOrExec, expression.toString(), response.isSuccess());
     }
 
     /**

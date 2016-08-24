@@ -116,7 +116,7 @@ public class ActionResponse //extends RuntimeException
     public String getSayToUserOrExec()
     {
         StringBuilder retVal = new StringBuilder();
-        boolean isPrevExec = false;
+
         Optional<JSONObject> tmpCmdsToExec = Optional.empty();
         for (SayOrExec sayToOrExec : sayToUserOrExec)
         {
@@ -140,7 +140,7 @@ public class ActionResponse //extends RuntimeException
                     //add sayToOrExec.toExec to tmpCmdsToExec
                     JSONObject source = sayToOrExec.toExec;
                     JSONObject nextBlock = tmpCmdsToExec.get();
-                    try
+                    try //moving to the end of the next blocks
                     {
                         while (nextBlock.has("nextBlock") && nextBlock.get("nextBlock") != null)
                         {
@@ -151,14 +151,15 @@ public class ActionResponse //extends RuntimeException
                     }
                     try
                     {
-                        nextBlock.put("nextBlock", source.getJSONObject("nextBlock"));
+                        JSONObject clonedNextBlock = new JSONObject(source.getJSONObject("nextBlock").toString());
+                        nextBlock.put("nextBlock", clonedNextBlock);
                     } catch (JSONException e)
                     {
                         e.printStackTrace();
                     }
                 }
             }
-            isPrevExec = sayToOrExec.isCmdExec();
+
         }
         if (tmpCmdsToExec.isPresent()) //if we have some JSON commands, add them
         {
