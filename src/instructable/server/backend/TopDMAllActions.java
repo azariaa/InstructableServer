@@ -1350,8 +1350,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         if (!internalState.isInLearningMode())
             return teachNewCommand(infoForCommand);
-        if (internalState.learnedSomething())
-            return failWithMessage(infoForCommand, "speech commands can only be combined with already demonstrated commands. Please cancel current command, and teach me by demonstration a new command. Then you can combine it with speech commands");
+        //if (internalState.learnedSomething())
+            //return failWithMessage(infoForCommand, "speech commands can only be combined with already demonstrated commands. Please cancel current command, and teach me by demonstration a new command. Then you can combine it with speech commands");
 
         String scriptName = internalState.lastCommandOrLearningCommand;
 //        InfoForCommand infoForDemonstrate = new InfoForCommand(scriptName, ExpressionParser.expression2().parseSingleExpression(runScriptExpression.apply(scriptName)));
@@ -1404,24 +1404,49 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 //    }
 
     @Override
-    public ActionResponse sugExecClick(InfoForCommand infoForCommand, String buttonText)
+    public ActionResponse sugExec(InfoForCommand infoForCommand, String actionType, String buttonText, String fromLocation, String actionPrm)
     {
+        Optional<String> optionalActionParam = Optional.empty();
+        if (!actionPrm.isEmpty())
+            optionalActionParam = Optional.of(actionPrm);
+        return sugExec(infoForCommand, actionType, buttonText, fromLocation.equals("true"), optionalActionParam);
+    }
 
-        Optional<JSONObject> jsonToExec = createJSONforSug("CLICK", buttonText);
+    private ActionResponse sugExec(InfoForCommand infoForCommand, String actionType, String buttonText, boolean isLocation, Optional<String> actionParam)
+    {
+        Optional<JSONObject> jsonToExec = createJSONForSug(actionType, buttonText, isLocation, actionParam);
         if (jsonToExec.isPresent())
             return new ActionResponse(jsonToExec.get(), true, Optional.empty()); //TODO: fix learning sentence here!!!!
         return failWithMessage(infoForCommand, "there is a problem with the json");
     }
 
-    private Optional<JSONObject> createJSONforSug(String actionType, String buttonText)
+    /**
+     *
+     * @param actionType
+     * @param buttonText should be the text of the button, or location e.g. "1188 1944 1384 2140"
+     * @param isLocation
+     * @return
+     */
+    private Optional<JSONObject> createJSONForSug(String actionType, String buttonText, boolean isLocation, Optional<String> actionParam)
     {
         try
         {
                 //buttonText = buttonText.substring(0, 1).toUpperCase() + buttonText.substring(1);//capitilize first letter for debug purposes
             JSONObject asBlock = new JSONObject();
             asBlock.put("actionType", actionType);
+            if (actionParam.isPresent())
+                asBlock.put("actionParameter", actionParam.get());
             JSONObject filter = new JSONObject();
-            filter.put("textOrChildTextOrContentDescription", buttonText);
+            if (isLocation)
+            {
+                filter.put("boundsInScreen", buttonText);
+            }
+            else
+            {
+                filter.put("textOrChildTextOrContentDescription", buttonText);
+            }
+            if (actionType.equals("CLICK")) //don't need this for LONG_CLICK
+                filter.put("isClickable", "true");
             //filter.put("text", buttonText);
             asBlock.put("filter", filter);
             JSONObject asJson = new JSONObject();
@@ -1451,45 +1476,51 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             int blockNum = 0;
             while (nextBlock != null)
             {
-                JSONArray altList = nextBlock.getJSONObject("filter").getJSONArray("alternativeLabels");
-                //add all alternatives as new types
                 List<String> allAlternatives = new LinkedList<>();
-                for (int i = 0; i < altList.length(); i++)
+                if (nextBlock.getJSONObject("filter").has("alternativeLabels"))
                 {
-                    try
+                    JSONArray altList = nextBlock.getJSONObject("filter").getJSONArray("alternativeLabels");
+                    //add all alternatives as new types
+                    for (int i = 0; i < altList.length(); i++)
                     {
-                        String singleAlt = altList.getJSONObject(i).getString("value");
-                        singleAlt = InstUtils.alphaNumLower(singleAlt);
-                        //it is not likely that the user will use very long alternatives, so we shorten them-up
-                        if (singleAlt.split(" ").length > 3)
-                        {
-                            String[] singleAltWords = singleAlt.split(" ");
-                            singleAlt = singleAltWords[0] + " " + singleAltWords[1] + " " + singleAltWords[2];
-                        }
-                        if (singleAlt.length() > 50)
-                            singleAlt = singleAlt.substring(0, 50);
-                        if (!singleAlt.equals(""))
-                            allAlternatives.add(InstUtils.alphaNumLower(singleAlt));
-                    } catch (Exception e)
-                    {
-                        System.out.print("error when adding alt, i:" + i);
                         try
                         {
-                            String alt = altList.getJSONObject(i).getString("value");
-                            System.out.print(". alt: " + alt);
-                        }
-                        catch (Exception ignored)
+                            String singleAlt = altList.getJSONObject(i).getString("value");
+                            singleAlt = InstUtils.alphaNumLower(singleAlt);
+                            //it is not likely that the user will use very long alternatives, so we shorten them-up
+                            //if (singleAlt.split(" ").length > 3)
+                            //{
+                            //String[] singleAltWords = singleAlt.split(" ");
+                            //singleAlt = singleAltWords[0] + " " + singleAltWords[1] + " " + singleAltWords[2];
+                            //}
+                            //if (singleAlt.length() > 50)
+                            //singleAlt = singleAlt.substring(0, 50);
+                            if (!singleAlt.equals(""))
+                                allAlternatives.add(InstUtils.alphaNumLower(singleAlt));
+                        } catch (Exception e)
                         {
-                            System.out.print(". error fetching alternative");
+                            System.out.print("error when adding alt, i:" + i);
+                            try
+                            {
+                                String alt = altList.getJSONObject(i).getString("value");
+                                System.out.print(". alt: " + alt);
+                            } catch (Exception ignored)
+                            {
+                                System.out.print(". error fetching alternative");
+                            }
                         }
                     }
                 }
-                commandsToParser.newDemonstrateAlt(cmdForType+blockNum, allAlternatives);
+
                 //add command demonstrated
                 //convert json to a json with only one command
                 String actionType = nextBlock.getString("actionType");
 
                 JSONObject filter = null;
+                boolean isLocation = false;
+                Optional<String> actionParameter = Optional.empty();
+                if (nextBlock.has("actionParameter"))
+                    actionParameter = Optional.of(InstUtils.alphaNumLower(nextBlock.getString("actionParameter")));
                 if (nextBlock.has("filter"))
                     filter = nextBlock.getJSONObject("filter");
                 if (filter != null)
@@ -1500,8 +1531,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                         buttonText = filter.getString("text");
                     if (buttonText == null || buttonText.equals(""))
                     {
-                        if (nextBlock.has("contentDescription"))
-                            buttonText = nextBlock.getString("contentDescription");
+                        if (filter.has("contentDescription"))
+                            buttonText = filter.getString("contentDescription");
                     }
                     if (buttonText == null || buttonText.equals(""))
                     {
@@ -1511,11 +1542,35 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                         if (childFilter != null)
                             buttonText = childFilter.getString("text");
                     }
+
+                    if (buttonText == null || buttonText.equals(""))
+                    {
+                        if (filter.has("boundsInScreen"))
+                        {
+                            buttonText = filter.getString("boundsInScreen");
+                            isLocation = true;
+                        }
+                    }
                     //commandsToParser.newDemonstrateAlt("SugOption", filterText); //just double checking we added this alternative
                     if (buttonText != null && !buttonText.equals(""))
                     {
                         buttonText = InstUtils.alphaNumLower(buttonText);
-                        internalState.userGaveCommand(new InfoForCommand("n/a", ExpressionParser.expression2().parseSingleExpression("(sugExecClick " /*+ actionType + " "*/ + buttonText.replace(" ", "_") + ")")), true, false);
+                        String expression;
+                        if (isLocation)
+                        {
+                            expression = "(sugExec \"" + actionType +"\" \"" + buttonText + "\"" + " \"true\"";
+                        }
+                        else
+                        {
+                            if (!allAlternatives.contains(InstUtils.alphaNumLower(buttonText)))
+                            {
+                                allAlternatives.add(InstUtils.alphaNumLower(buttonText));
+                            }
+                            commandsToParser.newDemonstrateAlt(cmdForType+blockNum, allAlternatives);
+                            expression = "(sugExec \"" + actionType + "\" " + buttonText.replace(" ", "_") + " \"false\"";
+                        }
+                        expression += " " +(actionParameter.isPresent()? "(stringValue \"" + actionParameter.get() + "\")" : "\"\"")+")";
+                        internalState.userGaveCommand(new InfoForCommand("n/a", ExpressionParser.expression2().parseSingleExpression(expression)), true, false);
                     }
                 }
                 if (nextBlock.has("nextBlock"))

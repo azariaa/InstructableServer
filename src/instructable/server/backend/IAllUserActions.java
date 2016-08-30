@@ -135,7 +135,7 @@ public interface IAllUserActions
 
 
 //    ActionResponse sugExecFromJSON(InfoForCommand infoForCommand, String jsonBlock);
-    ActionResponse sugExecClick(InfoForCommand infoForCommand, String filterText);
+    ActionResponse sugExec(InfoForCommand infoForCommand, String actionType, String filterText, String fromLocation, String actionPrm);
     ActionResponse demonstrate(InfoForCommand infoForCommand);
     ActionResponse userHasDemonstrated(InfoForCommand infoForCommand, JSONObject json);
 
