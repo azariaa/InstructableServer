@@ -306,7 +306,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         {
             commandHistory.push(infoForCommand, () -> cancel(infoForCommand));
             String lastCommand = internalState.startLearning();
-            return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first? (say demonstrate to demonstrate)", true, Optional.empty());
+            return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first? (Either tell me what to do or say demonstrate to demonstrate)", true, Optional.empty());
         }
         else
         {
