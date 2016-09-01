@@ -240,6 +240,7 @@ public class ParserSettings
             {
                 e.printStackTrace();
             }
+            return Optional.of(new CcgUtils.SayAndExpression("There is some error with your demonstration, please try again.", commandType, false));
         }
         return Optional.empty();
     }

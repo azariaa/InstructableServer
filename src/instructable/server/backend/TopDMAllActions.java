@@ -1409,10 +1409,10 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         Optional<String> optionalActionParam = Optional.empty();
         if (!actionPrm.isEmpty())
             optionalActionParam = Optional.of(actionPrm);
-        return sugExec(infoForCommand, actionType, buttonText, fromLocation.equals("true"), optionalActionParam);
+        return sugExec(infoForCommand, actionType, buttonText, fromLocation, optionalActionParam);
     }
 
-    private ActionResponse sugExec(InfoForCommand infoForCommand, String actionType, String buttonText, boolean isLocation, Optional<String> actionParam)
+    private ActionResponse sugExec(InfoForCommand infoForCommand, String actionType, String buttonText, String isLocation, Optional<String> actionParam)
     {
         Optional<JSONObject> jsonToExec = createJSONForSug(actionType, buttonText, isLocation, actionParam);
         if (jsonToExec.isPresent())
@@ -1427,7 +1427,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
      * @param isLocation
      * @return
      */
-    private Optional<JSONObject> createJSONForSug(String actionType, String buttonText, boolean isLocation, Optional<String> actionParam)
+    private Optional<JSONObject> createJSONForSug(String actionType, String buttonText, String isLocation, Optional<String> actionParam)
     {
         try
         {
@@ -1437,9 +1437,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             if (actionParam.isPresent())
                 asBlock.put("actionParameter", actionParam.get());
             JSONObject filter = new JSONObject();
-            if (isLocation)
+            if (isLocation.equals("parent") || isLocation.equals("screen"))
             {
-                filter.put("boundsInScreen", buttonText);
+                if (isLocation.equals("screen"))
+                    filter.put("boundsInScreen", buttonText);
+                else if (isLocation.equals("parent"))
+                    filter.put("boundsInParent", buttonText);
             }
             else
             {
@@ -1518,6 +1521,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
                 JSONObject filter = null;
                 boolean isLocation = false;
+                boolean locationParent = false;
                 Optional<String> actionParameter = Optional.empty();
                 if (nextBlock.has("actionParameter"))
                     actionParameter = Optional.of(InstUtils.alphaNumLower(nextBlock.getString("actionParameter")));
@@ -1549,6 +1553,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                         {
                             buttonText = filter.getString("boundsInScreen");
                             isLocation = true;
+                            locationParent = false;
+                        }
+                        if (filter.has("boundsInParent"))
+                        {
+                            buttonText = filter.getString("boundsInParent");
+                            isLocation = true;
+                            locationParent = true;
                         }
                     }
                     //commandsToParser.newDemonstrateAlt("SugOption", filterText); //just double checking we added this alternative
@@ -1558,7 +1569,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                         String expression;
                         if (isLocation)
                         {
-                            expression = "(sugExec \"" + actionType +"\" \"" + buttonText + "\"" + " \"true\"";
+                            expression = "(sugExec \"" + actionType +"\" \"" + buttonText + "\"" + " \"" + (locationParent?"parent":"screen") + "\"";
                         }
                         else
                         {
