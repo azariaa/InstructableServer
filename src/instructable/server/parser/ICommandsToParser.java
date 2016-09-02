@@ -23,7 +23,7 @@ public interface ICommandsToParser
     void newInstanceDefined(String instanceName);
 
     //adds a list of alternatives from new demonstration
-    void newDemonstrateAlt(String type, List<String> names);
+    void newDemonstrateAlt(String type, List<String> names, boolean willTrainLater);
 
     void removeField(String fieldName);
 

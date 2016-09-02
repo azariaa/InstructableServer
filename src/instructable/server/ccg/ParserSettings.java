@@ -260,13 +260,14 @@ public class ParserSettings
      * CCG parser in {@code settings}.
      * Not using unaryRules. If required, need to add customizable unaryRules to parserKnowledgeSeeder
      */
-    public void updateParserGrammar(List<LexiconEntry> lexiconEntries)//, List<CcgUnaryRule> unaryRules)
+    public void updateParserGrammar(List<LexiconEntry> lexiconEntries, boolean willTrainLater)//, List<CcgUnaryRule> unaryRules)
     {
         parserKnowledgeSeeder.addNewUserLexicons(lexiconEntries.stream().map(LexiconEntry::toCsvString).collect(Collectors.toList())); //updating the DB
 
         lexicon.addAll(lexiconEntries);
         this.unaryRules.addAll(unaryRules);
-        updateGrammarFromExisting();
+        if (!willTrainLater)
+            updateGrammarFromExisting();
     }
 
     private void updateGrammarFromExisting()
@@ -285,7 +286,7 @@ public class ParserSettings
         List<String> lexiconAsList = new LinkedList<>();
         lexiconAsList.add(newLexicon);
         List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(lexiconAsList);
-        this.updateParserGrammar(lexiconEntries);//, new LinkedList<>());
+        this.updateParserGrammar(lexiconEntries, false);//, new LinkedList<>());
     }
 
     public void removeFromParserGrammar(String lexiconToRemove)
@@ -365,7 +366,7 @@ public class ParserSettings
         List<LexiconEntry> newEntries = CcgUtils.induceLexiconEntriesHeuristic(example, parser);
         System.out.println(newEntries);
 
-        updateParserGrammar(newEntries);//, Lists.newArrayList());
+        updateParserGrammar(newEntries, true);//, Lists.newArrayList());
         ccgExamples.add(example);
         retrain(retrainAfterNewCommand);
     }

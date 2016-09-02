@@ -127,7 +127,7 @@ public class LispExecutor
                 {
                     int idxInArgs = i - 1;
                     if (parameters[i].isAssignableFrom(String.class))
-                        invokeArgs.add(argumentValues.get(idxInArgs));
+                        invokeArgs.add(argumentValues.get(idxInArgs).toString());
                     if (parameters[i].isAssignableFrom(JSONObject.class))
                         invokeArgs.add(((ActionResponse) argumentValues.get(idxInArgs)).getValue());
                     if (parameters[i].isAssignableFrom(FieldHolder.class))

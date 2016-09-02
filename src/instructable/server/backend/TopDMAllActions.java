@@ -1577,7 +1577,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                             {
                                 allAlternatives.add(InstUtils.alphaNumLower(buttonText));
                             }
-                            commandsToParser.newDemonstrateAlt(cmdForType+blockNum, allAlternatives);
+                            commandsToParser.newDemonstrateAlt(cmdForType+blockNum, allAlternatives, true);
                             expression = "(sugExec \"" + actionType + "\" " + buttonText.replace(" ", "_") + " \"false\"";
                         }
                         expression += " " +(actionParameter.isPresent()? "(stringValue \"" + actionParameter.get() + "\")" : "\"\"")+")";

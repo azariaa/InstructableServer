@@ -60,7 +60,7 @@ public class TestDirectly
             }
 
             @Override
-            public void newDemonstrateAlt(String type, List<String> names)
+            public void newDemonstrateAlt(String type, List<String> names, boolean willTrainLater)
             {
 
             }

@@ -1,16 +1,5 @@
 package testing;
 
-import instructable.server.parser.CommandsToParser;
-import instructable.server.ccg.CcgUtils;
-import instructable.server.ccg.ParserSettings;
-import instructable.server.ccg.WeightedCcgExample;
-import instructable.server.dal.CreateParserFromFiles;
-
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgParse;
 import com.jayantkrish.jklol.ccg.CcgParser;
@@ -20,6 +9,16 @@ import com.jayantkrish.jklol.ccg.lambda.ExpressionParser;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
 import com.jayantkrish.jklol.models.parametric.SufficientStatistics;
+import instructable.server.ccg.CcgUtils;
+import instructable.server.ccg.ParserSettings;
+import instructable.server.ccg.WeightedCcgExample;
+import instructable.server.dal.CreateParserFromFiles;
+import instructable.server.parser.CommandsToParser;
+
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public class TestLexiconInduction {
     public static void main(String[] args) throws Exception
@@ -59,7 +58,7 @@ public class TestLexiconInduction {
 
     	System.out.println("Initial parameters");
     	System.out.println(parserSettings.parserFamily.getParameterDescription(parserSettings.parserParameters));
-    	parserSettings.updateParserGrammar(newEntries);//, Lists.newArrayList());
+    	parserSettings.updateParserGrammar(newEntries, true);//, Lists.newArrayList());
     	SufficientStatistics newParameters = CcgUtils.train(parserSettings.parserFamily, examples, 10, null);
     	
     	CcgParser newParser = parserSettings.parserFamily.getModelFromParameters(newParameters);

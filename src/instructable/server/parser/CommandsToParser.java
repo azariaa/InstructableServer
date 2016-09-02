@@ -93,10 +93,10 @@ public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
     }
 
     @Override
-    public void newDemonstrateAlt(String type, List<String> names)
+    public void newDemonstrateAlt(String type, List<String> names, boolean willTrainLater)
     {
         List<LexiconEntry> lexiconEntries = LexiconEntry.parseLexiconEntries(names.stream().map(actualName-> "\""+actualName + "\",\"" + type + "{0}\",\"" + actualName.replace(" ", "_") + "\",0 \"" + actualName.replace(" ", "_")+"\"").collect(Collectors.toList()));
-        parserSettings.updateParserGrammar(lexiconEntries);
+        parserSettings.updateParserGrammar(lexiconEntries, willTrainLater);
         for (String actualName : names)
             parserSettings.env.bindName(actualName.replace(" ", "_"), actualName.replace("_", " "), parserSettings.symbolTable);
     }
