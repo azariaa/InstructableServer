@@ -1470,13 +1470,14 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (!internalState.isInLearningMode())
             return failWithMessage(infoForCommand, "I wasn't expecting a demonstration from you");
 
-        String commandBeingLearned = internalState.lastCommandOrLearningCommand;
-        String cmdForType = commandBeingLearned.replace(" ", "_");
+        //String commandBeingLearned = internalState.lastCommandOrLearningCommand;
+        //String cmdForType = commandBeingLearned.replace(" ", "_");
+        String previousClickForType = "topLvl";
         //pull out all alternatives
         try
         {
             JSONObject nextBlock = json.getJSONObject("nextBlock");
-            int blockNum = 0;
+            //int blockNum = 0;
             while (nextBlock != null)
             {
                 List<String> allAlternatives = new LinkedList<>();
@@ -1577,9 +1578,15 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                             {
                                 allAlternatives.add(InstUtils.alphaNumLower(buttonText));
                             }
-                            commandsToParser.newDemonstrateAlt(cmdForType+blockNum, allAlternatives, true);
+                            commandsToParser.newDemonstrateAlt(previousClickForType, allAlternatives, true);
                             expression = "(sugExec \"" + actionType + "\" " + buttonText.replace(" ", "_") + " \"false\"";
                         }
+                        //top level should have packageName: "com.google.android.googlequicksearchbox"
+                        String textForType = buttonText.trim();
+                        if (textForType.contains(" "))
+                            textForType = textForType.split(" ")[0];
+                        textForType = InstUtils.alphaNumLower(textForType);
+                        previousClickForType += "_" + textForType; //should work even if textForType end-up  being empty
                         expression += " " +(actionParameter.isPresent()? "(stringValue \"" + actionParameter.get() + "\")" : "\"\"")+")";
                         internalState.userGaveCommand(new InfoForCommand("n/a", ExpressionParser.expression2().parseSingleExpression(expression)), true, false);
                     }
@@ -1588,7 +1595,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                     nextBlock = nextBlock.getJSONObject("nextBlock");
                 else
                     nextBlock = null;
-                blockNum++;
+                //blockNum++;
             }
             //learn
         } catch (Exception ex)

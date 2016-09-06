@@ -262,12 +262,30 @@ public class ParserSettings
      */
     public void updateParserGrammar(List<LexiconEntry> lexiconEntries, boolean willTrainLater)//, List<CcgUnaryRule> unaryRules)
     {
-        parserKnowledgeSeeder.addNewUserLexicons(lexiconEntries.stream().map(LexiconEntry::toCsvString).collect(Collectors.toList())); //updating the DB
-
-        lexicon.addAll(lexiconEntries);
-        this.unaryRules.addAll(unaryRules);
-        if (!willTrainLater)
-            updateGrammarFromExisting();
+        //filter out entries which are already present in the lexicon
+        List<LexiconEntry> lexEntriesToAdd = new LinkedList<>();//tried doing this with lambda, but ended-up writing myself...
+        for (LexiconEntry candidate : lexiconEntries)
+        {
+            boolean isNewCandidate = true;
+            for (LexiconEntry current : lexicon)
+            {
+                if (current.toCsvString().equals(candidate.toCsvString()))
+                {
+                    isNewCandidate = false;
+                    break;
+                }
+            }
+            if (isNewCandidate)
+                lexEntriesToAdd.add(candidate);
+        }
+        if (lexEntriesToAdd.size() > 0)
+        {
+            parserKnowledgeSeeder.addNewUserLexicons(lexEntriesToAdd.stream().map(LexiconEntry::toCsvString).collect(Collectors.toList())); //updating the DB
+            lexicon.addAll(lexEntriesToAdd);
+            this.unaryRules.addAll(unaryRules);
+            if (!willTrainLater)
+                updateGrammarFromExisting();
+        }
     }
 
     private void updateGrammarFromExisting()
