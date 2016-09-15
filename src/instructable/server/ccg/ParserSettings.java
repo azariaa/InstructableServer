@@ -212,12 +212,14 @@ public class ParserSettings
         for (String sentence : userSays) //trying all alternatives
         {
             Expression2 expression = parse(sentence);
-            if (!expression.equals(unknownExpression))
+            if (!expression.equals(unknownExpression) || failNextCommand)
             {
+                failNextCommand = false;
                 return executeLogicalForm(userId, allUserActions, userSays, sentence, expression);
             }
         }
         //all alternatives failed
+        failNextCommand = false;
         return executeLogicalForm(userId, allUserActions, userSays, userSays.get(0), unknownExpression);
     }
 
@@ -368,7 +370,6 @@ public class ParserSettings
         {
             expression = parse.getLogicalForm();
         }
-        failNextCommand = false;  //make sure we don't fail again even if we wanted to fail this time
 
         return simplifier.apply(expression);
     }

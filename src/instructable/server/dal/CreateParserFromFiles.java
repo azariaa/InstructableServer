@@ -54,6 +54,7 @@ public class CreateParserFromFiles
                 "EmailAmbiguous{0} InstanceName{0}, (lambda x x)", //only if the parser doesn't manage to identify which kind of email the user means, will this be used.
                 "EmailAmbiguous{0} Instance{0},(lambda x (getProbInstanceByName x))",
                 "ExactInstance{0} Instance{0},(lambda x x)"//, //exact instance is also an instance (that can be read).
+                //"StringV{0} StringV{0}/StringV{0}, (lambda x (lambda y (concat x y)))"
                 //"ScriptName{0} S{0},(lambda x (runScript x))" //run a script (e.g. "order coffee") //no need: each script is an example translated to (runScript "...")
                 //"PP_StringV{1} (S{0}\\(S{0}/PP_StringV{1}){0}){0}, (lambda x x)", //these two are for handling sentences like: "set body to hello and subject to see you"
                 //"MutableField{1} ((S{0}/PP_StringV{2}){0}\\(S{0}/PP_StringV{2}){0}/MutableField{1}){0}){0}, (lambda x y x y)"

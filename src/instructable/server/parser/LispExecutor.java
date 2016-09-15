@@ -30,6 +30,7 @@ public class LispExecutor
     public static final String doSeq = "doSeq";
     public static final String stringNoun = "stringNoun";
     public static final String stringValue = "stringValue";
+//    public static final String concat = "concat";
 
     public LispExecutor(IAllUserActions allUserActions, InfoForCommand infoForCommand)
     {
@@ -44,6 +45,7 @@ public class LispExecutor
         allFunctionNames.add(doSeq);
         allFunctionNames.add(stringNoun);
         allFunctionNames.add(stringValue);
+//        allFunctionNames.add(concat);
         return allFunctionNames;
     }
 
@@ -88,6 +90,13 @@ public class LispExecutor
                         return retStr.trim().replaceAll("^[;.,]+","").replaceAll("[;.,]+$","");
                     return retStr;
                 }
+
+//                if (currentFunction.equals(concat))
+//                {
+//                    String arg1 = (String) argumentValues.get(0);
+//                    String arg2 = (String) argumentValues.get(1);
+//                    return arg1 + " " + arg2;
+//                }
 
                 if (currentFunction.equals(doSeq))
                 {
