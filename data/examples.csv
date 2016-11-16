@@ -158,3 +158,6 @@ undo, (undo)
 undo last command, (undo)
 say I love you,"(say (stringValue ""I love you""))"
 no,(no)
+boop,"(say (stringValue ""hello world""))"
+coot,"(say (stringValue ""go to sleep""))"
+aoop,"(say (stringValue ""nothing""))"

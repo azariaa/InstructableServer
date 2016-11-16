@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class ParserSettings
 {
     static final int initialTraining = 10;
-    static final int retrainAfterNewCommand = 1;
+    static final int retrainAfterNewCommand = 5;
     static final boolean treatCorpusAsLearnedExamples = true;//false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
 
     private static final Expression2 unknownExpression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
@@ -382,11 +382,19 @@ public class ParserSettings
 
         WeightedCcgExample example = CcgUtils.createCcgExample(originalCommand, expressionLearnt, posUsed, false, featureVectorGenerator);
 
-        List<LexiconEntry> newEntries = CcgUtils.induceLexiconEntriesHeuristic(example, parser);
+        List<WeightedCcgExample> possibleNewExampleList = new LinkedList<>();
+        List<LexiconEntry> newEntries = CcgUtils.induceLexiconEntriesHeuristic(example, parser, possibleNewExampleList);
         System.out.println(newEntries);
+        if (possibleNewExampleList.isEmpty()) //if we don't have any alternative examples, we use the original one
+            possibleNewExampleList.add(example);
 
         updateParserGrammar(newEntries, true);//, Lists.newArrayList());
-        ccgExamples.add(example);
+        ccgExamples.addAll(possibleNewExampleList);
+//        ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon, unaryRules,
+//                posUsed, featureVectorGenerator);
+//        this.parserParameters = CcgUtils.train(family, ccgExamples, initialTraining, null);
+//        this.parser = family.getModelFromParameters(this.parserParameters);
+//        this.parserFamily = family;
         retrain(retrainAfterNewCommand);
     }
 
@@ -406,6 +414,7 @@ public class ParserSettings
 
     public void retrain(int iterations)
     {
+        updateGrammarFromExisting();
         SufficientStatistics newParameters = CcgUtils.train(parserFamily,
                 ccgExamples, iterations, parserParameters);
         

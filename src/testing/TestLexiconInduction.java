@@ -17,6 +17,7 @@ import instructable.server.parser.CommandsToParser;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +48,7 @@ public class TestLexiconInduction {
     		System.out.println(example.getLogicalForm());
     		CcgParse predicted = parser.beamSearch(example.getSentence(), 100).get(0);
     		System.out.println(simplifier.apply(predicted.getLogicalForm()));
-    		List<LexiconEntry> entries = CcgUtils.induceLexiconEntriesHeuristic(example, parser);
+    		List<LexiconEntry> entries = CcgUtils.induceLexiconEntriesHeuristic(example, parser, new LinkedList<>());
     		for (LexiconEntry entry : entries) {
     		  List<UnfilledDependency> unfilledDependencies = entry.getCategory().createUnfilledDependencies(0, null);
     		  System.out.println("  " + entry + " " + entry.getCategory().getSemanticHeads() +" " + unfilledDependencies);

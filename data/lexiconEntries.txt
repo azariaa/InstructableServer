@@ -167,3 +167,9 @@ duration,FieldName{0},duration,0 duration
 demonstrate,S{0},(demonstrate)
 click,(S{0}/StringN{1}){0},(lambda $1 (sugExecClick $1))
 click,actionType{0},actionType,0 actionType
+#
+# debug
+#
+boop,S{0},(say (stringValue ~"hello world~"))
+coot,S{0},(say (stringValue ~"go to sleep~"))
+aoop,S{0},(say (stringValue ~"nothing~"))

@@ -1,48 +1,66 @@
 package instructable.server.ccg;
 
-import java.util.List;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.jayantkrish.jklol.ccg.CcgExample;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import com.jayantkrish.jklol.nlpannotation.AnnotatedSentence;
 
-public class WeightedCcgExample {
+import java.util.List;
 
-  private final AnnotatedSentence sentence;
-  private final Expression2 logicalForm;
+public class WeightedCcgExample
+{
 
-  private final double weight;
-  
-  public WeightedCcgExample(AnnotatedSentence sentence, Expression2 logicalForm, double weight) {
-    this.sentence = Preconditions.checkNotNull(sentence);
-    this.logicalForm = Preconditions.checkNotNull(logicalForm);
+    private final AnnotatedSentence sentence;
+    private final Expression2 logicalForm;
 
-    this.weight = weight;
-  }
-  
-  public static List<CcgExample> toCcgExamples(List<WeightedCcgExample> examples) {
-    List<CcgExample> ccgExamples = Lists.newArrayList();
-    for (WeightedCcgExample e : examples) {
-      ccgExamples.add(e.toCcgExample());
+    private final double weight;
+
+    public WeightedCcgExample(AnnotatedSentence sentence, Expression2 logicalForm, double weight)
+    {
+        this.sentence = Preconditions.checkNotNull(sentence);
+        this.logicalForm = Preconditions.checkNotNull(logicalForm);
+
+        this.weight = weight;
     }
-    return ccgExamples;
-  }
 
-  public AnnotatedSentence getSentence() {
-    return sentence;
-  }
+    public static List<CcgExample> toCcgExamples(List<WeightedCcgExample> examples)
+    {
+        List<CcgExample> ccgExamples = Lists.newArrayList();
+        for (WeightedCcgExample e : examples)
+        {
+            ccgExamples.add(e.toCcgExample());
+        }
+        return ccgExamples;
+    }
 
-  public Expression2 getLogicalForm() {
-    return logicalForm;
-  }
-  
-  public CcgExample toCcgExample() {
-    return new CcgExample(sentence, null, null, logicalForm, null);
-  }
+    public AnnotatedSentence getSentence()
+    {
+        return sentence;
+    }
 
-  public double getWeight() {
-    return weight;
-  }
+    public Expression2 getLogicalForm()
+    {
+        return logicalForm;
+    }
+
+//    public void setLogicalForm(Expression2 logicalForm)
+//    {
+//        this.logicalForm = logicalForm;
+//    }
+
+    public CcgExample toCcgExample()
+    {
+        return new CcgExample(sentence, null, null, logicalForm, null);
+    }
+
+    public double getWeight()
+    {
+        return weight;
+    }
+
+    public WeightedCcgExample newExampleWithDifferentLf(Expression2 newLf)
+    {
+        return new WeightedCcgExample(sentence, newLf, weight);
+    }
 }
