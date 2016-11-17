@@ -208,6 +208,7 @@ public class CcgUtils
 
             int[] indexes = subsetIter.next();
             Expression2 substituted = lf;
+            Optional<Expression2> noSub = Optional.empty();
             for (int i = 0; i < spanStarts.size(); i++)
             {
                 Expression2 var = Expression2.constant("$" + i);
@@ -219,14 +220,17 @@ public class CcgUtils
                         substituted = substituted.substitute(toSubstitute, var);
                     else
                     {
-                        Expression2 expressionB4Sub = getExpWithStringConcat(substituted, toSubstitute).get();
-                        newExamplesAdded.add(example.newExampleWithDifferentLf(expressionB4Sub));
-                        substituted = expressionB4Sub.substitute(toSubstitute, var);
+                        if (!noSub.isPresent())
+                            noSub = Optional.of(lf);
+                        noSub = Optional.of(getExpWithStringConcat(noSub.get(), toSubstitute).get());
+                        substituted = getExpWithStringConcat(substituted, toSubstitute).get().substitute(toSubstitute, var);
                     }
                     entryUsed[i] = true;
                     atLeastOneUsed = true;
                 }
             }
+            if (noSub.isPresent())
+                newExamplesAdded.add(example.newExampleWithDifferentLf(noSub.get()));
 
             if (!atLeastOneUsed && spanStarts.size() > 0)
             {

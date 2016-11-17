@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class ParserSettings
 {
     static final int initialTraining = 10;
-    static final int retrainAfterNewCommand = 5;
+    static final int retrainAfterNewCommand = 2;
     static final boolean treatCorpusAsLearnedExamples = true;//false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
 
     private static final Expression2 unknownExpression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
