@@ -22,6 +22,7 @@ public class ConnectToService
     static private final boolean useRealtimeAgent = true; //determines whether to provide actual user credentials for sending real emails.
     static private final String userId = "a992";
     static private final String USER_AGENT = "Mozilla/5.0";
+    static private final String httpIp = "http://34.193.23.122";//"http://localhost";
 
     public static void main(String[] args) throws Exception
     {
@@ -31,7 +32,7 @@ public class ConnectToService
 
     private static void initializeGameId() throws Exception
     {
-        String url = "http://localhost:"+ Service.portToUse + "/" + (useRealtimeAgent? Service.contextRealtimeAgent : Service.contextEmailAndExperiment);// + "?" + Service.userSaysParam + "=" +URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
+        String url = httpIp + ":" + Service.portToUse + "/" + (useRealtimeAgent? Service.contextRealtimeAgent : Service.contextEmailAndExperiment);// + "?" + Service.userSaysParam + "=" +URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -101,7 +102,7 @@ public class ConnectToService
      */
     private static String getSayToUser(String userSays) throws IOException
     {
-        String url = "http://localhost:"+ Service.portToUse + "/" + Service.contextRealtimeAgent;// + "?" + Service.userSaysParam + "=" +URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
+        String url = httpIp + ":"+ Service.portToUse + "/" + Service.contextRealtimeAgent;// + "?" + Service.userSaysParam + "=" +URLEncoder.encode(userSays, StandardCharsets.UTF_8.name());
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
