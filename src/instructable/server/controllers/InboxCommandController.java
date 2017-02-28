@@ -45,15 +45,15 @@ public class InboxCommandController
     }
 
 
-    public String getCurrentEmailName()
+    public String getCurrentEmailName(ExecutionStatus executionStatus)
     {
-        makeSureEmailIsPresentInDb();
+        makeSureEmailIsPresentInDb(executionStatus);
         return emailMessageNameStart + currentIncomingEmailIdx;
     }
 
     public Optional<GenericInstance> getCurrentIncomingEmail(ExecutionStatus executionStatus)
     {
-        boolean ok = makeSureEmailIsPresentInDb();
+        boolean ok = makeSureEmailIsPresentInDb(executionStatus);
         if (ok)
             return instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, instanceName(currentIncomingEmailIdx));
         executionStatus.add(ExecutionStatus.RetStatus.error, "the email was not found");
@@ -64,12 +64,12 @@ public class InboxCommandController
      *
      * @return true is ok.
      */
-    private boolean makeSureEmailIsPresentInDb()
+    private boolean makeSureEmailIsPresentInDb(ExecutionStatus executionStatus)
     {
         //TODO: what happens if email was deleted? Maybe current email is different?
         if (emailFetcher.isPresent() && !instanceContainer.getInstance(new ExecutionStatus(), IncomingEmail.incomingEmailType, instanceName(currentIncomingEmailIdx)).isPresent())
         {
-            Optional<EmailInfo> emailInfo = emailFetcher.get().getEmailInfo(currentIncomingEmailIdx);
+            Optional<EmailInfo> emailInfo = emailFetcher.get().getEmailInfo(executionStatus, currentIncomingEmailIdx);
             if (emailInfo.isPresent())
             {
                 new IncomingEmail(instanceContainer, emailInfo.get(), instanceName(currentIncomingEmailIdx));

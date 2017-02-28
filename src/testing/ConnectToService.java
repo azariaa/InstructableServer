@@ -43,7 +43,7 @@ public class ConnectToService
         con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
         String parameters =  (useRealtimeAgent? RealtimeAgentServer.userIdParam : ExperimentServer.gameIdParam) + "=" + userId;
-        parameters += "&" + (useRealtimeAgent? RealtimeAgentServer.actionParam : ExperimentServer.actionParam) + "=" + (useRealtimeAgent? RealtimeAgentServer.actionNewRealUser : ExperimentServer.newGameJoinedStr);
+        parameters += "&" + (useRealtimeAgent? RealtimeAgentServer.actionParam : ExperimentServer.actionParam) + "=" + (useRealtimeAgent? RealtimeAgentServer.actionSetEmailAndPswd : ExperimentServer.newGameJoinedStr);
         if (useRealtimeAgent)
         {
             parameters += "&" + RealtimeAgentServer.username + "=" + "234jhf84kj";

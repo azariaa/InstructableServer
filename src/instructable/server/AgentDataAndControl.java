@@ -7,10 +7,10 @@ import instructable.server.backend.IGetAwaitingResponse;
 import instructable.server.backend.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
-import instructable.server.senseffect.*;
 import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.dal.EmailPassword;
 import instructable.server.parser.CommandsToParser;
+import instructable.server.senseffect.*;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -80,7 +80,7 @@ public class AgentDataAndControl
         CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy);
 
         //TODO: calendar should be user's calendar.
-        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", userId, commandsToParser, emailSender, usePendingResponses, emailFetcher, Optional.of(new RealCalendar()));
+        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", userId, commandsToParser, emailSender, usePendingResponses, emailFetcher, Optional.empty());
         if (addInboxEmails.isPresent())
             addInboxEmails.get().addInboxEmails(topDMAllActions);
         return new ParserSetAndActions(parserSettingsCopy, topDMAllActions, commandsToParser);
@@ -99,14 +99,14 @@ public class AgentDataAndControl
             logger.warning("shouldn't happen that responseToUserListenerList.size() is: " + responseToUserListenerList.size());
     }
 
-    public Optional<String> executeSentenceForUser(String userId, List<String> userSays)
+    public Optional<String> executeSentenceForUser(String userId, String username, String encPassword, List<String> userSays)
     {
-        return executeSentenceOrGetPending(userId, userSays);
+        return executeSentenceOrGetPending(userId, username, encPassword, userSays);
     }
 
-    public Optional<String> getPendingResponse(String userId)
+    public Optional<String> getPendingResponse(String userId, String username, String encPassword)
     {
-        return executeSentenceOrGetPending(userId, new LinkedList<>());
+        return executeSentenceOrGetPending(userId, username, encPassword, new LinkedList<>());
     }
 
     /**
@@ -114,7 +114,7 @@ public class AgentDataAndControl
      * @param userSays set to empty list for a pending response. If there is more than one sentence, the parser will choose the one which doesn't parse to unknown command.
      * @return agent's response to user's sentence. Optional.empty, if user wasn't found.
      */
-    private Optional<String> executeSentenceOrGetPending(String userId, List<String> userSays)
+    private Optional<String> executeSentenceOrGetPending(String userId, String username, String encPassword, List<String> userSays)
     {
         boolean getPendingResponse = userSays.isEmpty();
         logger.info("UserID:" + userId + ". " + (getPendingResponse ? "Requested pending response." : "User says: " + userSays.get(0)));
@@ -124,7 +124,7 @@ public class AgentDataAndControl
             parserSetAndActions = parserSetAndActionsMap.get(userId);
         }
         if (parserSetAndActions == null)
-            return Optional.empty();
+            parserSetAndActions = addUserFromDBIfHas(userId, username, encPassword);
         String sayToUser = "";
         boolean success = false;
         if (getPendingResponse)
@@ -175,22 +175,32 @@ public class AgentDataAndControl
         parserSetAndActions.parserSettings.evaluate(parserSetAndActions.allUserActions, userSays, expression);
     }
 
-    public String setNewUserUsernamePwd(String userId, String username, String encPassword, String email, String realPwd)
+    public String setEmailAndPswd(String userId, String username, String encPassword, String email, String realPwd)
     {
         Optional<RealEmailOperations> emailSender = EmailPassword.getRealEmailOp(username, encPassword, email, realPwd);
         if (!emailSender.isPresent())
             return "Error setting new password";
-        addNewUser(userId, emailSender.get(), Optional.empty(), Optional.of((IEmailFetcher) emailSender.get()), true); //replace if old existed
-        return "email and password set successfully";
+        addNewUser(userId, emailSender.get(), Optional.empty(), Optional.of(emailSender.get()), true); //replace if old existed
+        return "email and password set successfully. Make sure to turn on access for less secure apps at: https://www.google.com/settings/security/lesssecureapps. You can say reset email and password if you want to modify them";
+
     }
 
     public String newUserNoPwd(String userId, String username, String encPassword)
     {
-        Optional<RealEmailOperations> emailSender = EmailPassword.getRealEmailOp(username, encPassword);
-        if (!emailSender.isPresent())
-            return "Error getting password. Please set password again.";
-        addNewUser(userId, emailSender.get(), Optional.empty(), Optional.of(emailSender.get()), false);
-        return "new user added " + RealtimeAgentServer.successContains + ".";
+        addUserFromDBIfHas(userId, username, encPassword);
+
+        return "new user added succefully";
+    }
+
+    private ParserSetAndActions addUserFromDBIfHas(String userId, String username, String encPassword)
+    {
+        Optional<RealEmailOperations> realEmailOps = EmailPassword.getRealEmailOp(username, encPassword);
+        //if (!emailSender.isPresent())
+        //return "Error getting password. Please set password again.";
+        return addNewUser(userId,
+                realEmailOps.isPresent() ? realEmailOps.get() : new EmptyEmailOperations(),
+                Optional.empty(),
+                Optional.of(realEmailOps.isPresent() ? realEmailOps.get() : new EmptyEmailOperations()), false);
     }
 
 }

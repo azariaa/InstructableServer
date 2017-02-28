@@ -1,5 +1,6 @@
 package instructable.server.senseffect;
 
+import instructable.server.backend.ExecutionStatus;
 import instructable.server.hirarchy.EmailInfo;
 
 import java.util.Optional;
@@ -10,5 +11,5 @@ import java.util.Optional;
 public interface IEmailFetcher
 {
     int getLastEmailIdx();
-    Optional<EmailInfo> getEmailInfo(int emailIdx);
+    Optional<EmailInfo> getEmailInfo(ExecutionStatus executionStatus, int emailIdx);
 }

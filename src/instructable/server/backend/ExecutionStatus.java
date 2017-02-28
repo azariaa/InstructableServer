@@ -14,7 +14,7 @@ public class ExecutionStatus
 
     public enum RetStatus
     {
-        ok, comment, warning, error
+        ok, comment, warning, error, noPswdSet
     }
 
     ;
@@ -56,6 +56,11 @@ public class ExecutionStatus
                 retStatusAndMessage = statusAndMessage;
                 break;
             }
+            else if (statusAndMessage.retStatus == RetStatus.noPswdSet)
+            {
+                retStatusAndMessage = statusAndMessage;
+                break;
+            }
             else if (statusAndMessage.retStatus == RetStatus.warning && retStatusAndMessage.retStatus != RetStatus.error)
             {
                 retStatusAndMessage = statusAndMessage;
@@ -72,7 +77,7 @@ public class ExecutionStatus
     public boolean isError()
     {
         RetStatus retStatus = getStatus();
-        return retStatus == RetStatus.error;
+        return retStatus == RetStatus.error || retStatus == RetStatus.noPswdSet;
     }
 
     public boolean noError()

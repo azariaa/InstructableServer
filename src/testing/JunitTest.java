@@ -31,7 +31,7 @@ public class JunitTest {
   
   @Test
   public void testLongSentence1() {
-    IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, false, Optional.empty(), Optional.empty());
+    IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings), (executionStatus, subject, body, copyList, recipientList) -> {}, false, Optional.empty(), Optional.empty());
     testHelpers.systemSays("Let's start by sending a dummy email to your-self, set the subject to hello and the body to test.");
     CcgUtils.SayAndExpression response;
     String userSays;
@@ -45,7 +45,7 @@ public class JunitTest {
   
   @Test
   public void testLongSentence2() {
-    IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, false, Optional.empty(), Optional.empty());
+    IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings), (executionStatus, subject, body, copyList, recipientList) -> {}, false, Optional.empty(), Optional.empty());
     testHelpers.systemSays("Let's start by sending a dummy email to your-self, set the subject to hello, and the body to test.");
     CcgUtils.SayAndExpression response;
     String userSays;

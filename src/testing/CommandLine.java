@@ -7,7 +7,6 @@ import instructable.server.ccg.ParserSettings;
 import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.dal.DBUtils;
 import instructable.server.parser.CommandsToParser;
-import instructable.server.senseffect.RealCalendar;
 
 import java.util.Optional;
 import java.util.Scanner;
@@ -22,7 +21,7 @@ public class CommandLine
         String userId = "tempUser";
         DBUtils.clearUserData(userId);
         ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of(userId));
-        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {}, true, Optional.empty(), Optional.of(new RealCalendar()));
+        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings), (executionStatus, subject, body, copyList, recipientList) -> {}, true, Optional.empty(), Optional.empty());
         IAllUserActions allUserActions = topDMAllActions;
 
         CreateParserFromFiles.addInboxEmails(topDMAllActions);

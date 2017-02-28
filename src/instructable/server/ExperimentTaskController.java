@@ -1,5 +1,6 @@
 package instructable.server;
 
+import instructable.server.backend.ExecutionStatus;
 import instructable.server.hirarchy.EmailInfo;
 import instructable.server.senseffect.IAddInboxEmails;
 import instructable.server.senseffect.IEmailSender;
@@ -205,7 +206,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
 
     //should actually be named "emailSent"
     @Override
-    public void sendEmail(String subject1, String body1, String copyList, String recipientList)
+    public void sendEmail(ExecutionStatus executionStatus, String subject1, String body1, String copyList, String recipientList)
     {
         String subject = subject1.toLowerCase();
         String body = body1.toLowerCase();

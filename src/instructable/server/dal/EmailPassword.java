@@ -1,7 +1,7 @@
 package instructable.server.dal;
 
 import com.google.common.base.Preconditions;
-import instructable.server.senseffect.RealCalendar;
+//import instructable.server.senseffect.RealCalendar;
 import instructable.server.senseffect.RealEmailOperations;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -207,9 +207,9 @@ public class EmailPassword
 //    {
 //        return new RealEmailOperations(emailPassword.email, emailPassword.password, emailPassword.email);
 //    }
-
-    public static RealCalendar getRealCalendarOp(EmailPassword emailPassword)
-    {
-        return new RealCalendar(); //doesn't use username and password.
-    }
+//
+//    public static RealCalendar getRealCalendarOp(EmailPassword emailPassword)
+//    {
+//        return new RealCalendar(); //doesn't use username and password.
+//    }
 }

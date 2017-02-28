@@ -1,5 +1,6 @@
 package testing;
 
+import instructable.server.backend.ExecutionStatus;
 import instructable.server.backend.IAllUserActions;
 import instructable.server.backend.TopDMAllActions;
 import instructable.server.ccg.CcgUtils;
@@ -75,7 +76,7 @@ public class AnnotateInteractions
 			String userId = "tempUser";
             DBUtils.clearUserData(userId); //Amos added
 			ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of(userId));
-			IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", userId, new CommandsToParser(parserSettings), (subject, body, copyList, recipientList) -> {
+			IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", userId, new CommandsToParser(parserSettings), (executionStatus, subject, body, copyList, recipientList) -> {
             }, false, Optional.empty(), Optional.empty());
 			addContextEmails((TopDMAllActions) allUserActions);
 			System.out.println("Ready to annotate!");
@@ -112,7 +113,7 @@ public class AnnotateInteractions
 					System.out.println("\nWorking with gameId: "+gameId+"\tuId: "+lineNo);
 					String userUtterance = line.split("\t")[3].trim();
 					System.out.println("U: " + userUtterance);
-					String currentEmail = ((TopDMAllActions) allUserActions).inboxCommandController.getCurrentEmailName();
+					String currentEmail = ((TopDMAllActions) allUserActions).inboxCommandController.getCurrentEmailName(new ExecutionStatus());
 
 					//Parse and Execute
 					CcgUtils.SayAndExpression response = parserSettings.parseAndEval(allUserActions, userUtterance);

@@ -72,7 +72,7 @@ public class OutEmailCommandController
 
     private void sendThisEmail(ExecutionStatus executionStatus, OutgoingEmail outgoingEmail)
     {
-        emailSender.sendEmail(outgoingEmail.getSubject(),outgoingEmail.getBody(),outgoingEmail.getCopy(),outgoingEmail.getRecipient());
+        emailSender.sendEmail(executionStatus, outgoingEmail.getSubject(),outgoingEmail.getBody(),outgoingEmail.getCopy(),outgoingEmail.getRecipient());
     }
 
     public void createNewEmail(ExecutionStatus executionStatus)

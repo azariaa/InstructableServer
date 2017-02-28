@@ -18,6 +18,10 @@ public interface IAllUserActions
 
     ActionResponse send(InfoForCommand infoForCommand, String instanceName);
 
+//    ActionResponse reset(InfoForCommand infoForCommand, String instanceName);
+
+    ActionResponse resetEmailAndPassword(InfoForCommand infoForCommand);
+
     ActionResponse saveCalendarEvent(InfoForCommand infoForCommand);
 
     ActionResponse save(InfoForCommand infoForCommand, String instanceName);
@@ -135,9 +139,12 @@ public interface IAllUserActions
 
 
 //    ActionResponse sugExecFromJSON(InfoForCommand infoForCommand, String jsonBlock);
+    ActionResponse sugExecClick(InfoForCommand infoForCommand, String filterText);
     ActionResponse sugExec(InfoForCommand infoForCommand, String actionType, String filterText, String fromLocation, String actionPrm);
     ActionResponse demonstrate(InfoForCommand infoForCommand);
     ActionResponse userHasDemonstrated(InfoForCommand infoForCommand, JSONObject json);
+
+    ActionResponse plusAction(InfoForCommand infoForCommand, String arg1, String arg2);
 
     //future work: ActionResponse undoLastAction(InfoForCommand infoForCommand);
 

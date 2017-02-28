@@ -26,7 +26,7 @@ public class ActionResponse //extends RuntimeException
             return new ActionResponse("Error: nothing to append", false, Optional.empty());
         Optional<String> learningSentence = Optional.empty();
         //StringBuilder fullResponse = new StringBuilder();
-        LinkedList<SayOrExec> allSayToUserOrExec = new LinkedList<>();
+        LinkedList<SayExecOrCmd> allSayToUserOrExec = new LinkedList<>();
         boolean success = true;
         for (ActionResponse actionResponse : actionResponseList)
         {
@@ -45,7 +45,7 @@ public class ActionResponse //extends RuntimeException
 
     public String onlySentenceToUser()
     {
-        if (sayToUserOrExec.size() > 0 && !sayToUserOrExec.getLast().isCmdExec())
+        if (sayToUserOrExec.size() > 0 && sayToUserOrExec.getLast().isCmdExec() == TypeOfCmdForUser.toSay)
             return sayToUserOrExec.getLast().toSay;
         return "found nothing to say";
     }
@@ -72,16 +72,23 @@ public class ActionResponse //extends RuntimeException
     public ActionResponse(String sayToUser, boolean success, Optional<String> learningSentence)
     {
         this(success, learningSentence);
-        this.sayToUserOrExec.add(new SayOrExec(sayToUser));
+        this.sayToUserOrExec.add(new SayExecOrCmd(sayToUser));
     }
 
     public ActionResponse(JSONObject execForUser, boolean success, Optional<String> learningSentence)
     {
         this(success, learningSentence);
-        this.sayToUserOrExec.add(new SayOrExec(execForUser));
+        this.sayToUserOrExec.add(new SayExecOrCmd(execForUser));
     }
 
-    public ActionResponse(LinkedList<SayOrExec> sayToUserOrExec, boolean success, Optional<String> learningSentence)
+    static public ActionResponse reqEmailAndPswd()
+    {
+        ActionResponse response = new ActionResponse(false, Optional.empty());
+        response.sayToUserOrExec.add(new SayExecOrCmd(TypeOfCmdForUser.noEmailPswd));
+        return response;
+    }
+
+    public ActionResponse(LinkedList<SayExecOrCmd> sayToUserOrExec, boolean success, Optional<String> learningSentence)
     {
         this(success, learningSentence);
         this.sayToUserOrExec = sayToUserOrExec;
@@ -111,20 +118,25 @@ public class ActionResponse //extends RuntimeException
     }
 
     /**
-     * includes all sequential executions as a single json execution command. Preserves order of sentences.
+     * merges all sequential executions to a single json execution command. Preserves order of sentences.
      */
     public String getSayToUserOrExec()
     {
         StringBuilder retVal = new StringBuilder();
 
         Optional<JSONObject> tmpCmdsToExec = Optional.empty();
-        for (SayOrExec sayToOrExec : sayToUserOrExec)
+        for (SayExecOrCmd sayToOrExec : sayToUserOrExec)
         {
-            if (!sayToOrExec.isCmdExec())
+            if (sayToOrExec.isCmdExec() == TypeOfCmdForUser.noEmailPswd)
             {
-                if (tmpCmdsToExec.isPresent()) //if we have some JSON commands, add them and empty it
+                retVal.append(Consts.getEmailAndPassword).append("\n");
+            }
+            else if (sayToOrExec.isCmdExec() == TypeOfCmdForUser.toSay)
+            {
+                if (tmpCmdsToExec.isPresent()) //if we already have some JSON commands, add them and empty it
                 {
                     retVal.append(Consts.execCmdPre + tmpCmdsToExec.get().toString());
+                    retVal.append("\n");
                     tmpCmdsToExec = Optional.empty();
                 }
                 retVal.append(sayToOrExec.toSay).append("\n");
@@ -173,7 +185,7 @@ public class ActionResponse //extends RuntimeException
         return retVal.toString();
     }
 
-    private LinkedList<SayOrExec> sayToUserOrExec = new LinkedList<>(); //holds a sentence to say, or a JSON to execute
+    private LinkedList<SayExecOrCmd> sayToUserOrExec = new LinkedList<>(); //holds a sentence to say, or a JSON to execute
 
     public boolean isSuccess()
     {
@@ -206,27 +218,33 @@ public class ActionResponse //extends RuntimeException
     private GenericInstance instance;
     private FieldHolder field;
 
-    class SayOrExec
+    public enum TypeOfCmdForUser {toSay, toExecSug, noEmailPswd}
+    static class SayExecOrCmd
     {
-        public boolean isCmdExec()
+        public TypeOfCmdForUser isCmdExec()
         {
             return cmdExec;
         }
 
-        boolean cmdExec = false;
+        TypeOfCmdForUser cmdExec = TypeOfCmdForUser.toSay;
         String toSay = "";
         JSONObject toExec;
 
-        public SayOrExec(String toSay)
+        public SayExecOrCmd(String toSay)
         {
             this.toSay = toSay;
-            cmdExec = false;
+            cmdExec = TypeOfCmdForUser.toSay;
         }
 
-        public SayOrExec(JSONObject toExec)
+        public SayExecOrCmd(JSONObject toExec)
         {
             this.toExec = toExec;
-            cmdExec = true;
+            cmdExec = TypeOfCmdForUser.toExecSug;
+        }
+
+        public SayExecOrCmd(TypeOfCmdForUser typeOfCmdForUser)
+        {
+            cmdExec = typeOfCmdForUser;
         }
     }
 }

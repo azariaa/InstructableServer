@@ -1,10 +1,7 @@
 package testing;
 
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import instructable.server.backend.ActionResponse;
-import instructable.server.backend.IAllUserActions;
-import instructable.server.backend.InfoForCommand;
-import instructable.server.backend.TopDMAllActions;
+import instructable.server.backend.*;
 import instructable.server.ccg.ParserSettings;
 import instructable.server.hirarchy.EmailInfo;
 import instructable.server.parser.ICommandsToParser;
@@ -92,7 +89,7 @@ public class TestDirectly
                 new IEmailSender()
                 {
                     @Override
-                    public void sendEmail(String subject, String body, String copyList, String recipientList)
+                    public void sendEmail(ExecutionStatus executionStatus, String subject, String body, String copyList, String recipientList)
                     {
                         //do nothing
                     }

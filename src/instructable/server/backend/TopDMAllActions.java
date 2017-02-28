@@ -128,7 +128,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             return internalLearningStateMode == internalLearningStateMode.learnNext;
         }
 
-        public void reset()
+        private void reset()
         {
             internalLearningStateMode = InternalLearningStateMode.none;
             pendingOnEmailCreation = false;
@@ -227,7 +227,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     public ActionResponse sendEmail(InfoForCommand infoForCommand)
     {
         ExecutionStatus executionStatus = new ExecutionStatus();
+
         outEmailCommandController.sendEmail(executionStatus);
+        if (executionStatus.getStatus() == ExecutionStatus.RetStatus.noPswdSet)
+        {
+            return resetEmailAndPassword(infoForCommand);
+        }
         if (executionStatus.isError())
         {
             if (!outEmailCommandController.isAnEmailBeingComposed())
@@ -243,6 +248,41 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 Optional.of("Email sent successfully."),
                 false,//true,
                 Optional.of(() -> createNewEmailOrRestore(infoForCommand, true, false)));
+
+//        //this will also mark as sent
+//        Optional<OutgoingEmail> emailToSend = outEmailCommandController.getEmailToSend(executionStatus);
+//        List<ActionResponse> listOfActions = new LinkedList<>();
+//        if (executionStatus.isError() || !emailToSend.isPresent())
+//        {
+//            if (!outEmailCommandController.isAnEmailBeingComposed())
+//            {
+//                internalState.userGaveCommand(infoForCommand, false, commandHistory.isExecutingAnUndoNow());
+//                return TextFormattingUtils.noEmailFound(internalState);
+//            }
+//        }
+//        else
+//        {
+//            listOfActions.add(sugExecClick(infoForCommand, "GMail"));
+//            //TODO: may need to click on the back button (or "Open navigation drawer" button)
+//            listOfActions.add(sugExecClick(infoForCommand, "Compose"));
+//            if (emailToSend.get().hasSubject())
+//                listOfActions.add(sugExecSetText(infoForCommand, "Subject", emailToSend.get().getSubject()));
+//            if (emailToSend.get().hasBody())
+//                listOfActions.add(sugExecSetText(infoForCommand, "Compose email", emailToSend.get().getBody()));
+//            listOfActions.add(sugExec(infoForCommand, "SET_TEXT", "0 0 964 196"/*"To"*/, "parent", emailToSend.get().getRecipient()));
+//            //listOfActions.add(sugExec(infoForCommand, "SET_TEXT", "0 0 964 196"/*"To"*/, "parent", "amos.azaria@gmail.co;fdsa.dsfa@fdsa.com"));
+//            listOfActions.add(sugExecClick(infoForCommand, "Send"));
+//        }
+//        listOfActions.add(
+//                testOkAndFormat(infoForCommand,
+//                executionStatus,
+//                false,
+//                true,
+//                Optional.of("Now sending Email!"), //TODO: should really see if managed to send email. "Email sent successfully."),
+//                false,//true,
+//                Optional.of(() -> createNewEmailOrRestore(infoForCommand, true, false)))
+//        );
+//        return ActionResponse.createFromList(listOfActions);
     }
 
     @Override
@@ -254,6 +294,23 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             return sendEmail(infoForCommand);
         }
         return failWithMessage(infoForCommand, "I don't know how to send " + instanceName);
+    }
+
+//    @Override
+//    public ActionResponse reset(InfoForCommand infoForCommand, String instanceName)
+//    {
+//        //instanceName can actually also be a conceptName (probably outgoing_email), for example when saying: "send an email", or "send one email"
+//        if (instanceName.equals(ambiguousEmailInstanceName) || instanceName.equals(OutgoingEmail.strOutgoingEmailTypeAndName))
+//        {
+//            return resetEmailAndPassword(infoForCommand);
+//        }
+//        return failWithMessage(infoForCommand, "I don't know how to reset " + instanceName);
+//    }
+
+    @Override
+    public ActionResponse resetEmailAndPassword(InfoForCommand infoForCommand)
+    {
+        return ActionResponse.reqEmailAndPswd();
     }
 
     @Override
@@ -337,20 +394,28 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse getInstance(InfoForCommand infoForCommand, String conceptName, String instanceName)
     {
+        ExecutionStatus executionStatus = new ExecutionStatus();
         //instanceName = AliasMapping.instanceNameMapping(instanceName);
         if (inboxCommandController.isInboxInstanceName(instanceName))
         {
             conceptName = IncomingEmail.incomingEmailType; //make sure is asking for the right concept
-            instanceName = inboxCommandController.getCurrentEmailName();
+            instanceName = inboxCommandController.getCurrentEmailName(executionStatus);
+            if (executionStatus.getStatus() == ExecutionStatus.RetStatus.noPswdSet)
+            {
+                return resetEmailAndPassword(infoForCommand);
+            }
         }
 
-        ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = instanceContainer.getInstance(executionStatus, conceptName, instanceName);
         if (!instance.isPresent())
         {
             if (conceptName.equals(IncomingEmail.incomingEmailType)) //this might happen if for some reason didn't use current inbox message
             {
-                instanceName = inboxCommandController.getCurrentEmailName();
+                instanceName = inboxCommandController.getCurrentEmailName(executionStatus);
+                if (executionStatus.getStatus() == ExecutionStatus.RetStatus.noPswdSet)
+                {
+                    return resetEmailAndPassword(infoForCommand);
+                }
                 instance = instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, OutgoingEmail.strOutgoingEmailTypeAndName);
             }
             if (instanceName.contains(InboxCommandController.emailMessageNameStart)) //this might happen if concept mismatches the instanceName
@@ -429,10 +494,16 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             instanceName = InboxCommandController.emailMessageNameStart; //it seems that Instance is mostly immutable.
         }
 
-        if (inboxCommandController.isInboxInstanceName(instanceName))
-            instanceName = inboxCommandController.getCurrentEmailName();
-
         ExecutionStatus executionStatus = new ExecutionStatus();
+        if (inboxCommandController.isInboxInstanceName(instanceName))
+        {
+            instanceName = inboxCommandController.getCurrentEmailName(executionStatus);
+            if (executionStatus.getStatus() == ExecutionStatus.RetStatus.noPswdSet)
+            {
+                return resetEmailAndPassword(infoForCommand);
+            }
+        }
+
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, Optional.of(instanceName), Optional.empty(), false, infoForCommand.userSentence);
 
         ActionResponse actionResponse = testOkAndFormat(infoForCommand,
@@ -463,12 +534,19 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
     private ActionResponse getProbField(InfoForCommand infoForCommand, Optional<String> instanceName, String fieldName, boolean mutableOnly)
     {
+        ExecutionStatus executionStatus = new ExecutionStatus();
         if (instanceName.isPresent() && instanceName.get().equals(ambiguousEmailInstanceName)) //if got ambiguous "email" instance, select the better choice according to mutability.
         {
             if (mutableOnly)
                 instanceName = Optional.of(OutgoingEmail.strOutgoingEmailTypeAndName);
             else
-                instanceName = Optional.of(inboxCommandController.getCurrentEmailName());
+            {
+                instanceName = Optional.of(inboxCommandController.getCurrentEmailName(executionStatus));
+                if (executionStatus.getStatus() == ExecutionStatus.RetStatus.noPswdSet)
+                {
+                    return resetEmailAndPassword(infoForCommand);
+                }
+            }
         }
 
         if (instanceName.isPresent() && inboxCommandController.isInboxInstanceName(instanceName.get()))
@@ -478,15 +556,22 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             else
             {
                 //instanceName = Optional.of(AliasMapping.instanceNameMapping(instanceName.get()));
-                instanceName = Optional.of(inboxCommandController.getCurrentEmailName());
+                instanceName = Optional.of(inboxCommandController.getCurrentEmailName(executionStatus));
+                if (executionStatus.getStatus() == ExecutionStatus.RetStatus.noPswdSet)
+                {
+                    return resetEmailAndPassword(infoForCommand);
+                }
             }
         }
 
-        ExecutionStatus executionStatus = new ExecutionStatus();
         Optional<GenericInstance> instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly, infoForCommand.userSentence);
         if (instance.isPresent() && instance.get().getConceptName().equals(OutgoingEmail.strOutgoingEmailTypeAndName) && !instanceName.isPresent() && !mutableOnly) //since the user didn't need mutable, and didn't explicitly mention the outgoing email, he probably wants the inbox
         {
-            instanceName = Optional.of(inboxCommandController.getCurrentEmailName());
+            instanceName = Optional.of(inboxCommandController.getCurrentEmailName(executionStatus));
+            if (executionStatus.getStatus() == ExecutionStatus.RetStatus.noPswdSet)
+            {
+                return resetEmailAndPassword(infoForCommand);
+            }
             instance = getMostPlausibleInstance(executionStatus, instanceName, Optional.of(fieldName), mutableOnly, infoForCommand.userSentence);
         }
         Optional<FieldHolder> field = Optional.empty();
@@ -1244,7 +1329,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 Preconditions.checkState(opposite != null);
             }
 
-            instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName()); //just touching it to update last instance being touched (for "it", etc.).
+            instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName(new ExecutionStatus())); //just touching it to update last instance being touched (for "it", etc.).
 
             return testOkAndFormat(infoForCommand,
                     executionStatus,
@@ -1282,7 +1367,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.previous);
             }
 
-            instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName());
+            instanceContainer.getInstance(executionStatus, IncomingEmail.incomingEmailType, inboxCommandController.getCurrentEmailName(executionStatus));
 
             ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                     executionStatus,
@@ -1402,6 +1487,18 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 //        }
 //        return failWithMessage(infoForCommand, "there is a problem with the json");
 //    }
+
+    @Override
+    public ActionResponse sugExecClick(InfoForCommand infoForCommand, String buttonText)
+    {
+        return sugExec(infoForCommand, "CLICK", buttonText, "false", Optional.empty());
+    }
+
+    //@Override currently not accessible from outside
+    public ActionResponse sugExecSetText(InfoForCommand infoForCommand, String buttonText, String stringToSet)
+    {
+        return sugExec(infoForCommand, "SET_TEXT", buttonText, "false", stringToSet);
+    }
 
     @Override
     public ActionResponse sugExec(InfoForCommand infoForCommand, String actionType, String buttonText, String fromLocation, String actionPrm)
@@ -1705,5 +1802,10 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             commandHistory.push(infoForCommand, callableForUndo.get());
 
         return new ActionResponse(response.toString(), success, learningSentence);
+    }
+
+    public ActionResponse plusAction(InfoForCommand infoForCommand, String arg1, String arg2)
+    {
+        return new ActionResponse("I don't know how much is " + arg1 + " and " + arg2, true, Optional.empty());
     }
 }

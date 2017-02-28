@@ -1,5 +1,6 @@
 package instructable.server.senseffect;
 
+import instructable.server.backend.ExecutionStatus;
 import instructable.server.hirarchy.EmailInfo;
 
 import javax.mail.*;
@@ -71,7 +72,7 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
     }
 
     @Override
-    public void sendEmail(String subject, String body, String copyList, String recipientList)
+    public void sendEmail(ExecutionStatus executionStatus, String subject, String body, String copyList, String recipientList)
     {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
@@ -103,7 +104,15 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
 
             System.out.println("Done");
 
-        } catch (MessagingException e)
+        } catch(javax.mail.AuthenticationFailedException e)
+        {
+            e.printStackTrace();
+            if (e.getLocalizedMessage().startsWith("535-5.7.8"))
+                executionStatus.add(ExecutionStatus.RetStatus.error, "there was an authentication error. Say reset email and password if you would like to reset them");
+            else
+                executionStatus.add(ExecutionStatus.RetStatus.error, "there was an authentication error. You need to turn on access for less secure apps at: https://www.google.com/settings/security/lesssecureapps");
+        }
+        catch (MessagingException e)
         {
             throw new RuntimeException(e);
         }
@@ -126,7 +135,8 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_ONLY);
             return inbox.getMessageCount(); //at least GMail starts from 1, so no need for - 1;
-        } catch (MessagingException e)
+        }
+        catch (MessagingException e)
         {
             e.printStackTrace();
             return 0;
@@ -134,7 +144,7 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
     }
 
     @Override
-    public Optional<EmailInfo> getEmailInfo(int emailIdx)
+    public Optional<EmailInfo> getEmailInfo(ExecutionStatus executionStatus, int emailIdx)
     {
         Properties props = new Properties();
         props.setProperty("mail.store.protocol", "imaps");
@@ -182,7 +192,8 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
             //System.out.println("CONTENT:" + bodyStr);
             return Optional.of(new EmailInfo(sender, msg.getSubject(), recipients, copy, bodyStr));
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }

@@ -3,6 +3,8 @@ not_a_real_word,UnknownCommand{0},**skip**,0 **skip**
 "send","S{0}","(sendEmail)","0 sendEmail"
 "send","S{0}/InstanceName","(lambda $1 (send $1))" //send the email
 "send","S{0}/ConceptName","(lambda $1 (send $1))" //send an email, actually means create an instance of concept email, and send it.
+reset, S{0}/InstanceName,"(lambda $1 (reset $1))"
+"reset email and password", S{0}, (resetEmailAndPassword)
 yes,S{0},(yes)
 no,S{0},(no)
 end,S{0},(end)
@@ -173,3 +175,10 @@ click,actionType{0},actionType,0 actionType
 boop,S{0},(say (stringValue ~"hello world~"))
 coot,S{0},(say (stringValue ~"go to sleep~"))
 aoop,S{0},(say (stringValue ~"nothing~"))
+#
+# numbers
+#
+one, Number, "one"
+two, Number, "two"
+three, Number, "three"
+plus, (S\Number)/Number, (lambda $1 $2 (plusAction $1 $2))

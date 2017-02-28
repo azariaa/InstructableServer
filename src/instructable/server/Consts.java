@@ -7,4 +7,5 @@ public class Consts
 {
     public static final String execCmdPre = "execCmd:";
     public static final String demonstrateStr = "demonstrate:";
+    static public final String getEmailAndPassword = "getEmailAndPassword:";
 }
