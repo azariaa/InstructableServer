@@ -1315,7 +1315,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             }
             else if (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.newest)
             {
-                int prevIdx = inboxCommandController.setToNewestEmail();
+                int prevIdx = inboxCommandController.setToNewestEmail(executionStatus);
                 opposite = new CNextPrevLastIdx(CNextPrevLastIdx.ENextPrevLastIdx.requested, prevIdx);
             }
             else if (nextPrevLastIdx.nextPrevLastIdx == CNextPrevLastIdx.ENextPrevLastIdx.requested)

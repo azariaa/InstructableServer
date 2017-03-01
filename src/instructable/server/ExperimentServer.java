@@ -115,7 +115,7 @@ public class ExperimentServer implements HttpHandler, AgentDataAndControl.Respon
                     break;
             }
             //We should always send a response even if it's empty!
-            httpExchange.sendResponseHeaders(200, responseToSend.length());
+            httpExchange.sendResponseHeaders(200, responseToSend.getBytes().length);
             OutputStream os = httpExchange.getResponseBody();
             os.write(responseToSend.getBytes());
             os.flush();

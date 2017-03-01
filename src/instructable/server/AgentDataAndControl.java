@@ -79,8 +79,8 @@ public class AgentDataAndControl
         ParserSettings parserSettingsCopy = originalParserSettings.createPSFromGeneralForUser(userId);
         CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy);
 
-        //TODO: calendar should be user's calendar.
-        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", userId, commandsToParser, emailSender, usePendingResponses, emailFetcher, Optional.empty());
+        //TODO: why is this: you@youremail.com
+        TopDMAllActions topDMAllActions = new TopDMAllActions("you@youremail.com", userId, commandsToParser, emailSender, usePendingResponses, emailFetcher, Optional.empty());
         if (addInboxEmails.isPresent())
             addInboxEmails.get().addInboxEmails(topDMAllActions);
         return new ParserSetAndActions(parserSettingsCopy, topDMAllActions, commandsToParser);

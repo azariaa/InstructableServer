@@ -123,7 +123,7 @@ public class RealtimeAgentServer implements HttpHandler
                 systemReply = "Sorry, but I got some error...";
             }
             agentDataAndControl.logger.info("UserID:" + userId + ". System reply: " + systemReply);
-            httpExchange.sendResponseHeaders(200, systemReply.length());
+            httpExchange.sendResponseHeaders(200, systemReply.getBytes().length);
             OutputStream os = httpExchange.getResponseBody();
             os.write(systemReply.getBytes());
             os.flush();

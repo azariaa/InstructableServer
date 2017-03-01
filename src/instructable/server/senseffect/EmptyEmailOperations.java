@@ -13,8 +13,9 @@ public class EmptyEmailOperations implements IEmailSender, IEmailFetcher
     String emailAndPasswordNotSet = "email and password are not set";
 
     @Override
-    public int getLastEmailIdx()
+    public int getLastEmailIdx(ExecutionStatus executionStatus)
     {
+        executionStatus.add(ExecutionStatus.RetStatus.noPswdSet, emailAndPasswordNotSet);
         return 0;
     }
 

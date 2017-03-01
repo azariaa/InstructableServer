@@ -122,7 +122,7 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
      * @return 0 on case of error (or if inbox is empty).
      */
     @Override
-    public int getLastEmailIdx()
+    public int getLastEmailIdx(ExecutionStatus executionStatus)
     {
         Properties props = new Properties();
         props.setProperty("mail.store.protocol", "imaps");
@@ -136,11 +136,20 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
             inbox.open(Folder.READ_ONLY);
             return inbox.getMessageCount(); //at least GMail starts from 1, so no need for - 1;
         }
+        catch(javax.mail.AuthenticationFailedException e)
+        {
+            e.printStackTrace();
+            if (e.getLocalizedMessage().startsWith("535-5.7.8"))
+                executionStatus.add(ExecutionStatus.RetStatus.error, "there was an authentication error. Say reset email and password if you would like to reset them");
+            else
+                executionStatus.add(ExecutionStatus.RetStatus.error, "there was an authentication error. You need to turn on access for less secure apps at: https://www.google.com/settings/security/lesssecureapps");
+        }
         catch (MessagingException e)
         {
             e.printStackTrace();
-            return 0;
+            executionStatus.add(ExecutionStatus.RetStatus.error, "there was an error while fetching your emails");
         }
+        return 0;
     }
 
     @Override
@@ -190,8 +199,19 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
             //System.out.println("SENT DATE:" + msg.getSentDate());
             //System.out.println("SUBJECT:" + msg.getSubject());
             //System.out.println("CONTENT:" + bodyStr);
-            return Optional.of(new EmailInfo(sender, msg.getSubject(), recipients, copy, bodyStr));
+            String bodyStrRemovedExtraWS = bodyStr.replaceAll("((\\r|\\n|\\r\\n)( ?))+", "\\\n");
+            String clearBodytext = bodyStrRemovedExtraWS.replaceAll("<?((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)>?", "[link]");
 
+            return Optional.of(new EmailInfo(sender, msg.getSubject(), recipients, copy, clearBodytext));
+
+        }
+        catch(javax.mail.AuthenticationFailedException e)
+        {
+            e.printStackTrace();
+            if (e.getLocalizedMessage().startsWith("535-5.7.8"))
+                executionStatus.add(ExecutionStatus.RetStatus.error, "there was an authentication error. Say reset email and password if you would like to reset them");
+            else
+                executionStatus.add(ExecutionStatus.RetStatus.error, "there was an authentication error. You need to turn on access for less secure apps at: https://www.google.com/settings/security/lesssecureapps");
         }
         catch (Exception e)
         {

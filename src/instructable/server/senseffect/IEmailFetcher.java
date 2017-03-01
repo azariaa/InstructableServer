@@ -10,6 +10,6 @@ import java.util.Optional;
  */
 public interface IEmailFetcher
 {
-    int getLastEmailIdx();
+    int getLastEmailIdx(ExecutionStatus executionStatus);
     Optional<EmailInfo> getEmailInfo(ExecutionStatus executionStatus, int emailIdx);
 }

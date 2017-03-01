@@ -24,7 +24,7 @@ public class InboxCommandController
         this.instanceContainer = instanceContainer;
         this.emailFetcher = emailFetcher;
         if (emailFetcher.isPresent())
-            currentIncomingEmailIdx = emailFetcher.get().getLastEmailIdx();
+            currentIncomingEmailIdx = emailFetcher.get().getLastEmailIdx(new ExecutionStatus());
         else
             currentIncomingEmailIdx = 0;
         conceptContainer.defineConcept(new ExecutionStatus(), IncomingEmail.incomingEmailType, IncomingEmail.getFieldDescriptions());
@@ -36,7 +36,7 @@ public class InboxCommandController
      */
     public void addEmailMessageToInbox(EmailInfo emailMessage)
     {
-        new IncomingEmail(instanceContainer, emailMessage, instanceName(inboxSize()));
+        new IncomingEmail(instanceContainer, emailMessage, instanceName(inboxSize(new ExecutionStatus())));
     }
 
     public boolean isInboxInstanceName(String instanceName)
@@ -47,6 +47,8 @@ public class InboxCommandController
 
     public String getCurrentEmailName(ExecutionStatus executionStatus)
     {
+        if (currentIncomingEmailIdx == 0)
+            setToNewestEmail(new ExecutionStatus());
         makeSureEmailIsPresentInDb(executionStatus);
         return emailMessageNameStart + currentIncomingEmailIdx;
     }
@@ -82,11 +84,11 @@ public class InboxCommandController
 
     public void setToNextEmail(ExecutionStatus executionStatus)
     {
-        int inboxSize = inboxSize();
+        int inboxSize = inboxSize(executionStatus);
         if (currentIncomingEmailIdx < inboxSize - 1)
             currentIncomingEmailIdx++;
         else
-            executionStatus.add(ExecutionStatus.RetStatus.error, "there are no more emails. You have probably missed some earlier emails. You may want to request a previous email (say \"previous email\")"); //TODO: shouldn't be in the production version
+            executionStatus.add(ExecutionStatus.RetStatus.error, "there are no more emails. You may want to set to a previous email");// You have probably missed some earlier emails. You may want to request a previous email (say \"previous email\")"); //shouldn't be in the production version
     }
 
     public void setToPrevEmail(ExecutionStatus executionStatus)
@@ -101,9 +103,9 @@ public class InboxCommandController
      * sets to last email, returns index before setting.
      * @return
      */
-    public int setToNewestEmail()
+    public int setToNewestEmail(ExecutionStatus executionStatus)
     {
-        return setToIndex(inboxSize() - 1);
+        return setToIndex(inboxSize(executionStatus) - 1);
     }
 
     /**
@@ -122,10 +124,10 @@ public class InboxCommandController
         return emailMessageNameStart + emailIdx;
     }
 
-    private int inboxSize()
+    private int inboxSize(ExecutionStatus executionStatus)
     {
         if (emailFetcher.isPresent())
-            return emailFetcher.get().getLastEmailIdx() + 1;
+            return emailFetcher.get().getLastEmailIdx(executionStatus) + 1;
         return instanceContainer.getAllInstances(IncomingEmail.incomingEmailType).size();
     }
     //TODO: delete?
