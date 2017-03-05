@@ -393,7 +393,7 @@ public class CcgUtils
         }
 
 //	  //adding just the whole sentence as a lexicon entry, in case any other parse fails
-        //this part was removed, instead we now check before giving a setnece to the parser whether it is identical to a learnt command.
+        //this part was removed, instead we now check before giving a sentence to the parser whether it is identical to a learnt command.
 //	  CsvParser csv = LexiconEntry.getCsvParser();
 //	  List<String> sentenceWords = example.getSentence().getWords().subList(1, example.getSentence().getWords().size());
 //	  List<String> parts = Lists.newArrayList(String.join(" ", sentenceWords), "S{0}", example.getLogicalForm().toString());
@@ -402,11 +402,29 @@ public class CcgUtils
         return newEntries;
     }
 
+    /**
+     * If lexLf presents a substring of any subexpression of lf, this function will return lf with the relevant string
+     * substituted with a concatenation of its beginning and lexLf.
+     * E.g. if lf is (doSeq (say "hi") (say (StringValue "good morning"))) and lexLf is (StringValue "morning"), this function will return
+     * (doSeq (say "hi" (say (concat (StringValue "good") (StringValue "morning"))
+     *
+     * @param lf
+     * @param lexLf
+     * @return
+     */
     private static Optional<Expression2> getExpWithStringConcat(Expression2 lf, Expression2 lexLf)
     {
         return getExpWithStringConcat(lf, lexLf, lf);
     }
 
+    /**
+     *
+     * @param lf
+     * @param lexLf
+     * @param originalLf the original logical form. Once the function returns a logical form that is a concatenation of
+     *                   lexLf in lf, it will substitute lf in the original logical form with the result.
+     * @return
+     */
     private static Optional<Expression2> getExpWithStringConcat(Expression2 lf, Expression2 lexLf, Expression2 originalLf)
     {
         if (lf.getSubexpressions() == null || !lexLf.toString().startsWith("(string"))
@@ -415,10 +433,19 @@ public class CcgUtils
         int spaceIdx = lexLfAsStr.indexOf(" \"");
         if (spaceIdx <= 0)
             return Optional.empty();
+        // strVal is the actual string of lexLF, e.g. in (stringValue "hello world"), strVal will be hello world (no quotes).
         String strVal = lexLfAsStr.substring(spaceIdx + 2, lexLfAsStr.length() - 2); //removing quotes and ")"
+        if (strVal.length() == 0)
+            return Optional.empty();
         for (Expression2 expr : lf.getSubexpressions())
         {
-            if (expr.toString().startsWith("(string") && expr.toString().contains(strVal))
+            //Currently concatenating two strings reserves the type.
+            //While it may make sense that after concatenating a stringValue with a stringNoun we could get a stringValue,
+            //I'm trying to avoid this. It might be better if we could just reduce the weights for that to happen and not
+            //totally disallow this.
+            if ((expr.toString().startsWith("(stringNoun") && lexLf.toString().startsWith("(stringNoun") ||
+                    expr.toString().startsWith("(stringValue") && lexLf.toString().startsWith("(stringValue")) &&
+                    expr.toString().contains(strVal))
             {
                 //insert string from lexLF into expr (lf's subexpression) using "concat"
                 int strValLocInLf = expr.toString().indexOf(strVal);
@@ -426,7 +453,10 @@ public class CcgUtils
                 boolean atStart = expr.toString().indexOf(" \"") + 2 == strValLocInLf;
                 boolean atEnd = strValLocEnd + 2 == expr.toString().length();
                 if (atStart && atEnd)
-                    return Optional.of(expr);
+                {
+                    //no need to concatenate! (regular procedure should find this)
+                    return Optional.empty();//bug, used to be: Optional.of(expr);
+                }
                 String withLexLfStr;
                 if (atEnd)
                     withLexLfStr = "(concat " + expr.toString().substring(0, strValLocInLf - 1) + "\") " + lexLfAsStr + ")";
