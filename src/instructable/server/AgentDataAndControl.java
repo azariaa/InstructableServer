@@ -77,7 +77,7 @@ public class AgentDataAndControl
     private ParserSetAndActions getParserSetAndActions(String userId, IEmailSender emailSender, Optional<IAddInboxEmails> addInboxEmails, Optional<IEmailFetcher> emailFetcher)
     {
         ParserSettings parserSettingsCopy = originalParserSettings.createPSFromGeneralForUser(userId);
-        CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy);
+        CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy, Optional.of(() -> originalParserSettings.createPSFromGeneralForUser(userId)));
 
         //TODO: why is this: you@youremail.com
         TopDMAllActions topDMAllActions = new TopDMAllActions("you@youremail.com", userId, commandsToParser, emailSender, usePendingResponses, emailFetcher, Optional.empty());

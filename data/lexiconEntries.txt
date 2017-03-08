@@ -164,11 +164,16 @@ participants,FieldName{0},participant_list,0 participant_list
 participant,FieldName{0},participant_list,0 participant_list
 duration,FieldName{0},duration,0 duration
 #
-# added for scripts
+# added for Sugilite scripts
 #
 demonstrate,S{0},(demonstrate)
 click,(S{0}/StringN{1}){0},(lambda $1 (sugExecClick $1))
 click,actionType{0},actionType,0 actionType
+#
+# forget everything
+#
+forget, (S{0}/Everything{1}){0}, (lambda $1 (forgetAllLearned))
+everything, Everything{0}, "everything"
 #
 # numbers
 #

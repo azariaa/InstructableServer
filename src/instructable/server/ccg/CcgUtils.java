@@ -408,9 +408,7 @@ public class CcgUtils
      * E.g. if lf is (doSeq (say "hi") (say (StringValue "good morning"))) and lexLf is (StringValue "morning"), this function will return
      * (doSeq (say "hi" (say (concat (StringValue "good") (StringValue "morning"))
      *
-     * @param lf
-     * @param lexLf
-     * @return
+     * Note: LIA can't generalize: good morning -> say good morning, because good morning appears twice and there is no word to capture it. LIA can however generalize: good morning -> have a wonderful morning
      */
     private static Optional<Expression2> getExpWithStringConcat(Expression2 lf, Expression2 lexLf)
     {
@@ -419,11 +417,8 @@ public class CcgUtils
 
     /**
      *
-     * @param lf
-     * @param lexLf
      * @param originalLf the original logical form. Once the function returns a logical form that is a concatenation of
      *                   lexLf in lf, it will substitute lf in the original logical form with the result.
-     * @return
      */
     private static Optional<Expression2> getExpWithStringConcat(Expression2 lf, Expression2 lexLf, Expression2 originalLf)
     {

@@ -162,3 +162,6 @@ say hello world,"(say (stringValue ""hello world""))"
 say go to sleep right now,"(say (stringValue ""go to sleep right now""))"
 say nothing,"(say (stringValue ""nothing""))"
 reset email and password,(resetEmailAndPassword)
+forget me,(forgetAllLearned)
+forget everything,(forgetAllLearned)
+forget all I taught,(forgetAllLearned)

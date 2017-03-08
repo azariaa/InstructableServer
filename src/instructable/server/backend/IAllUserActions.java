@@ -144,6 +144,8 @@ public interface IAllUserActions
     ActionResponse demonstrate(InfoForCommand infoForCommand);
     ActionResponse userHasDemonstrated(InfoForCommand infoForCommand, JSONObject json);
 
+    ActionResponse forgetAllLearned(InfoForCommand infoForCommand);
+
     ActionResponse plusAction(InfoForCommand infoForCommand, String arg1, String arg2);
 
     //future work: ActionResponse undoLastAction(InfoForCommand infoForCommand);

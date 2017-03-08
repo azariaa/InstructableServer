@@ -8,6 +8,7 @@ import instructable.server.ccg.ParserSettings;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 /**
@@ -16,14 +17,33 @@ import java.util.stream.Collectors;
  */
 public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
 {
-    static final String tempFileName = "learntCommands.csv";
+    //static final String tempFileName = "learntCommands.csv";
     ParserSettings parserSettings;
+    Optional<Callable<ParserSettings>> getFreshParserSettings; //required in case the user asks to forget all LIA learned
     Optional<ActionResponse> pendingActionResponse = Optional.empty();
-    boolean isCurrentlyLearning = false;
+    //boolean isCurrentlyLearning = false;
     private final Object lockWhileLearning = new Object();
-    public CommandsToParser(ParserSettings parserSettings)
+    public CommandsToParser(ParserSettings parserSettings, Optional<Callable<ParserSettings>> getFreshParserSettings)
     {
         this.parserSettings = parserSettings;
+        this.getFreshParserSettings = getFreshParserSettings;
+    }
+
+    @Override
+    public boolean forgetEverythingLearned()
+    {
+        if (getFreshParserSettings.isPresent())
+        {
+            try
+            {
+                this.parserSettings = getFreshParserSettings.get().call();
+                return true;
+            } catch (Exception ex)
+            {
+                return false;
+            }
+        }
+        return false;
     }
 
     @Override

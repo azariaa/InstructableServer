@@ -83,7 +83,7 @@ public class TestLexiconInduction {
     private static void runTestCommandsToParser() throws Exception
     {
     	ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
-    	CommandsToParser commandsToParser = new CommandsToParser(parserSettings);
+    	CommandsToParser commandsToParser = new CommandsToParser(parserSettings, Optional.empty());
     	ExpressionParser<Expression2> p = ExpressionParser.expression2();
     	ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
 

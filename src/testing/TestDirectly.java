@@ -33,6 +33,12 @@ public class TestDirectly
         IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", "test", new ICommandsToParser()
         {
             @Override
+            public boolean forgetEverythingLearned()
+            {
+                return false;
+            }
+
+            @Override
             public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, Optional<ActionResponse> replyWhenDone)
             {
 
