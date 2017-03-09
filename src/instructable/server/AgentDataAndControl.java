@@ -1,10 +1,7 @@
 package instructable.server;
 
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import instructable.server.backend.ActionResponse;
-import instructable.server.backend.IAllUserActions;
-import instructable.server.backend.IGetAwaitingResponse;
-import instructable.server.backend.TopDMAllActions;
+import instructable.server.backend.*;
 import instructable.server.ccg.CcgUtils;
 import instructable.server.ccg.ParserSettings;
 import instructable.server.dal.CreateParserFromFiles;
@@ -24,16 +21,19 @@ public class AgentDataAndControl
 
     private class ParserSetAndActions
     {
-        ParserSetAndActions(ParserSettings parserSettings, IAllUserActions allUserActions, IGetAwaitingResponse getAwaitingCommand)
+        ParserSetAndActions(IAllUserActions allUserActions, IGetParserSettingAndAwaitingResponse getPSAndAwaiting)
         {
-            this.parserSettings = parserSettings;
             this.allUserActions = allUserActions;
-            this.getAwaitingCommand = getAwaitingCommand;
+            this.getPSAndAwaiting = getPSAndAwaiting;
         }
 
-        ParserSettings parserSettings;
+        ParserSettings getParserSettings()
+        {
+            return getPSAndAwaiting.getParserSettings();
+        }
+
         IAllUserActions allUserActions;
-        IGetAwaitingResponse getAwaitingCommand;
+        IGetParserSettingAndAwaitingResponse getPSAndAwaiting;
     }
 
     ParserSettings originalParserSettings;
@@ -83,7 +83,7 @@ public class AgentDataAndControl
         TopDMAllActions topDMAllActions = new TopDMAllActions("you@youremail.com", userId, commandsToParser, emailSender, usePendingResponses, emailFetcher, Optional.empty());
         if (addInboxEmails.isPresent())
             addInboxEmails.get().addInboxEmails(topDMAllActions);
-        return new ParserSetAndActions(parserSettingsCopy, topDMAllActions, commandsToParser);
+        return new ParserSetAndActions(topDMAllActions, commandsToParser);
     }
 
     interface ResponseToUserListener
@@ -129,7 +129,7 @@ public class AgentDataAndControl
         boolean success = false;
         if (getPendingResponse)
         {
-            Optional<ActionResponse> responseOptional = parserSetAndActions.getAwaitingCommand.getNSetPendingActionResponse();
+            Optional<ActionResponse> responseOptional = parserSetAndActions.getPSAndAwaiting.getNSetPendingActionResponse();
             if (responseOptional.isPresent())
             {
                 sayToUser = responseOptional.get().getSayToUserOrExec();
@@ -138,7 +138,7 @@ public class AgentDataAndControl
         }
         else
         {
-            CcgUtils.SayAndExpression response = parserSetAndActions.parserSettings.parseAndEval(Optional.of(userId), parserSetAndActions.allUserActions, userSays);
+            CcgUtils.SayAndExpression response = parserSetAndActions.getParserSettings().parseAndEval(Optional.of(userId), parserSetAndActions.allUserActions, userSays);
             logger.info("UserID:" + userId + ". Lambda expression: " + response.lExpression);
             sayToUser = response.sayToUser;
             success = response.success;
@@ -157,7 +157,7 @@ public class AgentDataAndControl
         {
             parserSetAndActions = parserSetAndActionsMap.get(userId);
         }
-        return parserSetAndActions.parserSettings;
+        return parserSetAndActions.getParserSettings();
     }
 
     /**
@@ -172,7 +172,7 @@ public class AgentDataAndControl
         {
             parserSetAndActions = parserSetAndActionsMap.get(userId);
         }
-        parserSetAndActions.parserSettings.evaluate(parserSetAndActions.allUserActions, userSays, expression);
+        parserSetAndActions.getParserSettings().evaluate(parserSetAndActions.allUserActions, userSays, expression);
     }
 
     public String setEmailAndPswd(String userId, String username, String encPassword, String email, String realPwd)

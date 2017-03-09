@@ -446,7 +446,7 @@ public class ParserSettings
      * @param newUserId
      * @return
      */
-    private ParserSettings createPSFromGeneralForNewUser(String newUserId)
+    public ParserSettings createPSFromGeneralForNewUser(String newUserId)
     {
         //should also check that newUserId is actually new.
         ParserSettings parserSettings = new ParserSettings();
@@ -454,8 +454,8 @@ public class ParserSettings
         parserSettings.lexicon = new LinkedList<>(lexicon); //(LinkedList<LexiconEntry>)lexicon.clone();
         parserSettings.unaryRules = new LinkedList<>(unaryRules);
         parserSettings.featureVectorGenerator = featureVectorGenerator;
-        parserSettings.parser = parser;
         parserSettings.parserFamily = parserFamily;
+        parserSettings.parser = parser; //parserFamily.getModelFromParameters(parserParameters);
         parserSettings.parserParameters = parserParameters.duplicate();
         parserSettings.env = new Environment(env);
         parserSettings.symbolTable = new IndexedList<String>(symbolTable);

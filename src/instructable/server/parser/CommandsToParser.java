@@ -3,7 +3,7 @@ package instructable.server.parser;
 import com.jayantkrish.jklol.ccg.LexiconEntry;
 import com.jayantkrish.jklol.ccg.lambda2.Expression2;
 import instructable.server.backend.ActionResponse;
-import instructable.server.backend.IGetAwaitingResponse;
+import instructable.server.backend.IGetParserSettingAndAwaitingResponse;
 import instructable.server.ccg.ParserSettings;
 
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * Created by Amos Azaria on 13-May-15.
  * Every update to the parser also updates DB
  */
-public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
+public class CommandsToParser implements ICommandsToParser, IGetParserSettingAndAwaitingResponse
 {
     //static final String tempFileName = "learntCommands.csv";
     ParserSettings parserSettings;
@@ -40,6 +40,7 @@ public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
                 return true;
             } catch (Exception ex)
             {
+                ex.printStackTrace();
                 return false;
             }
         }
@@ -69,6 +70,12 @@ public class CommandsToParser implements ICommandsToParser, IGetAwaitingResponse
             }
         }
         return retVal;
+    }
+
+    @Override
+    public ParserSettings getParserSettings()
+    {
+        return parserSettings;
     }
 
     private enum ConceptFieldInstance {Concept,Field,Instance}//,Script}
