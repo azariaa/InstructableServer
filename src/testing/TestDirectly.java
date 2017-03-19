@@ -39,10 +39,17 @@ public class TestDirectly
             }
 
             @Override
-            public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, Optional<ActionResponse> replyWhenDone)
+            public boolean addTrainingEg(String originalCommand, List<Expression2> commandsLearnt)
+            {
+                return false;
+            }
+
+            @Override
+            public void retrain(Optional<ActionResponse> replyWhenDone)
             {
 
             }
+
 
             @Override
             public void newConceptDefined(String conceptName)

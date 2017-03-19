@@ -17,93 +17,101 @@ import instructable.server.parser.CommandsToParser;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class TestLexiconInduction {
+public class TestLexiconInduction
+{
     public static void main(String[] args) throws Exception
     {
-      runTest();
-      // runTestCommandsToParser();
+        runTest();
+        // runTestCommandsToParser();
     }
 
     private static void runTest() throws Exception
     {
-    	ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
-    	CcgParser parser = parserSettings.parser;
-    	ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
-    	List<String[]> exampleStrings = CcgUtils.loadExamples(Paths.get("learntCommands.csv"));
-    	List<WeightedCcgExample> examples = Lists.newArrayList();
-    	for (String[] exampleString : exampleStrings) {
-    		Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exampleString[1]);
+        ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
+        CcgParser parser = parserSettings.parser;
+        ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
+        List<String[]> exampleStrings = CcgUtils.loadExamples(Paths.get("learntCommands.csv"));
+        List<WeightedCcgExample> examples = Lists.newArrayList();
+        for (String[] exampleString : exampleStrings)
+        {
+            Expression2 expression = ExpressionParser.expression2().parseSingleExpression(exampleString[1]);
             WeightedCcgExample example = CcgUtils.createCcgExample(exampleString[0], expression, parserSettings.posUsed, true,
-                parserSettings.featureVectorGenerator);
+                    parserSettings.featureVectorGenerator);
             examples.add(example);
-    	}
+        }
 
-    	List<LexiconEntry> newEntries = Lists.newArrayList();
-    	for (WeightedCcgExample example : examples) {
-    		System.out.println(example.getSentence().getWords());
-    		System.out.println(example.getLogicalForm());
-    		CcgParse predicted = parser.beamSearch(example.getSentence(), 100).get(0);
-    		System.out.println(simplifier.apply(predicted.getLogicalForm()));
-    		List<LexiconEntry> entries = CcgUtils.induceLexiconEntriesHeuristic(example, parser, new LinkedList<>());
-    		for (LexiconEntry entry : entries) {
-    		  List<UnfilledDependency> unfilledDependencies = entry.getCategory().createUnfilledDependencies(0, null);
-    		  System.out.println("  " + entry + " " + entry.getCategory().getSemanticHeads() +" " + unfilledDependencies);
-    		}
-    		
-    		newEntries.addAll(entries);
-    	}
+        List<LexiconEntry> newEntries = Lists.newArrayList();
+        for (WeightedCcgExample example : examples)
+        {
+            System.out.println(example.getSentence().getWords());
+            System.out.println(example.getLogicalForm());
+            CcgParse predicted = parser.beamSearch(example.getSentence(), 100).get(0);
+            System.out.println(simplifier.apply(predicted.getLogicalForm()));
+            List<LexiconEntry> entries = CcgUtils.induceLexiconEntriesHeuristic(example, parser).lexiconEntries;
+            for (LexiconEntry entry : entries)
+            {
+                List<UnfilledDependency> unfilledDependencies = entry.getCategory().createUnfilledDependencies(0, null);
+                System.out.println("  " + entry + " " + entry.getCategory().getSemanticHeads() + " " + unfilledDependencies);
+            }
 
-    	System.out.println("Initial parameters");
-    	System.out.println(parserSettings.parserFamily.getParameterDescription(parserSettings.parserParameters));
-    	parserSettings.updateParserGrammar(newEntries, true);//, Lists.newArrayList());
-    	SufficientStatistics newParameters = CcgUtils.train(parserSettings.parserFamily, examples, 10, null);
-    	
-    	CcgParser newParser = parserSettings.parserFamily.getModelFromParameters(newParameters);
-    	for (LexiconEntry entry : newParser.getLexiconEntries("set", "VBN")) {
-    	  System.out.println(entry.getWords() + " " + entry.getCategory().getLogicalForm());
-    	}
-    	
-    	for (WeightedCcgExample example : examples) {
-    	  List<CcgParse> parses = newParser.beamSearch(example.getSentence(), 10);
-    	  
-    	  System.out.println(example.getSentence().getWords());
-    	  System.out.println(example.getLogicalForm());
-    	  for (CcgParse parse : parses) {
-    	    Expression2 predictedLf = simplifier.apply(parse.getLogicalForm());
-    	    System.out.println("   " + predictedLf);
-    	  }
-    	  System.out.println(parses.size());
-    	}
+            newEntries.addAll(entries);
+        }
+
+        System.out.println("Initial parameters");
+        System.out.println(parserSettings.parserFamily.getParameterDescription(parserSettings.parserParameters));
+        parserSettings.updateParserGrammar(newEntries, true);//, Lists.newArrayList());
+        SufficientStatistics newParameters = CcgUtils.train(parserSettings.parserFamily, examples, 10, null);
+
+        CcgParser newParser = parserSettings.parserFamily.getModelFromParameters(newParameters);
+        for (LexiconEntry entry : newParser.getLexiconEntries("set", "VBN"))
+        {
+            System.out.println(entry.getWords() + " " + entry.getCategory().getLogicalForm());
+        }
+
+        for (WeightedCcgExample example : examples)
+        {
+            List<CcgParse> parses = newParser.beamSearch(example.getSentence(), 10);
+
+            System.out.println(example.getSentence().getWords());
+            System.out.println(example.getLogicalForm());
+            for (CcgParse parse : parses)
+            {
+                Expression2 predictedLf = simplifier.apply(parse.getLogicalForm());
+                System.out.println("   " + predictedLf);
+            }
+            System.out.println(parses.size());
+        }
     }
-    
+
     private static void runTestCommandsToParser() throws Exception
     {
-    	ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
-    	CommandsToParser commandsToParser = new CommandsToParser(parserSettings, Optional.empty());
-    	ExpressionParser<Expression2> p = ExpressionParser.expression2();
-    	ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
+        ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of("tempUser"));
+        CommandsToParser commandsToParser = new CommandsToParser(parserSettings, Optional.empty());
+        ExpressionParser<Expression2> p = ExpressionParser.expression2();
+        ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
 
-    	String sentence = "next and read";
-    	List<Expression2> expressions = Lists.newArrayList();
-    	expressions.add(p.parseSingleExpression("(nextEmailMessage)"));
-    	expressions.add(p.parseSingleExpression("(readInstance (getProbInstanceByName inbox))"));
+        String sentence = "next and read";
+        List<Expression2> expressions = Lists.newArrayList();
+        expressions.add(p.parseSingleExpression("(nextEmailMessage)"));
+        expressions.add(p.parseSingleExpression("(readInstance (getProbInstanceByName inbox))"));
 
-    	commandsToParser.addTrainingEg(sentence, expressions, Optional.empty());
+        commandsToParser.addTrainingEg(sentence, expressions);
+        commandsToParser.retrain(Optional.empty());
 
-    	CcgParser newParser = parserSettings.parser;
-    	
-    	WeightedCcgExample example = CcgUtils.createCcgExample(Arrays.asList(sentence.split(" ")), expressions.get(0));
-    	List<CcgParse> parses = newParser.beamSearch(example.getSentence(), 10);
-    	  
-    	System.out.println(example.getSentence().getWords());
-    	System.out.println(example.getLogicalForm());
-    	for (CcgParse parse : parses) {
-    	  Expression2 predictedLf = simplifier.apply(parse.getLogicalForm());
-    	  System.out.println("   " + predictedLf);
-    	}
+        CcgParser newParser = parserSettings.parser;
+
+        WeightedCcgExample example = CcgUtils.createCcgExample(Arrays.asList(sentence.split(" ")), expressions.get(0));
+        List<CcgParse> parses = newParser.beamSearch(example.getSentence(), 10);
+
+        System.out.println(example.getSentence().getWords());
+        System.out.println(example.getLogicalForm());
+        for (CcgParse parse : parses)
+        {
+            Expression2 predictedLf = simplifier.apply(parse.getLogicalForm());
+            System.out.println("   " + predictedLf);
+        }
     }
 }

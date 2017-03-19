@@ -13,7 +13,9 @@ public interface ICommandsToParser
 {
     boolean forgetEverythingLearned();
         
-    void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, Optional<ActionResponse> replyWhenDone);
+    boolean addTrainingEg(String originalCommand, List<Expression2> commandsLearnt);
+
+    void retrain(Optional<ActionResponse> replyWhenDone);
 
     //needs to add ConceptName to the lexicon and the conceptName to the environment table
     void newConceptDefined(String conceptName);

@@ -91,15 +91,29 @@ public class CcgUtils
     }
 
 
+    public static class LexiconInductionRet
+    {
+        LexiconInductionRet(List<LexiconEntry> lexiconEntries, List<WeightedCcgExample> newExamplesAdded, boolean foundAnyGeneralization)
+        {
+            this.lexiconEntries = lexiconEntries;
+            this.newExamplesAdded = newExamplesAdded;
+            this.foundAnyGeneralization = foundAnyGeneralization;
+        }
+        public List<LexiconEntry> lexiconEntries;
+        public List<WeightedCcgExample> newExamplesAdded; //when using "concat" values in this list should replace the original example
+        public boolean foundAnyGeneralization;
+    }
     /**
      *
      * @param example
      * @param parser
-     * @param newExamplesAdded when using "concat" values in this list should replace the original example
      * @return
      */
-    public static List<LexiconEntry> induceLexiconEntriesHeuristic(WeightedCcgExample example, CcgParser parser, List<WeightedCcgExample> newExamplesAdded)
+    public static LexiconInductionRet induceLexiconEntriesHeuristic(WeightedCcgExample example, CcgParser parser)
     {
+        boolean foundAnyGeneralization = false;
+        List<WeightedCcgExample> newExamplesAdded = new LinkedList<>();
+
         ExpressionSimplifier simplifier = getExpressionSimplifier();
 
         List<String> words = example.getSentence().getWords();
@@ -389,6 +403,8 @@ public class CcgUtils
                 }
                 CcgCategory ccgCategory = new CcgCategory(cat, lambdaExpression, subjects, argumentNumbers, objects, assignments);
                 newEntries.add(new LexiconEntry(words.subList(i, i + 1), ccgCategory));
+                if (numArgs > 0) //if any of the new lexicons receive at least 1 argument (either left or right), we consider that we have found some generalization
+                    foundAnyGeneralization = true;
             }
         }
 
@@ -399,7 +415,7 @@ public class CcgUtils
 //	  List<String> parts = Lists.newArrayList(String.join(" ", sentenceWords), "S{0}", example.getLogicalForm().toString());
 //	  newEntries.add(LexiconEntry.parseLexiconEntry(csv.toCsv(parts)));
 
-        return newEntries;
+        return new LexiconInductionRet(newEntries, newExamplesAdded, foundAnyGeneralization);
     }
 
     /**

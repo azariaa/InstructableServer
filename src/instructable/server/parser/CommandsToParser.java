@@ -48,11 +48,17 @@ public class CommandsToParser implements ICommandsToParser, IGetParserSettingAnd
     }
 
     @Override
-    public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt, Optional<ActionResponse> actionResponseWhenDone)
+    public boolean addTrainingEg(String originalCommand, List<Expression2> commandsLearnt)
+    {
+        return parserSettings.addTrainingEg(originalCommand, commandsLearnt);
+    }
+
+    @Override
+    public void retrain(Optional<ActionResponse> actionResponseWhenDone)
     {
         synchronized (lockWhileLearning)
         {
-            parserSettings.addTrainingEg(originalCommand, commandsLearnt);
+            parserSettings.retrain();
             pendingActionResponse = actionResponseWhenDone;
         }
     }

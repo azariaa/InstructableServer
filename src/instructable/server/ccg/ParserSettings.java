@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class ParserSettings
 {
     static final int initialTraining = 10;
-    static final int retrainAfterNewCommand = 3;
+    static final int numOfIterationsToRetrain = 3;
     static final boolean treatCorpusAsLearnedExamples = true;//false; //treatCorpusAsLearnedExamples==true should improve performance, but may hide bugs, so should be false during testing.
 
     private static final Expression2 unknownExpression = ExpressionParser.expression2().parseSingleExpression("(" + IAllUserActions.unknownCommandStr + ")");
@@ -374,7 +374,13 @@ public class ParserSettings
         return simplifier.apply(expression);
     }
 
-    public void addTrainingEg(String originalCommand, List<Expression2> commandsLearnt)
+    /**
+     *
+     * @param originalCommand
+     * @param commandsLearnt
+     * @return if learned any generalization (i.e. if any of the induced lexicon entries receive an argument)
+     */
+    public boolean addTrainingEg(String originalCommand, List<Expression2> commandsLearnt)
     {
         Expression2 expressionLearnt = CcgUtils.combineCommands(commandsLearnt);
         //we first tokenize the sentence (after adding the start symbol) then we join back the tokens, to make sure that it matches future sentences with identical tokens.
@@ -382,20 +388,23 @@ public class ParserSettings
 
         WeightedCcgExample example = CcgUtils.createCcgExample(originalCommand, expressionLearnt, posUsed, false, featureVectorGenerator);
 
-        List<WeightedCcgExample> possibleNewExampleList = new LinkedList<>();
-        List<LexiconEntry> newEntries = CcgUtils.induceLexiconEntriesHeuristic(example, parser, possibleNewExampleList);
-        System.out.println(newEntries);
-        if (possibleNewExampleList.isEmpty()) //if we don't have any alternative examples, we use the original one
-            possibleNewExampleList.add(example);
+        CcgUtils.LexiconInductionRet lexiconInductionRet = CcgUtils.induceLexiconEntriesHeuristic(example, parser);
+        System.out.println(lexiconInductionRet.lexiconEntries);
 
-        updateParserGrammar(newEntries, true);//, Lists.newArrayList());
-        ccgExamples.addAll(possibleNewExampleList);
+        updateParserGrammar(lexiconInductionRet.lexiconEntries, true);//, Lists.newArrayList());
+
+        if (!lexiconInductionRet.newExamplesAdded.isEmpty())
+            ccgExamples.addAll(lexiconInductionRet.newExamplesAdded);
+        else //if we don't have any alternative examples, we use the original one
+            ccgExamples.add(example);
+
 //        ParametricCcgParser family = CcgUtils.buildParametricCcgParser(lexicon, unaryRules,
 //                posUsed, featureVectorGenerator);
 //        this.parserParameters = CcgUtils.train(family, ccgExamples, initialTraining, null);
 //        this.parser = family.getModelFromParameters(this.parserParameters);
 //        this.parserFamily = family;
-        retrain(retrainAfterNewCommand);
+
+        return lexiconInductionRet.foundAnyGeneralization;
     }
 
     private void addToLearnedExamples(String originalCommand, Expression2 expressionLearnt, boolean updateDB)
@@ -410,6 +419,11 @@ public class ParserSettings
         {
             parserKnowledgeSeeder.addNewUserExample(new String[] {jointTokenizedSentence, expressionLearnt.toString()});
         }
+    }
+
+    public void retrain()
+    {
+        retrain(numOfIterationsToRetrain);
     }
 
     public void retrain(int iterations)

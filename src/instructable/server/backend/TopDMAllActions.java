@@ -1117,7 +1117,10 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         //make sure learnt at least one successful sentence
         if (commandsLearnt.size() > 0)
         {
-            final String learningSuccessStr = "I now know what to do when you say (for example): \"" + commandBeingLearnt + "\"!";
+            boolean learnedAnyGeneralization = commandsToParser.addTrainingEg(
+                    commandBeingLearnt,
+                    commandsLearnt);
+            final String learningSuccessStr = "I now know what to do when you say "+(learnedAnyGeneralization? "(for example)":"")+": \"" + commandBeingLearnt + "\"!";
             if (usePendingResponses)
             {
                 new Thread()
@@ -1125,22 +1128,17 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                     @Override
                     public void run()
                     {
-                        commandsToParser.addTrainingEg(
-                                commandBeingLearnt,
-                                commandsLearnt,
+                        commandsToParser.retrain(
                                 Optional.of(new ActionResponse(learningSuccessStr, true, Optional.empty())));
 
                     }
                 }.start();
-                return new ActionResponse("I'm currently learning the new command (\"" + commandBeingLearnt + "\"). I'm trying to generalize to other similar commands, " + resendNewRequest + "...", true, Optional.empty());
+                return new ActionResponse("I'm currently learning the new command (\"" + commandBeingLearnt + "\"), " + resendNewRequest +
+                        ". " + (learnedAnyGeneralization? "I'm also trying to generalize to other similar commands!" : "I did not find any way to generalize this new command to other commands, but you can use the new command and it should work!"), true, Optional.empty());
             }
             else
             {
-                commandsToParser.addTrainingEg(
-                        commandBeingLearnt,
-                        commandsLearnt,
-                        Optional.empty()
-                );
+                commandsToParser.retrain(Optional.empty());
                 return new ActionResponse(learningSuccessStr, true, Optional.empty());
             }
         }
