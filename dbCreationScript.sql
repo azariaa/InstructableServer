@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `instructable_kb`.`instance_values` (
   `concept_name` VARCHAR(45) NOT NULL,
   `instance_name` VARCHAR(45) NOT NULL,
   `field_name` VARCHAR(45) NOT NULL,
-  `field_jsonval` VARCHAR(1000) NULL DEFAULT NULL,
+  `field_jsonval` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`, `concept_name`, `instance_name`, `field_name`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
@@ -93,10 +93,10 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `instructable_kb`.`interaction` (
   `user_id` VARCHAR(45) NULL DEFAULT NULL,
-  `full_alt` VARCHAR(3000) NULL DEFAULT NULL,
-  `sentence` VARCHAR(1000) NULL DEFAULT NULL,
-  `logical_form` VARCHAR(2000) NULL DEFAULT NULL,
-  `reply` VARCHAR(2000) NULL DEFAULT NULL,
+  `full_alt` TEXT NULL DEFAULT NULL,
+  `sentence` TEXT NULL DEFAULT NULL,
+  `logical_form` TEXT NULL DEFAULT NULL,
+  `reply` TEXT NULL DEFAULT NULL,
   `success` BIT(1) NULL DEFAULT NULL,
   `insertTime` DATETIME NULL DEFAULT CURRENT_TIMESTAMP)
 ENGINE = InnoDB
@@ -108,7 +108,7 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `instructable_kb`.`lex_entries` (
   `user_id` VARCHAR(45) NULL DEFAULT NULL,
-  `lex_entry` VARCHAR(2000) NULL DEFAULT NULL,
+  `lex_entry` TEXT NULL DEFAULT NULL,
   `insert_time` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
@@ -120,8 +120,8 @@ COMMENT = 'user_id can also be general, for all users. No Primary Key.';
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `instructable_kb`.`parse_examples` (
   `user_id` VARCHAR(45) NULL DEFAULT NULL,
-  `example_sentence` VARCHAR(500) NULL DEFAULT NULL,
-  `example_lf` VARCHAR(2000) NULL DEFAULT NULL,
+  `example_sentence` TEXT NULL DEFAULT NULL,
+  `example_lf` TEXT NULL DEFAULT NULL,
   `insert_time` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8

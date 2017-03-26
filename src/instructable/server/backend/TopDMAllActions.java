@@ -1071,7 +1071,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         }
 
         ExecutionStatus executionStatus = new ExecutionStatus();
-        executionStatus.add(ExecutionStatus.RetStatus.error, "I don't understand");
+        executionStatus.add(ExecutionStatus.RetStatus.error, "I heard \"" + infoForCommand.userSentence + "\" and I don't know what to do");
 
         return testOkAndFormat(infoForCommand,
                 executionStatus,
