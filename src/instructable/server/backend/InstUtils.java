@@ -2,8 +2,14 @@ package instructable.server.backend;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -146,6 +152,42 @@ public class InstUtils
     public static String alphaNumLower(String org) //this is problematic for multilingual
     {
         return org.replaceAll("[^a-zA-Z0-9' ]", "").toLowerCase().trim();
+    }
+
+
+    public static String callServer(String fullUrlWithQueries) throws Exception
+    {
+        HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead
+
+        HttpGet request = new HttpGet(fullUrlWithQueries);
+        request.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+
+
+        HttpResponse httpResponse = httpClient.execute(request);
+
+        if (httpResponse.getStatusLine().getStatusCode() != 200)
+        {
+            System.out.println("S: error. (response code is: " + httpResponse.getStatusLine().getStatusCode() + ")");
+        }
+
+        String response = new BasicResponseHandler().handleResponse(httpResponse);//httpResponse.getEntity().toString();
+        return response;
+    }
+    public static String getFirstYoutubeResponse(String spaceSeparatedTerms)
+    {
+        try
+        {
+            String url = "https://www.googleapis.com/youtube/v3/search?&key=AIzaSyBlUJHzNfQAXyeL6bYqa-0cGqapAyX9VpI&part=snippet&q=" + spaceSeparatedTerms.replace(" ", "+");
+            JSONObject jsonObj = new JSONObject(callServer(url));
+            String video = ((JSONObject)jsonObj.getJSONArray("items").get(0)).getJSONObject("id").getString("videoId");
+            return video;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     private InstUtils()

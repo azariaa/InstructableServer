@@ -146,7 +146,10 @@ public interface IAllUserActions
 
     ActionResponse forgetAllLearned(InfoForCommand infoForCommand);
 
+    ActionResponse searchYoutube(InfoForCommand infoForCommand, String searchTerm);
+
     ActionResponse plusAction(InfoForCommand infoForCommand, String arg1, String arg2);
+
 
     //future work: ActionResponse undoLastAction(InfoForCommand infoForCommand);
 

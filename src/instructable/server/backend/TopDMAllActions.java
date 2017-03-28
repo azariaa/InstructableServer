@@ -1809,6 +1809,24 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
+    public ActionResponse searchYoutube(InfoForCommand infoForCommand, String searchTerm)
+    {
+        String videoId = InstUtils.getFirstYoutubeResponse(searchTerm);
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        if (videoId == null)
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "YouTube video not found");
+        }
+        //return new ActionResponse(videoId != null ? Consts.playYouTubeStr + videoId : "YouTube video not found", true, Optional.empty());
+        return testOkAndFormat(infoForCommand,
+                executionStatus,
+                Optional.of(Consts.playYouTubeStr + videoId),
+                Optional.of(() -> say(infoForCommand, "Forget that..."))
+                );
+    }
+
+
+    @Override
     public ActionResponse plusAction(InfoForCommand infoForCommand, String arg1, String arg2)
     {
         return new ActionResponse("I don't know how much is " + arg1 + " and " + arg2, true, Optional.empty());

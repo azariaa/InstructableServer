@@ -55,6 +55,7 @@ dependencies {
     compile 'org.codehaus.jackson:jackson-core-asl:1.1.0'
     compile 'com.fasterxml.jackson.core:jackson-core:2.7.2'
     compile 'org.apache.opennlp:opennlp-tools:1.5.3'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.3'
 //    compile 'com.jayantkrish:jklol:1.0'
     compile 'org.json:json:20090211'
     compile 'org.apache.commons:commons-lang3:3.0'
