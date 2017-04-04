@@ -1079,6 +1079,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 false,
                 Optional.empty(), //will fail anyway, because added error above.
+                Optional.empty(),
                 true,
                 Optional.empty());//shouldn't be used because failed
     }
@@ -1468,7 +1469,19 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     {
         Optional<JSONObject> jsonToExec = createJSONForSug(actionType, buttonText, isLocation, actionParam);
         if (jsonToExec.isPresent())
-            return new ActionResponse(jsonToExec.get(), true, Optional.empty()); //TODO: fix learning sentence here!!!!
+        {
+            return testOkAndFormat(
+                    infoForCommand,
+                    new ExecutionStatus(),
+                    false,
+                    true,
+                    false,
+                    Optional.empty(),
+                    jsonToExec,
+                    false,
+                    Optional.of(() -> failWithMessage(infoForCommand, "I can't undo this"))
+                    );
+        }
         return failWithMessage(infoForCommand, "there is a problem with the json");
     }
 
@@ -1688,6 +1701,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 false,
                 optionalSuccessSentence,
+                Optional.empty(),
                 false,
                 callableForUndo);
     }
@@ -1702,6 +1716,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                                           boolean ignoreComments,
                                           boolean preservePending,
                                           Optional<String> optionalSuccessSentence,
+                                          Optional<JSONObject> optionalSuccessExecJson, //can't have both a sentence and JSon
                                           boolean askToTeachIfFails,
                                           Optional<Callable<ActionResponse>> callableForUndo)
     {
@@ -1767,7 +1782,10 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (success && callableForUndo.isPresent())
             commandHistory.push(infoForCommand, callableForUndo.get());
 
-        return new ActionResponse(response.toString(), success, learningSentence);
+        if (optionalSuccessExecJson.isPresent())
+            return new ActionResponse(optionalSuccessExecJson.get(), success, learningSentence);
+        else
+            return new ActionResponse(response.toString(), success, learningSentence);
     }
 
     @Override
@@ -1782,6 +1800,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 true,
                 true,
                 Optional.of("Forget all I know, are you really sure about that?"),
+                Optional.empty(),
                 false,
                 Optional.of(() -> say(infoForCommand, "I didn't do anything, so there is nothing to undo")));
     }
@@ -1823,6 +1842,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 Optional.of(Consts.playYouTubeStr + videoId),
                 Optional.of(() -> say(infoForCommand, "Forget that..."))
                 );
+    }
+
+    @Override
+    public ActionResponse spell(InfoForCommand infoForCommand, String word)
+    {
+        String spelledOutWord = word.replaceAll(".(?=.)", "$0 ");
+        return say(infoForCommand, word + " is spelled " + spelledOutWord);
     }
 
 

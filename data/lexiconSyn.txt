@@ -95,3 +95,4 @@ delete,{forget} //forget everything
 learned,{everything} //as in forget all you learned
 taught,{everything}
 me,{everything}
+"spell out",{spell}

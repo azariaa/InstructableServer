@@ -175,9 +175,10 @@ click,actionType{0},actionType,0 actionType
 forget, (S{0}/Everything{1}){0}, (lambda $1 (forgetAllLearned))
 everything, Everything{0}, "everything"
 #
-#music
+# accesories (music, spell)
 #
 play, (S{0}/StringV{1}){0}, (lambda $1 (searchYoutube $1))
+spell, (S{0}/StringN{1}){0}, (lambda $1 (spell $1))
 #
 # numbers
 #

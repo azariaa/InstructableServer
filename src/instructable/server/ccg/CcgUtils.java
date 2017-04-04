@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.*;
+import java.util.regex.Pattern;
 
 
 public class CcgUtils
@@ -454,9 +455,10 @@ public class CcgUtils
             //While it may make sense that after concatenating a stringValue with a stringNoun we could get a stringValue,
             //I'm trying to avoid this. It might be better if we could just reduce the weights for that to happen and not
             //totally disallow this.
+            Pattern p = Pattern.compile("\\b"+strVal+"\\b");
             if ((expr.toString().startsWith("(stringNoun") && lexLf.toString().startsWith("(stringNoun") ||
                     expr.toString().startsWith("(stringValue") && lexLf.toString().startsWith("(stringValue")) &&
-                    expr.toString().contains(strVal))
+                    p.matcher(expr.toString()).find())
             {
                 //insert string from lexLF into expr (lf's subexpression) using "concat"
                 int strValLocInLf = expr.toString().indexOf(strVal);

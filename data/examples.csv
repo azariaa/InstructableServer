@@ -165,3 +165,5 @@ reset email and password,(resetEmailAndPassword)
 forget me,(forgetAllLearned)
 forget everything,(forgetAllLearned)
 forget all I taught,(forgetAllLearned)
+play white noise,"(searchYoutube (stringValue ""white noise""))"
+spell cat,"(spell (stringNoun ""cat""))"
