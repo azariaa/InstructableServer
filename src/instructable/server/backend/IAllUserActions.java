@@ -129,8 +129,6 @@ public interface IAllUserActions
 
     ActionResponse newest(InfoForCommand infoForCommand, String instanceName);
 
-    ActionResponse replyTo(InfoForCommand infoForCommand);
-
     ActionResponse say(InfoForCommand infoForCommand, String toSay);
 
     ActionResponse undo(InfoForCommand infoForCommand);

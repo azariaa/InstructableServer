@@ -94,5 +94,6 @@ ignore,{no}
 delete,{forget} //forget everything
 learned,{everything} //as in forget all you learned
 taught,{everything}
+know,{everything} //forget all you know
 me,{everything}
 "spell out",{spell}

@@ -78,7 +78,6 @@ inside,PP_MutableField/MutableField,(lambda $1 $1) //put hello world inside the 
 and,"(S{3}/S{2})\S{1}",(lambda $1 $2 (doSeq $1 $2)) //regular and (has a sentence ahead and sentence behind).
 #and,"(S/S)\FieldVal",(lambda $1 $2 (doSeq $1 $2)) // not sure what this is, is this a mistake?
 #and,"((((S{3}\((S{3}/PP_StringV{2}){3}/MutableField{1}){3}){3})\((S{3}\((S{3}/PP_StringV{2}){3}/MutableField{1}){3}){3})){0}/((S{3}\((S{3}/PP_StringV{2}){3}/MutableField{1}){3}){3})){0}", (lambda $1 $2 $3 (doSeq ($1 $2) ($1 $3))) //tried to do: set subject to hello and body to see you
-hi,S{0},(replyTo)
 say,(S{0}/StringV{1}){0},(lambda $1 (say $1))
 # using:
 # using is like "and write", example: create new email using mom's email as the recipient, or create a contact for mom using mom@fd.com as the email
@@ -173,6 +172,7 @@ click,actionType{0},actionType,0 actionType
 # forget everything
 #
 forget, (S{0}/Everything{1}){0}, (lambda $1 (forgetAllLearned))
+all, (Everything{0}/Everything{1}){0}, (lambda $1 $1)
 everything, Everything{0}, "everything"
 #
 # accesories (music, spell)

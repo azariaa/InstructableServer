@@ -1346,15 +1346,6 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
-    public ActionResponse replyTo(InfoForCommand infoForCommand)
-    {
-        String userSaid = infoForCommand.userSentence.toLowerCase();
-        if (userSaid.equals("hi") || userSaid.startsWith("hello"))
-            return new ActionResponse("Sorry, but I don't do small-talk. Please give me a command.", true, Optional.empty());
-        return new ActionResponse("Don't know what to say", false, Optional.empty());
-    }
-
-    @Override
     public ActionResponse say(InfoForCommand infoForCommand, String toSay)
     {
         return testOkAndFormat(infoForCommand,

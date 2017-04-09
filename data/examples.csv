@@ -167,3 +167,4 @@ forget everything,(forgetAllLearned)
 forget all I taught,(forgetAllLearned)
 play white noise,"(searchYoutube (stringValue ""white noise""))"
 spell cat,"(spell (stringNoun ""cat""))"
+forget all you know,(forgetAllLearned)

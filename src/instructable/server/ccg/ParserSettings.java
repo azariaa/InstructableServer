@@ -65,7 +65,11 @@ public class ParserSettings
         learnedExamples = new HashMap<>();
 
         // remove all that appears after a "//" or starts with # (parseLexiconEntries only removes lines that start with "#")
-        List<String> lexiconWithoutComments = lexiconEntries.stream().filter(e -> !e.contains(fullRowComment)).map(e -> (e.contains(midRowComment) ? e.substring(0, e.indexOf(midRowComment)) : e)).collect(Collectors.toList());
+        List<String> lexiconWithoutComments = lexiconEntries.stream()
+                .filter(e -> !e.contains(fullRowComment))
+                .map(e -> (e.contains(midRowComment) ? e.substring(0, e.indexOf(midRowComment)) : e).trim())
+                .filter(e->!e.isEmpty())
+                .collect(Collectors.toList());
 
         // add synonyms. format: newWord, {meaning1,meaning2,...} (i.e, newWord = meaning1 U meaning2)
         List<String> lexEntriesFromSyn = new LinkedList<>();
