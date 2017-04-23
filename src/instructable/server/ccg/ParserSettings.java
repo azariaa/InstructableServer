@@ -66,7 +66,7 @@ public class ParserSettings
 
         // remove all that appears after a "//" or starts with # (parseLexiconEntries only removes lines that start with "#")
         List<String> lexiconWithoutComments = lexiconEntries.stream()
-                .filter(e -> !e.contains(fullRowComment))
+                .filter(e -> !e.trim().isEmpty() && !e.contains(fullRowComment)) //remove all empty rows and those containing #
                 .map(e -> (e.contains(midRowComment) ? e.substring(0, e.indexOf(midRowComment)) : e).trim())
                 .filter(e->!e.isEmpty())
                 .collect(Collectors.toList());

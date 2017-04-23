@@ -146,6 +146,8 @@ public interface IAllUserActions
 
     ActionResponse searchYoutube(InfoForCommand infoForCommand, String searchTerm);
 
+    ActionResponse getNewsGuardian(InfoForCommand infoForCommand, String searchTerm);
+
     ActionResponse spell(InfoForCommand infoForCommand, String word);
 
     ActionResponse plusAction(InfoForCommand infoForCommand, String arg1, String arg2);

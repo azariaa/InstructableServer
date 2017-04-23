@@ -175,10 +175,13 @@ forget, (S{0}/Everything{1}){0}, (lambda $1 (forgetAllLearned))
 all, (Everything{0}/Everything{1}){0}, (lambda $1 $1)
 everything, Everything{0}, "everything"
 #
-# accesories (music, spell)
+# accessories (music, spell, news)
 #
 play, (S{0}/StringV{1}){0}, (lambda $1 (searchYoutube $1))
 spell, (S{0}/StringN{1}){0}, (lambda $1 (spell $1))
+news, (S{0}/StringN{1}){0}, (lambda $1 (getNewsGuardian $1))
+news, (S{0}\StringN{1}){0}, (lambda $1 (getNewsGuardian $1))
+news, S{0}, (getNewsGuardian ~"world~")
 #
 # numbers
 #

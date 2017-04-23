@@ -15,6 +15,7 @@ import instructable.server.senseffect.ICalendarAccessor;
 import instructable.server.senseffect.IEmailFetcher;
 import instructable.server.senseffect.IEmailSender;
 import instructable.server.senseffect.IIncomingEmailControlling;
+import instructable.server.utils.InstUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -1826,13 +1827,34 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         if (videoId == null)
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "YouTube video not found");
+            videoId = "";
         }
-        //return new ActionResponse(videoId != null ? Consts.playYouTubeStr + videoId : "YouTube video not found", true, Optional.empty());
+
         return testOkAndFormat(infoForCommand,
                 executionStatus,
                 Optional.of(Consts.playYouTubeStr + videoId),
                 Optional.of(() -> say(infoForCommand, "Forget that..."))
                 );
+    }
+
+    @Override
+    public ActionResponse getNewsGuardian(InfoForCommand infoForCommand, String searchTerm)//, int numOfStories)
+    {
+        List<InstUtils.NewsInfo> newsInfos = InstUtils.getGuardianLinks(searchTerm, 4);
+        InstUtils.getSummaries(newsInfos, 2);
+        String newsForUser = newsInfos.stream().map(e -> "Title: " + e.title + "\n" + e.summary).reduce("", (x,y) -> x + "\n" + y, (x,y) -> x + y);
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        if (newsInfos.size() == 0)
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "No matching titles found for: " + searchTerm);
+            newsForUser = "";
+        }
+
+        return testOkAndFormat(infoForCommand,
+                executionStatus,
+                Optional.of(newsForUser),
+                Optional.of(() -> say(infoForCommand, "Forget that..."))
+        );
     }
 
     @Override
