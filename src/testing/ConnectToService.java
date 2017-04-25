@@ -20,9 +20,9 @@ import java.util.Scanner;
 public class ConnectToService
 {
     static private final boolean useRealtimeAgent = true; //determines whether to provide actual user credentials for sending real emails.
-    static private final String userId = "a992";
+    static private final String userId = "328749992";
     static private final String USER_AGENT = "Mozilla/5.0";
-    static private final String httpIp = "http://34.193.23.122";//"http://localhost";
+    static private final String httpIp = "http://localhost";//"http://34.193.23.122";
 
     public static void main(String[] args) throws Exception
     {
@@ -122,6 +122,8 @@ public class ConnectToService
         {
             parameters += "&" + RealtimeAgentServer.actionParam + "=" + RealtimeAgentServer.actionResendRequested;
         }
+        parameters += "&" + RealtimeAgentServer.username + "=" + "234jhf84kj";
+        parameters += "&" + RealtimeAgentServer.encPwd + "=" + "fsk2iue73";
 
         // Send post request
         con.setDoOutput(true);

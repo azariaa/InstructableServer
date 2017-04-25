@@ -168,3 +168,8 @@ forget all I taught,(forgetAllLearned)
 play white noise,"(searchYoutube (stringValue ""white noise""))"
 spell cat,"(spell (stringNoun ""cat""))"
 forget all you know,(forgetAllLearned)
+say hi there,"(say (stringValue ""hi there""))"
+what is the population of france,"(getAnswerToFactoid (stringValue ""the population of france""))"
+question fastest airplane in the sky,"(getAnswerToFactoid (stringValue ""fastest airplane in the sky""))"
+who is the president of the united states,"(getAnswerToFactoid (stringValue ""president of the united states""))"
+france sports news,"(getNewsGuardian (stringNoun ""france sports""))"

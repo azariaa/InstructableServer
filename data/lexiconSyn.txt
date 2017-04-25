@@ -97,3 +97,9 @@ taught,{everything}
 know,{everything} //forget all you know
 me,{everything}
 "spell out",{spell}
+what, {question}
+who, {question}
+when, {question}
+why, {question}
+where, {question}
+how, {question}

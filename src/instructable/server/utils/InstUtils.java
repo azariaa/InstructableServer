@@ -11,8 +11,17 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -183,6 +192,7 @@ public class InstUtils
         String response = new BasicResponseHandler().handleResponse(httpResponse);//httpResponse.getEntity().toString();
         return response;
     }
+
     public static String getFirstYoutubeResponse(String spaceSeparatedTerms)
     {
         try
@@ -308,6 +318,29 @@ public class InstUtils
         catch (Exception ex)
         {
             ex.printStackTrace();
+        }
+    }
+
+    public static String getAnswerToFactoid(String spaceSeparatedQuestion)
+    {
+        try
+        {
+            String url = "http://api.wolframalpha.com/v2/query?appid="+ Credentials.wolframAppId + "&input=" + spaceSeparatedQuestion.replace(" ", "%20") + "&includepodid=Result";
+            String xmlStr = callServer(url);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document xmlDoc = builder.parse(new InputSource(new StringReader(xmlStr)));
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+            XPathExpression expr = xpath.compile("queryresult/pod/subpod/plaintext");
+            String res = (String)expr.evaluate(xmlDoc, XPathConstants.STRING);
+
+            return res;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
         }
     }
 

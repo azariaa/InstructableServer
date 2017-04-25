@@ -1840,8 +1840,10 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse getNewsGuardian(InfoForCommand infoForCommand, String searchTerm)//, int numOfStories)
     {
-        List<InstUtils.NewsInfo> newsInfos = InstUtils.getGuardianLinks(searchTerm, 4);
-        InstUtils.getSummaries(newsInfos, 2);
+        final int numOfTitles = 3;
+        final int numOfSentencesPerTitle = 2;
+        List<InstUtils.NewsInfo> newsInfos = InstUtils.getGuardianLinks(searchTerm, numOfTitles);
+        InstUtils.getSummaries(newsInfos, numOfSentencesPerTitle);
         String newsForUser = newsInfos.stream().map(e -> "Title: " + e.title + "\n" + e.summary).reduce("", (x,y) -> x + "\n" + y, (x,y) -> x + y);
         ExecutionStatus executionStatus = new ExecutionStatus();
         if (newsInfos.size() == 0)
@@ -1854,6 +1856,25 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 executionStatus,
                 Optional.of(newsForUser),
                 Optional.of(() -> say(infoForCommand, "Forget that..."))
+        );
+    }
+
+    @Override
+    public ActionResponse getAnswerToFactoid(InfoForCommand infoForCommand, String searchTerm)
+    {
+        searchTerm = infoForCommand.userSentence; //modifying searchTerm to include the whole question!
+        String result = InstUtils.getAnswerToFactoid(searchTerm);
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        if (result == null || result.equals(""))
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "no answer was found");
+            result = "";
+        }
+
+        return testOkAndFormat(infoForCommand,
+                executionStatus,
+                Optional.of(result),
+                Optional.of(() -> say(infoForCommand, "Just forget that..."))
         );
     }
 
