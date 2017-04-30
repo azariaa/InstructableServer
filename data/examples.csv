@@ -173,3 +173,5 @@ what is the population of france,"(getAnswerToFactoid (stringValue ""the populat
 question fastest airplane in the sky,"(getAnswerToFactoid (stringValue ""fastest airplane in the sky""))"
 who is the president of the united states,"(getAnswerToFactoid (stringValue ""president of the united states""))"
 france sports news,"(getNewsGuardian (stringNoun ""france sports""))"
+what's the date,"(timeFuncs ""read"" ""date"" """" """")"
+what's the time,"(timeFuncs ""read"" ""time"" """" """")"

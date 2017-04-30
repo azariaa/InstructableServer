@@ -152,6 +152,8 @@ public interface IAllUserActions
 
     ActionResponse spell(InfoForCommand infoForCommand, String word);
 
+    ActionResponse timeFuncs(InfoForCommand infoForCommand, String type, String arg1, String arg2, String arg3);
+
     ActionResponse plusAction(InfoForCommand infoForCommand, String arg1, String arg2);
 
 

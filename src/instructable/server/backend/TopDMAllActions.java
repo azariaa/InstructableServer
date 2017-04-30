@@ -1885,6 +1885,37 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         return say(infoForCommand, word + " is spelled " + spelledOutWord);
     }
 
+    /**
+     * @param infoForCommand
+     * @param type : read/setTimer/setAlarm
+     * @param arg1 : if read: whatToRead: currentTime/currentDate/allTimers/allAlarms.
+     *             if setTimer: hh:mm:ss. if setAlarm: YYYY-MM-DD HH:mm:ss
+     * @param arg2 : if setTimer/setAlarm: alarmType: bell/#timesToRepeat
+     * @param arg3 : if setTimer/setAlarm: toSay: what to say when time
+     * @return
+     */
+    @Override
+    public ActionResponse timeFuncs(InfoForCommand infoForCommand, String type, String arg1, String arg2, String arg3)
+    {
+        JSONObject jsonForTimer = new JSONObject();
+        ExecutionStatus executionStatus = new ExecutionStatus();
+        try
+        {
+            jsonForTimer.put("type", type);
+            jsonForTimer.put("whatToRead", arg1.equals("time") ? "currentTime" : "currentDate");
+        }
+        catch (Exception ex)
+        {
+            executionStatus.add(ExecutionStatus.RetStatus.error, "something went wrong");
+        }
+
+        return testOkAndFormat(infoForCommand,
+                executionStatus,
+                Optional.of(Consts.timerFunctions + jsonForTimer.toString()),
+                Optional.of(() -> say(infoForCommand, "Forget that..."))
+        );
+    }
+
 
     @Override
     public ActionResponse plusAction(InfoForCommand infoForCommand, String arg1, String arg2)
