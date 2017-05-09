@@ -9,6 +9,7 @@ import instructable.server.controllers.InboxCommandController;
 import instructable.server.controllers.OutEmailCommandController;
 import instructable.server.dal.DBUtils;
 import instructable.server.hirarchy.*;
+import instructable.server.hirarchy.fieldTypes.DateType;
 import instructable.server.hirarchy.fieldTypes.PossibleFieldType;
 import instructable.server.parser.ICommandsToParser;
 import instructable.server.senseffect.ICalendarAccessor;
@@ -19,6 +20,7 @@ import instructable.server.utils.InstUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -679,31 +681,31 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         return setAndAdd(infoForCommand, field, Optional.empty(), Optional.of(jsonVal), false, true);
     }
 
-    @Override
-    public ActionResponse setFieldWithMissingArg(InfoForCommand infoForCommand, FieldHolder field)
-    {
-        return failWithMessage(infoForCommand, "I don't know what to set " + field.getParentInstanceName() + "'s " + field.getFieldName() + " to. " +
-                "Please repeat and tell me what to set it to (e.g. set " + field.getParentInstanceName() + "'s " + field.getFieldName() + " to something)");
-    }
-
-    @Override
-    public ActionResponse setWhatFromString(InfoForCommand infoForCommand, String val)
-    {
-        return failWithMessage(infoForCommand, "I don't know what should be set to " + val + ". " +
-                "Please repeat and tell me what should be set to it (e.g. set example to " + val + ")");
-    }
-
-    @Override
-    public ActionResponse setWhatFromField(InfoForCommand infoForCommand, FieldHolder field)
-    {
-        String parentNiceName = field.getParentInstanceName();
-        if (parentNiceName.contains(InboxCommandController.emailMessageNameStart))
-        {
-            parentNiceName = InboxCommandController.emailMessageNameStart;
-        }
-        return failWithMessage(infoForCommand, "I don't know what should be set to " + parentNiceName + "'s " + field.getFieldName() + ". " +
-                "Please repeat and tell me what should be set to it (e.g. set example to " + parentNiceName + "'s " + field.getFieldName() + ")");
-    }
+//    @Override
+//    public ActionResponse setFieldWithMissingArg(InfoForCommand infoForCommand, FieldHolder field)
+//    {
+//        return failWithMessage(infoForCommand, "I don't know what to set " + field.getParentInstanceName() + "'s " + field.getFieldName() + " to. " +
+//                "Please repeat and tell me what to set it to (e.g. set " + field.getParentInstanceName() + "'s " + field.getFieldName() + " to something)");
+//    }
+//
+//    @Override
+//    public ActionResponse setWhatFromString(InfoForCommand infoForCommand, String val)
+//    {
+//        return failWithMessage(infoForCommand, "I don't know what should be set to " + val + ". " +
+//                "Please repeat and tell me what should be set to it (e.g. set example to " + val + ")");
+//    }
+//
+//    @Override
+//    public ActionResponse setWhatFromField(InfoForCommand infoForCommand, FieldHolder field)
+//    {
+//        String parentNiceName = field.getParentInstanceName();
+//        if (parentNiceName.contains(InboxCommandController.emailMessageNameStart))
+//        {
+//            parentNiceName = InboxCommandController.emailMessageNameStart;
+//        }
+//        return failWithMessage(infoForCommand, "I don't know what should be set to " + parentNiceName + "'s " + field.getFieldName() + ". " +
+//                "Please repeat and tell me what should be set to it (e.g. set example to " + parentNiceName + "'s " + field.getFieldName() + ")");
+//    }
 
 
     @Override
@@ -731,11 +733,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         return setAndAdd(infoForCommand, field, Optional.empty(), Optional.of(jsonVal), true, false);
     }
 
-    @Override
-    public ActionResponse addToWhat(InfoForCommand infoForCommand, String toAdd)
-    {
-        return failWithMessage(infoForCommand, "I don't know what I should add \"" + toAdd + "\" to. Say: add " + toAdd + " to something");
-    }
+//    @Override
+//    public ActionResponse addToWhat(InfoForCommand infoForCommand, String toAdd)
+//    {
+//        return failWithMessage(infoForCommand, "I don't know what I should add \"" + toAdd + "\" to. Say: add " + toAdd + " to something");
+//    }
 
 
     private Optional<GenericInstance> getMostPlausibleInstance(ExecutionStatus executionStatus, Optional<String> optionalInstanceName, Optional<String> fieldName, boolean mutableOnly, String userSentence)
@@ -1644,7 +1646,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                         textForType = InstUtils.alphaNumLower(textForType);
                         previousClickForType += "_" + textForType; //should work even if textForType end-up  being empty
                         expression += " " + (actionParameter.isPresent() ? "(stringValue \"" + actionParameter.get() + "\")" : "\"\"") + ")";
-                        internalState.userGaveCommand(new InfoForCommand("n/a", ExpressionParser.expression2().parseSingleExpression(expression)), true, false, false);
+                        internalState.userGaveCommand(new InfoForCommand("n/a", ExpressionParser.expression2().parseSingleExpression(expression), Optional.empty()), true, false, false);
                     }
                 }
                 if (nextBlock.has("nextBlock"))
@@ -1889,9 +1891,9 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
      * @param infoForCommand
      * @param type : read/setTimer/setAlarm
      * @param arg1 : if read: whatToRead: currentTime/currentDate/allTimers/allAlarms.
-     *             if setTimer: hh:mm:ss. if setAlarm: YYYY-MM-DD HH:mm:ss
-     * @param arg2 : if setTimer/setAlarm: alarmType: bell/#timesToRepeat
-     * @param arg3 : if setTimer/setAlarm: toSay: what to say when time
+     *             alarmDateTime: yyyy-MM-dd HH:mm:ss
+     * @param arg2 : if setTimer/setAlarm: toSay: what to say when time
+     * @param arg3 : if setTimer/setAlarm: alarmType: bell/#timesToRepeat
      * @return
      */
     @Override
@@ -1902,7 +1904,35 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         try
         {
             jsonForTimer.put("type", type);
-            jsonForTimer.put("whatToRead", arg1.equals("time") ? "currentTime" : "currentDate");
+            if (type.equals("read"))
+            {
+                String whatToRead = "";
+                if (arg1.equals("time"))
+                    whatToRead = "currentTime";
+                else if (arg1.equals("date"))
+                    whatToRead = "currentDate";
+                else if (arg1.equals("alarm"))
+                    whatToRead = "allAlarms";
+                else if (arg1.equals("timer"))
+                    whatToRead = "allTimers";
+                jsonForTimer.put("whatToRead", whatToRead);
+            }
+            else if (type.equals("setAlarm") || type.equals("setTimer"))
+            {
+                Optional<Date> alarmDateTime = InstUtils.getDate(arg1, infoForCommand.currentTimeOnUsersPhone);
+                if (alarmDateTime.isPresent())
+                {
+                    jsonForTimer.put("alarmTimerDate", DateType.dateFormat.format(alarmDateTime.get()));
+                }
+                else
+                {
+                    executionStatus.add(ExecutionStatus.RetStatus.error, "I couldn't understand when the alarm should be set for");
+                }
+                String toSay = arg2;
+                jsonForTimer.put("toSay", toSay);
+                boolean bell = !arg3.equals("false"); //if the user doesn't explicitly ask for no bell, there will be a bell
+                jsonForTimer.put("bell", bell);
+            }
         }
         catch (Exception ex)
         {

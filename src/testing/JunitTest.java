@@ -38,7 +38,7 @@ public class JunitTest {
 
     userSays = "next email and read email and send an email to foo@bar.com";
     testHelpers.userSays(userSays);
-    response = parserSettings.parseAndEval(allUserActions, userSays);
+    response = parserSettings.parseAndEval(allUserActions, userSays, Optional.empty());
     //actionResponse = allUserActions.sendEmail(new InfoForCommand(userSays,null));
     testHelpers.systemSays(response.sayToUser);
   }
@@ -52,7 +52,7 @@ public class JunitTest {
 
     userSays = "Create new email, set recipient to email's sender and set subject to hi there, send email.";
     testHelpers.userSays(userSays);
-    response = parserSettings.parseAndEval(allUserActions, userSays);
+    response = parserSettings.parseAndEval(allUserActions, userSays, Optional.empty());
     //actionResponse = allUserActions.sendEmail(new InfoForCommand(userSays,null));
     testHelpers.systemSays(response.sayToUser);
   }

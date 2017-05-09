@@ -48,7 +48,7 @@ repositories {
 
 dependencies {
     compile 'junit:junit:4.11'
-    compile 'com.joestelmach:natty:0.12'
+    compile 'com.joestelmach:natty:0.13'
     compile 'edu.stanford.nlp:stanford-corenlp:3.5.2'
     compile 'edu.stanford.nlp:stanford-parser:3.6.0'
     compile 'com.google.guava:guava:11.0.2'

@@ -12,14 +12,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -38,11 +36,37 @@ public class InstUtils
     static Set<String> singularWords = null;
     static Parser parser = new Parser();
 
-    public static Optional<Date> getDate(String val)
+    public static Optional<Date> getDate(String val, Optional<Date> currentTime)
     {
-        List<DateGroup> dates = parser.parse(val);
+        Date date = new Date();
+        if (currentTime.isPresent())
+            date = currentTime.get();
+        List<DateGroup> dates = parser.parse(val, date);
         if (dates.size() > 0)
-            return Optional.of(dates.get(0).getDates().get(0));
+        {
+            Date firstAnswer = dates.get(0).getDates().get(0);
+            if (!currentTime.isPresent() || !firstAnswer.before(currentTime.get()))
+                return Optional.of(firstAnswer);
+            for (DateGroup group : dates)
+            {
+                for (Date currentDate : group.getDates())
+                {
+                    if (!currentDate.before(currentTime.get()))
+                        return Optional.of(currentDate);
+                }
+            }
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(firstAnswer);
+            cal.add(Calendar.HOUR_OF_DAY, 12); // add 12 hours (in case got am/pm confused)
+            Date answer = cal.getTime();
+            if (!answer.before(currentTime.get()))
+                return Optional.of(answer);
+            cal.add(Calendar.HOUR_OF_DAY, 12); // adds another 12 hours (in case got day confused)
+            Date answer2 = cal.getTime();
+            if (!answer2.before(currentTime.get()))
+                return Optional.of(answer2);
+            return Optional.empty();
+        }
         else
             return Optional.empty();
     }
@@ -321,21 +345,36 @@ public class InstUtils
         }
     }
 
+    private static List<String> interestingPodTitles = Arrays.asList("Input interpretation", "Members", "Basic information", "Result", "Notable facts");
+
     public static String getAnswerToFactoid(String spaceSeparatedQuestion)
     {
         try
         {
+            StringBuilder res = new StringBuilder();
             String url = "http://api.wolframalpha.com/v2/query?appid="+ Credentials.wolframAppId + "&input=" + spaceSeparatedQuestion.replace(" ", "%20"); // + "&includepodid=Result";
             String xmlStr = callServer(url);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document xmlDoc = builder.parse(new InputSource(new StringReader(xmlStr)));
-            XPathFactory xPathfactory = XPathFactory.newInstance();
-            XPath xpath = xPathfactory.newXPath();
-            XPathExpression expr = xpath.compile("queryresult/pod/subpod/plaintext");
-            String res = (String)expr.evaluate(xmlDoc, XPathConstants.STRING);
+            //XPathFactory xPathfactory = XPathFactory.newInstance();
+            //XPath xpath = xPathfactory.newXPath();
+            //XPathExpression expr = xpath.compile("queryresult/pod/subpod/plaintext");
+            //String res = (String)expr.evaluate(xmlDoc, XPathConstants.STRING);
+            //Element queryresult = (Element) xmlDoc.getDocumentElement().getElementsByTagName("queryresult").item(0);
+            NodeList pods = xmlDoc.getDocumentElement().getElementsByTagName("pod");
+            for (int i = 0; i < pods.getLength(); i++)
+            {
+                Element currentPod = (Element)pods.item(i);
+                String podType = currentPod.getAttribute("title");
+                if (interestingPodTitles.contains(podType))
+                {
+                    String text = ((Element)((Element)(currentPod.getElementsByTagName("subpod").item(0))).getElementsByTagName("plaintext").item(0)).getTextContent();
+                    res.append(text + "\n");
+                }
+            }
 
-            return res;
+            return res.toString();
         }
         catch (Exception ex)
         {

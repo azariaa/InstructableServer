@@ -99,14 +99,14 @@ public class AgentDataAndControl
             logger.warning("shouldn't happen that responseToUserListenerList.size() is: " + responseToUserListenerList.size());
     }
 
-    public Optional<String> executeSentenceForUser(String userId, String username, String encPassword, List<String> userSays)
+    public Optional<String> executeSentenceForUser(String userId, String username, String encPassword, List<String> userSays, Date userTime)
     {
-        return executeSentenceOrGetPending(userId, username, encPassword, userSays);
+        return executeSentenceOrGetPending(userId, username, encPassword, userSays, Optional.of(userTime));
     }
 
     public Optional<String> getPendingResponse(String userId, String username, String encPassword)
     {
-        return executeSentenceOrGetPending(userId, username, encPassword, new LinkedList<>());
+        return executeSentenceOrGetPending(userId, username, encPassword, new LinkedList<>(), Optional.empty());
     }
 
     /**
@@ -114,7 +114,7 @@ public class AgentDataAndControl
      * @param userSays set to empty list for a pending response. If there is more than one sentence, the parser will choose the one which doesn't parse to unknown command.
      * @return agent's response to user's sentence. Optional.empty, if user wasn't found.
      */
-    private Optional<String> executeSentenceOrGetPending(String userId, String username, String encPassword, List<String> userSays)
+    private Optional<String> executeSentenceOrGetPending(String userId, String username, String encPassword, List<String> userSays, Optional<Date> userTime)
     {
         boolean getPendingResponse = userSays.isEmpty();
         logger.info("UserID:" + userId + ". " + (getPendingResponse ? "Requested pending response." : "User says: " + userSays.get(0)));
@@ -138,7 +138,7 @@ public class AgentDataAndControl
         }
         else
         {
-            CcgUtils.SayAndExpression response = parserSetAndActions.getParserSettings().parseAndEval(Optional.of(userId), parserSetAndActions.allUserActions, userSays);
+            CcgUtils.SayAndExpression response = parserSetAndActions.getParserSettings().parseAndEval(Optional.of(userId), parserSetAndActions.allUserActions, userSays, userTime);
             logger.info("UserID:" + userId + ". Lambda expression: " + response.lExpression);
             sayToUser = response.sayToUser;
             success = response.success;
@@ -172,7 +172,7 @@ public class AgentDataAndControl
         {
             parserSetAndActions = parserSetAndActionsMap.get(userId);
         }
-        parserSetAndActions.getParserSettings().evaluate(parserSetAndActions.allUserActions, userSays, expression);
+        parserSetAndActions.getParserSettings().evaluate(parserSetAndActions.allUserActions, userSays, expression, Optional.empty());
     }
 
     public String setEmailAndPswd(String userId, String username, String encPassword, String email, String realPwd)

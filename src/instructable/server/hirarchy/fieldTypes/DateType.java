@@ -23,7 +23,7 @@ public class DateType extends FieldType
      */
     public void setDouble(ExecutionStatus executionStatus, String val)
     {
-        Optional<Date> dateRes = InstUtils.getDate(val);
+        Optional<Date> dateRes = InstUtils.getDate(val, Optional.empty());
         if (dateRes.isPresent())
         {
             fieldVal = dateFormat.format(dateRes.get());

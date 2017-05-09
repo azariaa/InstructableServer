@@ -116,7 +116,7 @@ public class AnnotateInteractions
 					String currentEmail = ((TopDMAllActions) allUserActions).inboxCommandController.getCurrentEmailName(new ExecutionStatus());
 
 					//Parse and Execute
-					CcgUtils.SayAndExpression response = parserSettings.parseAndEval(allUserActions, userUtterance);
+					CcgUtils.SayAndExpression response = parserSettings.parseAndEval(allUserActions, userUtterance, Optional.empty());
 					String parsedLogicalForm = response.lExpression.toString();
 
 					String curResponse = response.sayToUser.trim().replaceAll("\n", "|");
@@ -151,9 +151,9 @@ public class AnnotateInteractions
                     {
                         System.out.println("moving back");
                         if (didSomethingThisRound)
-                            parserSettings.parseAndEval(allUserActions, "undo"); //undo this command
+                            parserSettings.parseAndEval(allUserActions, "undo", Optional.empty()); //undo this command
                         if (didSomethingLastRound)
-                            parserSettings.parseAndEval(allUserActions, "undo"); //undo previous command, so can redo it
+                            parserSettings.parseAndEval(allUserActions, "undo", Optional.empty()); //undo previous command, so can redo it
                         lineNo-=4;
                     }
                     else{ //manual mode:
@@ -221,7 +221,7 @@ public class AnnotateInteractions
 							else{
                                 try
                                 {
-                                    CcgUtils.SayAndExpression response1 = parserSettings.parseAndEval(allUserActions, userSays);
+                                    CcgUtils.SayAndExpression response1 = parserSettings.parseAndEval(allUserActions, userSays, Optional.empty());
                                     lf = response1.lExpression.toString();
                                     System.out.println("LOGICAL FORM:" + lf);
                                     sysR = response1.sayToUser.trim().replaceAll("\n", "|");

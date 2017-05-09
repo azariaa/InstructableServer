@@ -167,10 +167,10 @@ public class ParserSettings
         this.parserFamily = family;
     }
 
-    public ActionResponse evaluate(IAllUserActions allUserActions, String userSays, Expression2 expression)
+    public ActionResponse evaluate(IAllUserActions allUserActions, String userSays, Expression2 expression, Optional<Date> userTime)
     {
 
-        LispExecutor lispExecutor = new LispExecutor(allUserActions, new InfoForCommand(userSays, expression));
+        LispExecutor lispExecutor = new LispExecutor(allUserActions, new InfoForCommand(userSays, expression, userTime));
 
         //env.bindName("sendEmail", lispExecutor.getFunction("sendEmail"), symbolTable);
         //env.bindName("setFieldFromString", lispExecutor.getFunction("setFieldFromString"), symbolTable);
@@ -194,9 +194,9 @@ public class ParserSettings
         return response;
     }
 
-    public CcgUtils.SayAndExpression parseAndEval(IAllUserActions allUserActions, String userSays)
+    public CcgUtils.SayAndExpression parseAndEval(IAllUserActions allUserActions, String userSays, Optional<Date> userTime)
     {
-        return parseAndEval(Optional.empty(), allUserActions, new LinkedList<>(Collections.singleton(userSays)));
+        return parseAndEval(Optional.empty(), allUserActions, new LinkedList<>(Collections.singleton(userSays)), userTime);
     }
 
     /**
@@ -207,7 +207,7 @@ public class ParserSettings
      * @param userSays
      * @return
      */
-    public CcgUtils.SayAndExpression parseAndEval(Optional<String> userId, IAllUserActions allUserActions, List<String> userSays)
+    public CcgUtils.SayAndExpression parseAndEval(Optional<String> userId, IAllUserActions allUserActions, List<String> userSays, Optional<Date> userTime)
     {
         Preconditions.checkArgument(!userSays.isEmpty());
         Optional<CcgUtils.SayAndExpression> specialCase = execIfSpecialCase(userId, allUserActions, userSays);
@@ -219,12 +219,12 @@ public class ParserSettings
             if (!expression.equals(unknownExpression) || failNextCommand)
             {
                 failNextCommand = false;
-                return executeLogicalForm(userId, allUserActions, userSays, sentence, expression);
+                return executeLogicalForm(userId, allUserActions, userSays, sentence, expression, userTime);
             }
         }
         //all alternatives failed
         failNextCommand = false;
-        return executeLogicalForm(userId, allUserActions, userSays, userSays.get(0), unknownExpression);
+        return executeLogicalForm(userId, allUserActions, userSays, userSays.get(0), unknownExpression, userTime);
     }
 
     private Optional<CcgUtils.SayAndExpression> execIfSpecialCase(Optional<String> userId, IAllUserActions allUserActions, List<String> userSays)
@@ -237,7 +237,7 @@ public class ParserSettings
             try
             {
                 JSONObject asJson = new JSONObject(jsonPart);
-                ActionResponse response = allUserActions.userHasDemonstrated(new InfoForCommand(sentence, unknownExpression), asJson); //unknownExpression is used instead of null
+                ActionResponse response = allUserActions.userHasDemonstrated(new InfoForCommand(sentence, unknownExpression, Optional.empty()), asJson); //unknownExpression is used instead of null
                 String sayToUserOrExec = response.getSayToUserOrExec();
                 if (userId.isPresent())
                     InteractionRecording.addUserUtterance(userId.get(), userSays, sentence, "", sayToUserOrExec, response.isSuccess());
@@ -251,10 +251,15 @@ public class ParserSettings
         return Optional.empty();
     }
 
-    private CcgUtils.SayAndExpression executeLogicalForm(Optional<String> userId, IAllUserActions allUserActions, List<String> userSays, String sentence, Expression2 expression)
+    private CcgUtils.SayAndExpression executeLogicalForm(Optional<String> userId,
+                                                         IAllUserActions allUserActions,
+                                                         List<String> userSays,
+                                                         String sentence,
+                                                         Expression2 expression,
+                                                         Optional<Date> userTime)
     {
         System.out.println("debug:" + expression.toString());
-        ActionResponse response = this.evaluate(allUserActions, sentence, expression);
+        ActionResponse response = this.evaluate(allUserActions, sentence, expression, userTime);
         String sayToUserOrExec = response.getSayToUserOrExec();
         if (userId.isPresent())
             InteractionRecording.addUserUtterance(userId.get(), userSays, sentence, expression.toString(), sayToUserOrExec, response.isSuccess());

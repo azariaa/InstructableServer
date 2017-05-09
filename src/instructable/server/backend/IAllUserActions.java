@@ -65,11 +65,11 @@ public interface IAllUserActions
 
     ActionResponse setFieldFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal);
 
-    ActionResponse setFieldWithMissingArg(InfoForCommand infoForCommand, FieldHolder field);
-
-    ActionResponse setWhatFromString(InfoForCommand infoForCommand, String val);
-
-    ActionResponse setWhatFromField(InfoForCommand infoForCommand, FieldHolder field);
+//    ActionResponse setFieldWithMissingArg(InfoForCommand infoForCommand, FieldHolder field);
+//
+//    ActionResponse setWhatFromString(InfoForCommand infoForCommand, String val);
+//
+//    ActionResponse setWhatFromField(InfoForCommand infoForCommand, FieldHolder field);
 
     //ActionResponse setFieldFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 
@@ -83,7 +83,7 @@ public interface IAllUserActions
 
     ActionResponse addToFieldAtStartFromFieldVal(InfoForCommand infoForCommand, FieldHolder field, JSONObject jsonVal);
 
-    ActionResponse addToWhat(InfoForCommand infoForCommand, String toAdd);
+    //ActionResponse addToWhat(InfoForCommand infoForCommand, String toAdd);
 
     //ActionResponse addToFieldAtStartFromPreviousEval(InfoForCommand infoForCommand, FieldHolder field);
 

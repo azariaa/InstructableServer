@@ -82,12 +82,12 @@ finished,{end}
 "that is all",{end}
 nothing,{end}
 learn,{end}
-quit,{cancel}
-stop,{cancel}
-nevermind,{cancel}
-"never mind",{cancel}
-forget, {cancel}
-"start over", {cancel}
+cancel,{quit}
+stop,{quit}
+nevermind,{quit}
+"never mind",{quit}
+forget, {quit}
+"start over", {quit}
 wait,{stop}
 meeting,{event}
 ignore,{no}
@@ -103,3 +103,13 @@ when, {question}
 why, {question}
 where, {question}
 how, {question}
+alarm, {"set an alarm"}
+"set alarm", {"set an alarm"}
+"set an alarm for", {"set an alarm"}
+"set alarm for", {"set an alarm"}
+timer, {"set a timer"}
+"set timer", {"set a timer"}
+"set timer for", {"set a timer"}
+"set a timer for", {"set a timer"}
+delete, {cancel}
+what, {read}

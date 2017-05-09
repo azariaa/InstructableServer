@@ -88,7 +88,7 @@ public class ExperimentServer implements HttpHandler, AgentDataAndControl.Respon
                         if (parameters.containsKey(userSaysParam))
                         {
                             String userSays = parameters.get(userSaysParam).toString();
-                            Optional<String> res = agentDataAndControl.executeSentenceForUser(gameId, gameId, gameId, new LinkedList<>(Collections.singleton(userSays)));
+                            Optional<String> res = agentDataAndControl.executeSentenceForUser(gameId, gameId, gameId, new LinkedList<>(Collections.singleton(userSays)), new Date());
                             if (res.isPresent())
                                 responseToSend = res.get();
                             else

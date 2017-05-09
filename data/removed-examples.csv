@@ -1,3 +1,6 @@
 I want to teach you bo,(teachNewCommand)
 I want to teach you what to do when I ask you to send an email and go over, (teachNewCommand)
 say everyone should have a wonderful day,"(say (concat (stringValue ""everyone should have"") (stringValue ""a wonderful day"")))"
+use bob's classification,(setWhatFromField (getProbFieldByInstanceNameAndFieldName bob classification))
+add email field,"(addToWhat (stringNoun ""email""))"
+set bob's classification,(setFieldWithMissingArg (getProbMutableFieldByInstanceNameAndFieldName bob classification))

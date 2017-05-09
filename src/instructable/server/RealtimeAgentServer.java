@@ -3,6 +3,7 @@ package instructable.server;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import instructable.server.backend.IAllUserActions;
+import instructable.server.hirarchy.fieldTypes.DateType;
 
 import java.io.OutputStream;
 import java.util.*;
@@ -21,6 +22,7 @@ public class RealtimeAgentServer implements HttpHandler
     static public final String actionResendRequested = "actionResendRequested";
     static public final String actionSetEmailAndPswd = "actionSetEmailAndPswd";
     static public final String userSaysParam = "userSays";
+    static public final String userTimeParam = "userTime"; //"yyyy-MM-dd HH:mm:ss"
     static public final String userIdParam = "userId";
     static public final String whenContainedSendAnotherRequest = IAllUserActions.resendNewRequest; //TODO: not elegant that this is hard coded
     static public final String username = "username";
@@ -99,7 +101,10 @@ public class RealtimeAgentServer implements HttpHandler
                                 String userSays = parameters.get(userSaysParam).toString();
                                 //if doesn't contain multiAltSentenceConcat(^) will have only a single entry
                                 List<String> userSentences = Arrays.asList(userSays.split(multiAltSentenceConcatForRegEx)).stream().filter(s -> !s.isEmpty()).collect(Collectors.toList());
-                                Optional<String> res = agentDataAndControl.executeSentenceForUser(userId, usernameParm, encPwdParm, userSentences);
+                                Date currentDateTime = new Date();
+                                if (parameters.containsKey(userTimeParam))
+                                    currentDateTime = DateType.dateFormat.parse(parameters.get(userTimeParam).toString());
+                                Optional<String> res = agentDataAndControl.executeSentenceForUser(userId, usernameParm, encPwdParm, userSentences, currentDateTime);
                                 if (res.isPresent())
                                     systemReply = res.get();
                                 else

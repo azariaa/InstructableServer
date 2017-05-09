@@ -8,6 +8,7 @@ import instructable.server.dal.CreateParserFromFiles;
 import instructable.server.dal.DBUtils;
 import instructable.server.parser.CommandsToParser;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.Scanner;
 /**
@@ -37,7 +38,7 @@ public class CommandLine
             CcgUtils.SayAndExpression response;
             try
             {
-                response = parserSettings.parseAndEval(allUserActions, userSays);
+                response = parserSettings.parseAndEval(allUserActions, userSays, Optional.of(new Date()));
                 System.out.println("S:" + response.sayToUser + "\n");
             } catch (Exception ex)
             {

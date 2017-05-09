@@ -9,7 +9,7 @@ yes,S{0},(yes)
 no,S{0},(no)
 end,S{0},(end)
 stop,S{0},(endOrCancel)
-cancel,S{0},(cancel)
+quit,S{0},(cancel)
 teach,S{0},(teachNewCommand)
 teach,(S{0}/Command{1}){0}, (lambda $1 (teachNewCommand))
 teach,(S{0}/StringV{1}){0}, (lambda $1 (teachNewCommand)) //users many times add information to this command, but it is ignored
@@ -29,7 +29,7 @@ create,(S{0}/StringN{1}){0},"(lambda $1 (defineConcept $1))"
 create,(S{0}/Command{1}){0}, (lambda $1 (teachNewCommand)) //create a command
 define,(S{0}/StringN{1}){0},"(lambda $1 (defineConcept $1))"
 add,((S{0}/PP_ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (addFieldToConcept $2 $1))
-add,(S{0}/StringN{1}){0}, (lambda $1 (addToWhat $1))
+#add,(S{0}/StringN{1}){0}, (lambda $1 (addToWhat $1))
 add,((S{0}/PP_MutableField{2}){0}/StringV{1}), (lambda $1 $2 (addToFieldFromString $2 $1))
 add,((S{0}/PP_MutableField{2}){0}/FieldVal{1}), (lambda $1 $2 (addToFieldFromFieldVal $2 $1))
 remove,((S{0}/PP_ConceptName{2}){0}/FieldName{1}), (lambda $1 $2 (removeFieldFromConcept $2 $1))
@@ -41,13 +41,13 @@ read,(S{0}/Instance{1}){0},(lambda $1 (readInstance $1)) //Instance seems to alw
 take,(FieldVal{0}/Field{1}){0},(lambda $1 (evalField $1))
 write,"((S{0}/PP_MutableField{2}){0}/StringV{1}){0}","(lambda $1 $2 (setFieldFromString $2 $1))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2"// write hello world in the subject
 write,"((S{0}/PP_MutableField{2}){0}/FieldVal{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $2 $1))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2"
-write, (S{0}/StringV{1}){0},(lambda $1 (setWhatFromString $1))
-write, (S{0}/Field{1}){0},(lambda $1 (setWhatFromField $1))
+#write, (S{0}/StringV{1}){0},(lambda $1 (setWhatFromString $1))
+#write, (S{0}/Field{1}){0},(lambda $1 (setWhatFromField $1))
 change,"((S{0}/PP_FieldVal{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromFieldVal $1 $2))","0 setFieldFromFieldVal","setFieldFromFieldVal 1 1","setFieldFromFieldVal 2 2" //change recipient to mom's email
 change,"((S{0}/PP_StringV{2}){0}/MutableField{1}){0}","(lambda $1 $2 (setFieldFromString $1 $2))","0 setFieldFromString","setFieldFromString 1 1","setFieldFromString 2 2" //change subject to hello world
 change,((S{0}/StringV{2}){0}/MutableField{1}){0},(lambda $1 $2 (setFieldFromString $1 $2)) //set contact mom fds@fds.com //not clean, but is used by users.
 change,((S{0}/FieldVal{2}){0}/MutableField{1}){0},(lambda $1 $2 (setFieldFromFieldVal $1 $2)) //set recipient mom's email //not clean, but is used by users.
-change,(S{0}/MutableField{1}){0},(lambda $1 (setFieldWithMissingArg $1)) //change mom's email (without to "hello world)
+#change,(S{0}/MutableField{1}){0},(lambda $1 (setFieldWithMissingArg $1)) //change mom's email (without to "hello world)
 goes,"((S{0}/PP_MutableField{2}){0}\StringV{1})",(lambda $1 $2 (setFieldFromString $2 $1)) //hello world goes in the subject
 goes,"((S{0}/PP_MutableField{2}){0}\FieldVal{1}){0}",(lambda $1 $2 (setFieldFromFieldVal $2 $1)) //mom's email goes in the subject
 of,((Field{0}\FieldName{2}){0}/ExactInstance{1}){0},(lambda $1 $2 (getFieldFromInstance $1 $2))
@@ -84,8 +84,8 @@ say,(S{0}/StringV{1}){0},(lambda $1 (say $1))
 # this could have been more elegant by creating them automatically using a format like: using,"and set"...
 using,"(((S{1}/PP_MutableField{3}){1}/StringV{2}){1}\S{0}){1}",(lambda $1 $2 $3 (doSeq $1(setFieldFromString $3 $2)))
 using,"(((S{1}/PP_MutableField{3}){1}/FieldVal{2}){1}\S{0}){1}",(lambda $1 $2 $3 (doSeq $1(setFieldFromFieldVal $3 $2)))
-using, ((S{1}/StringV{2}){1}\S{0}){1},(lambda $1 $2 (doSeq $1 (setWhatFromString $2)))
-using, ((S{1}/Field{2}){1}\S{0}){1},(lambda $1 $2 (doSeq $1 (setWhatFromField $2)))
+#using, ((S{1}/StringV{2}){1}\S{0}){1},(lambda $1 $2 (doSeq $1 (setWhatFromString $2)))
+#using, ((S{1}/Field{2}){1}\S{0}){1},(lambda $1 $2 (doSeq $1 (setWhatFromField $2)))
 #
 # The following are used to hint on the type but are actually ignored
 #
@@ -188,7 +188,19 @@ question, (S{0}/StringV{1}){0}, (lambda $1 (getAnswerToFactoid $1))
 #
 time, TimeType, ~"time~"
 date, TimeType, ~"date~"
+alarm, AlarmTimerType, ~"alarm~"
+alarms, AlarmTimerType, ~"alarm~"
+timer, AlarmTimerType, ~"timer~"
+timers, AlarmTimerType, ~"timer~"
+all, (AlarmTimerType{0}/AlarmTimerType{1}){0}, (lambda $1 $1)
 what, (S{0}/TimeType{1}){0}, (lambda $1 (timeFuncs ~"read~" $1 ~"~" ~"~"))
+read, (S{0}/AlarmTimerType{1}){0}, (lambda $1 (timeFuncs ~"read~" $1 ~"~" ~"~"))
+"set an alarm", (S{0}/StringN{1}){0}, (lambda $1 (timeFuncs ~"setAlarm~" $1 ~"~" ~"~"))
+"set a timer", (S{0}/StringN{1}){0}, (lambda $1 (timeFuncs ~"setTimer~" $1 ~"~" ~"~"))
+message, (AlarmMessage{0}/StringV{1}){0}, (lambda $1 $1)
+"set an alarm", ((S{0}/AlarmMessage{1}){0}/StringN{2}){0}, (lambda $1 $2 (timeFuncs ~"setAlarm~" $1 $2 ~"~"))
+"set a timer", ((S{0}/StringN{1}){0}/AlarmMessage{2}){0}, (lambda $1 $2 (timeFuncs ~"setTimer~" $1 $2 ~"~"))
+cancel, (S{0}/AlarmTimerType{1}){0}, (lambda $1 (timeFuncs ~"delAll~" $1 ~"~" ~"~"))
 #
 # numbers
 #
