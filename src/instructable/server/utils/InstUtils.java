@@ -38,37 +38,56 @@ public class InstUtils
 
     public static Optional<Date> getDate(String val, Optional<Date> currentTime)
     {
-        Date date = new Date();
-        if (currentTime.isPresent())
-            date = currentTime.get();
-        List<DateGroup> dates = parser.parse(val, date);
+        try
+        {
+            Date currentTimeForParser = new Date();
+            if (currentTime.isPresent())
+                currentTimeForParser = currentTime.get();
+            Optional<Date> resDate = getMostProbableDate(val, currentTimeForParser, currentTime.isPresent());
+            if (!resDate.isPresent())
+                return Optional.empty();
+            if (!currentTime.isPresent() || !resDate.get().before(currentTime.get()))
+                return resDate;
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(currentTime.get());
+            //we got a time but it is in the past. Try adding 12 hours (twice) to currentTime and see what we get:
+            for (int i = 0; i < 2; i++)
+            {
+                cal.add(Calendar.HOUR_OF_DAY, 12); // add 12 hours (in case got am/pm confused)
+                currentTimeForParser = cal.getTime();
+                resDate = getMostProbableDate(val, currentTimeForParser, currentTime.isPresent());
+                if (!resDate.isPresent())
+                    return Optional.empty();
+                if (!resDate.get().before(currentTime.get()))
+                    return resDate;
+            }
+            return Optional.empty();
+        } catch (Exception ex)
+        {
+            return Optional.empty();
+        }
+    }
+
+    private static Optional<Date> getMostProbableDate(String val, Date currentTimeForParser, boolean suppliedACurrentTime)
+    {
+        List<DateGroup> dates = parser.parse(val, currentTimeForParser);
         if (dates.size() > 0)
         {
             Date firstAnswer = dates.get(0).getDates().get(0);
-            if (!currentTime.isPresent() || !firstAnswer.before(currentTime.get()))
+            if (!suppliedACurrentTime || !firstAnswer.before(currentTimeForParser))
                 return Optional.of(firstAnswer);
             for (DateGroup group : dates)
             {
                 for (Date currentDate : group.getDates())
                 {
-                    if (!currentDate.before(currentTime.get()))
+                    if (!currentDate.before(currentTimeForParser))
                         return Optional.of(currentDate);
                 }
             }
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(firstAnswer);
-            cal.add(Calendar.HOUR_OF_DAY, 12); // add 12 hours (in case got am/pm confused)
-            Date answer = cal.getTime();
-            if (!answer.before(currentTime.get()))
-                return Optional.of(answer);
-            cal.add(Calendar.HOUR_OF_DAY, 12); // adds another 12 hours (in case got day confused)
-            Date answer2 = cal.getTime();
-            if (!answer2.before(currentTime.get()))
-                return Optional.of(answer2);
-            return Optional.empty();
+            return Optional.of(firstAnswer);
         }
-        else
-            return Optional.empty();
+        return Optional.empty();
     }
 
     public enum Plurality {unknown,singular,plural};

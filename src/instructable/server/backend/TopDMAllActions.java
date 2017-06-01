@@ -1933,6 +1933,22 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 boolean bell = !arg3.equals("false"); //if the user doesn't explicitly ask for no bell, there will be a bell
                 jsonForTimer.put("bell", bell);
             }
+            else if (type.equals("del"))
+            {
+                if (arg1.equals("alarm"))
+                    jsonForTimer.put("type", "delAlarm");
+                else
+                    jsonForTimer.put("type", "delTimer");
+                Optional<Date> alarmDateTime = InstUtils.getDate(arg2, infoForCommand.currentTimeOnUsersPhone);
+                if (alarmDateTime.isPresent())
+                {
+                    jsonForTimer.put("alarmTimerDate", DateType.dateFormat.format(alarmDateTime.get()));
+                }
+                else
+                {
+                    executionStatus.add(ExecutionStatus.RetStatus.error, "I couldn't understand which alarm should be canceled");
+                }
+            }
         }
         catch (Exception ex)
         {

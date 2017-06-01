@@ -113,3 +113,5 @@ timer, {"set a timer"}
 "set a timer for", {"set a timer"}
 delete, {cancel}
 what, {read}
+"remind me", {remind}
+tell, {remind}

@@ -177,3 +177,8 @@ alarm 4:10pm message see you later,"(timeFuncs ""setAlarm"" (stringNoun ""4:10 p
 set an alarm for 5pm message don't forget to eat,"(timeFuncs ""setAlarm"" (stringNoun ""5pm"") (stringValue ""don't forget to eat"") """")"
 set alarm tomorrow 4:30am message get off the computer,"(timeFuncs ""setAlarm"" (stringNoun ""tomorrow 4:30 am"") (stringValue ""get off the computer"") """")"
 set alarm for tomorrow 4:35am message hi,"(timeFuncs ""setAlarm"" (stringNoun ""tomorrow 4:35 am"") (stringValue ""hi"") """")"
+cancel 4 pm alarm,"(timeFuncs ""del"" ""alarm"" (stringNoun ""4 pm"") """")"
+remind me to eat my supper in 20 minutes,"(timeFuncs ""setTimer"" (stringNoun ""in 20 minutes"") (stringValue ""eat my supper"") ""false"")"
+remind me to take out the garbage at 8 pm,"(timeFuncs ""setTimer"" (stringNoun ""at 8 pm"") (stringValue ""take out the garbage"") ""false"")"
+cancel all alarms,"(timeFuncs ""delAll"" ""alarm"" """" """")"
+tell me to take out the cat in 8 days,"(timeFuncs ""setTimer"" (stringNoun ""in 8 days"") (stringValue ""take out the cat"") ""false"")"
