@@ -364,7 +364,7 @@ public class InstUtils
         }
     }
 
-    private static List<String> interestingPodTitles = Arrays.asList("Input interpretation", "Members", "Basic information", "Result", "Notable facts");
+    private static List<String> interestingPodTitles = Arrays.asList("Members", "Basic information", "Result", "Notable facts", "Definition"); //"Input interpretation",
 
     public static String getAnswerToFactoid(String spaceSeparatedQuestion)
     {

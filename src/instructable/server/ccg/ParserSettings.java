@@ -418,16 +418,18 @@ public class ParserSettings
 
     private void addToLearnedExamples(String originalCommand, Expression2 expressionLearnt, boolean updateDB)
     {
-        List<String> tokens = new LinkedList<>();
-        tokens.add(CcgUtils.startSymbol);
+        LinkedList<String> tokens = new LinkedList<>();
         List<String> dummy = new LinkedList<>(); //don't need POS
         CcgUtils.tokenizeAndPOS(originalCommand, tokens, dummy, false, posUsed);
         String jointTokenizedSentence = String.join(" ", tokens);
-        learnedExamples.put(jointTokenizedSentence, expressionLearnt);
+        //we update db before we add the startSymbol
         if (updateDB)
         {
             parserKnowledgeSeeder.addNewUserExample(new String[] {jointTokenizedSentence, expressionLearnt.toString()});
         }
+        tokens.addFirst(CcgUtils.startSymbol);
+        jointTokenizedSentence = String.join(" ", tokens);
+        learnedExamples.put(jointTokenizedSentence, expressionLearnt);
     }
 
     public void retrain()
