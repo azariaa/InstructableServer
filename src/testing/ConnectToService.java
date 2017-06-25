@@ -26,7 +26,7 @@ public class ConnectToService
 
     public static void main(String[] args) throws Exception
     {
-        initializeGameId();
+        //initializeGameId();
         runRequestsInLoop();
     }
 

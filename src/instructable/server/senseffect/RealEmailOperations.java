@@ -211,7 +211,7 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
             if (e.getLocalizedMessage().startsWith("535-5.7.8"))
                 executionStatus.add(ExecutionStatus.RetStatus.error, "there was an authentication error. Say reset email and password if you would like to reset them");
             else
-                executionStatus.add(ExecutionStatus.RetStatus.error, "there was an authentication error. You need to turn on access for less secure apps at: https://www.google.com/settings/security/lesssecureapps");
+                executionStatus.add(ExecutionStatus.RetStatus.error, "there was an authentication error. You need to turn on access for less secure apps. Login to your email account and then visit https://www.google.com/settings/security/lesssecureapps and click enable. You might also need to go to https://accounts.google.com/DisplayUnlockCaptcha and click continue, then immediately the same operation again.");
         }
         catch (Exception e)
         {

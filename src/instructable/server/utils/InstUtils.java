@@ -371,7 +371,7 @@ public class InstUtils
         try
         {
             StringBuilder res = new StringBuilder();
-            String url = "http://api.wolframalpha.com/v2/query?appid="+ Credentials.wolframAppId + "&input=" + spaceSeparatedQuestion.replace(" ", "%20"); // + "&includepodid=Result";
+            String url = "http://api.wolframalpha.com/v2/query?appid="+ Credentials.wolframAppId + "&input=" + spaceSeparatedQuestion.replace(" ", "%20").replace("+", "%2B"); // + "&includepodid=Result";
             String xmlStr = callServer(url);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();

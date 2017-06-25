@@ -158,6 +158,7 @@ no,(no)
 say hello world,"(say (stringValue ""hello world""))"
 say go to sleep right now,"(say (stringValue ""go to sleep right now""))"
 say nothing,"(say (stringValue ""nothing""))"
+reset password,(resetEmailAndPassword)
 reset email and password,(resetEmailAndPassword)
 forget me,(forgetAllLearned)
 forget everything,(forgetAllLearned)
@@ -172,6 +173,7 @@ who is the president of the united states,"(getAnswerToFactoid (stringValue ""pr
 france sports news,"(getNewsGuardian (stringNoun ""france sports""))"
 what's the date,"(timeFuncs ""read"" ""date"" """" """")"
 what's the time,"(timeFuncs ""read"" ""time"" """" """")"
+what is the time now in new york, "(getAnswerToFactoid (stringValue ""the time now in new york""))"
 alarm for 7 am,"(timeFuncs ""setAlarm"" (stringNoun ""7 am"") """" """")"
 alarm 4:10pm message see you later,"(timeFuncs ""setAlarm"" (stringNoun ""4:10 pm"") (stringValue ""see you later"") """")"
 set an alarm for 5pm message don't forget to eat,"(timeFuncs ""setAlarm"" (stringNoun ""5pm"") (stringValue ""don't forget to eat"") """")"
