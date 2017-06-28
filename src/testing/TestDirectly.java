@@ -217,7 +217,7 @@ public class TestDirectly
 
         userSays = "compose a new email";
         testHelpers.userSays(userSays);
-        response = allUserActions.createInstanceByConceptName(getInfoForCommand(userSays), "outgoing email");
+        response = allUserActions.createInstanceEmail(getInfoForCommand(userSays), "outgoing email");
         testHelpers.systemSays(response.getSayToUserOrExec());
 
         userSays = "set my spouse as the recipient";
@@ -385,7 +385,7 @@ public class TestDirectly
 
         userSays = "compose an email";
         testHelpers.userSays(userSays);
-        response = allUserActions.createInstanceByConceptName(getInfoForCommand(userSays), "outgoing email");
+        response = allUserActions.createInstanceEmail(getInfoForCommand(userSays), "outgoing email");
         testHelpers.systemSays(response.getSayToUserOrExec());
 
         userSays = "set jane's email to be jane@gmail.com";
@@ -517,7 +517,7 @@ public class TestDirectly
 
         userSays = "first create a new email";
         testHelpers.userSays(userSays);
-        response = allUserActions.createInstanceByConceptName(getInfoForCommand(userSays), "outgoing email");
+        response = allUserActions.createInstanceEmail(getInfoForCommand(userSays), "outgoing email");
         testHelpers.systemSays(response.getSayToUserOrExec());
 
         userSays = "then copy the subject from the incoming email to the outgoing email";

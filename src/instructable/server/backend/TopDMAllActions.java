@@ -914,19 +914,18 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     }
 
     @Override
-    public ActionResponse createInstanceByConceptName(InfoForCommand infoForCommand, String conceptName)
+    public ActionResponse createInstanceEmail(InfoForCommand infoForCommand, String emailStr)
     {
-        if (conceptName.equals(OutgoingEmail.strOutgoingEmailTypeAndName) ||
-                conceptName.equals(ambiguousEmailInstanceName)) //this is actually an instance name, but user's intention is clear.
+        if (emailStr.equals(OutgoingEmail.strOutgoingEmailTypeAndName) ||
+                emailStr.equals(ambiguousEmailInstanceName)) //this is actually an instance name, but user's intention is clear.
         {
             return createNewEmailOrRestore(infoForCommand, false, true);
         }
-
-        if (conceptName.equals(CalendarEvent.strCalendarEventTypeAndName))
-        {
-            return createNewEventOrRestore(infoForCommand, false, true);
-        }
-        return failWithMessage(infoForCommand, "creating an instance of \"" + conceptName + "\" requires a name (please repeat command and provide a name)");
+//        if (conceptName.equals(CalendarEvent.strCalendarEventTypeAndName))
+//        {
+//            return createNewEventOrRestore(infoForCommand, false, true);
+//        }
+        return failWithMessage(infoForCommand, "creating an instance of \"" + emailStr + "\" requires a name (please repeat command and provide a name)");
     }
 
     /**

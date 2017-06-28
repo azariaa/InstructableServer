@@ -100,7 +100,7 @@ public interface IAllUserActions
 
     ActionResponse removeFieldFromConcept(InfoForCommand infoForCommand, String conceptName, String fieldName);
 
-    ActionResponse createInstanceByConceptName(InfoForCommand infoForCommand, String conceptName);
+    ActionResponse createInstanceEmail(InfoForCommand infoForCommand, String emailStr);
 
     ActionResponse createInstanceByFullNames(InfoForCommand infoForCommand, String conceptName, String newInstanceName);
 

@@ -5,6 +5,8 @@ not_a_real_word,UnknownCommand{0},**skip**,0 **skip**
 "send","S{0}/ConceptName","(lambda $1 (send $1))" //send an email, actually means create an instance of concept email, and send it.
 reset, S{0}/InstanceName,"(lambda $1 (reset $1))"
 "reset email and password", S{0}, (resetEmailAndPassword)
+"reset password", S{0}, (resetEmailAndPassword)
+"reset username and password", S{0}, (resetEmailAndPassword)
 yes,S{0},(yes)
 no,S{0},(no)
 end,S{0},(end)
@@ -20,8 +22,8 @@ undo_command,(S{0}/LastLearned{1}){0},(removeLastLearnedCommand)
 next,S{0}/InstanceName{1},(lambda $1 (next $1))
 previous,S{0}/InstanceName{1},(lambda $1 (previous $1))
 newest,S{0}/InstanceName{1},(lambda $1 (newest $1))
-"compose","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
-"create","(S{0}/ConceptName{1}){0}","(lambda $1 (createInstanceByConceptName $1))","0 createInstanceByConceptName","createInstanceByConceptName 1 1"
+"compose","(S{0}/EmailAmbiguous{1}){0}","(lambda $1 (createInstanceEmail $1))","0 createInstanceEmail","createInstanceEmail 1 1"
+"create","(S{0}/EmailAmbiguous{1}){0}","(lambda $1 (createInstanceEmail $1))","0 createInstanceEmail","createInstanceEmail 1 1"
 compose,((S{0}/StringN{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
 create,((S{0}/StringN{2}){0}/ConceptName{1}), (lambda $1 $2 (createInstanceByFullNames $1 $2))
 create,((S{0}/PP_ConceptName{2}){0}/StringN{1}), (lambda $1 $2 (createInstanceByFullNames $2 $1))
@@ -137,7 +139,7 @@ email,FieldName{0},email
 # The following were added just to support the examples
 #
 bob,InstanceName{0},bob,0 bob
-name,ConceptName{0},name
+zebra,ConceptName{0},zebra
 classification,FieldName{0},classification
 jane,InstanceName{0},jane
 "my spouse",InstanceName{0},my_spouse

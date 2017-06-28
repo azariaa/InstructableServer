@@ -6,10 +6,10 @@ set the subject of this outgoing email to hello,"(setFieldFromString (getProbMut
 set subject to hello,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""hello""))"
 set the subject to the sender's email,(setFieldFromFieldVal (getProbMutableFieldByFieldName subject) (evalField (getProbFieldByFieldName sender)))
 set I am thinking about the sender as the subject,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""I am thinking about the sender""))"
-create tom as a name,"(createInstanceByFullNames name (stringNoun ""tom""))"
-create name david.,"(createInstanceByFullNames name (stringNoun ""david""))"
-create name for david,"(createInstanceByFullNames name (stringNoun ""david""))"
-create name beth,"(createInstanceByFullNames name (stringNoun ""beth""))"
+create tom as a zebra,"(createInstanceByFullNames zebra (stringNoun ""tom""))"
+create zebra david.,"(createInstanceByFullNames zebra (stringNoun ""david""))"
+create zebra for david,"(createInstanceByFullNames zebra (stringNoun ""david""))"
+create zebra beth,"(createInstanceByFullNames zebra (stringNoun ""beth""))"
 set body to glue,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""glue""))"
 set subject to party,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""party""))"
 set subject to green,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""green""))"
@@ -23,17 +23,16 @@ set myself@myjob.com as the recipient,"(setFieldFromString (getProbMutableFieldB
 set something as the body,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""something""))"
 set someone@myandyou.com as the recipient,"(setFieldFromString (getProbMutableFieldByFieldName recipient_list) (stringValue ""someone@myandyou.com""))"
 send,(sendEmail)
-compose a new email,(createInstanceByConceptName outgoing_email)
-create a new outgoing email,(createInstanceByConceptName outgoing_email)
-create an outgoing email and set the subject to I'm on my way,"(doSeq (createInstanceByConceptName outgoing_email) (setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""I'm on my way"")))"
+compose a new email,(createInstanceEmail email)
+create an outgoing email and set the subject to I'm on my way,"(doSeq (createInstanceEmail email) (setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""I'm on my way"")))"
 define person!,"(defineConcept (stringNoun ""person""))"
 define the concept person.,"(defineConcept (stringNoun ""person""))"
 define concept person,"(defineConcept (stringNoun ""person""))"
 define concept shoe,"(defineConcept (stringNoun ""shoe""))"
-add wings as a field in name,"(addFieldToConcept name (stringNoun ""wings""))"
-add email as a field in name,"(addFieldToConcept name (stringNoun ""email""))"
-add the email field to the concept name,"(addFieldToConcept name (stringNoun ""email""))"
-create a name call it wing,"(createInstanceByFullNames name (stringNoun ""wing""))"
+add wings as a field in zebra,"(addFieldToConcept zebra (stringNoun ""wings""))"
+add email as a field in zebra,"(addFieldToConcept zebra (stringNoun ""email""))"
+add the email field to the concept zebra,"(addFieldToConcept zebra (stringNoun ""email""))"
+create a zebra call it wing,"(createInstanceByFullNames zebra (stringNoun ""wing""))"
 set bob's classification to eating,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) (stringValue ""eating""))"
 set bob's classification to bob@gmail.com,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) (stringValue ""bob@gmail.com""))"
 what's bob's classification?,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
@@ -49,7 +48,7 @@ set jane's classification to be jane@gmail.com,"(setFieldFromString (getProbMuta
 set bob's classification to be bob2@gmail.com,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) (stringValue ""bob2@gmail.com""))"
 set it as the recipient,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (getProbFieldVal))
 that's it,(end)
-create a name my spouse,"(createInstanceByFullNames name (stringNoun ""my spouse""))"
+create a zebra my spouse,"(createInstanceByFullNames zebra (stringNoun ""my spouse""))"
 set its classification to my.spouse@gmail.com,"(setFieldFromString (getProbMutableFieldByFieldName classification) (stringValue ""my.spouse@gmail.com""))"
 eat this subject with my spouse,(unknownCommand)
 sure,(yes)
@@ -66,26 +65,26 @@ read incoming email,(readInstance (getProbInstanceByName inbox))
 next email message,(next email)
 read email,(readInstance (getProbInstanceByName email))
 open email,(readInstance (getProbInstanceByName email))
-open new email, (createInstanceByConceptName outgoing_email)
+open new email, (createInstanceEmail email)
 read the email,(readInstance (getProbInstanceByName email))
 open next email, (next email)
 view next email, (next email)
 read next email, (next email)
-write new email, (createInstanceByConceptName outgoing_email)
+write new email, (createInstanceEmail email)
 read current email,(readInstance (getProbInstanceByName inbox))
 previous email message,(previous email)
 move to the previous email,(previous email)
 move to the previous email in inbox, (previous inbox)
-read name bob,(readInstance (getInstance name bob))
-name has a gender,"(addFieldToConcept name (stringNoun ""gender""))"
-name has an age,"(addFieldToConcept name (stringNoun ""age""))"
+read zebra bob,(readInstance (getInstance zebra bob))
+zebra has a gender,"(addFieldToConcept zebra (stringNoun ""gender""))"
+zebra has an age,"(addFieldToConcept zebra (stringNoun ""age""))"
 bob's classification is bob@work.com,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) (stringValue ""bob@work.com""))"
 bob's classification is identical to jane's classification,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName bob classification) (evalField (getProbFieldByInstanceNameAndFieldName jane classification)))
 set bob's classification to jane's classification,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName bob classification) (evalField (getProbFieldByInstanceNameAndFieldName jane classification)))
 set subject to I am on my way,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""I am on my way""))"
 set body to I wanted to tell you something interesting,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""I wanted to tell you something interesting""))"
 set body to let me know if you have any questions,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""let me know if you have any questions""))"
-compose name sam baffman,"(createInstanceByFullNames name (stringNoun ""sam baffman""))"
+compose zebra sam baffman,"(createInstanceByFullNames zebra (stringNoun ""sam baffman""))"
 set next email,(next email)
 read the current email,(readInstance (getProbInstanceByName inbox))
 next incoming email,(next inbox)
@@ -96,13 +95,13 @@ set the recipient to b@gmail.com and c@gmail.com and d@gmail.com,"(setFieldFromS
 set the body to your vacation has been approved,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""your vacation has been approved""))"
 set the body to I didn't hear from you in a while is everything ok,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""I didn't hear from you in a while is everything ok""))"
 set the subject to working hours this week,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""working hours this week""))"
-john is a name.,"(createInstanceByFullNames name (stringNoun ""john""))"
-create a name for bill and set bill's classification to fdsdf@gmail.com,"(doSeq (createInstanceByFullNames name (stringNoun ""bill"")) (setFieldFromString (getProbMutableFieldByFieldName classification) (stringValue ""fdsdf@gmail.com"")))"
-set name jane's classification as the recipient,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getFieldFromInstance (getInstance name jane) classification)))
+john is a zebra.,"(createInstanceByFullNames zebra (stringNoun ""john""))"
+create a zebra for bill and set bill's classification to fdsdf@gmail.com,"(doSeq (createInstanceByFullNames zebra (stringNoun ""bill"")) (setFieldFromString (getProbMutableFieldByFieldName classification) (stringValue ""fdsdf@gmail.com"")))"
+set zebra jane's classification as the recipient,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getFieldFromInstance (getInstance zebra jane) classification)))
 write hello all in the body,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""hello all""))"
 use bob's classification as the subject,(setFieldFromFieldVal (getProbMutableFieldByFieldName subject) (evalField (getProbFieldByInstanceNameAndFieldName bob classification)))
 drive bob's classification to the subject,(unknownCommand)
-dive bob's name,(unknownCommand)
+dive bob's zebra,(unknownCommand)
 eat the subject,(unknownCommand)
 split the sender,(unknownCommand)
 walk around the email,(unknownCommand)
@@ -113,7 +112,7 @@ pay for the sender,(unknownCommand)
 prepare the email's body,(unknownCommand)
 acknowledge the subject,(unknownCommand)
 bike to the sender,(unknownCommand)
-repair the name's subject,(unknownCommand)
+repair the zebra's subject,(unknownCommand)
 often remain with the recipient,(unknownCommand)
 talk this email to bob,(unknownCommand)
 teleport jane,(unknownCommand)
@@ -148,8 +147,8 @@ learn new command eat, (teachNewCommand)
 learn new command, (teachNewCommand)
 new command,(teachNewCommand)
 teach command,(teachNewCommand)
-create new mail with current email's sender as recipient,(doSeq (createInstanceByConceptName outgoing_email) (setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName inbox sender))))
-create new email using the sender as the recipient,(doSeq (createInstanceByConceptName outgoing_email) (setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByFieldName sender))))
+create new mail with current email's sender as recipient,(doSeq (createInstanceEmail email) (setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByInstanceNameAndFieldName inbox sender))))
+create new email using the sender as the recipient,(doSeq (createInstanceEmail email) (setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByFieldName sender))))
 teach a very long sentence which describes what the agent should do when I type swipe, (teachNewCommand)
 undo, (undo)
 undo last command, (undo)
@@ -173,7 +172,7 @@ who is the president of the united states,"(getAnswerToFactoid (stringValue ""pr
 france sports news,"(getNewsGuardian (stringNoun ""france sports""))"
 what's the date,"(timeFuncs ""read"" ""date"" """" """")"
 what's the time,"(timeFuncs ""read"" ""time"" """" """")"
-what is the time now in new york, "(getAnswerToFactoid (stringValue ""the time now in new york""))"
+what is the time now in new york,"(getAnswerToFactoid (stringValue ""the time now in new york""))"
 alarm for 7 am,"(timeFuncs ""setAlarm"" (stringNoun ""7 am"") """" """")"
 alarm 4:10pm message see you later,"(timeFuncs ""setAlarm"" (stringNoun ""4:10 pm"") (stringValue ""see you later"") """")"
 set an alarm for 5pm message don't forget to eat,"(timeFuncs ""setAlarm"" (stringNoun ""5pm"") (stringValue ""don't forget to eat"") """")"
