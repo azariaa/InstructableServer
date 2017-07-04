@@ -154,7 +154,7 @@ undo, (undo)
 undo last command, (undo)
 say I love you,"(say (stringValue ""I love you""))"
 no,(no)
-say hello world,"(say (stringValue ""hello world""))"
+say hello world?,"(say (stringValue ""hello world?""))"
 say go to sleep right now,"(say (stringValue ""go to sleep right now""))"
 say nothing,"(say (stringValue ""nothing""))"
 reset password,(resetEmailAndPassword)
