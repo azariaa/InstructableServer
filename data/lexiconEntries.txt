@@ -206,6 +206,7 @@ to, (AlarmMessage{0}/StringV{1}){0}, (lambda $1 $1)
 cancel, (S{0}/AlarmTimerType{1}){0}, (lambda $1 (timeFuncs ~"delAll~" $1 ~"~" ~"~"))
 cancel, ((S{0}/AlarmTimerType{1}){0}/StringN{2}){0}, (lambda $1 $2 (timeFuncs ~"del~" $2 $1 ~"~"))
 remind, ((S{0}/StringN{1}){0}/AlarmMessage{2}){0}, (lambda $1 $2 (timeFuncs ~"setTimer~" $2 $1 ~"false~"))
+remind, ((S{0}/AlarmMessage{2}){0}/StringN{1}){0}, (lambda $1 $2 (timeFuncs ~"setTimer~" $1 $2 ~"false~"))
 #
 # numbers
 #

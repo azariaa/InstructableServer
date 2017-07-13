@@ -42,7 +42,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     CalendarEventController calendarEventController;
     public InboxCommandController inboxCommandController;
     CommandHistory commandHistory;
-    Callable<Void> clearUserDB;
+    Callable<Void> clearUserDBAndReset;
 
     static private final String ambiguousEmailInstanceName = "email"; //can either be outgoing email, or inbox
     static private final String yesExpression = "(yes)";
@@ -60,18 +60,25 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         commandHistory = new CommandHistory();
         this.userEmailAddress = userEmailAddress;
         this.usePendingResponses = usePendingResponses;
-        conceptContainer = new ConceptContainer(userId);
-        instanceContainer = new InstanceContainer(conceptContainer, userId);
-        outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer, emailSender);
-        inboxCommandController = new InboxCommandController(conceptContainer, instanceContainer, emailFetcher);
-        calendarEventController = new CalendarEventController(conceptContainer, instanceContainer, calendarAccessor);
+        reset(userEmailAddress, userId, emailSender, emailFetcher, calendarAccessor);
         this.commandsToParser = commandsToParser;
         internalState = new InternalState();
         commandHistory.startRecording();
-        clearUserDB = () -> {
+        clearUserDBAndReset = () -> {
             DBUtils.clearUserData(userId);
+            reset(userEmailAddress, userId, emailSender, emailFetcher, calendarAccessor);
             return null;
         };
+    }
+
+    private void reset(String userEmailAddress, String userId, IEmailSender emailSender, Optional<IEmailFetcher> emailFetcher, Optional<ICalendarAccessor> calendarAccessor)
+    {
+        conceptContainer = new ConceptContainer(userId);
+        instanceContainer = new InstanceContainer(conceptContainer, userId);
+        // the following command will also define the concept outgoing_email, however, the previous command may already try fetching the email being composed. This used to raise an exception.
+        outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer, emailSender);
+        inboxCommandController = new InboxCommandController(conceptContainer, instanceContainer, emailFetcher);
+        calendarEventController = new CalendarEventController(conceptContainer, instanceContainer, calendarAccessor);
     }
 
 
@@ -1803,7 +1810,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         ExecutionStatus executionStatus = new ExecutionStatus();
         try
         {
-            clearUserDB.call();
+            clearUserDBAndReset.call();
             boolean success = commandsToParser.forgetEverythingLearned();
             if (!success)
             {

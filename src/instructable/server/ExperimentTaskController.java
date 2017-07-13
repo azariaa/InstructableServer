@@ -132,7 +132,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case createContact:
                 return "Your 3rd training task is to <b>create</b> a contact for "+ momName +" (simply tell the agent to create a contact for mom)";
             case setMomsEmail:
-                return "Your 4th training task is to <b>set</b> mom's email to correctly. (Set "+momName+"'s email to the email that appears in the \"notes\" image. Make sure to type it in correctly!)";
+                return "Your 4th training task is to <b>set</b> mom's email correctly. (Set "+momName+"'s email to the email that appears in the \"notes\" image. Make sure to type it in correctly!)";
             case seeMomsEmail:
                 return "Your 5th training task is to ask the agent for "+momName+"'s email";
             case createEmail:
@@ -305,7 +305,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 "Task I asked",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
-                "Are you working on the task that I asked you to work on? Please reply immediately ."
+                "Are you working on the task that I asked you to work on? Please reply immediately."
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker2Email,

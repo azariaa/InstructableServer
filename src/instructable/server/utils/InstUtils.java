@@ -74,15 +74,20 @@ public class InstUtils
         List<DateGroup> dates = parser.parse(val, currentTimeForParser);
         if (dates.size() > 0)
         {
+            boolean rightNow = false;
             Date firstAnswer = dates.get(0).getDates().get(0);
-            if (!suppliedACurrentTime || !firstAnswer.before(currentTimeForParser))
+            if (!suppliedACurrentTime || firstAnswer.after(currentTimeForParser)) //used to be !firstAnser.before(currentTimeForParser), but then returned many times currentTime.
+            {
                 return Optional.of(firstAnswer);
+            }
             for (DateGroup group : dates)
             {
                 for (Date currentDate : group.getDates())
                 {
-                    if (!currentDate.before(currentTimeForParser))
+                    if (currentDate.after(currentTimeForParser))
+                    {
                         return Optional.of(currentDate);
+                    }
                 }
             }
             return Optional.of(firstAnswer);

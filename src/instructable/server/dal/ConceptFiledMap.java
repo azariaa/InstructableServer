@@ -88,7 +88,9 @@ public class ConceptFiledMap
 
     public List<FieldDescription> getAllFieldDescriptions(String concept)
     {
-        return conceptFieldMap.get(concept);
+        if (conceptFieldMap.containsKey(concept))
+            return conceptFieldMap.get(concept);
+        return new LinkedList<>();
     }
 
     public Set<String> allConcepts()
