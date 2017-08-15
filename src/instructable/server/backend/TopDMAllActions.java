@@ -827,7 +827,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         ActionResponse actionResponse = testOkAndFormat(infoForCommand,
                 executionStatus,
+                true,
+                true,
+                false,
                 Optional.of("Concept \"" + newConceptName + "\" was defined successfully. Please add fields to it."),
+                Optional.empty(),
+                false,
                 Optional.of(() -> undefineConcept(infoForCommand, newConceptName)));
         if (actionResponse.isSuccess())
         {
@@ -1775,7 +1780,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 learningSentence = Optional.of("I didn't learn anything. If you want to teach me what to do when you say \"" + internalState.lastCommandOrLearningCommand + "\", say it again, and answer \"yes\" when I ask if you want to teach me.");
             else if (internalState.isLearningForTooLong() || internalState.userHavingTrouble())
             {
-                learningSentence = Optional.of(learningSentence.get() + "\nI noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want me to end and learn this new command, say \"end\". If you want me to cancel this command say \"cancel\".");
+                //learningSentence = Optional.of(learningSentence.get() + "\nI noticed that you are teaching me a command for a while now, it's ok with me and you may continue, but if you want me to end and learn this new command, say \"end\". If you want me to cancel this command say \"cancel\".");
+                learningSentence = Optional.of(learningSentence.get() + "\nYou may continue teaching me this command, when you want me to end and learn this new command, say \"end\". If you want me to cancel this command say \"cancel\".");
             }
         }
 
@@ -1830,9 +1836,12 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse searchYoutube(InfoForCommand infoForCommand, String searchTerm)
     {
-        String videoId = InstUtils.getFirstYoutubeResponse(searchTerm);
+        Optional<String> optionalVideoId = InstUtils.getFirstYoutubeResponse(searchTerm);
+        String videoId;
         ExecutionStatus executionStatus = new ExecutionStatus();
-        if (videoId == null)
+        if (optionalVideoId.isPresent())
+            videoId = optionalVideoId.get();
+        else
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "YouTube video not found");
             videoId = "";

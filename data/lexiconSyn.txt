@@ -103,6 +103,8 @@ when, {question}
 why, {question}
 where, {question}
 how, {question}
+is, {question}
+does, {question}
 alarm, {"set an alarm"}
 "set alarm", {"set an alarm"}
 "set an alarm for", {"set an alarm"}
@@ -112,6 +114,6 @@ timer, {"set a timer"}
 "set timer for", {"set a timer"}
 "set a timer for", {"set a timer"}
 delete, {cancel}
-what, {read}
+what, {read, provide} //what is the time
 "remind me", {remind}
-tell, {remind}
+tell, {remind, provide}

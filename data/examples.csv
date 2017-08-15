@@ -36,7 +36,9 @@ create a zebra call it wing,"(createInstanceByFullNames zebra (stringNoun ""wing
 set bob's classification to eating,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) (stringValue ""eating""))"
 set bob's classification to bob@gmail.com,"(setFieldFromString (getProbMutableFieldByInstanceNameAndFieldName bob classification) (stringValue ""bob@gmail.com""))"
 what's bob's classification?,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
-what is bob's email?,(evalField (getProbFieldByInstanceNameAndFieldName bob email))
+what is bob email,(evalField (getProbFieldByInstanceNameAndFieldName bob email))
+what's bob's classification,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
+what is bob's email,(evalField (getProbFieldByInstanceNameAndFieldName bob email))
 take bob's classification,(evalField (getProbFieldByInstanceNameAndFieldName bob classification))
 set it as the outgoing email's subject,(setFieldFromFieldVal (getProbMutableFieldByInstanceNameAndFieldName outgoing_email subject) (getProbFieldVal))
 set it as the body,(setFieldFromFieldVal (getProbMutableFieldByFieldName body) (getProbFieldVal))
@@ -184,3 +186,8 @@ remind me to take out the garbage at 8 pm,"(timeFuncs ""setTimer"" (stringNoun "
 cancel all alarms,"(timeFuncs ""delAll"" ""alarm"" """" """")"
 tell me to take out the cat in 8 days,"(timeFuncs ""setTimer"" (stringNoun ""in 8 days"") (stringValue ""take out the cat"") ""false"")"
 remind me in 20 minutes to eat my supper,"(timeFuncs ""setTimer"" (stringNoun ""in 20 minutes"") (stringValue ""eat my supper"") ""false"")"
+what's the time right now,"(timeFuncs ""read"" ""time"" """" """")"
+what's the time now,"(timeFuncs ""read"" ""time"" """" """")"
+tell me the date now,"(timeFuncs ""read"" ""date"" """" """")"
+play me white noise,"(searchYoutube (stringValue ""white noise""))"
+read me incoming email,(readInstance (getProbInstanceByName inbox))

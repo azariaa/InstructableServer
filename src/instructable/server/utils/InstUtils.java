@@ -2,6 +2,7 @@ package instructable.server.utils;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
+import instructable.server.Consts;
 import instructable.server.Credentials;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -241,19 +242,26 @@ public class InstUtils
         return response;
     }
 
-    public static String getFirstYoutubeResponse(String spaceSeparatedTerms)
+    public static Optional<String> getFirstYoutubeResponse(String spaceSeparatedTerms)
     {
         try
         {
             String url = "https://www.googleapis.com/youtube/v3/search?key="+ Credentials.youTubeApiKey + "&part=snippet&q=" + spaceSeparatedTerms.replace(" ", "+");
             JSONObject jsonObj = new JSONObject(callServer(url));
-            String video = (jsonObj.getJSONArray("items").getJSONObject(0)).getJSONObject("id").getString("videoId");
-            return video;
+            JSONObject videoFullId = (jsonObj.getJSONArray("items").getJSONObject(0)).getJSONObject("id");
+            String videoOrPlaylist;
+            if (videoFullId.has("videoId"))
+                videoOrPlaylist = Consts.videoPre + videoFullId.getString("videoId");
+            else if (videoFullId.has("playlistId"))
+                videoOrPlaylist = Consts.playListPre + videoFullId.getString("playlistId");
+            else
+                return Optional.empty();
+            return Optional.of(videoOrPlaylist);
         }
         catch (Exception ex)
         {
             ex.printStackTrace();
-            return null;
+            return Optional.empty();
         }
     }
 

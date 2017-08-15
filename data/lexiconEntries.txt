@@ -104,7 +104,8 @@ a,(StringN\StringN)/(StringN\StringN),(lambda $1 $1) //add email being a field t
 as,(StringN\StringN)/(StringN\StringN),(lambda $1 $1) //add email as a field to concept contact 
 instance,InstanceName/InstanceName,(lambda $1 $1)
 instance,StringN/StringN,(lambda $1 $1) //create instance mom of concept contact
-please,S{0}/S{0},(lambda $1 $1)
+please,S{0}/S{0},(lambda $1 $1) //please do this
+please,S{0}\S{0},(lambda $1 $1) //do this please
 move,S{0}/S{0},(lambda $1 $1) //move to the next email
 ".",S{0}\S{0},(lambda $1 $1)
 ",",((S/S)\S)\((S/S)\S),(lambda $1 $1)
@@ -195,7 +196,7 @@ alarms, AlarmTimerType, ~"alarm~"
 timer, AlarmTimerType, ~"timer~"
 timers, AlarmTimerType, ~"timer~"
 all, (AlarmTimerType{0}/AlarmTimerType{1}){0}, (lambda $1 $1)
-what, (S{0}/TimeType{1}){0}, (lambda $1 (timeFuncs ~"read~" $1 ~"~" ~"~"))
+provide, (S{0}/TimeType{1}){0}, (lambda $1 (timeFuncs ~"read~" $1 ~"~" ~"~")) //provide the time
 read, (S{0}/AlarmTimerType{1}){0}, (lambda $1 (timeFuncs ~"read~" $1 ~"~" ~"~"))
 "set an alarm", (S{0}/StringN{1}){0}, (lambda $1 (timeFuncs ~"setAlarm~" $1 ~"~" ~"~"))
 "set a timer", (S{0}/StringN{1}){0}, (lambda $1 (timeFuncs ~"setTimer~" $1 ~"~" ~"~"))
