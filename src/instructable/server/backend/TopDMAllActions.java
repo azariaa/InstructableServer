@@ -391,6 +391,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     @Override
     public ActionResponse no(InfoForCommand infoForCommand)
     {
+        internalState.reset();
         return new ActionResponse("Ok, I won't do anything.", true, Optional.empty());
     }
 

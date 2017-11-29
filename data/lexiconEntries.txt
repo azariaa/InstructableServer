@@ -200,6 +200,7 @@ provide, (S{0}/TimeType{1}){0}, (lambda $1 (timeFuncs ~"read~" $1 ~"~" ~"~")) //
 read, (S{0}/AlarmTimerType{1}){0}, (lambda $1 (timeFuncs ~"read~" $1 ~"~" ~"~"))
 "set an alarm", (S{0}/StringN{1}){0}, (lambda $1 (timeFuncs ~"setAlarm~" $1 ~"~" ~"~"))
 "set a timer", (S{0}/StringN{1}){0}, (lambda $1 (timeFuncs ~"setTimer~" $1 ~"~" ~"~"))
+timer, (S{0}\StringN{1}){0}, (lambda $1 (timeFuncs ~"setTimer~" $1 ~"~" ~"~"))
 message, (AlarmMessage{0}/StringV{1}){0}, (lambda $1 $1)
 to, (AlarmMessage{0}/StringV{1}){0}, (lambda $1 $1)
 "set an alarm", ((S{0}/AlarmMessage{1}){0}/StringN{2}){0}, (lambda $1 $2 (timeFuncs ~"setAlarm~" $1 $2 ~"~"))
