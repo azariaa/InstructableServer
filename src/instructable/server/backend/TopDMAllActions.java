@@ -1891,9 +1891,13 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
         return testOkAndFormat(infoForCommand,
                 executionStatus,
+                false,
+                true,
+                false,
                 Optional.of(result),
-                Optional.of(() -> say(infoForCommand, "Just forget that..."))
-        );
+                Optional.empty(),
+                true,
+                Optional.of(() -> say(infoForCommand, "Just forget that...")));
     }
 
     @Override
