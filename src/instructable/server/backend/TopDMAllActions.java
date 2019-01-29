@@ -383,7 +383,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             case pendingOnLearning:
                 commandHistory.push(infoForCommand, () -> cancel(infoForCommand));
                 String lastCommand = internalState.startLearning();
-                return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first? (Either tell me what to do or say demonstrate to demonstrate)", true, Optional.empty());
+                return new ActionResponse("Great! When you say, for example: \"" + lastCommand + "\", what shall I do first? (Please give me a command)", //(Either tell me what to do or say demonstrate to demonstrate)",
+                        true, Optional.empty());
         }
         return new ActionResponse("That should never happen!", false, Optional.empty());
     }

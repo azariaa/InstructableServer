@@ -62,3 +62,5 @@ build/distributions/
 build/libs/InstructableServer-1.0.jar
 build/
 src/instructable/server/Credentials.java
+data/examples - complete.csv
+data/lexiconEntries - complete.txt

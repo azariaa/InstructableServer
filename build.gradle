@@ -61,7 +61,8 @@ dependencies {
     //compile 'org.json:json:20090211'
     compile 'org.apache.commons:commons-lang3:3.0'
     compile 'javax.mail:mail:1.4.7'
-    compile 'mysql:mysql-connector-java:5.1.35'
+    //compile 'mysql:mysql-connector-java:5.1.35'
+    compile 'mysql:mysql-connector-java:8.0.11'
     compile name: 'jklol'
 
     //Calendar

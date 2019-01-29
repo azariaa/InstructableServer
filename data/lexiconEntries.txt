@@ -168,9 +168,9 @@ duration,FieldName{0},duration,0 duration
 #
 # added for Sugilite scripts
 #
-demonstrate,S{0},(demonstrate)
-click,(S{0}/StringN{1}){0},(lambda $1 (sugExecClick $1))
-click,actionType{0},actionType,0 actionType
+#demonstrate,S{0},(demonstrate)
+#click,(S{0}/StringN{1}){0},(lambda $1 (sugExecClick $1))
+#click,actionType{0},actionType,0 actionType
 #
 # forget everything
 #
@@ -185,7 +185,7 @@ spell, (S{0}/StringN{1}){0}, (lambda $1 (spell $1))
 news, (S{0}/StringN{1}){0}, (lambda $1 (getNewsGuardian $1))
 news, (S{0}\StringN{1}){0}, (lambda $1 (getNewsGuardian $1))
 news, S{0}, (getNewsGuardian ~"world~")
-question, (S{0}/StringV{1}){0}, (lambda $1 (getAnswerToFactoid $1))
+#question, (S{0}/StringV{1}){0}, (lambda $1 (getAnswerToFactoid $1))
 #
 # time, alarm, timer
 #

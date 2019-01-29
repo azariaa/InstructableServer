@@ -1,8 +1,11 @@
 package instructable.server.dal;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+//import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+
+import com.mysql.cj.jdbc.MysqlDataSource;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
  * Created by Amos Azaria on 23-Jul-15.
@@ -29,6 +32,15 @@ public class InstDataSource
         dataSource.setPassword(password);
         dataSource.setPort(portNum);
         dataSource.setServerName(serverName);
+
+        try
+        {
+            dataSource.setUseSSL(false);
+            dataSource.setServerTimezone("UTC");
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     static public DataSource getDataSource()
