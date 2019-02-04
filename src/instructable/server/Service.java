@@ -26,7 +26,7 @@ import java.util.logging.*;
  */
 public class Service
 {
-    static private final boolean isExperiment = false;
+    //static private final boolean isExperiment = false; //Both experiment and realtime servers run together. The difference is only in the HTTP call.
     static public final int portToUse = 18892;
     static public final String contextRealtimeAgent = "realtimeAgent";
     static public final String contextEmailAndExperiment = "emailAndExperiment";

@@ -17,17 +17,22 @@ public class InstanceKB
 {
     String userId;
     Map<String, Map<String, SingleInstance>> conceptToInstance; //map from conceptNames to a map holding all instances of that concept
+    boolean connectToDB;
 
-    public InstanceKB(String userId, ConceptFiledMap conceptFiledMap)
+    public InstanceKB(String userId, ConceptFiledMap conceptFiledMap, boolean connectToDB)
     {
         this.userId = userId;
-        fillMap(conceptFiledMap);
+        conceptToInstance =  new HashMap<>();
+        this.connectToDB = connectToDB;
+        conceptToInstance =  new HashMap<>();
+        if (connectToDB)
+            fillMap(conceptFiledMap);
     }
 
     private void fillMap(ConceptFiledMap conceptFiledMap)
     {
         conceptToInstance =  new HashMap<>();
-        //connect to DB and fill map! //TODO: didn't check if works
+        //connect to DB and fill map!
 
         try (
                 Connection connection = InstDataSource.getDataSource().getConnection();
@@ -44,7 +49,7 @@ public class InstanceKB
                     String instanceName = resultSet.getString(DBUtils.instanceColName);
                     boolean mutable = resultSet.getBoolean(DBUtils.mutableColName);
 
-                    SingleInstance instance = SingleInstance.loadInstanceFieldsFromDB(userId, conceptName, instanceName, mutable, conceptFiledMap.getAllFieldDescriptions(conceptName));
+                    SingleInstance instance = SingleInstance.loadInstanceFieldsFromDB(userId, conceptName, instanceName, mutable, conceptFiledMap.getAllFieldDescriptions(conceptName), connectToDB);
                     if (!conceptToInstance.containsKey(conceptName))
                         conceptToInstance.put(conceptName, new HashMap<>());
                     Map<String, SingleInstance> allInstancesOfConcept = conceptToInstance.get(conceptName);
@@ -114,7 +119,7 @@ public class InstanceKB
 
     public SingleInstance addInstance(String conceptName, String instanceName, boolean isMutable, List<FieldDescription> fieldDiscriptionList)
     {
-        SingleInstance singleInstance = SingleInstance.createNewInstance(userId, conceptName, instanceName, isMutable, fieldDiscriptionList); //also updates DB
+        SingleInstance singleInstance = SingleInstance.createNewInstance(userId, conceptName, instanceName, isMutable, fieldDiscriptionList, connectToDB); //also updates DB
         //GenericInstance instance = GenericInstance.WrapAsGenericInstance(singleInstance);
 
         if (!conceptToInstance.containsKey(conceptName))

@@ -1,5 +1,7 @@
 package testing;
 
+import com.jayantkrish.jklol.ccg.CcgParse;
+import com.jayantkrish.jklol.ccg.lambda2.*;
 import instructable.server.AgentDataAndControl;
 import instructable.server.ExperimentTaskController;
 import instructable.server.ccg.CcgDetokenizer;
@@ -10,14 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.jayantkrish.jklol.ccg.CcgParse;
-import com.jayantkrish.jklol.ccg.lambda2.Expression2;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionComparator;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplificationException;
-import com.jayantkrish.jklol.ccg.lambda2.ExpressionSimplifier;
-import com.jayantkrish.jklol.ccg.lambda2.SimplificationComparator;
-import com.jayantkrish.jklol.ccg.lambda2.StaticAnalysis;
 
 public class TestDialogues
 {
@@ -51,7 +45,7 @@ public class TestDialogues
         Logger logger, boolean executeGold)
     {
         ExperimentTaskController experimentTaskController = new ExperimentTaskController(logger,gameId);
-        agentDataAndControl.addNewUser(gameId, experimentTaskController, Optional.of(experimentTaskController), Optional.empty(), false);
+        agentDataAndControl.addNewUser(gameId, experimentTaskController, Optional.of(experimentTaskController), Optional.empty(), false, false);
 
         ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
         ExpressionComparator comparator = new SimplificationComparator(simplifier);

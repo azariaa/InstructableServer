@@ -22,7 +22,7 @@ public class CommandLine
         String userId = "tempUser";
         DBUtils.clearUserData(userId);
         ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of(userId));
-        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings, Optional.empty()), (executionStatus, subject, body, copyList, recipientList) -> {}, true, Optional.empty(), Optional.empty());
+        TopDMAllActions topDMAllActions = new TopDMAllActions("you@myworkplace.com", "tempUser", new CommandsToParser(parserSettings, Optional.empty()), (executionStatus, subject, body, copyList, recipientList) -> {}, true, Optional.empty(), Optional.empty(), false);
         IAllUserActions allUserActions = topDMAllActions;
 
         CreateParserFromFiles.addInboxEmails(topDMAllActions);

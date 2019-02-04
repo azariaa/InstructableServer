@@ -6,9 +6,12 @@ set the subject of this outgoing email to hello,"(setFieldFromString (getProbMut
 set subject to hello,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""hello""))"
 set the subject to the sender's email,(setFieldFromFieldVal (getProbMutableFieldByFieldName subject) (evalField (getProbFieldByFieldName sender)))
 set I am thinking about the sender as the subject,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""I am thinking about the sender""))"
+the subject is goat,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""goat""))"
+the subject is fdsad@gdsafd.com,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""fdsad@gdsafd.com""))"
 create tom as a zebra,"(createInstanceByFullNames zebra (stringNoun ""tom""))"
 create zebra david.,"(createInstanceByFullNames zebra (stringNoun ""david""))"
 create zebra for david,"(createInstanceByFullNames zebra (stringNoun ""david""))"
+create a zebra for david,"(createInstanceByFullNames zebra (stringNoun ""david""))"
 create zebra beth,"(createInstanceByFullNames zebra (stringNoun ""beth""))"
 set body to glue,"(setFieldFromString (getProbMutableFieldByFieldName body) (stringValue ""glue""))"
 set subject to party,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""party""))"

@@ -21,11 +21,11 @@ public class ConceptContainer
     private ConceptFiledMap conceptFieldMap;
     private String userId;
 
-    public ConceptContainer(String userId)
+    public ConceptContainer(String userId, boolean connectToDB)
     {
         //conceptFieldMap.put("email", Arrays.asList(EmailMessage.fieldDescriptions));
         this.userId = userId;
-        conceptFieldMap = new ConceptFiledMap(userId);
+        conceptFieldMap = new ConceptFiledMap(userId, connectToDB);
     }
 
     public boolean doesConceptExist(String concept)

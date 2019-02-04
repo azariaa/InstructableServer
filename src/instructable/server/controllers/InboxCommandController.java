@@ -23,7 +23,7 @@ public class InboxCommandController
         this.conceptContainer = conceptContainer;
         this.instanceContainer = instanceContainer;
         this.emailFetcher = emailFetcher;
-        if (emailFetcher.isPresent())
+        if (emailFetcher.isPresent() && emailFetcher.get().shouldUseLastEmail())
             currentIncomingEmailIdx = emailFetcher.get().getLastEmailIdx(new ExecutionStatus());
         else
             currentIncomingEmailIdx = 0;
@@ -47,7 +47,7 @@ public class InboxCommandController
 
     public String getCurrentEmailName(ExecutionStatus executionStatus)
     {
-        if (currentIncomingEmailIdx == 0)
+        if (currentIncomingEmailIdx == 0 && emailFetcher.isPresent() && emailFetcher.get().shouldUseLastEmail())
             setToNewestEmail(new ExecutionStatus());
         makeSureEmailIsPresentInDb(executionStatus);
         return emailMessageNameStart + currentIncomingEmailIdx;

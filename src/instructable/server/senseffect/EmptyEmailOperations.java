@@ -27,6 +27,12 @@ public class EmptyEmailOperations implements IEmailSender, IEmailFetcher
     }
 
     @Override
+    public boolean shouldUseLastEmail()
+    {
+        return false;
+    }
+
+    @Override
     public void sendEmail(ExecutionStatus executionStatus, String subject, String body, String copyList, String recipientList)
     {
         executionStatus.add(ExecutionStatus.RetStatus.noPswdSet, emailAndPasswordNotSet);

@@ -36,7 +36,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         eRepW1,
         eRepMomAtWork,
         eRepW3,
-        tellBoss,
+        //tellBoss,
         eForwardMToBoss,
         eForwardToMom,
         eForwardToW2,
@@ -65,7 +65,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     static final String worker3Email = "aaronworkshard3@myworkplace.com";
     static final String myEmail = "you@myworkplace.com";//TopDMAllActions.userEmailAddress; //in production every user should have a different email
 
-    static final String familyEventDate = "September 28th";
+    static final String familyEventDate = "April 28th";
 
     //or the notes appear bossEmail, momEmail and CharlieEmail only!
 
@@ -76,6 +76,8 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     LinkedHashSet<TasksToComplete> userTasks = new LinkedHashSet<>();
     String gameId;
     Logger logger;
+
+    Optional<String> messageToSend = Optional.empty();
 
     public ExperimentTaskController(Logger logger, String gameId)
     {
@@ -123,6 +125,9 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
 
     public String getCurrentTaskText()
     {
+        if (messageToSend.isPresent())
+            return messageToSend.get();
+
         switch (currentTask())
         {
             case defineContact:
@@ -132,7 +137,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case createContact:
                 return "Your 3rd training task is to <b>create</b> a contact for "+ momName +" (simply tell the agent to create a contact for mom)";
             case setMomsEmail:
-                return "Your 4th training task is to <b>set</b> mom's email correctly. (Set "+momName+"'s email to the email that appears in the \"notes\" image. Make sure to type it in correctly!)";
+                return "Your 4th training task is to <b>set</b> mom's email according to the email that appears in the \"notes\" image below. Make sure to type it in correctly!";
             case seeMomsEmail:
                 return "Your 5th training task is to ask the agent for "+momName+"'s email";
             case createEmail:
@@ -159,9 +164,9 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 switch (lastEmailSent)
                 {
                     case ok:
-                        return "Main Task: read each of the incoming emails (next email, etc.). For each email do as it says (follow the sender's request). (Remember that teaching new commands may save you time!)";
+                        return "Main Task: read each of the incoming emails (next email, etc.). For each email do as it says and follow the sender's request (that is, either reply to the email or forward it). (Remember that teaching new commands may save you time!)";
                     case noTask:
-                        return "Sent email did not complete any task. Check email's subject, body, and recipient address.";
+                        return "Sent email did not complete any task. Check email's subject, body, and recipient address. Did you include the subject (or the body) of the current email?";
                     case oldTask:
                         return "Sent email completed a task which you have already completed in the past. Move to the next email.";
                 }
@@ -172,6 +177,8 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
 
     public void responseSentToUser(String agentResponse)
     {
+        messageToSend = Optional.empty();
+
         if (agentResponse.contains("Composing new email") && !userTasks.contains(TasksToComplete.createEmail))
             userTasks.add(TasksToComplete.createEmail);
         else if (agentResponse.contains("Concept \"contact\" was defined successfully"))
@@ -202,6 +209,10 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         {
             userTasks.addAll(Arrays.asList(TasksToComplete.class.getEnumConstants()));
         }
+        else if (currentTask().equals(TasksToComplete.setMomsEmail) && agentResponse.contains("\"email\"") && agentResponse.contains("set"))
+        {
+            messageToSend = Optional.of("Incorrect email! Set mom's email according to the email that appears in the \"notes\" image below (i.e. " + momEmail + ")");
+        }
     }
 
     //should actually be named "emailSent"
@@ -229,8 +240,8 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             completedInThisEmail.add(TasksToComplete.eRepMomAtWork);
         if (subject.contains("work") && recipientList.contains(worker3Email) && !body.isEmpty())
             completedInThisEmail.add(TasksToComplete.eRepW3);
-        if (recipientList.contains(bossEmail) && (body.contains(" way") || body.contains(" late")|| subject.contains(" way") || subject.contains(" late") || subject.contains(worker2Name.toLowerCase()) || body.contains(worker2Name.toLowerCase()) || body.contains("coming")|| subject.contains("coming")))
-            completedInThisEmail.add(TasksToComplete.tellBoss);
+//        if (recipientList.contains(bossEmail) && (body.contains(" way") || body.contains(" late")|| subject.contains(" way") || subject.contains(" late") || subject.contains(worker2Name.toLowerCase()) || body.contains(worker2Name.toLowerCase()) || body.contains("coming")|| subject.contains("coming")))
+//            completedInThisEmail.add(TasksToComplete.tellBoss);
         if (subject.contains("family event") && recipientList.contains(bossEmail) && body.contains("vacation"))
             completedInThisEmail.add(TasksToComplete.eForwardMToBoss);
         if (subject.contains("vacation") && recipientList.contains(momEmail) && body.contains("vacation"))
@@ -336,14 +347,14 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 "I like my job. Please reply and let me know what you think, as soon as possible."
         ));
 
+//
         //plain send
-        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker2Email,
-                "Tell Alex that I'm on my way",
-                Arrays.asList(myEmail),
-                new LinkedList<>(),
-                "Please email Alex saying that I'm on my way. " + worker2Name
-        ));
-
+//        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker2Email,
+//                "Tell Alex that I'm on my way",
+//                Arrays.asList(myEmail),
+//                new LinkedList<>(),
+//                "Please email Alex saying that I'm on my way. " + worker2Name
+//        ));
 
         //forwarding
         incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(momEmail,

@@ -219,4 +219,10 @@ public class RealEmailOperations implements IEmailSender, IEmailFetcher
         }
         return Optional.empty();
     }
+
+    @Override
+    public boolean shouldUseLastEmail()
+    {
+        return true;
+    }
 }

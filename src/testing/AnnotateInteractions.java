@@ -77,7 +77,7 @@ public class AnnotateInteractions
             DBUtils.clearUserData(userId); //Amos added
 			ParserSettings parserSettings = CreateParserFromFiles.createParser(Optional.of(userId));
 			IAllUserActions allUserActions = new TopDMAllActions("you@myworkplace.com", userId, new CommandsToParser(parserSettings, Optional.empty()), (executionStatus, subject, body, copyList, recipientList) -> {
-            }, false, Optional.empty(), Optional.empty());
+            }, false, Optional.empty(), Optional.empty(), false);
 			addContextEmails((TopDMAllActions) allUserActions);
 			System.out.println("Ready to annotate!");
 

@@ -20,11 +20,15 @@ public class ConceptFiledMap
 
     Map<String, List<FieldDescription>> conceptFieldMap;
     String userId;
+    boolean connectToDB;
 
-    public ConceptFiledMap(String userId)
+    public ConceptFiledMap(String userId, boolean connectToDB)
     {
         this.userId = userId;
-        fillMap();
+        this.connectToDB = connectToDB;
+        conceptFieldMap = new HashMap<>();
+        if (connectToDB)
+            fillMap();
     }
 
     private void fillMap()
@@ -105,19 +109,22 @@ public class ConceptFiledMap
     {
         conceptFieldMap.put(conceptName, new LinkedList<>());
 
-        //update DB!!!
-        try (
-                Connection connection = InstDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.conceptsTableName + " (" + DBUtils.userIdColName + "," + DBUtils.conceptColName + ") values (?,?)");
-        )
+        if (connectToDB)
         {
-            pstmt.setString(1, userId);
-            pstmt.setString(2, conceptName);
+            //update DB!!!
+            try (
+                    Connection connection = InstDataSource.getDataSource().getConnection();
+                    PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.conceptsTableName + " (" + DBUtils.userIdColName + "," + DBUtils.conceptColName + ") values (?,?)");
+            )
+            {
+                pstmt.setString(1, userId);
+                pstmt.setString(2, conceptName);
 
-            pstmt.executeUpdate();
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
+                pstmt.executeUpdate();
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -126,35 +133,38 @@ public class ConceptFiledMap
         conceptFieldMap.remove(conceptName);
 
         //update DB!
-        //first delete concept
-        try (
-                Connection connection = InstDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.conceptsTableName + " where " + DBUtils.userIdColName + "=? and " + DBUtils.conceptColName + "=?");
-        )
+        if (connectToDB)
         {
-            pstmt.setString(1, userId);
-            pstmt.setString(2, conceptName);
+            //first delete concept
+            try (
+                    Connection connection = InstDataSource.getDataSource().getConnection();
+                    PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.conceptsTableName + " where " + DBUtils.userIdColName + "=? and " + DBUtils.conceptColName + "=?");
+            )
+            {
+                pstmt.setString(1, userId);
+                pstmt.setString(2, conceptName);
 
-            pstmt.executeUpdate();
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
+                pstmt.executeUpdate();
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
 
-        //then delete all fields
-        try (
-                Connection connection = InstDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.conceptFieldTableName + " where " + DBUtils.userIdColName + "=? and " + DBUtils.conceptColName + "=?");
+            //then delete all fields
+            try (
+                    Connection connection = InstDataSource.getDataSource().getConnection();
+                    PreparedStatement pstmt = connection.prepareStatement("delete from " + DBUtils.conceptFieldTableName + " where " + DBUtils.userIdColName + "=? and " + DBUtils.conceptColName + "=?");
 
-        )
-        {
-            pstmt.setString(1, userId);
-            pstmt.setString(2, conceptName);
+            )
+            {
+                pstmt.setString(1, userId);
+                pstmt.setString(2, conceptName);
 
-            pstmt.executeUpdate();
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
+                pstmt.executeUpdate();
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -162,23 +172,26 @@ public class ConceptFiledMap
     {
         conceptFieldMap.get(conceptName).add(fieldDescription);
 
-        //update DB!!!
-        try (
-                Connection connection = InstDataSource.getDataSource().getConnection();
-                PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.conceptFieldTableName + " (" + DBUtils.userIdColName + "," + DBUtils.conceptColName + "," + DBUtils.fieldColName + "," + DBUtils.fieldTypeCol + "," + DBUtils.isListColName + "," + DBUtils.mutableColName + ") values (?,?,?,?,?,?)");
-        )
+        if (connectToDB)
         {
-            pstmt.setString(1, userId);
-            pstmt.setString(2, conceptName);
-            pstmt.setString(3, fieldDescription.fieldName);
-            pstmt.setString(4, fieldDescription.fieldType.name());
-            pstmt.setBoolean(5, fieldDescription.isList);
-            pstmt.setBoolean(6, fieldDescription.mutable);
+            //update DB!!!
+            try (
+                    Connection connection = InstDataSource.getDataSource().getConnection();
+                    PreparedStatement pstmt = connection.prepareStatement("insert into " + DBUtils.conceptFieldTableName + " (" + DBUtils.userIdColName + "," + DBUtils.conceptColName + "," + DBUtils.fieldColName + "," + DBUtils.fieldTypeCol + "," + DBUtils.isListColName + "," + DBUtils.mutableColName + ") values (?,?,?,?,?,?)");
+            )
+            {
+                pstmt.setString(1, userId);
+                pstmt.setString(2, conceptName);
+                pstmt.setString(3, fieldDescription.fieldName);
+                pstmt.setString(4, fieldDescription.fieldType.name());
+                pstmt.setBoolean(5, fieldDescription.isList);
+                pstmt.setBoolean(6, fieldDescription.mutable);
 
-            pstmt.executeUpdate();
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
+                pstmt.executeUpdate();
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }

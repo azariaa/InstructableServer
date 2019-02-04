@@ -19,10 +19,10 @@ public class InstanceContainer
 
     ConceptContainer conceptContainer;
 
-    public InstanceContainer(ConceptContainer conceptContainer, String userId)
+    public InstanceContainer(ConceptContainer conceptContainer, String userId, boolean connectToDB)
     {
         this.conceptContainer = conceptContainer;
-        instanceKB = new InstanceKB(userId, conceptContainer.getConceptFieldMap());
+        instanceKB = new InstanceKB(userId, conceptContainer.getConceptFieldMap(), connectToDB);
     }
 
     //save last access, and sort according to last access

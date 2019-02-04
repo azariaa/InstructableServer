@@ -12,4 +12,5 @@ public interface IEmailFetcher
 {
     int getLastEmailIdx(ExecutionStatus executionStatus);
     Optional<EmailInfo> getEmailInfo(ExecutionStatus executionStatus, int emailIdx);
+    boolean shouldUseLastEmail();
 }

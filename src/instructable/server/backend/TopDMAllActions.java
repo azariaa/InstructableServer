@@ -55,26 +55,27 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
     public TopDMAllActions(String userEmailAddress, String userId, ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses,
                            Optional<IEmailFetcher> emailFetcher,
-                           Optional<ICalendarAccessor> calendarAccessor)
+                           Optional<ICalendarAccessor> calendarAccessor,
+                           boolean connectToDB)
     {
         commandHistory = new CommandHistory();
         this.userEmailAddress = userEmailAddress;
         this.usePendingResponses = usePendingResponses;
-        reset(userEmailAddress, userId, emailSender, emailFetcher, calendarAccessor);
+        reset(userEmailAddress, userId, emailSender, emailFetcher, calendarAccessor, connectToDB);
         this.commandsToParser = commandsToParser;
         internalState = new InternalState();
         commandHistory.startRecording();
         clearUserDBAndReset = () -> {
             DBUtils.clearUserData(userId);
-            reset(userEmailAddress, userId, emailSender, emailFetcher, calendarAccessor);
+            reset(userEmailAddress, userId, emailSender, emailFetcher, calendarAccessor, connectToDB);
             return null;
         };
     }
 
-    private void reset(String userEmailAddress, String userId, IEmailSender emailSender, Optional<IEmailFetcher> emailFetcher, Optional<ICalendarAccessor> calendarAccessor)
+    private void reset(String userEmailAddress, String userId, IEmailSender emailSender, Optional<IEmailFetcher> emailFetcher, Optional<ICalendarAccessor> calendarAccessor, boolean connectToDB)
     {
-        conceptContainer = new ConceptContainer(userId);
-        instanceContainer = new InstanceContainer(conceptContainer, userId);
+        conceptContainer = new ConceptContainer(userId, connectToDB);
+        instanceContainer = new InstanceContainer(conceptContainer, userId, connectToDB);
         // the following command will also define the concept outgoing_email, however, the previous command may already try fetching the email being composed. This used to raise an exception.
         outEmailCommandController = new OutEmailCommandController(userEmailAddress, conceptContainer, instanceContainer, emailSender);
         inboxCommandController = new InboxCommandController(conceptContainer, instanceContainer, emailFetcher);

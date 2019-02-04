@@ -106,7 +106,7 @@ public class TestDirectly
                     {
                         //do nothing
                     }
-                }, false, Optional.empty(), Optional.empty());
+                }, false, Optional.empty(), Optional.empty(), false);
 
         TestHelpers testHelpers = new TestHelpers(testingMode, fileName);
 
