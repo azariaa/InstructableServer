@@ -76,13 +76,24 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
     LinkedHashSet<TasksToComplete> userTasks = new LinkedHashSet<>();
     String gameId;
     Logger logger;
+    boolean learningAgent;
 
-    Optional<String> messageToSend = Optional.empty();
+    private Optional<String> messageToSend = Optional.empty();
 
-    public ExperimentTaskController(Logger logger, String gameId)
+    public ExperimentTaskController(Logger logger, String gameId, boolean learningAgent)
     {
         this.gameId = gameId;
         this.logger = logger;
+        this.learningAgent = learningAgent;
+        if (!learningAgent)
+        {
+            userTasks.add(TasksToComplete.teachReadNextInbox);
+        }
+    }
+
+    public void newUtteranceStarting()
+    {
+        messageToSend = Optional.empty();
     }
 
     //returns the most recent task completed by the user
@@ -137,7 +148,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case createContact:
                 return "Your 3rd training task is to <b>create</b> a contact for "+ momName +" (simply tell the agent to create a contact for mom)";
             case setMomsEmail:
-                return "Your 4th training task is to <b>set</b> mom's email according to the email that appears in the \"notes\" image below. Make sure to type it in correctly!";
+                return "Your 4th training task is to <b>set</b> mom's email according to the email that appears in the \"notes\" image below. Make sure to type it in correctly! (Say: \"set mom's email to ...\")";
             case seeMomsEmail:
                 return "Your 5th training task is to ask the agent for "+momName+"'s email";
             case createEmail:
@@ -145,11 +156,11 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             case sendTestEmail:
                 return "Your 7th training task is to set the recipient to "+ momName +"'s email and set the subject to hello and send the email (instead of retyping mom's email, you can say: \"set the recipient to " + momName +"'s email\")";
             case readEmailInInbox:
-                return "Your 8th training task is to read the current email (in the inbox). Ignore the email's content for now (don't read the next email yet, you'll do it later).";
+                return "Your 8th training task is to read the current email (in the inbox). Ignore the email's content for now (don't read the next email yet, you'll do it later)";
             case setRecpToSender:
                 return "Your 9th training task is to create a new email and set the recipient to the current email's sender (don't type the email yourself, use: \"current email's sender\" instead)";
             case sendTestBody:
-                return "Your 10th training task is to set the body to the current email's body (don't type in the body yourself, just use the current email's body), and send the email";
+                return "Your 10th training task is to set the body to the current email's body (don't type in the body yourself, just say: \"set the body to the current email's body\"), and then send the email";
             case nextEmailInInbox:
                 return "Your 11th training task is to move to the <b>next</b> email (in the inbox). (No need to read it now.)";
             case previousEmailInInbox:
@@ -164,7 +175,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 switch (lastEmailSent)
                 {
                     case ok:
-                        return "Main Task: read each of the incoming emails (next email, etc.). For each email do as it says and follow the sender's request (that is, either reply to the email or forward it). (Remember that teaching new commands may save you time!)";
+                        return "Main Task: read each of the incoming emails (read email, next email, etc.). For each email do as it says and follow the sender's request (that is, either reply to the email or forward it)." + (this.learningAgent ? "(Remember that teaching new commands may save you time!)" : "");
                     case noTask:
                         return "Sent email did not complete any task. Check email's subject, body, and recipient address. Did you include the subject (or the body) of the current email?";
                     case oldTask:
@@ -177,8 +188,6 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
 
     public void responseSentToUser(String agentResponse)
     {
-        messageToSend = Optional.empty();
-
         if (agentResponse.contains("Composing new email") && !userTasks.contains(TasksToComplete.createEmail))
             userTasks.add(TasksToComplete.createEmail);
         else if (agentResponse.contains("Concept \"contact\" was defined successfully"))
@@ -199,7 +208,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             userTasks.add(TasksToComplete.nextEmailInInbox);
         else if (agentResponse.contains("Set to previous incoming email successfully"))
             userTasks.add(TasksToComplete.previousEmailInInbox);
-        else if (agentResponse.contains("I now know what to do when you say (for example): "))
+        else if (agentResponse.contains("currently learning the new command"))
         {
             //make sure that it didn't teach something (probably not relevant) earlier.
             if (userTasks.contains(TasksToComplete.nextEmailInInbox) && userTasks.contains(TasksToComplete.readEmailInInbox) && userTasks.contains(TasksToComplete.previousEmailInInbox))
@@ -224,13 +233,26 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
 
         Set<TasksToComplete> completedInThisEmail = new HashSet<>();
         //may want to actually send the email in real environment right here.
-        if (subject.contains("hello") && recipientList.contains(momEmail) && !userTasks.contains(TasksToComplete.sendTestEmail))
-            completedInThisEmail.add(TasksToComplete.sendTestEmail);
-        if ((body.contains("feeling well today") || body.contains("felt like")) && !userTasks.contains(TasksToComplete.sendTestBody))
-            completedInThisEmail.add(TasksToComplete.sendTestBody);
+        if (!userTasks.contains(TasksToComplete.sendTestEmail))
+        {
+            if (subject.contains("hello") && recipientList.contains(momEmail))
+                completedInThisEmail.add(TasksToComplete.sendTestEmail);
+            else if (subject.contains("hello"))
+                messageToSend = Optional.of("Email address is incorrect. set the recipient to mom's email and try again");
+            else
+                messageToSend = Optional.of("Subject was not set to hello, please set it to hello and try again");
+
+        }
+        else if (!userTasks.contains(TasksToComplete.sendTestBody))
+        {
+            if ((body.contains("feeling well today") || body.contains("felt like")) || body.contains("favorite color"))
+                completedInThisEmail.add(TasksToComplete.sendTestBody);
+            else
+                messageToSend = Optional.of("Message body was incorrectly set. Say: \"set the body to current email's body\" and try again. (You must set the recipient to current email's sender as well, say: \"set the recipient to current email's sender\")");
+        }
         if (subject.contains("shirt color") && recipientList.contains(momEmail) && !body.isEmpty())
             completedInThisEmail.add(TasksToComplete.eRepMomShirt);
-        if (subject.contains("task")  && subject.contains("asked") && recipientList.contains(bossEmail) && !body.isEmpty())
+        if (subject.contains("current")  && subject.contains("tasks") && recipientList.contains(bossEmail) && !body.isEmpty())
             completedInThisEmail.add(TasksToComplete.eRepBossTask);
         if (subject.contains("working tomorrow") && recipientList.contains(worker2Email) && !body.isEmpty())
             completedInThisEmail.add(TasksToComplete.eRepW2);
@@ -262,8 +284,15 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             completedInThisEmail.add(TasksToComplete.eRepW1Attention);
 
 
-        if (completedInThisEmail.isEmpty())
+        if (completedInThisEmail.isEmpty() && userTasks.contains(TasksToComplete.sendTestEmail) && userTasks.contains(TasksToComplete.sendTestBody))
         {
+            if (body.isEmpty())
+                messageToSend = Optional.of("Previous email sent did not complete any task: email body cannot be empty");
+            else if ((recipientList.contains(momEmail) || recipientList.contains(bossEmail) ||
+                    recipientList.contains(worker1Email) || recipientList.contains(worker2Email) || recipientList.contains(worker3Email)))
+                messageToSend = Optional.of("Previous email sent did not complete any task: when replying you must set the recipient to current email's sender, and use the same subject. When forwarding, you need to use both the subject and the body of current email.");
+            else
+                messageToSend = Optional.of("Previous email sent did not complete any task: recipient email address is incorrect. please try again.");
             lastEmailSent = LastEmailSent.noTask;
             unsuccessfulCount++;
         }
@@ -291,15 +320,15 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 "Hi there",
                 Arrays.asList(myEmail),
                 new LinkedList<String>(),
-                "I'm feeling well today. I hope I will also feel well tomorrow and anytime! Please ignore this email and read the next one."
+                "I'm feeling well today. I hope I will also feel well tomorrow and anytime! Please ignore this email and move on to the next email and read it."
         ));
 
-        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker1Email,
-                "Another email",
-                Arrays.asList(myEmail),
-                new LinkedList<>(),
-                "I felt like sending you another email. I hope that you don't mind. Please ignore this email too and read the next one."
-        ));
+//        incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker1Email,
+//                "Another email",
+//                Arrays.asList(myEmail),
+//                new LinkedList<>(),
+//                "I felt like sending you another email. I hope that you don't mind. Please ignore this email too move on to the next email and read it."
+//        ));
 
 
 
@@ -313,17 +342,17 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(bossEmail,
-                "Task I asked",
+                "Your current tasks",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
-                "Are you working on the task that I asked you to work on? Please reply immediately."
+                "How many tasks are you working on right now? Please reply immediately."
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker2Email,
                 "Working tomorrow",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
-                "I don't feel like working tomorrow, do I have to? Please reply as soon as possible."
+                "I don't feel like working tomorrow, at what time should I come to work? Please reply as soon as possible."
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker1Email,
@@ -361,7 +390,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 "Family event",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
-                "You must ask your boss to approve your vacation for the family event on "+familyEventDate+". Forward this email to your boss (make sure to use the same subject, and include the whole body, as you should always do when forwarding an email :)."
+                "You must ask your boss to approve your vacation for the family event on "+familyEventDate+". Forward this email to your boss (make sure to use the same subject, and include the whole body, as you should always do when forwarding an email :). You have your boss' email in your notes (it's: " + bossEmail + ")."
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(bossEmail,
@@ -375,7 +404,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
                 worker2Name,
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
-                "I asked "+worker2Name+" to do what you said, but I see that it must come from you. Please forward this email to "+worker2Name + "."
+                "I asked "+worker2Name+" to do what you said, but I see that it must come from you. Please forward this email to "+worker2Name + ". (You obviously have his email, but here it is again: " + worker2Email + ")."
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(bossEmail,

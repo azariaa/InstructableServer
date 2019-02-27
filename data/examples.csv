@@ -8,6 +8,7 @@ set the subject to the sender's email,(setFieldFromFieldVal (getProbMutableField
 set I am thinking about the sender as the subject,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""I am thinking about the sender""))"
 the subject is goat,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""goat""))"
 the subject is fdsad@gdsafd.com,"(setFieldFromString (getProbMutableFieldByFieldName subject) (stringValue ""fdsad@gdsafd.com""))"
+set recipient to sender,(setFieldFromFieldVal (getProbMutableFieldByFieldName recipient_list) (evalField (getProbFieldByFieldName sender)))
 create tom as a zebra,"(createInstanceByFullNames zebra (stringNoun ""tom""))"
 create zebra david.,"(createInstanceByFullNames zebra (stringNoun ""david""))"
 create zebra for david,"(createInstanceByFullNames zebra (stringNoun ""david""))"

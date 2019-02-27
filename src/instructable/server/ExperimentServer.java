@@ -21,6 +21,7 @@ public class ExperimentServer implements HttpHandler, AgentDataAndControl.Respon
     static public final String newGameJoinedStr = "newGameJoined";
     static public final String sayToAgentStr = "sayToAgent";
     static public final String userSaysParam = "userSays";
+    static public final String learningParam = "learningParam";
     static public final String gameScoreStr = "gameScore";
     static public final String gameTaskStr = "gameTask";
     static public final String recentTaskCompletedStr = "recentTaskCompleted";
@@ -58,13 +59,16 @@ public class ExperimentServer implements HttpHandler, AgentDataAndControl.Respon
                 return;
             }
             String action = parameters.get(actionParam).toString();
+            boolean learningAgent = true;
+            if (parameters.containsKey(learningParam) && parameters.get(learningParam).toString().equalsIgnoreCase("false"))
+                learningAgent = false;
             Optional<ExperimentTaskController> opExperimentTaskController = getUserTasks(gameId);
             if (!opExperimentTaskController.isPresent())
             {
                 if (!action.equals(newGameJoinedStr))
                     logger.warning("gameId not in map, adding now. gameId:" + gameId);
-                ExperimentTaskController experimentTaskControl = newGameStarted(gameId);
-                agentDataAndControl.addNewUser(gameId, experimentTaskControl, Optional.of(experimentTaskControl), Optional.empty(), false, false);
+                ExperimentTaskController experimentTaskControl = newGameStarted(gameId, learningAgent);
+                agentDataAndControl.addNewUser(gameId, experimentTaskControl, Optional.of(experimentTaskControl), Optional.empty(), false, false, learningAgent);
             }
             ExperimentTaskController experimentTaskController = getUserTasks(gameId).get();
             String responseToSend = "";
@@ -87,6 +91,7 @@ public class ExperimentServer implements HttpHandler, AgentDataAndControl.Respon
                     {
                         if (parameters.containsKey(userSaysParam))
                         {
+                            experimentTaskController.newUtteranceStarting();
                             String userSays = parameters.get(userSaysParam).toString();
                             Optional<String> res = agentDataAndControl.executeSentenceForUser(gameId, gameId, gameId, new LinkedList<>(Collections.singleton(userSays)), new Date());
                             if (res.isPresent())
@@ -137,7 +142,7 @@ public class ExperimentServer implements HttpHandler, AgentDataAndControl.Respon
         return userScores;
     }
 
-    private ExperimentTaskController newGameStarted(String gameId)
+    private ExperimentTaskController newGameStarted(String gameId, boolean learningAgent)
     {
         synchronized (mapLock)
         {
@@ -147,7 +152,7 @@ public class ExperimentServer implements HttpHandler, AgentDataAndControl.Respon
             }
             else
             {
-                missionsCompletedByUser.put(gameId, new ExperimentTaskController(logger, gameId));
+                missionsCompletedByUser.put(gameId, new ExperimentTaskController(logger, gameId, learningAgent));
                 logger.info("gameId added to map. gameId:" + gameId + ".");
             }
             return missionsCompletedByUser.get(gameId);

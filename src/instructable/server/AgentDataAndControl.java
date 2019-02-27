@@ -56,7 +56,7 @@ public class AgentDataAndControl
         logger.info("Agent Ready!");
     }
 
-    public ParserSetAndActions addNewUser(String userId, IEmailSender emailSender, Optional<IAddInboxEmails> addInboxEmails, Optional<IEmailFetcher> emailFetcher, boolean replaceOld, boolean connectToDB)
+    public ParserSetAndActions addNewUser(String userId, IEmailSender emailSender, Optional<IAddInboxEmails> addInboxEmails, Optional<IEmailFetcher> emailFetcher, boolean replaceOld, boolean connectToDB, boolean learningAgent)
     {
         if (!replaceOld)
         {
@@ -66,7 +66,7 @@ public class AgentDataAndControl
                     return parserSetAndActionsMap.get(userId);
             }
         }
-        ParserSetAndActions parserSetAndActions = getParserSetAndActions(userId, emailSender, addInboxEmails, emailFetcher, connectToDB);
+        ParserSetAndActions parserSetAndActions = getParserSetAndActions(userId, emailSender, addInboxEmails, emailFetcher, connectToDB, learningAgent);
         synchronized (parserSetAndActionsMap)
         {
             parserSetAndActionsMap.put(userId, parserSetAndActions);
@@ -74,13 +74,13 @@ public class AgentDataAndControl
         return parserSetAndActions;
     }
 
-    private ParserSetAndActions getParserSetAndActions(String userId, IEmailSender emailSender, Optional<IAddInboxEmails> addInboxEmails, Optional<IEmailFetcher> emailFetcher, boolean connectToDB)
+    private ParserSetAndActions getParserSetAndActions(String userId, IEmailSender emailSender, Optional<IAddInboxEmails> addInboxEmails, Optional<IEmailFetcher> emailFetcher, boolean connectToDB, boolean learningAgent)
     {
-        ParserSettings parserSettingsCopy = originalParserSettings.createPSFromGeneralForUser(userId);
-        CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy, Optional.of(() -> originalParserSettings.createPSFromGeneralForUser(userId)));
+        ParserSettings parserSettingsCopy = originalParserSettings.createPSFromGeneralForUser(userId, !connectToDB);
+        CommandsToParser commandsToParser = new CommandsToParser(parserSettingsCopy, Optional.of(() -> originalParserSettings.createPSFromGeneralForUser(userId, !connectToDB)));
 
         //TODO: why is this: you@youremail.com
-        TopDMAllActions topDMAllActions = new TopDMAllActions("you@youremail.com", userId, commandsToParser, emailSender, usePendingResponses, emailFetcher, Optional.empty(), connectToDB);
+        TopDMAllActions topDMAllActions = new TopDMAllActions("you@youremail.com", userId, commandsToParser, emailSender, usePendingResponses, emailFetcher, Optional.empty(), connectToDB, learningAgent);
         if (addInboxEmails.isPresent())
             addInboxEmails.get().addInboxEmails(topDMAllActions);
         return new ParserSetAndActions(topDMAllActions, commandsToParser);
@@ -180,7 +180,7 @@ public class AgentDataAndControl
         Optional<RealEmailOperations> emailSender = EmailPassword.getRealEmailOp(username, encPassword, email, realPwd);
         if (!emailSender.isPresent())
             return "Error setting new password";
-        addNewUser(userId, emailSender.get(), Optional.empty(), Optional.of(emailSender.get()), true, true); //replace if old existed
+        addNewUser(userId, emailSender.get(), Optional.empty(), Optional.of(emailSender.get()), true, true, true); //replace if old existed
         return "email and password set successfully. Make sure to turn on access for less secure apps at: https://www.google.com/settings/security/lesssecureapps. You can say reset email and password if you want to modify them";
 
     }
@@ -200,7 +200,7 @@ public class AgentDataAndControl
         return addNewUser(userId,
                 realEmailOps.isPresent() ? realEmailOps.get() : new EmptyEmailOperations(),
                 Optional.empty(),
-                Optional.of(realEmailOps.isPresent() ? realEmailOps.get() : new EmptyEmailOperations()), false, true);
+                Optional.of(realEmailOps.isPresent() ? realEmailOps.get() : new EmptyEmailOperations()), false, true, true);
     }
 
 }

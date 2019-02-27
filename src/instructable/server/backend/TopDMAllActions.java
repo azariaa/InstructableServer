@@ -52,12 +52,27 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
     String userEmailAddress;
     Optional<JSONObject> previousFieldEval = Optional.empty();
     boolean usePendingResponses = true;
+    boolean learningAgent = true;
 
     public TopDMAllActions(String userEmailAddress, String userId, ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses,
                            Optional<IEmailFetcher> emailFetcher,
                            Optional<ICalendarAccessor> calendarAccessor,
                            boolean connectToDB)
     {
+        this(userEmailAddress, userId, commandsToParser, emailSender, usePendingResponses,
+                emailFetcher,
+                calendarAccessor,
+                connectToDB,
+                true);
+    }
+
+    public TopDMAllActions(String userEmailAddress, String userId, ICommandsToParser commandsToParser, IEmailSender emailSender, boolean usePendingResponses,
+                           Optional<IEmailFetcher> emailFetcher,
+                           Optional<ICalendarAccessor> calendarAccessor,
+                           boolean connectToDB,
+                           boolean learningAgent)
+    {
+        this.learningAgent = learningAgent;
         commandHistory = new CommandHistory();
         this.userEmailAddress = userEmailAddress;
         this.usePendingResponses = usePendingResponses;
@@ -65,7 +80,8 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         this.commandsToParser = commandsToParser;
         internalState = new InternalState();
         commandHistory.startRecording();
-        clearUserDBAndReset = () -> {
+        clearUserDBAndReset = () ->
+        {
             DBUtils.clearUserData(userId);
             reset(userEmailAddress, userId, emailSender, emailFetcher, calendarAccessor, connectToDB);
             return null;
@@ -1138,7 +1154,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             boolean learnedAnyGeneralization = commandsToParser.addTrainingEg(
                     commandBeingLearnt,
                     commandsLearnt);
-            final String learningSuccessStr = "I now know what to do when you say "+(learnedAnyGeneralization? "(for example)":"")+": \"" + commandBeingLearnt + "\"!";
+            final String learningSuccessStr = "I now know what to do when you say " + (learnedAnyGeneralization ? "(for example)" : "") + ": \"" + commandBeingLearnt + "\"!";
             if (usePendingResponses)
             {
                 new Thread()
@@ -1152,7 +1168,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                     }
                 }.start();
                 return new ActionResponse("I'm currently learning the new command (\"" + commandBeingLearnt + "\"), " + resendNewRequest +
-                        ". " + (learnedAnyGeneralization? "I'm also trying to generalize to other similar commands!" : "I did not find any way to generalize this new command to other commands, but you can use the new command and it should work!"), true, Optional.empty());
+                        ". " + (learnedAnyGeneralization ? "I'm also trying to generalize to other similar commands!" : "I did not find any way to generalize this new command to other commands, but you can use the new command and it should work!"), true, Optional.empty());
             }
             else
             {
@@ -1488,7 +1504,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                     jsonToExec,
                     false,
                     Optional.of(() -> failWithMessage(infoForCommand, "I can't undo this"))
-                    );
+            );
         }
         return failWithMessage(infoForCommand, "there is a problem with the json");
     }
@@ -1763,7 +1779,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
             }
         }
 
-        if (!success && askToTeachIfFails && !isInLearningPhase)
+        if (!success && askToTeachIfFails && !isInLearningPhase && learningAgent)
         {
             //response.append("\nWould you like to teach me what to do in this case (either say yes or simply ignore this question)?");
             response.append("\nWould you like to teach me (say yes or just ignore)?");
@@ -1854,7 +1870,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                 executionStatus,
                 Optional.of(Consts.playYouTubeStr + videoId),
                 Optional.of(() -> say(infoForCommand, "Forget that..."))
-                );
+        );
     }
 
     @Override
@@ -1864,7 +1880,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
         final int numOfSentencesPerTitle = 2;
         List<InstUtils.NewsInfo> newsInfos = InstUtils.getGuardianLinks(searchTerm, numOfTitles);
         InstUtils.getSummaries(newsInfos, numOfSentencesPerTitle);
-        String newsForUser = newsInfos.stream().map(e -> "Title: " + e.title + "\n" + e.summary).reduce("", (x,y) -> x + "\n" + y, (x,y) -> x + y);
+        String newsForUser = newsInfos.stream().map(e -> "Title: " + e.title + "\n" + e.summary).reduce("", (x, y) -> x + "\n" + y, (x, y) -> x + y);
         ExecutionStatus executionStatus = new ExecutionStatus();
         if (newsInfos.size() == 0)
         {
@@ -1911,11 +1927,11 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
 
     /**
      * @param infoForCommand
-     * @param type : read/setTimer/setAlarm
-     * @param arg1 : if read: whatToRead: currentTime/currentDate/allTimers/allAlarms.
-     *             alarmDateTime: yyyy-MM-dd HH:mm:ss
-     * @param arg2 : if setTimer/setAlarm: toSay: what to say when time
-     * @param arg3 : if setTimer/setAlarm: alarmType: bell/#timesToRepeat
+     * @param type           : read/setTimer/setAlarm
+     * @param arg1           : if read: whatToRead: currentTime/currentDate/allTimers/allAlarms.
+     *                       alarmDateTime: yyyy-MM-dd HH:mm:ss
+     * @param arg2           : if setTimer/setAlarm: toSay: what to say when time
+     * @param arg3           : if setTimer/setAlarm: alarmType: bell/#timesToRepeat
      * @return
      */
     @Override
@@ -1971,8 +1987,7 @@ public class TopDMAllActions implements IAllUserActions, IIncomingEmailControlli
                     executionStatus.add(ExecutionStatus.RetStatus.error, "I couldn't understand which alarm should be canceled");
                 }
             }
-        }
-        catch (Exception ex)
+        } catch (Exception ex)
         {
             executionStatus.add(ExecutionStatus.RetStatus.error, "something went wrong");
         }

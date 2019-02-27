@@ -451,12 +451,13 @@ public class ParserSettings
     /**
      * Important: This function can only be called if the current ParserSettings is general (not for a specific user)!
      * @param userId
+     * set alwaysCreateNew to true when running experiments and when not accessing the db.
      * @return
      */
-    public ParserSettings createPSFromGeneralForUser(String userId)
+    public ParserSettings createPSFromGeneralForUser(String userId, boolean alwaysCreateNew)
     {
         Preconditions.checkState(parserKnowledgeSeeder.isGeneralUser());
-        if (!ParserKnowledgeSeeder.userExists(userId))
+        if (alwaysCreateNew || !ParserKnowledgeSeeder.userExists(userId))
         {
             return createPSFromGeneralForNewUser(userId);
         }

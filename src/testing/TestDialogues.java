@@ -44,8 +44,8 @@ public class TestDialogues
     private static void runTest(String filename, String gameId, AgentDataAndControl agentDataAndControl,
         Logger logger, boolean executeGold)
     {
-        ExperimentTaskController experimentTaskController = new ExperimentTaskController(logger,gameId);
-        agentDataAndControl.addNewUser(gameId, experimentTaskController, Optional.of(experimentTaskController), Optional.empty(), false, false);
+        ExperimentTaskController experimentTaskController = new ExperimentTaskController(logger,gameId, true);
+        agentDataAndControl.addNewUser(gameId, experimentTaskController, Optional.of(experimentTaskController), Optional.empty(), false, false, true);
 
         ExpressionSimplifier simplifier = CcgUtils.getExpressionSimplifier();
         ExpressionComparator comparator = new SimplificationComparator(simplifier);
