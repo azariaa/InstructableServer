@@ -276,7 +276,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
             completedInThisEmail.add(TasksToComplete.eForwardToWWork);
         if (subject.contains("rest") && body.contains("well") && recipientList.contains(worker2Email))
             completedInThisEmail.add(TasksToComplete.eForwardToWRest);
-        if (subject.contains("cannot attend") && body.contains("sorry") && recipientList.contains(bossEmail))
+        if (subject.contains("attending party") && body.contains("sorry") && recipientList.contains(bossEmail))
             completedInThisEmail.add(TasksToComplete.eForwardWToBoss);
         if (subject.contains("everyone ignores me") && !body.isEmpty() && recipientList.contains(worker3Email))
             completedInThisEmail.add(TasksToComplete.eRepW3Ignore);
@@ -429,7 +429,7 @@ public class ExperimentTaskController implements IEmailSender, IAddInboxEmails
         ));
 
         incomingEmailControlling.addEmailMessageToInbox(new EmailInfo(worker2Email,
-                "Cannot attend the party",
+                "attending the party",
                 Arrays.asList(myEmail),
                 new LinkedList<>(),
                 "I am sorry, but I can't attend next week's party. Please forward this email to " + bossName + "."
